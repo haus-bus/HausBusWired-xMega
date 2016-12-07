@@ -74,6 +74,12 @@
 // From module: NVM - Non Volatile Memory
 #include <nvm.h>
 
+// From module: PMIC - Programmable Multi-level Interrupt Controller
+#include <pmic.h>
+
+// From module: PWM service using timer/counter
+#include <pwm.h>
+
 // From module: Part identification macros
 #include <parts.h>
 
@@ -89,6 +95,15 @@
 
 // From module: System Clock Control - XMEGA A1U/A3U/A3BU/A4U/B/C implementation
 #include <sysclk.h>
+
+// From module: TC - Timer Counter
+#include <tc.h>
+
+// From module: USART - Serial interface - XMEGA implementation
+#include <serial.h>
+
+// From module: USART - Universal Synchronous/Asynchronous Receiver/Transmitter
+#include <usart.h>
 
 // From module: USB CDC Protocol
 #include <usb_protocol_cdc.h>

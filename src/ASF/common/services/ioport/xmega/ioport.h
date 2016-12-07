@@ -101,16 +101,16 @@
 
 /** \name IOPORT Mode bit definitions */
 /** @{ */
-#define IOPORT_MODE_TOTEM           (0x00 << 3) /*!< Totem-pole */
-#define IOPORT_MODE_BUSKEEPER       (0x01 << 3) /*!< Buskeeper */
-#define IOPORT_MODE_PULLDOWN        (0x02 << 3) /*!< Pull-down */
-#define IOPORT_MODE_PULLUP          (0x03 << 3) /*!< Pull-up */
-#define IOPORT_MODE_WIREDOR         (0x04 << 3) /*!< Wired OR */
-#define IOPORT_MODE_WIREDAND        (0x05 << 3) /*!< Wired AND */
-#define IOPORT_MODE_WIREDORPULL     (0x06 << 3) /*!< Wired OR with pull-down */
-#define IOPORT_MODE_WIREDANDPULL    (0x07 << 3) /*!< Wired AND with pull-up */
-#define IOPORT_MODE_INVERT_PIN      (0x01 << 6) /*!< Invert output and input */
-#define IOPORT_MODE_SLEW_RATE_LIMIT (0x01 << 7) /*!< Slew rate limiting */
+#define IOPORT_MODE_TOTEM           (0x00 << 11) /*!< Totem-pole */
+#define IOPORT_MODE_BUSKEEPER       (0x01 << 11) /*!< Buskeeper */
+#define IOPORT_MODE_PULLDOWN        (0x02 << 11) /*!< Pull-down */
+#define IOPORT_MODE_PULLUP          (0x03 << 11) /*!< Pull-up */
+#define IOPORT_MODE_WIREDOR         (0x04 << 11) /*!< Wired OR */
+#define IOPORT_MODE_WIREDAND        (0x05 << 11) /*!< Wired AND */
+#define IOPORT_MODE_WIREDORPULL     (0x06 << 11) /*!< Wired OR with pull-down */
+#define IOPORT_MODE_WIREDANDPULL    (0x07 << 11) /*!< Wired AND with pull-up */
+#define IOPORT_MODE_INVERT_PIN      (0x01 << 14) /*!< Invert output and input */
+#define IOPORT_MODE_SLEW_RATE_LIMIT (0x01 << 15) /*!< Slew rate limiting */
 /** @} */
 
 /** @} */

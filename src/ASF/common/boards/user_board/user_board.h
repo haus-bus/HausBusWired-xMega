@@ -20,7 +20,8 @@
 #include <conf_board.h>
 
 //! Number of LEDs.
-#define LED_COUNT   6
+#define LED_COUNT			2
+#define PWM_LED_COUNT		6
 #define PUSH_BUTTON_COUNT   6
 
 //! Port to output LED 
@@ -63,6 +64,9 @@
 #  define BUTTON_S5_GPIO    IOPORT_CREATE_PIN(PORTA,4)
 #  define BUTTON_S6_GPIO    IOPORT_CREATE_PIN(PORTA,5)
 //! @}
+
+#  define RS485_RXEN_GPIO	IOPORT_CREATE_PIN(PORTE,0)
+#  define RS485_TXEN_GPIO	IOPORT_CREATE_PIN(PORTE,1)
 
 
 
