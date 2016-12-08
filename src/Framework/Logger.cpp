@@ -7,11 +7,7 @@
 
 
 #include "Logger.h"
-
-extern "C"
-{
-	uint32_t rtc_get_time();
-}
+#include "SystemTime.h"
 
 Logger& endl(Logger& me) 
 {
@@ -20,7 +16,7 @@ Logger& endl(Logger& me)
 
 Logger& newTraceLine(Logger& me) 
 {
-	return me << '\n' << '>' << rtc_get_time() << ' ';
+	return me << '\n' << '>' << SystemTime::now() << ' ';
 }
 
 void streamDummy(char c) {}

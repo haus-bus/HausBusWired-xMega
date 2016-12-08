@@ -553,6 +553,24 @@
     <None Include="src\ASF\xmega\utils\assembler\gas.h">
       <SubType>compile</SubType>
     </None>
+    <Compile Include="src\Framework\CriticalSection.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\Framework\GlobalInterrupt.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\Framework\SystemTime.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\Framework\SystemTime.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <None Include="src\Homematic\HMWModule.cpp">
+      <SubType>compile</SubType>
+    </None>
+    <Compile Include="src\Homematic\HMWModule.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\Homematic\HMWRS485.cpp">
       <SubType>compile</SubType>
     </Compile>

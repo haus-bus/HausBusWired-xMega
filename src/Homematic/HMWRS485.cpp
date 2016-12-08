@@ -10,6 +10,7 @@
 
 #include "HMWRS485.h"
 #include <Framework\Framework.h>
+#include <Framework\SystemTime.h>
 #include <string.h>
 
 extern "C"
@@ -140,10 +141,10 @@ void HMWRS485::sendFrame()
   for ( uint8_t i = 0; i < 3; i++ )
   {  // maximal 3 Versuche
     sendFrameSingle();
-    lastTry = rtc_get_time();
+    lastTry = SystemTime::now();
 // wait for ACK
     // TODO: Die Wartezeit bis die Uebertragung wiederholt wird sollte einen Zufallsanteil haben
-    while ( rtc_get_time() - lastTry < 200 )
+    while ( SystemTime::now() - lastTry < 200 )
     {
 // Daten empfangen (tut nichts, wenn keine Daten vorhanden)
       receive();
