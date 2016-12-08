@@ -60,9 +60,9 @@ int main (void)
 	while (true)
 	{
 		hmwrs485.loop();
-		if( time != rtc_get_time() )
+		if( time <= rtc_get_time() )
 		{
-			time = rtc_get_time();
+			time = rtc_get_time() + 1024;
 			PORTR.OUTTGL = 1;
 			DEBUG_H1( "loop");
 		}
