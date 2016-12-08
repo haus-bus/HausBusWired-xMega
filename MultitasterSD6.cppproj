@@ -472,6 +472,9 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="DFU Booter\SD6_DFU_Booter.hex">
+      <SubType>compile</SubType>
+    </None>
     <None Include="src\ASF\common\services\serial\serial.h">
       <SubType>compile</SubType>
     </None>
@@ -747,6 +750,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="DFU Booter" />
     <Folder Include="src\" />
     <Folder Include="src\ASF\" />
     <Folder Include="src\ASF\common\" />
