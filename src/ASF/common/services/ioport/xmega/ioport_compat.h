@@ -295,7 +295,7 @@ static inline void ioport_toggle_pin(port_pin_t pin)
 static inline void ioport_set_group_high(port_id_t port_id,
 		pin_mask_t port_mask)
 {
-	arch_ioport_set_port_level(port_id, port_mask, port_mask);
+	arch_ioport_set_port_level(port_id, port_mask, IOPORT_PIN_LEVEL_HIGH);
 }
 
 /*! \brief Drives a group of I/O pin of a port to low level.
@@ -305,7 +305,7 @@ static inline void ioport_set_group_high(port_id_t port_id,
  */
 static inline void ioport_set_group_low(port_id_t port_id, pin_mask_t port_mask)
 {
-	arch_ioport_set_port_level(port_id, port_mask, 0);
+	arch_ioport_set_port_level(port_id, port_mask, IOPORT_PIN_LEVEL_LOW);
 }
 
 /*! \brief Toggles a group of I/O pin of a port.
