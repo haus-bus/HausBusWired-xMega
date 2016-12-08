@@ -74,6 +74,9 @@
 // From module: NVM - Non Volatile Memory
 #include <nvm.h>
 
+// From module: NVM - Non volatile memory access
+#include <common_nvm.h>
+
 // From module: PMIC - Programmable Multi-level Interrupt Controller
 #include <pmic.h>
 

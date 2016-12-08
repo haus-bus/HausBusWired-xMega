@@ -34,11 +34,12 @@
     <option id="common.services.basic.clock" value="Add" config="" content-id="Atmel.ASF" />
     <option id="common.services.basic.gpio" value="Add" config="" content-id="Atmel.ASF" />
     <option id="common.services.ioport" value="Add" config="" content-id="Atmel.ASF" />
+    <option id="common.services.basic.serial" value="Add" config="" content-id="Atmel.ASF" />
     <option id="common.services.basic.sleepmgr" value="Add" config="" content-id="Atmel.ASF" />
     <option id="common.services.usb.class.device" value="Add" config="cdc" content-id="Atmel.ASF" />
     <option id="xmega.drivers.rtc" value="Add" config="" content-id="Atmel.ASF" />
     <option id="xmega.services.pwm" value="Add" config="" content-id="Atmel.ASF" />
-    <option id="common.services.basic.serial" value="Add" config="" content-id="Atmel.ASF" />
+    <option id="common.drivers.nvm" value="Add" config="no_extmem" content-id="Atmel.ASF" />
     <option id="common.boards.user_board.common" value="Add" config="" content-id="Atmel.ASF" />
   </options>
   <configurations>
@@ -132,6 +133,9 @@
     <file path="src/ASF/common/utils/interrupt/interrupt_avr8.h" framework="" version="3.33.0" source="common\utils\interrupt\interrupt_avr8.h" changed="False" content-id="Atmel.ASF" />
     <file path="src/ASF/common/utils/make/Makefile.avr.in" framework="" version="3.33.0" source="common\utils\make\Makefile.avr.in" changed="False" content-id="Atmel.ASF" />
     <file path="src/ASF/common/utils/parts.h" framework="" version="3.33.0" source="common\utils\parts.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/drivers/nvm/xmega/xmega_nvm.c" framework="" version="3.33.0" source="common\drivers\nvm\xmega\xmega_nvm.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/common/drivers/nvm/common_nvm.h" framework="" version="3.33.0" source="common\drivers\nvm\common_nvm.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/Config/conf_nvm.h" framework="" version="3.33.0" source="common\drivers\nvm\xmega\module_config\conf_nvm.h" changed="False" content-id="Atmel.ASF" />
   </files>
   <documentation help="http://asf.atmel.com/docs/3.33.0/common.applications.user_application.user_board.xmegaau/html/index.html" />
   <offline-documentation help="" />
@@ -230,6 +234,7 @@
       <Value>../src/ASF/xmega/utils/preprocessor</Value>
       <Value>../src/ASF/xmega/utils</Value>
       <Value>../src/ASF/common/utils</Value>
+      <Value>../src/ASF/common/drivers/nvm</Value>
     </ListValues>
   </avrgcc.compiler.directories.IncludePaths>
   <avrgcc.compiler.optimization.level>Optimize for size (-Os)</avrgcc.compiler.optimization.level>
@@ -280,6 +285,7 @@
       <Value>../src/ASF/common/services/serial/xmega_usart</Value>
       <Value>../src/ASF/common/services/serial</Value>
       <Value>../src/ASF/xmega/drivers/usart</Value>
+      <Value>../src/ASF/common/drivers/nvm</Value>
     </ListValues>
   </avrgcccpp.compiler.directories.IncludePaths>
   <avrgcccpp.compiler.optimization.level>Optimize for size (-Os)</avrgcccpp.compiler.optimization.level>
@@ -321,6 +327,7 @@
       <Value>../src/ASF/xmega/utils/preprocessor</Value>
       <Value>../src/ASF/xmega/utils</Value>
       <Value>../src/ASF/common/utils</Value>
+      <Value>../src/ASF/common/drivers/nvm</Value>
     </ListValues>
   </avrgcccpp.assembler.general.IncludePaths>
 </AvrGccCpp>
@@ -372,6 +379,7 @@
       <Value>../src/ASF/xmega/utils/preprocessor</Value>
       <Value>../src/ASF/xmega/utils</Value>
       <Value>../src/ASF/common/utils</Value>
+      <Value>../src/ASF/common/drivers/nvm</Value>
     </ListValues>
   </avrgcc.compiler.directories.IncludePaths>
   <avrgcc.compiler.optimization.level>Optimize (-O1)</avrgcc.compiler.optimization.level>
@@ -423,6 +431,7 @@
       <Value>../src/ASF/common/services/serial/xmega_usart</Value>
       <Value>../src/ASF/common/services/serial</Value>
       <Value>../src/ASF/xmega/drivers/usart</Value>
+      <Value>../src/ASF/common/drivers/nvm</Value>
     </ListValues>
   </avrgcccpp.compiler.directories.IncludePaths>
   <avrgcccpp.compiler.optimization.level>Optimize (-O1)</avrgcccpp.compiler.optimization.level>
@@ -465,6 +474,7 @@
       <Value>../src/ASF/xmega/utils/preprocessor</Value>
       <Value>../src/ASF/xmega/utils</Value>
       <Value>../src/ASF/common/utils</Value>
+      <Value>../src/ASF/common/drivers/nvm</Value>
     </ListValues>
   </avrgcccpp.assembler.general.IncludePaths>
   <avrgcccpp.assembler.debugging.DebugLevel>Default (-Wa,-g)</avrgcccpp.assembler.debugging.DebugLevel>
@@ -485,6 +495,12 @@
       <SubType>compile</SubType>
     </None>
     <Compile Include="src\ASF\common\boards\user_board\init.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <None Include="src\ASF\common\drivers\nvm\common_nvm.h">
+      <SubType>compile</SubType>
+    </None>
+    <Compile Include="src\ASF\common\drivers\nvm\xmega\xmega_nvm.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\ASF\common\services\serial\usart_serial.c">
@@ -553,6 +569,9 @@
     <None Include="src\ASF\xmega\utils\assembler\gas.h">
       <SubType>compile</SubType>
     </None>
+    <None Include="src\config\conf_nvm.h">
+      <SubType>compile</SubType>
+    </None>
     <Compile Include="src\Framework\CriticalSection.h">
       <SubType>compile</SubType>
     </Compile>
@@ -565,9 +584,9 @@
     <Compile Include="src\Framework\SystemTime.h">
       <SubType>compile</SubType>
     </Compile>
-    <None Include="src\Homematic\HMWModule.cpp">
+    <Compile Include="src\Homematic\HMWModule.cpp">
       <SubType>compile</SubType>
-    </None>
+    </Compile>
     <Compile Include="src\Homematic\HMWModule.h">
       <SubType>compile</SubType>
     </Compile>
@@ -774,6 +793,9 @@
     <Folder Include="src\ASF\common\" />
     <Folder Include="src\ASF\common\boards\" />
     <Folder Include="src\ASF\common\boards\user_board\" />
+    <Folder Include="src\ASF\common\drivers\" />
+    <Folder Include="src\ASF\common\drivers\nvm\" />
+    <Folder Include="src\ASF\common\drivers\nvm\xmega\" />
     <Folder Include="src\ASF\common\services\" />
     <Folder Include="src\ASF\common\services\clock\" />
     <Folder Include="src\ASF\common\services\clock\xmega\" />
