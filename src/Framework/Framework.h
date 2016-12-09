@@ -9,7 +9,10 @@
 #ifndef FRAMEWORK_H_
 #define FRAMEWORK_H_
 
-#include <compiler.h>
+extern "C"
+{
+	#include <asf.h>
+}
 #include "Logger.h"
 
 #define DEBUG_LEVEL_MASK     0x03

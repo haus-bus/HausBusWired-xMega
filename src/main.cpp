@@ -5,10 +5,6 @@
  *  Author: haus-bus
  */ 
 
-extern "C" 
-{ 
-	#include <asf.h> 
-}
 #include <Framework/Framework.h>
 #include <Homematic/HMWRS485.h>
 

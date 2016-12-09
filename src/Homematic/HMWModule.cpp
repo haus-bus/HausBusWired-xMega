@@ -12,7 +12,6 @@
 #include <string.h>
 #include <Framework/Framework.h>
 #include <Framework/SystemTime.h>
-#include <common_nvm.h>
 
 static const uint8_t debugLevel( DEBUG_LEVEL_LOW );
 #define getId() FSTR("HMWModul::")
