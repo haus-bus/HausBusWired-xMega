@@ -13,7 +13,10 @@ extern "C"
 {
 	#include <asf.h>
 }
+
 #include "Logger.h"
+#include "Timestamp.h"
+#include "CriticalSection.h"
 
 #define DEBUG_LEVEL_MASK     0x03
 #define DEBUG_LEVEL_OFF      0x00
