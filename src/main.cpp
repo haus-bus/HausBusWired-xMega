@@ -53,17 +53,11 @@ int main (void)
 	
 	HMWRS485 hmwrs485(USART_SERIAL, RS485_RXEN_GPIO, RS485_TXEN_GPIO );
 	setup( &hmwrs485 );
-	Timestamp timestamp;
 	
 	while (true)
 	{
 		hmwrs485.loop();
 		loop();
-		if( timestamp.since() >= SystemTime::S )
-		{
-			timestamp = Timestamp();
-			PORTR.OUTTGL = 1;
-		}
 	}
 	
 	return 1;
