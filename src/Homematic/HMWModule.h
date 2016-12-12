@@ -8,26 +8,20 @@
 #ifndef HMWMODULE_H_
 #define HMWMODULE_H_
 
-#include "HMWRS485.h"
+#include "HMWModuleInterface.h"
+#include "HMWDeviceInterface.h"
+
+class HMWRS485;
+
 
 // TODO: Firmware/Hardware Version aus EEPROM bzw. Flash?
 #define MODULE_HARDWARE_VERSION 1
 #define MODULE_FIRMWARE_VERSION 0x0306
 
-// Abstrakte Basisklasse mit Callbacks aus dem Modul
-class HMWDeviceBase
+class HMWModule: public HMWModuleInterface
 {
 public:
-  virtual void setLevel( uint8_t, unsigned int ) = 0;  // channel, level
-  virtual unsigned int getLevel( uint8_t ) = 0;       // channel, returns level
-  virtual void readConfig() = 0;         // read config from EEPROM
-};
-
-class HMWModule: public HMWModuleBase
-{
-public:
-  HMWModule( HMWDeviceBase*, HMWRS485*, uint8_t ); // rs485, device type
-  virtual ~HMWModule();
+  HMWModule( HMWDeviceInterface*, HMWRS485*, uint8_t ); // rs485, device type
 
   virtual void processEvent( uint8_t const * const frameData, uint8_t frameDataLength,
                              bool isBroadcast = false );
@@ -45,7 +39,7 @@ public:
 
 private:
   HMWRS485* hmwrs485;
-  HMWDeviceBase* device;
+  HMWDeviceInterface* device;
 
   void readAddressFromEEPROM();
   void determineSerial( uint8_t* );

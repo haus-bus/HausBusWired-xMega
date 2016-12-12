@@ -9,6 +9,7 @@
  */
 
 #include "HMWModule.h"
+#include "HMWRS485.h"
 #include <string.h>
 #include <Framework/Framework.h>
 #include <Framework/SystemTime.h>
@@ -16,7 +17,7 @@
 static const uint8_t debugLevel( DEBUG_LEVEL_LOW );
 #define getId() FSTR("HMWModul::")
 
-HMWModule::HMWModule( HMWDeviceBase* _device, HMWRS485* _hmwrs485,
+HMWModule::HMWModule( HMWDeviceInterface* _device, HMWRS485* _hmwrs485,
                       uint8_t _deviceType )
 {
   device = _device;
@@ -27,10 +28,6 @@ HMWModule::HMWModule( HMWDeviceBase* _device, HMWRS485* _hmwrs485,
   readAddressFromEEPROM();
 }
 
-HMWModule::~HMWModule()
-{
-  // TODO Auto-generated destructor stub
-}
 
 // Processing of default events (related to all modules)
 void HMWModule::processEvent( uint8_t const * const frameData,
@@ -125,11 +122,13 @@ void HMWModule::processEvent( uint8_t const * const frameData,
     case 'W':                                                    // Write EEPROM
       if ( frameDataLength == frameData[3] + 4 )
       {
-        DEBUG_H1( FSTR( "write eeprom" ) );
-        adrStart = ((unsigned int) (frameData[1]) << 8) | frameData[2]; // start adress of eeprom
+		adrStart = ((unsigned int) (frameData[1]) << 8) | frameData[2]; // start adress of eeprom
+        DEBUG_H2( FSTR( "write eeprom at 0x" ), adrStart );
+		DEBUG_M1( ' ' );
         for ( uint8_t i = 4; i < frameDataLength; i++ )
         {
           writeEEPROM( adrStart + i - 4, frameData[i] );
+		  DEBUG_L2( frameData[i], ' ' );
         }
       }
       ;
