@@ -7,6 +7,7 @@
 
 #include <Framework/Framework.h>
 #include <Homematic/HMWRS485.h>
+#include "Homematic/HMW_LC_Sw2_DR.h"
 
 
 static const uint8_t debugLevel( DEBUG_LEVEL_LOW );
@@ -51,18 +52,18 @@ int main (void)
 	Logger::setStream( putc );
 	
 	HMWRS485 hmwrs485(USART_SERIAL, RS485_RXEN_GPIO, RS485_TXEN_GPIO );
-	uint32_t time = rtc_get_time();
+	setup( &hmwrs485 );
+	Timestamp timestamp;
 	
 	while (true)
 	{
 		hmwrs485.loop();
-		if( time <= rtc_get_time() )
+		loop();
+		if( timestamp.since() >= SystemTime::S )
 		{
-			time = rtc_get_time() + 1024;
+			timestamp = Timestamp();
 			PORTR.OUTTGL = 1;
-			DEBUG_H1( "loop");
 		}
-		
 	}
 	
 	return 1;
