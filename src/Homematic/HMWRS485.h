@@ -17,16 +17,7 @@
 // TODO: Wo werden die Device Relations gesetzt? Irgendwo im EEPROM?
 // #define MAX_DEVICE_RELATIONS 100  TODO: loeschen, wenn nicht gebraucht
 
-// Abstrakte Basisklasse mit Callbacks fuer Verwender
-class HMWModuleBase
-{
-public:
-// processEvent wird nur aufgerufen, wenn es fuer das Modul was zu tun gibt
-// Also nicht fuer ACKs oder duplicates
-// TODO: Should return whether an ACK is needed or not
-  virtual void processEvent( uint8_t const * const frameData, uint8_t frameDataLength,
-                             bool isBroadcast = false ) = 0; // Data, broadcast-Flag
-};
+#include "HMWModuleInterface.h"
 
 class HMWRS485
 {
@@ -41,7 +32,7 @@ public:
 
   // Modul-Definition, wird vom Modul selbst gesetzt
   // TODO: Ist das gutes Design?
-  HMWModuleBase* module;
+  HMWModuleInterface* module;
 
   // Senderadresse beim Empfangen
   // TODO: Das sollte private sein, wird aber momentan noch vom Modul verwendet
