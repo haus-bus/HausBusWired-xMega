@@ -57,7 +57,7 @@ static const uint8_t debugLevel( DEBUG_LEVEL_LOW );
 // Das folgende Define kann benutzt werden, wenn ueber die
 // Kanaele "geloopt" werden soll
 // als Define, damit es zentral definiert werden kann, aber keinen (globalen) Speicherplatz braucht
-#define CHANNEL_PORTS uint8_t channelPorts[CHANNEL_IO_COUNT] = {BUTTON_S1_GPIO, BUTTON_S1_GPIO, LED1_GPIO, LED2_GPIO};
+#define CHANNEL_PORTS uint8_t channelPorts[CHANNEL_IO_COUNT] = {BUTTON_S1_GPIO, BUTTON_S2_GPIO, LED1_GPIO, LED2_GPIO};
 
 // Port Status, d.h. Port ist auf 0 oder 1
 uint8_t portStatus[CHANNEL_IO_BYTES];
@@ -105,11 +105,11 @@ void readPins()
 		// TODO: Check if this really works
 		if( ioport_get_value(channelPorts[i]) )
 		{
-			portStatus[i / 8] |= (i % 8);
+			portStatus[i / 8] |= (1<<(i % 8));
 		}
 		else
 		{
-			portStatus[i / 8] &= ~(i % 8);
+			portStatus[i / 8] &= ~(1<<(i % 8));
 		}
 	}
 }
@@ -178,6 +178,7 @@ public:
 //The setup function is called once at startup of the sketch
 void setup( HMWRS485* hmwrs485 )
 {
+	DEBUG_H1(FSTR("setup()"));
 	//-------------------------------------------------------------
 	// device type: 0x11 = HMW-LC-Sw2-DR
 	static HMWDevice hmwdevice;
@@ -188,6 +189,8 @@ void setup( HMWRS485* hmwrs485 )
 // "HHB2703111", 0x42380123);
 
 	hmwmodule->broadcastAnnounce(0);
+	
+	DEBUG_M1(FSTR("started"));
 }
 
 //------------------------------------------------------------
@@ -380,7 +383,7 @@ void handleKeys()
 		if (!config.keys[i].input_locked)
 			continue;   // inverted logic, locked = 0
 // Taste nicht gedrueckt (negative Logik wegen INPUT_PULLUP)
-		if ( portStatus[i / 8] & (i % 8))
+		if ( portStatus[i / 8] & (1<<(i % 8)))
 		{
 			// Taste war auch vorher nicht gedrueckt kann ignoriert werden
 			// Taste war vorher gedrueckt?
