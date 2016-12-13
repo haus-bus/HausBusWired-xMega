@@ -129,7 +129,7 @@ void HMWRS485::sendFrame()
 // simple send for ACKs and Broadcasts
   if ( txTargetAddress == 0xFFFFFFFF || ((txFrameControlByte & 0x03) == 1) )
   {
-    DEBUG_H2( FSTR( "Sending ACK or Broadcast" ), txFrameControlByte );
+    DEBUG_H3( FSTR( "Sending ACK or Broadcast (0x"), txFrameControlByte, ')'  );
     sendFrameSingle();
     // TODO: nicht besonders schoen, zuerst ackwait zu setzen und dann wieder zu loeschen
     frameStatus &= ~FRAME_SENTACKWAIT; // we do not really wait
@@ -194,7 +194,8 @@ void HMWRS485::sendFrameSingle()
     txFrameControlByte |= (txSeqNum << 5);
   };
 
-  DEBUG_H2( FSTR( "Sending" ), endl );
+  DEBUG_H2( FSTR( "SendSingleFrame" ), endl );
+  ioport_set_pin_low( rxEnablePin );
   ioport_set_pin_high( txEnablePin );
   usart_putchar( serial, FRAME_START_LONG );  // send startbyte
   crc16checksum = crc16Shift( FRAME_START_LONG, crc16checksum );
@@ -239,8 +240,10 @@ void HMWRS485::sendFrameSingle()
   sendFrameByte( crc16checksum / 0x100 );
   sendFrameByte( crc16checksum & 0xFF );
 
+  usart_clear_tx_complete( serial );
   while( !usart_tx_is_complete( serial ) );              // othwerwise, enable pin will go low too soon
   ioport_set_pin_low( txEnablePin );
+  ioport_set_pin_high( rxEnablePin );
 
   frameStatus |= FRAME_SENTACKWAIT;
   // frameStatus &= ~FRAME_ACKOK;    TODO: Remove, if not needed
@@ -251,15 +254,15 @@ void HMWRS485::sendFrameSingle()
 // TX-Pin needs to be HIGH before calling this
 void HMWRS485::sendFrameByte( uint8_t sendByte )
 {
-  // Debug
-  DEBUG_L2( sendByte, ':' );
-
   if ( sendByte == FRAME_START_LONG || sendByte == FRAME_START_SHORT
       || sendByte == ESCAPE_CHAR )
   {
-    usart_putchar( serial, ESCAPE_CHAR );
-    sendByte &= 0x7F;
+
+	 DEBUG_L2( (uint8_t)ESCAPE_CHAR, ':' ); 
+     usart_putchar( serial, ESCAPE_CHAR );
+     sendByte &= 0x7F;
   };
+  DEBUG_L2( sendByte, ':' );
   usart_putchar( serial, sendByte );
 }
 ;
