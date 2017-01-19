@@ -177,7 +177,8 @@
         <avrgcccpp.assembler.debugging.DebugLevel>Default (-Wa,-g)</avrgcccpp.assembler.debugging.DebugLevel>
       </AvrGccCpp>
     </ToolchainSettings>
-    <PreBuildEvent>$(SolutionDir)utils\bin\bin2header  ..\..\SD6_Booter\Release\SD6_Booter.bin  $(MSBuildProjectDirectory)\BooterFw.h</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="BoardHardware\" />

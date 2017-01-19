@@ -25,6 +25,13 @@ PbsSystemHw::PbsSystemHw()
   configure();
 }
 
+#ifdef _DEBUG_
+void putc( char c )
+{
+	Usart::instance( PortE, 0 ).write( c );
+}
+#endif
+
 void PbsSystemHw::configure()
 {
 #ifdef _DEBUG_
@@ -76,12 +83,6 @@ void PbsSystemHw::configureLogicalButtons()
     i++;
   }
 }
-
-void putc( char c )
-{
-  Usart::instance( PortE, 0 ).write( c );
-}
-
 
 void PbsSystemHw::configureTwi()
 {
