@@ -1,29 +1,31 @@
+/.vs
+/AR8/Debug
+/AR8/Release
+/AR8_Booter/Debug
+/AR8_Booter/Release
+/AR8_Bootloader/Debug
+/AR8_Bootloader/Release
+
+/SD6/Debug
+/SD6/Release
+/SD6_Booter/Debug
+/SD6_Booter/Release
+/SD6_Bootloader/Debug
+/SD6_Bootloader/Release
+
 # Compiled Object files
-*.slo
-*.lo
 *.o
-*.obj
+*.d
 
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
+# List files and maps
+*.lss
+*.map
 
 # Compiled Static libraries
-*.lai
-*.la
 *.a
 *.lib
 
 # Executables
-*.exe
-*.out
-*.app
+*.elf
+*.bin
+*.hex
