@@ -90,7 +90,10 @@ void setup()
 int main (void)
 {
 	setup();
-	device->loop();
+	while( 1 )
+	{
+		device->loop();
+	}
 }
 
 // following functions are realizations of basic Arduino functions
