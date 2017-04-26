@@ -18,6 +18,7 @@ public:
 protected:
 private:
 	pwm_config config;
+    uint8_t currentDutyCycle;
 
 //functions
 public:
@@ -27,7 +28,7 @@ public:
 		pwm_start( &config, 0 );
 	}
 	  
-	uint8_t getDutyCycle();
+	inline uint8_t getDutyCycle() { return currentDutyCycle; }
 	    
 	void setDutyCycle(uint8_t duty = 100);
 	

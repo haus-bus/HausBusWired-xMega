@@ -8,12 +8,8 @@
 
 #include "PwmOutput.h"
 
-uint8_t PwmOutput::getDutyCycle() 
-{
-	return 0;
-}
-
 void PwmOutput::setDutyCycle( uint8_t dutyCycle ) 
 {
 	pwm_set_duty_cycle_percent( &config, dutyCycle );
+    currentDutyCycle = dutyCycle;
 }
