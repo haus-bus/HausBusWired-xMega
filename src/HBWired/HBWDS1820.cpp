@@ -12,7 +12,7 @@ bool HBWDS1820::selfPowered( true );
 
 
 HBWDS1820::HBWDS1820( const OneWire& _hardware, Config* _config  ) :
-    hardware( _hardware ), state(START_MEASUREMENT)
+    hardware( _hardware ), state(SEARCH_SENSOR)
 {
     config = _config;
     nextActionDelay = 2000;
@@ -51,9 +51,9 @@ uint8_t HBWDS1820::get(uint8_t* data)
   }
   uint16_t centiCelsius = convertToCentiCelsius( sp );
 
-  // LSB first
-  *data++ = centiCelsius & 0xFF;
-  *data   = (centiCelsius>>8) & 0xFF;
+  // MSB first
+  *data++ = (centiCelsius>>8) & 0xFF;
+  *data   = centiCelsius & 0xFF;
   return 2;
 }
 
