@@ -94,11 +94,11 @@ void setup()
     static HBWDS1820 hbwDs1820( OneWire( ONE_WIRE_GPIO ), &config.ds1820cfg );
 
     channels[ 0] = &hbwKey1;
-    channels[ 1] = &hbwKey1;
-    channels[ 2] = &hbwKey1;
-    channels[ 3] = &hbwKey1;
-    channels[ 4] = &hbwKey1;
-    channels[ 5] = &hbwKey1;
+    channels[ 1] = &hbwKey2;
+    channels[ 2] = &hbwKey3;
+    channels[ 3] = &hbwKey4;
+    channels[ 4] = &hbwKey5;
+    channels[ 5] = &hbwKey6;
     channels[ 6] = &hbwLed1;
     channels[ 7] = &hbwLed2;
     channels[ 8] = &hbwLed3;
