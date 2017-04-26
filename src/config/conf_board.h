@@ -12,6 +12,7 @@
 #define CONF_BOARD_H
 
 #define CONF_BOARD_ENABLE_USARTE0
+#define CONF_BOARD_ENABLE_USARTC1
 
 
 #endif // CONF_BOARD_H

@@ -56,6 +56,9 @@
 #include <ccp.h>
 #include <xmega_reset_cause.h>
 
+// From module: Calendar functionality
+#include <calendar.h>
+
 // From module: Common build items for user board support templates
 #include <user_board.h>
 
@@ -107,16 +110,6 @@
 
 // From module: USART - Universal Synchronous/Asynchronous Receiver/Transmitter
 #include <usart.h>
-
-// From module: USB CDC Protocol
-#include <usb_protocol_cdc.h>
-
-// From module: USB Device CDC (Single Interface Device)
-#include <udi_cdc.h>
-
-// From module: USB Device Stack Core (Common API)
-#include <udc.h>
-#include <udd.h>
 
 // From module: XMEGA compiler driver
 #include <compiler.h>

@@ -12,34 +12,39 @@
 #define FIRMWARE_VERSION 0x0100
 
 
-extern "C"
-{
-	#include <asf.h>
-}
+#include <Utils/SystemTime.h>
+#include <Elements/SerialStream.h>
+
 #include "HBWired/HBWired.h"
-#include "HBWired/CDCStream.h"
-#include "HBWired/RS485Stream.h"
-#include "HBWired/HBWSwitch.h"
 #include "HBWired/HBWKey.h"
+#include "HBWired/HBWDimmer.h"
+#include "HBWired/HBWDS1820.h"
 
 struct hbw_config {
-	uint8_t  logging_time;     // 0x0001
-	uint32_t central_address;  // 0x0002 - 0x0005
-	// 6 LEDs erst mal als Switches
-	hbw_config_switch switchcfg[6];  // 0x0006 - 0x0011
-	// 6 Taster
-	hbw_config_key keycfg[6];        // 0x0012 - 0x002D
+	uint8_t  logging_time;          // 0x0001
+	uint32_t central_address;       // 0x0002 - 0x0005
+	hbw_config_key keycfg[6];       // 0x0006 - 0x0011
+	HBWDimmer::Config ledcfg[6];    // 0x0012 - 0x002D
+    HBWDS1820::Config ds1820cfg;    // 0x002E - 0x002F
 } config;
 
-HBWDevice* device = NULL;
-HBWChannel* channels[12];
+static HBWDevice* device = NULL;
+static HBWChannel* channels[13];
 
-static usart_serial_options_t usart_options = 
+static usart_serial_options_t dbg_options = 
 {
-	.baudrate = USART_SERIAL_BAUDRATE,
-	.charlength = USART_SERIAL_CHAR_LENGTH,
-	.paritytype = USART_SERIAL_PARITY,
-	.stopbits = USART_SERIAL_STOP_BIT
+	.baudrate = DBG_SERIAL_BAUDRATE,
+	.charlength = DBG_SERIAL_CHAR_LENGTH,
+	.paritytype = DBG_SERIAL_PARITY,
+	.stopbits = DBG_SERIAL_STOP_BIT
+};
+
+static usart_serial_options_t rs485_options =
+{
+    .baudrate = RS485_SERIAL_BAUDRATE,
+    .charlength = RS485_SERIAL_CHAR_LENGTH,
+    .paritytype = RS485_SERIAL_PARITY,
+    .stopbits = RS485_SERIAL_STOP_BIT
 };
 
 void setup()
@@ -55,34 +60,55 @@ void setup()
 	sysclk_init();
 	board_init();
 	
-	// Initialize system timer
-	rtc_init();
+	// Initialize interfaces
+	usart_serial_init(DBG_SERIAL, &dbg_options);
+    usart_serial_init(RS485_SERIAL, &rs485_options);
+
+    // Initialize system timer
+    SystemTime::init();
 	
-	// Initialize RS485 interface
-	usart_serial_init(USART_SERIAL, &usart_options);
-	
-	// Enable USB Stack Device
-	udc_start ();
-	
-	static CDCStream debugStream;
-	static RS485Stream rs485( USART_SERIAL );
-	
-	channels[0] = new HBWSwitch(LED1_GPIO,&(config.switchcfg[0]));
-	channels[1] = new HBWSwitch(LED2_GPIO,&(config.switchcfg[1]));
-	channels[2] = new HBWSwitch(LED3_GPIO,&(config.switchcfg[2]));
-	channels[3] = new HBWSwitch(LED4_GPIO,&(config.switchcfg[3]));
-	channels[4] = new HBWSwitch(LED5_GPIO,&(config.switchcfg[4]));
-	channels[5] = new HBWSwitch(LED6_GPIO,&(config.switchcfg[5]));
-	
-	channels[ 6] = new HBWKey(BUTTON_S1_GPIO,&(config.keycfg[0]));
-	channels[ 7] = new HBWKey(BUTTON_S2_GPIO,&(config.keycfg[1]));
-	channels[ 8] = new HBWKey(BUTTON_S3_GPIO,&(config.keycfg[2]));
-	channels[ 9] = new HBWKey(BUTTON_S4_GPIO,&(config.keycfg[3]));
-	channels[10] = new HBWKey(BUTTON_S5_GPIO,&(config.keycfg[4]));
-	channels[11] = new HBWKey(BUTTON_S6_GPIO,&(config.keycfg[5]));
+	static SerialStream debugStream( DBG_SERIAL );
+	static SerialStream rs485Stream( RS485_SERIAL );
+
+    static HBWKey hbwKey1(BUTTON_S1_GPIO,&(config.keycfg[0]));
+    static HBWKey hbwKey2(BUTTON_S2_GPIO,&(config.keycfg[1]));
+    static HBWKey hbwKey3(BUTTON_S3_GPIO,&(config.keycfg[2]));
+    static HBWKey hbwKey4(BUTTON_S4_GPIO,&(config.keycfg[3]));
+    static HBWKey hbwKey5(BUTTON_S5_GPIO,&(config.keycfg[4]));
+    static HBWKey hbwKey6(BUTTON_S6_GPIO,&(config.keycfg[5]));
+
+    static PwmOutput led1( PWM_TCC0, PWM_CH_A, 5000 );
+    static PwmOutput led2( PWM_TCC0, PWM_CH_B, 5000 );
+    static PwmOutput led3( PWM_TCC0, PWM_CH_C, 5000 );
+    static PwmOutput led4( PWM_TCC0, PWM_CH_D, 5000 );
+    static PwmOutput led5( PWM_TCC1, PWM_CH_A, 5000 );
+    static PwmOutput led6( PWM_TCC1, PWM_CH_B, 5000 );
+
+    static HBWDimmer hbwLed1( &led1, &config.ledcfg[0] );
+    static HBWDimmer hbwLed2( &led2, &config.ledcfg[1] );
+    static HBWDimmer hbwLed3( &led3, &config.ledcfg[2] );
+    static HBWDimmer hbwLed4( &led4, &config.ledcfg[3] );
+    static HBWDimmer hbwLed5( &led5, &config.ledcfg[4] );
+    static HBWDimmer hbwLed6( &led6, &config.ledcfg[5] );
+
+    static HBWDS1820 hbwDs1820( OneWire( ONE_WIRE_GPIO ), &config.ds1820cfg );
+
+    channels[ 0] = &hbwKey1;
+    channels[ 1] = &hbwKey1;
+    channels[ 2] = &hbwKey1;
+    channels[ 3] = &hbwKey1;
+    channels[ 4] = &hbwKey1;
+    channels[ 5] = &hbwKey1;
+    channels[ 6] = &hbwLed1;
+    channels[ 7] = &hbwLed2;
+    channels[ 8] = &hbwLed3;
+    channels[ 9] = &hbwLed4;
+    channels[10] = &hbwLed5;
+    channels[11] = &hbwLed6;
+    channels[12] = &hbwDs1820;
 	
 	device = new HBWDevice(	HMW_DEVICETYPE, HARDWARE_VERSION, FIRMWARE_VERSION,
-							&rs485,RS485_TXEN_GPIO,sizeof(config),&config,12,channels,&debugStream,
+							&rs485Stream,RS485_TXEN_GPIO,sizeof(config),&config,13,channels,&debugStream,
 							NULL, NULL);
 	hbwdebug(F("B: 2A\n"));
 }
@@ -96,30 +122,38 @@ int main (void)
 	}
 }
 
-// following functions are realizations of basic Arduino functions
+// following functions are realizations of some basic Arduino functions
 unsigned long millis(void)
 {
-	return rtc_get_time();
+	return SystemTime::now();
 }
 
 void pinMode( uint8_t pin, uint8_t mode)
 {
-	port_pin_flags_t flags = IOPORT_DIR_INPUT;
 	if( mode == OUTPUT )
 	{
-		flags = IOPORT_DIR_OUTPUT;
+		ioport_set_pin_dir( pin, IOPORT_DIR_OUTPUT );
 	}
-	ioport_configure_pin( pin, flags );
+    else
+    {
+        ioport_set_pin_dir( pin, IOPORT_DIR_INPUT );
+    }
 }
 
 void digitalWrite(uint8_t pin, uint8_t state)
 {
-	if( state ) ioport_set_pin_high( pin );
-	else ioport_set_pin_low( pin );
+	if( state ) 
+    {
+        ioport_set_pin_high( pin );
+    }
+	else 
+    {
+        ioport_set_pin_low( pin );
+    }
 }
 
 int digitalRead( uint8_t pin )
 {
-	return ioport_get_value( pin );
+	return ioport_get_pin_level( pin );
 } 
   
