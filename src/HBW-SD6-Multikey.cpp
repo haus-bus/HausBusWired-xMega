@@ -21,11 +21,14 @@
 #include "HBWired/HBWDS1820.h"
 
 struct hbw_config {
-	uint8_t  logging_time;          // 0x0001
-	uint32_t central_address;       // 0x0002 - 0x0005
-	hbw_config_key keycfg[6];       // 0x0006 - 0x0011
-	HBWDimmer::Config ledcfg[6];    // 0x0012 - 0x002D
-    HBWDS1820::Config ds1820cfg;    // 0x002E - 0x002F
+	uint8_t  loggingTime;           // 0x0001
+	uint32_t centralAddress;        // 0x0002 - 0x0005
+    uint16_t unused1;               // 0x0006 - 0x0007
+	hbw_config_key keycfg[6];       // 0x0008 - 0x0013
+	HBWDimmer::Config ledcfg[6];    // 0x0014 - 0x001F
+    HBWDS1820::Config ds1820cfg;    // 0x0020 - 0x002F
+    //uint8_t reserved[0x3CB];
+    //uint32_t ownAdress;
 } config;
 
 static HBWDevice* device = NULL;
@@ -107,9 +110,12 @@ void setup()
     channels[11] = &hbwLed6;
     channels[12] = &hbwDs1820;
 	
-	device = new HBWDevice(	HMW_DEVICETYPE, HARDWARE_VERSION, FIRMWARE_VERSION,
-							&rs485Stream,RS485_TXEN_GPIO,sizeof(config),&config,13,channels,&debugStream,
-							NULL, NULL);
+	static HBWDevice sd6MultiKey(	HMW_DEVICETYPE, HARDWARE_VERSION, FIRMWARE_VERSION,
+							        &rs485Stream,RS485_TXEN_GPIO,sizeof(config),&config,13,channels,&debugStream,
+							        NULL, NULL);
+
+    device = &sd6MultiKey;
+
 	hbwdebug(F("B: 2A\n"));
 }
 

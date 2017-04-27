@@ -145,14 +145,6 @@
                  <value_map to_device="false" from_device="true" parameter_value="150" device_value="0xffff"/>
                </conversion>				   
 			</parameter>
-			<parameter id="ONEWIRE_TYPE">
-			   <logical type="integer" min="0" max="254">
-			      <special_value id="NOT_USED" value="255"/>
-			    </logical>	  	  
-               <physical size="1.0" type="integer" interface="eeprom">
-                  <address index="+7.0"/>
-               </physical>	   
-			</parameter>		
 		</paramset>
 		<paramset type="VALUES" id="hmw_temp_input_values">
 			<parameter id="TEMPERATURE" operations="read,event">
