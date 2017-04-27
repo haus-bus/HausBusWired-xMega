@@ -9,6 +9,8 @@
 #define HwUnits_DS1820_H
 
 #include <Protocols/OneWire.h>
+#include <Utils/Timestamp.h>
+
 #include "HBWired.h"
 
 class Crc8;
@@ -46,9 +48,12 @@ public:
 
   	struct Config
   	{
-      	uint8_t logging:1;              // 0x0000
-      	uint8_t        :7;              // 0x0000
-      	uint8_t dummy;
+      	uint8_t     unused1;           
+      	uint8_t     minDelta;
+        uint8_t     unused2;
+        uint16_t    minInterval;
+        uint16_t    maxInterval;
+        uint8_t     unused3[9]; 
   	};
 
   static const uint8_t SCRATCHPAD_SIZE = 9;
@@ -89,7 +94,7 @@ public:
 
 private:
 
-  uint16_t convertToCentiCelsius( uint8_t* scratchPad );
+  int16_t convertToCentiCelsius( uint8_t* scratchPad );
 
   ////    Additional operations    ////
 
@@ -139,9 +144,18 @@ private:
 
     OneWire::RomCode romCode;
 
-    uint32_t lastActionTime;
-    
     uint16_t nextActionDelay;
+
+    int16_t currentCentiCelsius;
+
+    int16_t lastSentCentiCelsius;
+
+    Timestamp lastActionTime;
+    
+    Timestamp lastSentTime;
+
+    
+    
 
 };
 

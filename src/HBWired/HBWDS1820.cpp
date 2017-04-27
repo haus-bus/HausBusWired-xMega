@@ -38,22 +38,9 @@ bool HBWDS1820::isSensor( uint8_t familiyCode )
 
 uint8_t HBWDS1820::get(uint8_t* data)
 {
-  uint8_t sp[SCRATCHPAD_SIZE];
-
-  hardware.reset();
-  hardware.sendCommand( READ, (uint8_t*) &romCode );
-
-  for ( uint8_t i = 0; i < SCRATCHPAD_SIZE; i++ )
-    sp[i] = hardware.read();
-  if ( Crc8::hasError( sp, SCRATCHPAD_SIZE ) )
-  {
-    return 0; // CRC_FAILTURE;
-  }
-  uint16_t centiCelsius = convertToCentiCelsius( sp );
-
   // MSB first
-  *data++ = (centiCelsius>>8) & 0xFF;
-  *data   = centiCelsius & 0xFF;
+  *data++ = (currentCentiCelsius>>8) & 0xFF;
+  *data   = currentCentiCelsius & 0xFF;
   return 2;
 }
 
@@ -64,13 +51,12 @@ void HBWDS1820::loop(HBWDevice* device, uint8_t channel)
         return;
     }
 
-    unsigned long now = millis();
-    if( ( now - lastActionTime ) < nextActionDelay )
+    if( lastActionTime.since() < nextActionDelay )
     {
         return;
     }
 
-    lastActionTime = now;  // at least last time of trying
+    lastActionTime = Timestamp();  // at least last time of trying
 
     if( state == SEARCH_SENSOR )
     {
@@ -130,22 +116,34 @@ void HBWDS1820::loop(HBWDevice* device, uint8_t channel)
     }
     else if ( state == SEND_FEEDBACK )
     {
-        uint8_t data[2];
-        uint8_t errcode = device->sendInfoMessage(channel, get(data), data);
+        bool doSend = ( readMeasurement() == OK );
 
-        // sendInfoMessage returns 0 on success, 1 if bus busy, 2 if failed
-        if( errcode )
+        // do not send before min interval
+        doSend &= !( config->minInterval && ( lastSentTime.since() < ( (uint32_t)config->minInterval * 1000) ) );
+        doSend &= (( config->maxInterval && ( lastSentTime.since() >= ( (uint32_t)config->maxInterval * 1000) ) ) 
+                || ( config->minDelta && ( (uint16_t)abs(currentCentiCelsius - lastSentCentiCelsius)  >= ( (uint16_t)config->minDelta * 10) ) ) );
+
+        if( doSend )
         {
-            // bus busy
-            // try again later, but insert a small delay
-            nextActionDelay = 250;
+            uint8_t data[2];
+            uint8_t errcode = device->sendInfoMessage(channel, get(data), data);
+
+            // sendInfoMessage returns 0 on success, 1 if bus busy, 2 if failed
+            if( errcode )
+            {
+                // bus busy
+                // try again later, but insert a small delay
+                nextActionDelay = 250;
+                return;
+            }
+            lastSentCentiCelsius = currentCentiCelsius;
+            lastSentTime = Timestamp();
+
         }
-        else
-        {
-            // start next measurement after 10s
-            state = START_MEASUREMENT;
-            nextActionDelay = 10000;
-        }
+        // start next measurement after 5s
+        state = START_MEASUREMENT;
+        nextActionDelay = 5000;
+
     }
 }
 
@@ -170,7 +168,26 @@ HBWDS1820::HwStatus HBWDS1820::startMeasurement( bool allSensors )
   }
 }
 
-uint16_t HBWDS1820::convertToCentiCelsius( uint8_t* scratchPad )
+HBWDS1820::HwStatus HBWDS1820::readMeasurement()
+{
+
+  uint8_t sp[SCRATCHPAD_SIZE];
+
+  hardware.reset();
+  hardware.sendCommand( READ, (uint8_t*) &romCode );
+
+  for ( uint8_t i = 0; i < SCRATCHPAD_SIZE; i++ )
+  sp[i] = hardware.read();
+  if ( Crc8::hasError( sp, SCRATCHPAD_SIZE ) )
+  {
+      return CRC_FAILTURE;
+  }
+  currentCentiCelsius = convertToCentiCelsius( sp );
+
+  return OK;
+}
+
+int16_t HBWDS1820::convertToCentiCelsius( uint8_t* scratchPad )
 {
   uint16_t measurement = scratchPad[0];         // LSB
   measurement |= ((uint16_t) scratchPad[1]) << 8;  // MSB
@@ -199,7 +216,7 @@ uint16_t HBWDS1820::convertToCentiCelsius( uint8_t* scratchPad )
     }
   }
 
-  uint16_t centiCelsius = static_cast<int8_t>( measurement >> 4 ) * 100;
+  int16_t centiCelsius = static_cast<int8_t>( measurement >> 4 ) * 100;
   uint8_t fracture = (uint8_t) (measurement & 0x000F);
   if ( fracture & 0x8 ) centiCelsius += 50;
   if ( fracture & 0x4 ) centiCelsius += 25;
