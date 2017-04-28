@@ -70,5 +70,9 @@
 
 #  define ONE_WIRE_GPIO     IOPORT_CREATE_PIN(PORTD,7)
 
+#  define ADC_BRIGHTNESS            ADCA
+#  define ADC_BRIGHTNESS_CHANNEL    ADC_CH0
+#  define ADC_BRIGHTNESS_CH_POS     ADCCH_POS_PIN6
+
 
 #endif // USER_BOARD_H

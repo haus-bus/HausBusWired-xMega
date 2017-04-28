@@ -19,6 +19,7 @@
 #include "HBWired/HBWKey.h"
 #include "HBWired/HBWDimmer.h"
 #include "HBWired/HBWDS1820.h"
+#include "HBWired/HBWAnalogIn.h"
 
 struct hbw_config {
 	uint8_t  loggingTime;           // 0x0001
@@ -27,6 +28,7 @@ struct hbw_config {
 	hbw_config_key keycfg[6];       // 0x0008 - 0x0013
 	HBWDimmer::Config ledcfg[6];    // 0x0014 - 0x001F
     HBWDS1820::Config ds1820cfg;    // 0x0020 - 0x002F
+    HBWAnalogIn::Config analogInCfg;
     //uint8_t reserved[0x3CB];
     //uint32_t ownAdress;
 } config;
@@ -50,12 +52,27 @@ static usart_serial_options_t rs485_options =
     .stopbits = RS485_SERIAL_STOP_BIT
 };
 
+void adc_init()
+{
+    struct adc_config adc_conf;
+    struct adc_channel_config adcch_conf;
+
+    adc_read_configuration(&ADC_BRIGHTNESS, &adc_conf);
+    adcch_read_configuration(&ADC_BRIGHTNESS, ADC_BRIGHTNESS_CHANNEL, &adcch_conf);
+
+    adc_set_conversion_parameters(&adc_conf, ADC_SIGN_OFF, ADC_RES_12,
+    ADC_REF_BANDGAP);
+    adc_set_conversion_trigger(&adc_conf, ADC_TRIG_MANUAL, 1, 0);
+    adc_set_clock_rate(&adc_conf, 200000UL);
+
+    adcch_set_input(&adcch_conf, ADC_BRIGHTNESS_CH_POS, ADCCH_NEG_NONE, 1);
+
+    adc_write_configuration(&ADC_BRIGHTNESS, &adc_conf);
+    adcch_write_configuration(&ADC_BRIGHTNESS, ADC_BRIGHTNESS_CHANNEL, &adcch_conf);
+}
+
 void setup()
 {
-	// Authorize interrupts
-	irq_initialize_vectors();
-	cpu_irq_enable();
-	
 	// Initialize the sleep manager service
 	sleepmgr_init();
 	
@@ -67,8 +84,15 @@ void setup()
 	usart_serial_init(DBG_SERIAL, &dbg_options);
     usart_serial_init(RS485_SERIAL, &rs485_options);
 
+    // Initialize ADC to meassure the brightness
+    adc_init();
+
     // Initialize system timer
     SystemTime::init();
+
+    // Authorize interrupts
+    irq_initialize_vectors();
+    cpu_irq_enable();
 	
 	static SerialStream debugStream( DBG_SERIAL );
 	static SerialStream rs485Stream( RS485_SERIAL );
@@ -95,6 +119,7 @@ void setup()
     static HBWDimmer hbwLed6( &led6, &config.ledcfg[5] );
 
     static HBWDS1820 hbwDs1820( OneWire( ONE_WIRE_GPIO ), &config.ds1820cfg );
+    static HBWAnalogIn hbwBrightness(&ADC_BRIGHTNESS, ADC_BRIGHTNESS_CHANNEL, &config.analogInCfg );
 
     channels[ 0] = &hbwKey1;
     channels[ 1] = &hbwKey2;
@@ -109,9 +134,10 @@ void setup()
     channels[10] = &hbwLed5;
     channels[11] = &hbwLed6;
     channels[12] = &hbwDs1820;
+    channels[13] = &hbwBrightness;
 	
 	static HBWDevice sd6MultiKey(	HMW_DEVICETYPE, HARDWARE_VERSION, FIRMWARE_VERSION,
-							        &rs485Stream,RS485_TXEN_GPIO,sizeof(config),&config,13,channels,&debugStream,
+							        &rs485Stream,RS485_TXEN_GPIO,sizeof(config),&config,14,channels,&debugStream,
 							        NULL, NULL);
 
     device = &sd6MultiKey;
