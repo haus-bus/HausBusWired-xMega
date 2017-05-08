@@ -17,6 +17,9 @@ HBWDS1820::HBWDS1820( const OneWire& _hardware, Config* _config  ) :
     config = _config;
     nextActionDelay = 2000;
     lastActionTime = 0;
+
+    // check and correct config to defaults
+
 }
 
 bool HBWDS1820::isSelfPowered()
@@ -28,6 +31,26 @@ bool HBWDS1820::isSelfPowered()
 
   hardware.reset();
   return selfPowered;
+}
+
+void HBWDS1820::checkAndCorrectConfig()
+{
+    if( config->minDelta > 250 )
+    {
+        config->minDelta = 5;
+    }
+    if( config->minInterval && ( ( config->minInterval < 5 ) || ( config->minInterval > 3600 ) ) )
+    {
+        config->minInterval = 10;
+    }
+    if( config->maxInterval && ( ( config->maxInterval < 5 ) || ( config->maxInterval > 3600 ) ) )
+    {
+        config->maxInterval = 150;
+    }
+    if( config->maxInterval && ( config->maxInterval < config->minInterval ) )
+    {
+        config->maxInterval = 0;
+    }
 }
 
 bool HBWDS1820::isSensor( uint8_t familiyCode )
@@ -107,6 +130,7 @@ void HBWDS1820::loop(HBWDevice* device, uint8_t channel)
         {
             nextActionDelay = 1000;
             state = SEND_FEEDBACK;
+            checkAndCorrectConfig();
         }
         else
         {

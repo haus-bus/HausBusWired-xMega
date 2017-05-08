@@ -96,6 +96,8 @@ private:
 
   int16_t convertToCentiCelsius( uint8_t* scratchPad );
 
+  void checkAndCorrectConfig();
+
   ////    Additional operations    ////
 
 public:
