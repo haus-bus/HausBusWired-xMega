@@ -53,6 +53,10 @@
 	</channel>
 
 	<channel index="1" type="KEY" count="6" physical_index_offset="-1">
+	    <link_roles>
+            <source name="SWITCH"/>
+        </link_roles>
+
 		<paramset id="hmw_input_ch_master" type="MASTER" address_step="2" address_start="0x08">
 			<parameter id="LONG_PRESS_TIME">
 				<logical type="float" unit="s" default="1.0" max="5.0" min="0.4"/>
@@ -65,6 +69,26 @@
 				</conversion>
 			</parameter>
 		</paramset>
+		
+        <paramset id="hmw_input_ch_link" type="LINK" count="30" address_start="0x040" address_step="6" peer_param="ACTUATOR" channel_param="CHANNEL">
+            <parameter id="CHANNEL" hidden="true" operations="none">
+                <logical type="integer" min="0" max="255" default="255"/>
+                <physical size="1.0" type="integer" interface="eeprom">
+                    <address index="+0"/>
+                </physical>
+            </parameter>
+            <parameter id="ACTUATOR" hidden="true" operations="none">
+                <logical type="address"/>
+                <physical type="array">
+                    <physical size="4.0" type="integer" interface="eeprom">
+                        <address index="+1"/>
+                    </physical>
+                    <physical size="1.0" type="integer" interface="eeprom">
+                        <address index="+5"/>
+                    </physical>
+                </physical>
+            </parameter>
+        </paramset>
 		
 		<paramset id="hmw_input_ch_values" type="VALUES">
 			<parameter id="PRESS_SHORT" operations="event,write" loopback="true" control="BUTTON.SHORT">
@@ -85,7 +109,11 @@
 	</channel>	
 
 	<channel index="7" type="DIMMER" count="6" physical_index_offset="-1">
-     	<paramset id="hmw_dim_ch_master" type="MASTER" address_step="2" address_start="0x14">
+	    <link_roles>
+            <target name="SWITCH"/>
+        </link_roles>
+
+	    <paramset id="hmw_dim_ch_master" type="MASTER" address_step="2" address_start="0x14">
 			<parameter id="LOGGING">
 				<logical type="option">
 					<option id="OFF"/>
@@ -96,6 +124,77 @@
 				</physical>
 			</parameter>
 		</paramset>
+		
+		<paramset id="hmw_switch_ch_link" type="LINK" count="30" address_start="0xF4" address_step="16" peer_param="SENSOR" channel_param="CHANNEL">
+            <parameter id="SENSOR" hidden="true" operations="none">
+                <logical type="address"/>
+                <physical type="array">
+                    <physical size="4.0" type="integer" interface="eeprom">
+                        <address index="+0"/>
+                    </physical>
+                    <physical size="1.0" type="integer" interface="eeprom">
+                        <address index="+4"/>
+                    </physical>
+                </physical>
+            </parameter>
+            <parameter id="CHANNEL" hidden="true" operations="none">
+                <logical type="integer" min="0" max="255" default="255"/>
+                <physical size="1.0" type="integer" interface="eeprom">
+                    <address index="+5"/>
+                </physical>
+            </parameter>
+            <parameter id="SHORT_ACTION_TYPE">
+                <logical type="option">
+                    <option id="ON"/>
+                    <option id="OFF"/>
+                    <option id="INACTIVE"/>
+                    <option id="TOGGLE" default="true"/>
+                </logical>
+                <physical size="0.2" type="integer" interface="eeprom">
+                    <address index="+6"/>
+                </physical>
+            </parameter>
+            <parameter id="LONG_ACTION_TYPE">
+                <logical type="option">
+                    <option id="ON"/>
+                    <option id="OFF"/>
+                    <option id="INACTIVE"/>
+                    <option id="TOGGLE" default="true"/>
+                </logical>
+                <physical size="0.2" type="integer" interface="eeprom">
+                    <address index="+6.2"/>
+                </physical>
+            </parameter>
+			<parameter id="SHORT_ON_LEVEL">
+                <logical type="float" unit="%" default="100" max="100" min="0"/>
+                <conversion type="float_integer_scale" factor="2"/>
+                <physical size="1.0" type="integer" interface="eeprom">
+                    <address index="+7"/>
+                </physical>
+            </parameter>
+  		    <parameter id="SHORT_OFF_LEVEL">
+                <logical type="float" unit="%" default="0" max="100" min="0"/>
+                <conversion type="float_integer_scale" factor="2"/>
+                <physical size="1.0" type="integer" interface="eeprom">
+                    <address index="+8"/>
+                </physical>
+            </parameter>
+			<parameter id="LONG_ON_LEVEL">
+                <logical type="float" unit="%" default="100" max="100" min="0"/>
+                <conversion type="float_integer_scale" factor="2"/>
+                <physical size="1.0" type="integer" interface="eeprom">
+                    <address index="+9"/>
+                </physical>
+            </parameter>
+  		    <parameter id="LONG_OFF_LEVEL">
+                <logical type="float" unit="%" default="0" max="100" min="0"/>
+                <conversion type="float_integer_scale" factor="2"/>
+                <physical size="1.0" type="integer" interface="eeprom">
+                    <address index="+10"/>
+                </physical>
+            </parameter>
+        </paramset>
+		
 		<paramset id="hmw_dim_ch_values" type="VALUES">
 			<parameter id="LEVEL" operations="read,write,event" control="DIMMER.LEVEL">
 				<logical type="float" unit="100%" default="0.0" max="1.0" min="0.0"/>

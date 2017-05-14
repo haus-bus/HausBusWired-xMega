@@ -20,6 +20,8 @@
 #include "HBWired/HBWDimmer.h"
 #include "HBWired/HBWDS1820.h"
 #include "HBWired/HBWAnalogIn.h"
+#include "HBWired/HBWLinkKey.h"
+#include "HBWired/HBWLinkDimmer.h"
 
 struct hbw_config {
 	uint8_t  loggingTime;           // 0x0001
@@ -28,13 +30,15 @@ struct hbw_config {
 	hbw_config_key keycfg[6];       // 0x0008 - 0x0013
 	HBWDimmer::Config ledcfg[6];    // 0x0014 - 0x001F
     HBWDS1820::Config ds1820cfg;    // 0x0020 - 0x002F
-    HBWAnalogIn::Config analogInCfg;
+    HBWAnalogIn::Config analogInCfg;// 0x0030 - 0x003F
+    // HBWLinkKey                   // 0x0040 - 0x00F3
+    // HBWLinkLed                   // 0x00F4 - 0x02E3
     //uint8_t reserved[0x3CB];
     //uint32_t ownAdress;
 } config;
 
 static HBWDevice* device = NULL;
-static HBWChannel* channels[13];
+static HBWChannel* channels[14];
 
 static usart_serial_options_t dbg_options = 
 {
@@ -135,10 +139,13 @@ void setup()
     channels[11] = &hbwLed6;
     channels[12] = &hbwDs1820;
     channels[13] = &hbwBrightness;
+
+    static HBWLinkKey linkSender( 30, 0x0040 );
+    static HBWLinkDimmer linkReceiver( 30, 0x00F4 );
 	
 	static HBWDevice sd6MultiKey(	HMW_DEVICETYPE, HARDWARE_VERSION, FIRMWARE_VERSION,
 							        &rs485Stream,RS485_TXEN_GPIO,sizeof(config),&config,14,channels,&debugStream,
-							        NULL, NULL);
+							        &linkSender, &linkReceiver);
 
     device = &sd6MultiKey;
 

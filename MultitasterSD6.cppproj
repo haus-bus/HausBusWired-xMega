@@ -489,6 +489,18 @@
     <Compile Include="src\HBWired\HBWAnalogIn.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\HBWired\HBWLinkKey.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\HBWired\HBWLinkKey.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\HBWired\HBWLinkDimmer.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\HBWired\HBWLinkDimmer.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\Utils\Timestamp.h">
       <SubType>compile</SubType>
     </Compile>
