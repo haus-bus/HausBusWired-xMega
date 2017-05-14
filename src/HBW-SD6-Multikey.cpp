@@ -15,19 +15,17 @@
 #include <Utils/SystemTime.h>
 #include <Elements/SerialStream.h>
 
-#include "HBWired/HBWired.h"
-#include "HBWired/HBWKey.h"
-#include "HBWired/HBWDimmer.h"
-#include "HBWired/HBWDS1820.h"
-#include "HBWired/HBWAnalogIn.h"
+#include "HBW-SD6-MultiKey.h"
 #include "HBWired/HBWLinkKey.h"
 #include "HBWired/HBWLinkDimmer.h"
+
+
 
 struct hbw_config {
 	uint8_t  loggingTime;           // 0x0001
 	uint32_t centralAddress;        // 0x0002 - 0x0005
     uint16_t unused1;               // 0x0006 - 0x0007
-	hbw_config_key keycfg[6];       // 0x0008 - 0x0013
+	HBWKey::Config keycfg[6];       // 0x0008 - 0x0013
 	HBWDimmer::Config ledcfg[6];    // 0x0014 - 0x001F
     HBWDS1820::Config ds1820cfg;    // 0x0020 - 0x002F
     HBWAnalogIn::Config analogInCfg;// 0x0030 - 0x003F
@@ -88,7 +86,7 @@ void setup()
 	usart_serial_init(DBG_SERIAL, &dbg_options);
     usart_serial_init(RS485_SERIAL, &rs485_options);
 
-    // Initialize ADC to meassure the brightness
+    // Initialize ADC to measure the brightness
     adc_init();
 
     // Initialize system timer
@@ -143,9 +141,9 @@ void setup()
     static HBWLinkKey linkSender( 30, 0x0040 );
     static HBWLinkDimmer linkReceiver( 30, 0x00F4 );
 	
-	static HBWDevice sd6MultiKey(	HMW_DEVICETYPE, HARDWARE_VERSION, FIRMWARE_VERSION,
-							        &rs485Stream,RS485_TXEN_GPIO,sizeof(config),&config,14,channels,&debugStream,
-							        &linkSender, &linkReceiver);
+	static HBWSD6Multikey sd6MultiKey( HMW_DEVICETYPE, HARDWARE_VERSION, FIRMWARE_VERSION,
+							           &rs485Stream,RS485_TXEN_GPIO,sizeof(config),&config,14,channels,&debugStream,
+							           &linkSender, &linkReceiver);
 
     device = &sd6MultiKey;
 
@@ -159,6 +157,26 @@ int main (void)
 	{
 		device->loop();
 	}
+}
+
+void HBWSD6Multikey::afterReadConfig()
+{
+    checkAndCorrectConfig( &::config.keycfg[0] );
+    checkAndCorrectConfig( &::config.keycfg[1] );
+    checkAndCorrectConfig( &::config.keycfg[2] );
+    checkAndCorrectConfig( &::config.keycfg[3] );
+    checkAndCorrectConfig( &::config.keycfg[4] );
+    checkAndCorrectConfig( &::config.keycfg[5] );
+
+    checkAndCorrectConfig( &::config.ledcfg[0] );
+    checkAndCorrectConfig( &::config.ledcfg[1] );
+    checkAndCorrectConfig( &::config.ledcfg[2] );
+    checkAndCorrectConfig( &::config.ledcfg[3] );
+    checkAndCorrectConfig( &::config.ledcfg[4] );
+    checkAndCorrectConfig( &::config.ledcfg[5] );
+
+    checkAndCorrectConfig( &::config.ds1820cfg );
+
 }
 
 // following functions are realizations of some basic Arduino functions

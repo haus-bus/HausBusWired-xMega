@@ -41,7 +41,7 @@ void HBWLinkDimmer::receiveKeyEvent(HBWDevice* device, uint32_t senderAddress, u
 
 	  // ok, we have found a match
 	  // differs for short and long
-      uint8_t value;
+      uint8_t value = 255;
    	  if( longPress )
       {
       	  // we can have
@@ -59,8 +59,6 @@ void HBWLinkDimmer::receiveKeyEvent(HBWDevice* device, uint32_t senderAddress, u
               }
           	  default: // -> TOGGLE (default)
               {
-                value = 255;
-          	    break;
               }
            }
       }
@@ -80,8 +78,6 @@ void HBWLinkDimmer::receiveKeyEvent(HBWDevice* device, uint32_t senderAddress, u
           	  }
           	  default: // -> TOGGLE (default)
           	  {
-              	  value = 255;
-              	  break;
           	  }
       	  }
       }

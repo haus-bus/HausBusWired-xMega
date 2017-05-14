@@ -33,26 +33,6 @@ bool HBWDS1820::isSelfPowered()
   return selfPowered;
 }
 
-void HBWDS1820::checkAndCorrectConfig()
-{
-    if( config->minDelta > 250 )
-    {
-        config->minDelta = 5;
-    }
-    if( config->minInterval && ( ( config->minInterval < 5 ) || ( config->minInterval > 3600 ) ) )
-    {
-        config->minInterval = 10;
-    }
-    if( config->maxInterval && ( ( config->maxInterval < 5 ) || ( config->maxInterval > 3600 ) ) )
-    {
-        config->maxInterval = 150;
-    }
-    if( config->maxInterval && ( config->maxInterval < config->minInterval ) )
-    {
-        config->maxInterval = 0;
-    }
-}
-
 bool HBWDS1820::isSensor( uint8_t familiyCode )
 {
   return ((familiyCode == DS18B20_ID) || (familiyCode == DS18S20_ID));
@@ -130,7 +110,6 @@ void HBWDS1820::loop(HBWDevice* device, uint8_t channel)
         {
             nextActionDelay = 1000;
             state = SEND_FEEDBACK;
-            checkAndCorrectConfig();
         }
         else
         {
