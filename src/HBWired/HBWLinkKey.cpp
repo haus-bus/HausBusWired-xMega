@@ -34,8 +34,11 @@ void HBWLinkKey::sendKeyEvent(HBWDevice* device, uint8_t srcChan,
 		// channel is key?
 		if(data.ownChannel != srcChan) continue;
 
-		// own address? -> internal peering
-		if(data.actorAddress == device->getOwnAddress()) 
+		// the endianess in the EEPROM is BigEndian, we need it in LittleEndian
+        flipEndianess( &data.actorAddress );
+
+        // own address? -> internal peering
+		if( data.actorAddress == device->getOwnAddress()) 
         {
 			device->receiveKeyEvent( data.actorAddress, srcChan, data.actorChannel, longPress );
 		}

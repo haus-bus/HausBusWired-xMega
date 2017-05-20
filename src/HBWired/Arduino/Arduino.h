@@ -203,6 +203,17 @@ uint16_t makeWord(byte h, byte l);
 
 #define word(...) makeWord(__VA_ARGS__)
 
+static inline void flipEndianess(uint32_t *inVal)
+{
+    uint8_t *bytes = (uint8_t*)inVal;
+    uint8_t temp = bytes[0];
+    bytes[0] = bytes[3];
+    bytes[3] = temp;
+    temp = bytes[1];
+    bytes[1] = bytes[2];
+    bytes[2] = temp;
+}
+
 unsigned long pulseIn(uint8_t pin, uint8_t state, unsigned long timeout = 1000000L);
 unsigned long pulseInLong(uint8_t pin, uint8_t state, unsigned long timeout = 1000000L);
 

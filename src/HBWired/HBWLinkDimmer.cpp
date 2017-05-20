@@ -27,17 +27,19 @@ void HBWLinkDimmer::receiveKeyEvent(HBWDevice* device, uint32_t senderAddress, u
   // read what to do from EEPROM
   for(byte i = 0; i < numLinks; i++) 
   {
-	  device->readEEPROM(&data, eepromStart + sizeof(data) * i, sizeof(data), true);
-	  // TODO: is the following really ok?
-	  //       it reads to all links, even if none is set 
-	  if(data.sensorAddress == 0xFFFFFFFF) continue;
-	  if(data.sensorAddress != senderAddress) continue;
+	  device->readEEPROM(&data, eepromStart + sizeof(data) * i, sizeof(data) );
 
 	  // compare sender channel
 	  if(data.sensorChannel != senderChannel) continue;
 
 	  // compare target channel
 	  if(data.ownChannel != targetChannel) continue;
+
+      if(data.sensorAddress == 0xFFFFFFFF) continue;
+
+      // the endianess in the EEPROM is BigEndian, we need it in LittleEndian
+      flipEndianess( &data.sensorAddress );
+	  if(data.sensorAddress != senderAddress) continue;
 
 	  // ok, we have found a match
 	  // differs for short and long
