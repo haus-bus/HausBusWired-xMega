@@ -57,8 +57,14 @@ void HBWLinkDimmer::receiveKeyEvent(HBWDevice* device, uint32_t senderAddress, u
                 value = data.longOffLevel;
           	    break;
               }
-          	  default: // -> TOGGLE (default)
+              case 3: // -> TOGGLE
               {
+                break;
+              }
+              case 2: // -> INACTIVE
+          	  default: 
+              {
+                continue;
               }
            }
       }
@@ -76,9 +82,15 @@ void HBWLinkDimmer::receiveKeyEvent(HBWDevice* device, uint32_t senderAddress, u
               	  value = data.shortOffLevel;
               	  break;
           	  }
-          	  default: // -> TOGGLE (default)
-          	  {
-          	  }
+              case 3: // -> TOGGLE
+              {
+                  break;
+              }
+              case 2: // -> INACTIVE
+              default:
+              {
+                  continue;
+              }
       	  }
       }
 	  device->set(targetChannel,1,&value);    // channel, data length, data
