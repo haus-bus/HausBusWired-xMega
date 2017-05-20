@@ -646,7 +646,7 @@ uint8_t HBWDevice::sendKeyEvent(uint8_t srcChan, uint8_t keyPressNum, boolean lo
     	   address |= EEPROM.read(E2END - 3 + i);
        }
        if(address == 0xFFFFFFFF)
-    	   address = 0x42FFFFFF;
+    	   address = 0x60FFFFFF;
        setOwnAddress(address);
      }
 
