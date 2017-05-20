@@ -25,6 +25,10 @@ uint8_t HBWAnalogIn::get(uint8_t* data)
 
 void HBWAnalogIn::loop(HBWDevice* device, uint8_t channel)
 {
+
+    // TODO debug
+    return;
+
     if( !nextActionDelay )
     {
         return;
@@ -42,26 +46,31 @@ void HBWAnalogIn::loop(HBWDevice* device, uint8_t channel)
         adc_enable(adc);
         adc_start_conversion(adc, adcChannel);
         nextActionDelay = 1;
+        state = SAMPLE_VALUES;
     }
     else if ( state == SAMPLE_VALUES )
     {
-        static uint16_t buffer[8] = { 0,0,0,0,0,0,0,0 };
+
+        static const uint8_t MAX_SAMPLES = 8;
+        static uint16_t buffer[MAX_SAMPLES] = { 0,0,0,0,0,0,0,0 };
         static uint8_t nextIndex = 0;
 
         if( adc_get_interrupt_flag(adc, adcChannel) )
         {
             adc_clear_interrupt_flag( adc, adcChannel );
             buffer[nextIndex++] = adc_get_unsigned_result( adc, adcChannel );
+            state = START_MEASUREMENT;
 
-            if( nextIndex >= sizeof(buffer) )
+            if( nextIndex >= MAX_SAMPLES )
             {
+                nextIndex = 0;
                 uint32_t sum = 0;
-                uint8_t i=sizeof(buffer); 
+                uint8_t i=MAX_SAMPLES; 
                 do
                 {
                     sum += buffer[--i];
                 } while(i);
-                currentValue = sum / sizeof(buffer);
+                currentValue = sum / MAX_SAMPLES;
                 state = SEND_FEEDBACK;
             }
         }
