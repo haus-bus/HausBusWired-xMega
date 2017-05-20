@@ -28,6 +28,8 @@ protected:
 private:
     Config* config; 
     PwmOutput* pwmOutput;
+    bool feedbackCmdActive;
+    uint8_t currentLevel;
     uint32_t lastFeedbackTime;  
     uint16_t nextFeedbackDelay; 
 
@@ -41,8 +43,15 @@ public:
     virtual void set(HBWDevice*, uint8_t length, uint8_t const * const data);
 
 protected:
-private:
 
+private:
+    inline bool isBlinkOnCmd( uint8_t cmd ) { return cmd == BLINK_ON; }
+
+    inline bool isBlinkToggleCmd( uint8_t cmd ) { return cmd == BLINK_TOGGLE; }
+
+    inline bool isKeyFeedbackOnCmd( uint8_t cmd ) { return cmd == KEY_FEEDBACK_ON; }
+
+    inline bool isKeyFeedbackOffCmd( uint8_t cmd ) { return cmd == KEY_FEEDBACK_OFF; }
 
 }; //HBWDimmer
 

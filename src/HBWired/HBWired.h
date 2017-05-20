@@ -13,8 +13,17 @@
 class HBWDevice;
 
 // Basisklasse fuer Channels
-class HBWChannel {
+class HBWChannel 
+{
   public:	
+      enum Commands
+      {
+          BLINK_ON = 201,
+          BLINK_TOGGLE,
+          KEY_FEEDBACK_ON,
+          KEY_FEEDBACK_OFF
+      };
+
     virtual void set(HBWDevice*, uint8_t length, uint8_t const * const data);
     virtual uint8_t get(uint8_t* data);  // returns length, data must be big enough 
     virtual void loop(HBWDevice*, uint8_t channel);  // channel for feedbacks etc.  

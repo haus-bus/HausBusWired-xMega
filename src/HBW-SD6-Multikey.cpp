@@ -99,13 +99,6 @@ void setup()
 	static SerialStream debugStream( DBG_SERIAL );
 	static SerialStream rs485Stream( RS485_SERIAL );
 
-    static HBWKey hbwKey1(BUTTON_S1_GPIO,&(config.keycfg[0]));
-    static HBWKey hbwKey2(BUTTON_S2_GPIO,&(config.keycfg[1]));
-    static HBWKey hbwKey3(BUTTON_S3_GPIO,&(config.keycfg[2]));
-    static HBWKey hbwKey4(BUTTON_S4_GPIO,&(config.keycfg[3]));
-    static HBWKey hbwKey5(BUTTON_S5_GPIO,&(config.keycfg[4]));
-    static HBWKey hbwKey6(BUTTON_S6_GPIO,&(config.keycfg[5]));
-
     static PwmOutput led1( PWM_TCC0, PWM_CH_A, 5000 );
     static PwmOutput led2( PWM_TCC0, PWM_CH_B, 5000 );
     static PwmOutput led3( PWM_TCC0, PWM_CH_C, 5000 );
@@ -119,6 +112,13 @@ void setup()
     static HBWDimmer hbwLed4( &led4, &config.ledcfg[3] );
     static HBWDimmer hbwLed5( &led5, &config.ledcfg[4] );
     static HBWDimmer hbwLed6( &led6, &config.ledcfg[5] );
+
+    static HBWKey hbwKey1(BUTTON_S1_GPIO,&(config.keycfg[0]), &hbwLed1 );
+    static HBWKey hbwKey2(BUTTON_S2_GPIO,&(config.keycfg[1]), &hbwLed2 );
+    static HBWKey hbwKey3(BUTTON_S3_GPIO,&(config.keycfg[2]), &hbwLed3 );
+    static HBWKey hbwKey4(BUTTON_S4_GPIO,&(config.keycfg[3]), &hbwLed4 );
+    static HBWKey hbwKey5(BUTTON_S5_GPIO,&(config.keycfg[4]), &hbwLed5 );
+    static HBWKey hbwKey6(BUTTON_S6_GPIO,&(config.keycfg[5]), &hbwLed6 );
 
     static HBWDS1820 hbwDs1820( OneWire( ONE_WIRE_GPIO ), &config.ds1820cfg );
     static HBWAnalogIn hbwBrightness(&ADC_BRIGHTNESS, ADC_BRIGHTNESS_CHANNEL, &config.analogInCfg );

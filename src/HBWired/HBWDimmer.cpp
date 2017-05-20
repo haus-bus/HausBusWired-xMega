@@ -12,6 +12,8 @@ HBWDimmer::HBWDimmer( PwmOutput* _pwmOutput, Config* _config )
 {
     pwmOutput = _pwmOutput;
     config = _config;
+    feedbackCmdActive = false;
+    currentLevel = 0;
     nextFeedbackDelay = 0;
     lastFeedbackTime = 0;
 
@@ -20,21 +22,35 @@ HBWDimmer::HBWDimmer( PwmOutput* _pwmOutput, Config* _config )
 
 void HBWDimmer::set(HBWDevice* device, uint8_t length, uint8_t const * const data) {
     
-    if ( *data > 200 ) // toggle
+    if( *data <= 200 )
+    {
+        currentLevel = *data;
+    }
+    else if( isKeyFeedbackOnCmd( *data ) )
+    {
+        pwmOutput->setDutyCycle();
+        feedbackCmdActive = true;
+    }
+    else if( isKeyFeedbackOffCmd( *data ) )
+    {
+        feedbackCmdActive = false;
+    }
+    else // toggle
     {   
-        if( pwmOutput->getDutyCycle() ) 
+        if( currentLevel ) 
         {
-            pwmOutput->clear();
+            currentLevel = 0;
         }
         else
         {
-            pwmOutput->setDutyCycle();
+            currentLevel = 200;
         }
     }
-    else
+
+    if( !feedbackCmdActive )
     {
         // the default range is 0-200, this must be mapped to 0-100% duty cycle
-        pwmOutput->setDutyCycle( *data/2 );
+        pwmOutput->setDutyCycle( currentLevel/2 );
     }
 
     // Logging
@@ -49,7 +65,7 @@ void HBWDimmer::set(HBWDevice* device, uint8_t length, uint8_t const * const dat
 uint8_t HBWDimmer::get(uint8_t* data) 
 {
     // map 0-100% to 0-200
-    (*data) = pwmOutput->getDutyCycle()<<1;
+    (*data) = currentLevel;
     return 1;
 };
 
