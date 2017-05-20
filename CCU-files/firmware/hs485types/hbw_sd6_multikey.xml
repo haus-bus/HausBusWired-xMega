@@ -258,7 +258,40 @@
 	</channel>
 
 	<channel index="14" count="1" physical_index_offset="-1" type="ANALOGSENSOR">
-	    <paramset type="MASTER" id="hmw_analog_ch_master">
+	    <paramset type="MASTER" id="hmw_analog_ch_master" address_step="16" address_start="0x30">
+			<parameter id="SEND_DELTA_ANALOG">
+			   <logical type="integer" default="50" min="1" max="250">
+			       <special_value id="NOT_USED" value="0"/>
+			   </logical>	   
+               <physical size="1.0" type="integer" interface="eeprom">
+                  <address index="+1.0"/>
+               </physical>	
+               <conversion type="integer_integer_map">
+                 <value_map to_device="false" from_device="true" parameter_value="50" device_value="0xff"/>
+               </conversion>			   
+			</parameter>
+			<parameter id="SEND_MIN_INTERVAL">
+			   <logical type="integer" unit="s" default="10" min="5" max="3600">
+			     <special_value id="NOT_USED" value="0"/>
+			   </logical>	   
+               <physical size="2.0" type="integer" interface="eeprom" endian="little">
+                  <address index="+3.0"/>
+               </physical>	  
+               <conversion type="integer_integer_map">
+                 <value_map to_device="false" from_device="true" parameter_value="10" device_value="0xffff"/>
+               </conversion>				   
+			</parameter>
+			<parameter id="SEND_MAX_INTERVAL">
+			   <logical type="integer" unit="s" default="150" min="5" max="3600">
+			     <special_value id="NOT_USED" value="0"/>
+			   </logical>	   
+               <physical size="2.0" type="integer" interface="eeprom" endian="little">
+                  <address index="+5.0"/>
+               </physical>	
+               <conversion type="integer_integer_map">
+                 <value_map to_device="false" from_device="true" parameter_value="150" device_value="0xffff"/>
+               </conversion>				   
+			</parameter>
 		</paramset>
 		<paramset type="VALUES" id="hmw_analog_input_values">
 			<parameter id="VALUE" operations="read,event">
