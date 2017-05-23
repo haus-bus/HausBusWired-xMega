@@ -110,8 +110,8 @@
         <avrgcccpp.compiler.optimization.level>Optimize for size (-Os)</avrgcccpp.compiler.optimization.level>
       </AvrGccCpp>
     </ToolchainSettings>
-    <PreBuildEvent>$(SolutionDir)utils\bin\bin2header  ..\..\AR8_Booter\Release\AR8_Booter.bin  $(MSBuildProjectDirectory)\BooterFw.h</PreBuildEvent>
-    <PostBuildEvent>$(ToolchainDir)\avr-objcopy -j .text -j .data -O binary  $(OutputFileName).elf  $(OutputFileName).bin &amp;&amp; $(SolutionDir)utils\bin\modid $(OutputFileName).bin $(SolutionDir)Binaries\AR8_BOOTER</PostBuildEvent>
+    <PreBuildEvent>"$(SolutionDir)utils\bin\bin2header"  ..\..\AR8_Booter\Release\AR8_Booter.bin  $(MSBuildProjectDirectory)\BooterFw.h</PreBuildEvent>
+    <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .data -O binary  $(OutputFileName).elf  $(OutputFileName).bin &amp;&amp; "$(SolutionDir)utils\bin\modid" $(OutputFileName).bin "$(SolutionDir)Binaries\AR8_BOOTER"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>
