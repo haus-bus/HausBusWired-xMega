@@ -22,6 +22,15 @@
 		</physical>
 	</parameter>
 	<enforce id="CENTRAL_ADDRESS" value="1"/>
+	<parameter id="LED_FEEDBACK">
+		<logical type="option">
+			<option id="OFF"/>
+			<option id="ON" default="true"/>
+		</logical>
+		<physical size="0.1" type="integer" interface="eeprom">
+			<address index="0x0006"/>			
+		</physical>
+	</parameter>	
 </paramset>
 
 <frames>
@@ -58,6 +67,13 @@
         </link_roles>
 
 		<paramset id="hmw_input_ch_master" type="MASTER" address_step="2" address_start="0x08">
+			<parameter id="INPUT_LOCKED">
+				<logical type="boolean" default="false"/>
+				<physical size="0.1" type="integer" interface="eeprom">
+					<address index="+0.1"/>
+				</physical>
+				<conversion type="boolean_integer" invert="true"/>
+			</parameter>
 			<parameter id="LONG_PRESS_TIME">
 				<logical type="float" unit="s" default="1.0" max="5.0" min="0.4"/>
 				<physical size="1.0" type="integer" interface="eeprom">
@@ -149,8 +165,10 @@
                     <option id="OFF"/>
                     <option id="INACTIVE"/>
                     <option id="TOGGLE" default="true"/>
+					<option id="BLINK_ON"/>
+					<option id="BLINK_TOGGLE"/>
                 </logical>
-                <physical size="0.2" type="integer" interface="eeprom">
+                <physical size="0.3" type="integer" interface="eeprom">
                     <address index="+6"/>
                 </physical>
             </parameter>
@@ -160,9 +178,11 @@
                     <option id="OFF"/>
                     <option id="INACTIVE"/>
                     <option id="TOGGLE" default="true"/>
-                </logical>
-                <physical size="0.2" type="integer" interface="eeprom">
-                    <address index="+6.2"/>
+					<option id="BLINK_ON"/>
+					<option id="BLINK_TOGGLE"/>
+				</logical>
+                <physical size="0.3" type="integer" interface="eeprom">
+                    <address index="+6.3"/>
                 </physical>
             </parameter>
 			<parameter id="SHORT_ON_LEVEL">
@@ -193,6 +213,34 @@
                     <address index="+10"/>
                 </physical>
             </parameter>
+			<parameter id="BLINK_ON_TIME">
+				<logical type="float" unit="s" default="1.0" max="25.0" min="0.1"/>
+				<physical size="1.0" type="integer" interface="eeprom">
+					<address index="+11"/>
+				</physical>
+				<conversion type="float_integer_scale" factor="10"/>
+				<conversion type="integer_integer_map">
+					<value_map to_device="false" from_device="true" parameter_value="10" device_value="0xff"/>
+				</conversion>
+			</parameter>
+			<parameter id="BLINK_OFF_TIME">
+				<logical type="float" unit="s" default="1.0" max="25.0" min="0.1"/>
+				<physical size="1.0" type="integer" interface="eeprom">
+					<address index="+12"/>
+				</physical>
+				<conversion type="float_integer_scale" factor="10"/>
+				<conversion type="integer_integer_map">
+					<value_map to_device="false" from_device="true" parameter_value="10" device_value="0xff"/>
+				</conversion>
+			</parameter>
+			<parameter id="BLINK_QUANTITY">
+			   <logical type="integer" default="0" min="1" max="255">
+			     <special_value id="NOT_USED" value="0"/>
+			   </logical>	   
+               <physical size="1.0" type="integer" interface="eeprom">
+                  <address index="+13.0"/>
+               </physical>	  
+			</parameter>
         </paramset>
 		
 		<paramset id="hmw_dim_ch_values" type="VALUES">

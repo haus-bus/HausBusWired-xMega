@@ -24,13 +24,16 @@ class HBWLinkDimmer : public HBWLinkReceiver {
         uint32_t sensorAddress;
         uint8_t sensorChannel;
         uint8_t ownChannel;
-        uint8_t shortActionType : 2;
-        uint8_t longActionType : 2;
+        uint8_t shortActionType : 3;
+        uint8_t longActionType : 3;
         uint8_t shortOnLevel;
         uint8_t shortOffLevel;
         uint8_t longOnLevel;
         uint8_t longOffLevel;
-        uint8_t reserved[5];
+        uint8_t blinkOnTime;
+        uint8_t blinkOffTime;
+        uint8_t blinkQuantity;
+        uint8_t reserved[2];
     };
 
       uint8_t numLinks;         // number of links of this type  

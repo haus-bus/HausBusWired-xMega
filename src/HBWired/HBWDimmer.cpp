@@ -14,8 +14,11 @@ HBWDimmer::HBWDimmer( PwmOutput* _pwmOutput, Config* _config )
     config = _config;
     feedbackCmdActive = false;
     currentLevel = 0;
-    nextFeedbackDelay = 0;
-    lastFeedbackTime = 0;
+    blinkOnTime = 10;
+    blinkOffTime = 10;
+    blinkQuantity = 255;
+    nextFeedbackTime.reset();
+    nextBlinkTime.reset();
 
 } //HBWDimmer
 
@@ -30,10 +33,19 @@ void HBWDimmer::set(HBWDevice* device, uint8_t length, uint8_t const * const dat
     {
         pwmOutput->setDutyCycle();
         feedbackCmdActive = true;
+        return; // no logging for feedbackCmd
     }
     else if( isKeyFeedbackOffCmd( *data ) )
     {
         feedbackCmdActive = false;
+        return; // no logging for feedbackCmd
+    }
+    else if( isBlinkOnCmd( *data ) )
+    {
+        blinkOnTime = data[1];
+        blinkOffTime = data[2];
+        blinkQuantity = data[3];
+        nextBlinkTime = Timestamp();
     }
     else // toggle
     {   
@@ -47,17 +59,11 @@ void HBWDimmer::set(HBWDevice* device, uint8_t length, uint8_t const * const dat
         }
     }
 
-    if( !feedbackCmdActive )
-    {
-        // the default range is 0-200, this must be mapped to 0-100% duty cycle
-        pwmOutput->setDutyCycle( currentLevel/2 );
-    }
-
     // Logging
-    if( !nextFeedbackDelay && config->logging ) 
+    if( !nextFeedbackTime.isValid() && config->logging ) 
     {
-        lastFeedbackTime = millis();
-        nextFeedbackDelay = device->getLoggingTime() * 100;
+        nextFeedbackTime = Timestamp();
+        nextFeedbackTime += (device->getLoggingTime() * 100);
     }
 };
 
@@ -71,20 +77,51 @@ uint8_t HBWDimmer::get(uint8_t* data)
 
 void HBWDimmer::loop(HBWDevice* device, uint8_t channel) 
 {
+    if( nextBlinkTime.isValid() && nextBlinkTime.since() )
+    {
+        // handle blinking
+        if( pwmOutput->getDutyCycle() )
+        {
+            // is ON
+            nextBlinkTime += (blinkOffTime * 100);
+            pwmOutput->clear();
+        }
+        else
+        {
+            // is OFF
+            if( blinkQuantity )
+            {
+                nextBlinkTime += (blinkOnTime * 100);
+                pwmOutput->setDutyCycle( currentLevel ? currentLevel/2 : 100 );
+
+                if( blinkQuantity != 255 )
+                {
+                    blinkQuantity--;
+                }
+            }
+            else
+            {
+                nextBlinkTime.reset();
+            }
+        }
+
+    }
+    if( !feedbackCmdActive && !nextBlinkTime.isValid() )
+    {
+        // the default range is 0-200, this must be mapped to 0-100% duty cycle
+        pwmOutput->setDutyCycle( currentLevel/2 );
+    }
+
     // feedback trigger set?
-    if( !nextFeedbackDelay ) 
+    if( !nextFeedbackTime.isValid() ) 
     {
         return;
     }
 
-    unsigned long now = millis();
-    if( ( now - lastFeedbackTime ) < nextFeedbackDelay ) 
+    if( !nextFeedbackTime.since() ) 
     {
         return;
     }
-
-    lastFeedbackTime = now;  // at least last time of trying
-
     
     uint8_t level;
     uint8_t errcode = device->sendInfoMessage(channel, get(&level), &level);
@@ -94,10 +131,10 @@ void HBWDimmer::loop(HBWDevice* device, uint8_t channel)
     {  
         // bus busy
         // try again later, but insert a small delay
-        nextFeedbackDelay = 250;
+        nextFeedbackTime += 250;
     }
     else
     {
-        nextFeedbackDelay = 0;
+        nextFeedbackTime.reset();
     }
 }

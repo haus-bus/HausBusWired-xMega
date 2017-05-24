@@ -43,7 +43,8 @@ void HBWLinkDimmer::receiveKeyEvent(HBWDevice* device, uint32_t senderAddress, u
 
 	  // ok, we have found a match
 	  // differs for short and long
-      uint8_t value = 255;
+      uint8_t cmdData[] = { 255, data.blinkOnTime, data.blinkOffTime, data.blinkQuantity };
+      uint8_t length = 1;
    	  if( longPress )
       {
       	  // we can have
@@ -51,18 +52,32 @@ void HBWLinkDimmer::receiveKeyEvent(HBWDevice* device, uint32_t senderAddress, u
           {
           	  case 0: // -> ON
               {
-                value = data.longOnLevel;
+                cmdData[0] = data.longOnLevel;
           	    break;
               }
           	  case 1: // -> OFF
               {
-                value = data.longOffLevel;
+                cmdData[0] = data.longOffLevel;
           	    break;
               }
               case 3: // -> TOGGLE
               {
                 break;
               }
+              case 4: // -> BLINK_ON
+              {
+                cmdData[0] = HBWChannel::BLINK_ON;
+                length = sizeof(cmdData);
+                break;
+              }
+              case 5: // -> BLINK_TOGGLE
+              {
+                cmdData[0] = HBWChannel::BLINK_TOGGLE;
+                length = sizeof(cmdData);
+                break;
+              }
+
+
               case 2: // -> INACTIVE
           	  default: 
               {
@@ -76,16 +91,28 @@ void HBWLinkDimmer::receiveKeyEvent(HBWDevice* device, uint32_t senderAddress, u
       	  {
           	  case 0: // -> ON
           	  {
-              	  value = data.shortOnLevel;
+              	  cmdData[0] = data.shortOnLevel;
               	  break;
           	  }
           	  case 1: // -> OFF
           	  {
-              	  value = data.shortOffLevel;
+              	  cmdData[0] = data.shortOffLevel;
               	  break;
           	  }
               case 3: // -> TOGGLE
               {
+                  break;
+              }
+              case 4: // -> BLINK_ON
+              {
+                  cmdData[0] = HBWChannel::BLINK_ON;
+                  length = sizeof(cmdData);
+                  break;
+              }
+              case 5: // -> BLINK_TOGGLE
+              {
+                  cmdData[0] = HBWChannel::BLINK_TOGGLE;
+                  length = sizeof(cmdData);
                   break;
               }
               case 2: // -> INACTIVE
@@ -95,7 +122,7 @@ void HBWLinkDimmer::receiveKeyEvent(HBWDevice* device, uint32_t senderAddress, u
               }
       	  }
       }
-	  device->set(targetChannel,1,&value);    // channel, data length, data
+	  device->set(targetChannel,length,cmdData);    // channel, data length, data
   }
 }
  

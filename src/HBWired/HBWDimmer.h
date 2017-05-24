@@ -9,6 +9,8 @@
 #ifndef __HBWDIMMER_H__
 #define __HBWDIMMER_H__
 
+#include <Utils/Timestamp.h>
+
 #include "Elements/PwmOutput.h"
 #include "HBWired.h"
 
@@ -30,8 +32,11 @@ private:
     PwmOutput* pwmOutput;
     bool feedbackCmdActive;
     uint8_t currentLevel;
-    uint32_t lastFeedbackTime;  
-    uint16_t nextFeedbackDelay; 
+    uint8_t blinkOnTime;
+    uint8_t blinkOffTime;
+    uint8_t blinkQuantity;
+    Timestamp nextFeedbackTime;
+    Timestamp nextBlinkTime;    
 
 //functions
 public:
