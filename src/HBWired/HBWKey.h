@@ -16,7 +16,8 @@ class HBWKey : public HBWChannel
         {
             uint8_t isPushButton:1;
             uint8_t isUnlocked:1;
-            uint8_t :6;
+            uint8_t :5;
+            uint8_t ledFeedbackEnabled:1;
             uint8_t long_press_time;
         };
 

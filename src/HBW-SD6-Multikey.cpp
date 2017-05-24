@@ -23,14 +23,15 @@
 
 struct hbw_config {
 	uint8_t  loggingTime;           // 0x0001
-	uint32_t centralAddress;        // 0x0002 - 0x0005
-    uint16_t unused1;               // 0x0006 - 0x0007
-	HBWKey::Config keycfg[6];       // 0x0008 - 0x0013
-	HBWDimmer::Config ledcfg[6];    // 0x0014 - 0x001F
-    HBWDS1820::Config ds1820cfg;    // 0x0020 - 0x002F
-    HBWAnalogIn::Config analogInCfg;// 0x0030 - 0x003F
-    // HBWLinkKey                   // 0x0040 - 0x00F3
-    // HBWLinkLed                   // 0x00F4 - 0x02E3
+	uint32_t centralAddress;        // 0x0002   - 0x0005
+    uint16_t ledFeedback : 1;       // 0x0006:1
+    uint16_t unused1 :15;           // 0x0006:2 - 0x0007
+	HBWKey::Config keycfg[6];       // 0x0008   - 0x0013
+	HBWDimmer::Config ledcfg[6];    // 0x0014   - 0x001F
+    HBWDS1820::Config ds1820cfg;    // 0x0020   - 0x002F
+    HBWAnalogIn::Config analogInCfg;// 0x0030   - 0x003F
+    // HBWLinkKey                   // 0x0040   - 0x00F3
+    // HBWLinkLed                   // 0x00F4   - 0x02E3
     //uint8_t reserved[0x3CB];
     //uint32_t ownAdress;
 } config;
@@ -161,6 +162,14 @@ int main (void)
 
 void HBWSD6Multikey::afterReadConfig()
 {
+    // set global ledFeedback setting to each key object
+    ::config.keycfg[0].ledFeedbackEnabled = ::config.ledFeedback;
+    ::config.keycfg[1].ledFeedbackEnabled = ::config.ledFeedback;
+    ::config.keycfg[2].ledFeedbackEnabled = ::config.ledFeedback;
+    ::config.keycfg[3].ledFeedbackEnabled = ::config.ledFeedback;
+    ::config.keycfg[4].ledFeedbackEnabled = ::config.ledFeedback;
+    ::config.keycfg[5].ledFeedbackEnabled = ::config.ledFeedback;
+
     checkAndCorrectConfig( &::config.keycfg[0] );
     checkAndCorrectConfig( &::config.keycfg[1] );
     checkAndCorrectConfig( &::config.keycfg[2] );

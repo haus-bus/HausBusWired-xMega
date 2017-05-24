@@ -33,7 +33,7 @@ void HBWKey::loop(HBWDevice* device, uint8_t channel)
 			        device->sendKeyEvent(channel,keyPressNum, false);
 			    }
 			    keyPressedMillis = 0;
-                if( feedbackChannel )
+                if( feedbackChannel && config->ledFeedbackEnabled )
                 {
                     uint8_t cmd = KEY_FEEDBACK_OFF;
                     feedbackChannel->set( device, 1, &cmd );
@@ -69,7 +69,7 @@ void HBWKey::loop(HBWDevice* device, uint8_t channel)
 			    // Taste war vorher nicht gedrueckt
 			    keyPressedMillis = now ? now : 1; // der Teufel ist ein Eichhoernchen
 			    lastSentLong = 0;
-                if( feedbackChannel )
+                if( feedbackChannel && config->ledFeedbackEnabled )
                 {
                     uint8_t cmd = KEY_FEEDBACK_ON;
                     feedbackChannel->set( device, 1, &cmd );
