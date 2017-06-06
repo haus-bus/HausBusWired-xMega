@@ -13,7 +13,10 @@ HBWDimmer::HBWDimmer( PwmOutput* _pwmOutput, Config* _config )
     pwmOutput = _pwmOutput;
     config = _config;
     feedbackCmdActive = false;
+    logicalState = OFF;
     currentLevel = 0;
+    onLevel = 200;
+    offLevel = 0;
     blinkOnTime = 10;
     blinkOffTime = 10;
     blinkQuantity = 255;
@@ -28,6 +31,8 @@ void HBWDimmer::set(HBWDevice* device, uint8_t length, uint8_t const * const dat
     if( *data <= 200 )
     {
         currentLevel = *data;
+        nextBlinkTime.reset();
+        setLogicalState( *data ? ON  : OFF );
     }
     else if( isKeyFeedbackOnCmd( *data ) )
     {
@@ -40,12 +45,47 @@ void HBWDimmer::set(HBWDevice* device, uint8_t length, uint8_t const * const dat
         feedbackCmdActive = false;
         return; // no logging for feedbackCmd
     }
-    else if( isBlinkOnCmd( *data ) )
+
+    if( length >= 6 )
     {
-        blinkOnTime = data[1];
-        blinkOffTime = data[2];
-        blinkQuantity = data[3];
+        offLevel = data[1];
+        onLevel = data[2];
+        blinkOnTime = data[3];
+        blinkOffTime = data[4];
+        blinkQuantity = data[5];
+    }
+    if( isBlinkOnCmd( *data ) )
+    {
         nextBlinkTime = Timestamp();
+        setLogicalState( BLINK_ON );
+    }
+    else if( isBlinkToggleCmd( *data ) )
+    {
+       if( logicalState != BLINK_ON )
+       {
+         nextBlinkTime = Timestamp();
+         setLogicalState( BLINK_ON );
+       }
+       else
+       {
+         currentLevel = offLevel;
+         nextBlinkTime.reset();
+         setLogicalState( OFF );
+       }
+    }
+    else if( isToggleCmd( *data ) )
+    {
+        if( isLogicalOn() )
+        {
+            currentLevel = offLevel;
+            setLogicalState( OFF );
+        }
+        else
+        {
+            currentLevel = onLevel;
+            setLogicalState( ON );
+        }
+        nextBlinkTime.reset();
     }
     else // toggle
     {   
@@ -57,6 +97,7 @@ void HBWDimmer::set(HBWDevice* device, uint8_t length, uint8_t const * const dat
         {
             currentLevel = 200;
         }
+        nextBlinkTime.reset();
     }
 
     // Logging
@@ -80,11 +121,11 @@ void HBWDimmer::loop(HBWDevice* device, uint8_t channel)
     if( nextBlinkTime.isValid() && nextBlinkTime.since() )
     {
         // handle blinking
-        if( pwmOutput->getDutyCycle() )
+        if( 2*pwmOutput->getDutyCycle() == onLevel )
         {
             // is ON
             nextBlinkTime += (blinkOffTime * 100);
-            pwmOutput->clear();
+            pwmOutput->setDutyCycle( offLevel/2 );
         }
         else
         {
@@ -92,7 +133,7 @@ void HBWDimmer::loop(HBWDevice* device, uint8_t channel)
             if( blinkQuantity )
             {
                 nextBlinkTime += (blinkOnTime * 100);
-                pwmOutput->setDutyCycle( currentLevel ? currentLevel/2 : 100 );
+                pwmOutput->setDutyCycle( onLevel/2 );
 
                 if( blinkQuantity != 255 )
                 {

@@ -18,7 +18,10 @@ class HBWChannel
   public:	
       enum Commands
       {
-          BLINK_ON = 201,
+          ON = 201,
+          OFF,
+          TOGGLE,
+          BLINK_ON,
           BLINK_TOGGLE,
           KEY_FEEDBACK_ON,
           KEY_FEEDBACK_OFF

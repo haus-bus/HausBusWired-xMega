@@ -43,37 +43,41 @@ void HBWLinkDimmer::receiveKeyEvent(HBWDevice* device, uint32_t senderAddress, u
 
 	  // ok, we have found a match
 	  // differs for short and long
-      uint8_t cmdData[] = { 255, data.blinkOnTime, data.blinkOffTime, data.blinkQuantity };
-      uint8_t length = 1;
+      uint8_t cmdData[] = { 255, data.shortOffLevel, data.shortOnLevel, data.blinkOnTime, data.blinkOffTime, data.blinkQuantity };
+      uint8_t length = sizeof(cmdData);
    	  if( longPress )
       {
+          cmdData[1] = data.longOffLevel;
+          cmdData[2] = data.longOnLevel;
+
       	  // we can have
       	  switch( data.longActionType ) 
           {
           	  case 0: // -> ON
               {
                 cmdData[0] = data.longOnLevel;
+                length = 1;
           	    break;
               }
           	  case 1: // -> OFF
               {
                 cmdData[0] = data.longOffLevel;
+                length = 1;
           	    break;
               }
               case 3: // -> TOGGLE
               {
+                cmdData[0] = HBWChannel::TOGGLE;
                 break;
               }
               case 4: // -> BLINK_ON
               {
                 cmdData[0] = HBWChannel::BLINK_ON;
-                length = sizeof(cmdData);
                 break;
               }
               case 5: // -> BLINK_TOGGLE
               {
                 cmdData[0] = HBWChannel::BLINK_TOGGLE;
-                length = sizeof(cmdData);
                 break;
               }
 
@@ -92,27 +96,28 @@ void HBWLinkDimmer::receiveKeyEvent(HBWDevice* device, uint32_t senderAddress, u
           	  case 0: // -> ON
           	  {
               	  cmdData[0] = data.shortOnLevel;
+                  length = 1;
               	  break;
           	  }
           	  case 1: // -> OFF
           	  {
               	  cmdData[0] = data.shortOffLevel;
+                  length = 1;
               	  break;
           	  }
               case 3: // -> TOGGLE
               {
+                  cmdData[0] = HBWChannel::TOGGLE;
                   break;
               }
               case 4: // -> BLINK_ON
               {
                   cmdData[0] = HBWChannel::BLINK_ON;
-                  length = sizeof(cmdData);
                   break;
               }
               case 5: // -> BLINK_TOGGLE
               {
                   cmdData[0] = HBWChannel::BLINK_TOGGLE;
-                  length = sizeof(cmdData);
                   break;
               }
               case 2: // -> INACTIVE

@@ -32,11 +32,14 @@ private:
     PwmOutput* pwmOutput;
     bool feedbackCmdActive;
     uint8_t currentLevel;
+    uint8_t onLevel;
+    uint8_t offLevel;
     uint8_t blinkOnTime;
     uint8_t blinkOffTime;
     uint8_t blinkQuantity;
     Timestamp nextFeedbackTime;
     Timestamp nextBlinkTime;    
+    uint8_t logicalState;
 
 //functions
 public:
@@ -50,6 +53,8 @@ public:
 protected:
 
 private:
+    inline bool isToggleCmd( uint8_t cmd ) { return cmd == TOGGLE; }
+
     inline bool isBlinkOnCmd( uint8_t cmd ) { return cmd == BLINK_ON; }
 
     inline bool isBlinkToggleCmd( uint8_t cmd ) { return cmd == BLINK_TOGGLE; }
@@ -57,6 +62,10 @@ private:
     inline bool isKeyFeedbackOnCmd( uint8_t cmd ) { return cmd == KEY_FEEDBACK_ON; }
 
     inline bool isKeyFeedbackOffCmd( uint8_t cmd ) { return cmd == KEY_FEEDBACK_OFF; }
+
+    inline bool isLogicalOn( void ) { return logicalState != OFF; };
+
+    inline void setLogicalState( uint8_t state ) { logicalState = state ; }
 
 }; //HBWDimmer
 
