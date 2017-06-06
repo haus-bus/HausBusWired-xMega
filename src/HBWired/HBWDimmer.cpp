@@ -68,7 +68,6 @@ void HBWDimmer::set(HBWDevice* device, uint8_t length, uint8_t const * const dat
        }
        else
        {
-         currentLevel = offLevel;
          nextBlinkTime.reset();
          setLogicalState( OFF );
        }
@@ -143,6 +142,7 @@ void HBWDimmer::loop(HBWDevice* device, uint8_t channel)
             else
             {
                 nextBlinkTime.reset();
+                setLogicalState( currentLevel == onLevel ? ON : OFF );
             }
         }
 
