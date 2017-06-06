@@ -22,9 +22,8 @@ class HBWSD6Multikey : public HBWDevice
     inline HBWSD6Multikey(uint8_t _devicetype, uint8_t _hardware_version, uint16_t _firmware_version,
     Stream* _rs485, uint8_t _txen,
     uint8_t _configSize, void* _config,
-    uint8_t _numChannels, HBWChannel** _channels,
     Stream* _debugstream, HBWLinkSender* _linkSender = NULL, HBWLinkReceiver* _linkReceiver = NULL) 
-        : HBWDevice( _devicetype, _hardware_version, _firmware_version, _rs485,  _txen, _configSize, _config, _numChannels, _channels,  _debugstream, _linkSender, _linkReceiver )
+        : HBWDevice( _devicetype, _hardware_version, _firmware_version, _rs485,  _txen, _configSize, _config, _debugstream, _linkSender, _linkReceiver )
         {
             afterReadConfig();
         }

@@ -10,11 +10,22 @@
 
 #include "Arduino.h"
 
+#ifndef MAX_CHANNELS
+#define MAX_CHANNELS 32
+#endif
+
 class HBWDevice;
 
 // Basisklasse fuer Channels
 class HBWChannel 
 {
+  private:
+      static uint8_t numChannels;
+      static HBWChannel* instances[MAX_CHANNELS];
+
+  protected:
+    HBWChannel();
+
   public:	
       enum Commands
       {
@@ -26,6 +37,10 @@ class HBWChannel
           KEY_FEEDBACK_ON,
           KEY_FEEDBACK_OFF
       };
+
+
+    static inline uint8_t getNumChannels() { return numChannels; }
+    static inline HBWChannel* getChannel( uint8_t channel ) { return instances[channel]; }
 
     virtual void set(HBWDevice*, uint8_t length, uint8_t const * const data);
     virtual uint8_t get(uint8_t* data);  // returns length, data must be big enough 
@@ -71,8 +86,7 @@ class HBWDevice {
   public:
     HBWDevice(uint8_t _devicetype, uint8_t _hardware_version, uint16_t _firmware_version,
 	          Stream* _rs485, uint8_t _txen, 
-	          uint8_t _configSize, void* _config, 
-			  uint8_t _numChannels, HBWChannel** _channels,
+	          uint8_t _configSize, void* _config,
 			  Stream* _debugstream, HBWLinkSender* = NULL, HBWLinkReceiver* = NULL);
   
     void setConfigPins(uint8_t _configPin = 8, uint8_t _ledPin = 13);
@@ -110,8 +124,6 @@ class HBWDevice {
 	uint32_t getOwnAddress();
 
   private:							 
-	uint8_t numChannels;    // number of channels
-	HBWChannel** channels;  // channels
     HBWLinkSender* linkSender;
 	HBWLinkReceiver* linkReceiver;
 	

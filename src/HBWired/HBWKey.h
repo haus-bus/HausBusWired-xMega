@@ -23,6 +23,8 @@ class HBWKey : public HBWChannel
 
 		HBWKey(uint8_t _pin, Config* _config, HBWChannel* _feedbackChannel = NULL);
 
+        inline void setFeedbackChannel( HBWChannel* _feedbackChannel ) { feedbackChannel = _feedbackChannel; }
+
 		virtual void loop(HBWDevice*, uint8_t channel);
 
 	private:

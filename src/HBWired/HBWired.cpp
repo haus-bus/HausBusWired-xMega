@@ -360,6 +360,13 @@ void HBWDevice::receive(){
 } // receive
 
 
+uint8_t HBWChannel::numChannels = 0;
+HBWChannel* HBWChannel::instances[];
+
+HBWChannel::HBWChannel()
+{
+    instances[numChannels++] = this;
+}
 
 // Basisklasse fuer Channels, defaults
 void HBWChannel::set(HBWDevice* device, uint8_t length, uint8_t const * const data) {};
@@ -731,12 +738,9 @@ Stream* hbwdebugstream = 0;
 HBWDevice::HBWDevice(uint8_t _devicetype, uint8_t _hardware_version, uint16_t _firmware_version,
               Stream* _rs485, uint8_t _txen, 
 	          uint8_t _configSize, void* _config, 
-			  uint8_t _numChannels, HBWChannel** _channels,
 			  Stream* _debugstream, HBWLinkSender* _linkSender, HBWLinkReceiver* _linkReceiver) {	
     configSize = _configSize;     // size of config object without peerings
 	config = (uint8_t*)_config;        // pointer to config object 
-	numChannels = _numChannels;    // number of channels
-	channels = _channels;  // channels
 	linkSender = _linkSender;
 	linkReceiver = _linkReceiver;
 	hardware_version = _hardware_version;
@@ -776,18 +780,18 @@ void HBWDevice::set(uint8_t channel,uint8_t length,uint8_t const * const data){
 		hbwdebug("\n");
 	};
 	// to avoid crashes, do not try to set any channels, which do not exist
-	if(channel < numChannels)
-        channels[channel]->set(this, length, data);
+	if(channel < HBWChannel::getNumChannels() )
+        HBWChannel::getChannel(channel)->set(this, length, data);
 }
 
 
 uint8_t HBWDevice::get(uint8_t channel, uint8_t* data) {  // returns length
     // to avoid crashes, return 0 for channels, which do not exist
-	if(channel >= numChannels) {
+	if(channel >= HBWChannel::getNumChannels()) {
 		data[0] = 0;
 		return 1;
 	}
-    return channels[channel]->get(data);
+    return HBWChannel::getChannel(channel)->get(data);
 }
 
 
@@ -810,8 +814,8 @@ void HBWDevice::loop()
   // send announce message, if not done yet
   handleBroadcastAnnounce();
 // feedback from switches and handle keys
-   for(uint8_t i = 0; i < numChannels; i++)
-        channels[i]->loop(this,i);
+   for(uint8_t i = 0; i < HBWChannel::getNumChannels(); i++)
+        HBWChannel::getChannel(i)->loop(this,i);
 // config Button
    handleConfigButton();	
 };

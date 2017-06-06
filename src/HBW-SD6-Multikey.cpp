@@ -37,7 +37,6 @@ struct hbw_config {
 } config;
 
 static HBWDevice* device = NULL;
-static HBWChannel* channels[14];
 
 static usart_serial_options_t dbg_options = 
 {
@@ -96,9 +95,16 @@ void setup()
     // Authorize interrupts
     irq_initialize_vectors();
     cpu_irq_enable();
+
+    static SerialStream debugStream( DBG_SERIAL );
+    static SerialStream rs485Stream( RS485_SERIAL );
 	
-	static SerialStream debugStream( DBG_SERIAL );
-	static SerialStream rs485Stream( RS485_SERIAL );
+    static HBWKey hbwKey1(BUTTON_S1_GPIO,&(config.keycfg[0]) );
+    static HBWKey hbwKey2(BUTTON_S2_GPIO,&(config.keycfg[1]) );
+    static HBWKey hbwKey3(BUTTON_S3_GPIO,&(config.keycfg[2]) );
+    static HBWKey hbwKey4(BUTTON_S4_GPIO,&(config.keycfg[3]) );
+    static HBWKey hbwKey5(BUTTON_S5_GPIO,&(config.keycfg[4]) );
+    static HBWKey hbwKey6(BUTTON_S6_GPIO,&(config.keycfg[5]) );
 
     static PwmOutput led1( PWM_TCC0, PWM_CH_A, 5000 );
     static PwmOutput led2( PWM_TCC0, PWM_CH_B, 5000 );
@@ -114,36 +120,21 @@ void setup()
     static HBWDimmer hbwLed5( &led5, &config.ledcfg[4] );
     static HBWDimmer hbwLed6( &led6, &config.ledcfg[5] );
 
-    static HBWKey hbwKey1(BUTTON_S1_GPIO,&(config.keycfg[0]), &hbwLed1 );
-    static HBWKey hbwKey2(BUTTON_S2_GPIO,&(config.keycfg[1]), &hbwLed2 );
-    static HBWKey hbwKey3(BUTTON_S3_GPIO,&(config.keycfg[2]), &hbwLed3 );
-    static HBWKey hbwKey4(BUTTON_S4_GPIO,&(config.keycfg[3]), &hbwLed4 );
-    static HBWKey hbwKey5(BUTTON_S5_GPIO,&(config.keycfg[4]), &hbwLed5 );
-    static HBWKey hbwKey6(BUTTON_S6_GPIO,&(config.keycfg[5]), &hbwLed6 );
-
     static HBWDS1820 hbwDs1820( OneWire( ONE_WIRE_GPIO ), &config.ds1820cfg );
     static HBWAnalogIn hbwBrightness(&ADC_BRIGHTNESS, ADC_BRIGHTNESS_CHANNEL, &config.analogInCfg );
 
-    channels[ 0] = &hbwKey1;
-    channels[ 1] = &hbwKey2;
-    channels[ 2] = &hbwKey3;
-    channels[ 3] = &hbwKey4;
-    channels[ 4] = &hbwKey5;
-    channels[ 5] = &hbwKey6;
-    channels[ 6] = &hbwLed1;
-    channels[ 7] = &hbwLed2;
-    channels[ 8] = &hbwLed3;
-    channels[ 9] = &hbwLed4;
-    channels[10] = &hbwLed5;
-    channels[11] = &hbwLed6;
-    channels[12] = &hbwDs1820;
-    channels[13] = &hbwBrightness;
+    hbwKey1.setFeedbackChannel( &hbwLed1 );
+    hbwKey2.setFeedbackChannel( &hbwLed2 );
+    hbwKey3.setFeedbackChannel( &hbwLed3 );
+    hbwKey4.setFeedbackChannel( &hbwLed4 );
+    hbwKey5.setFeedbackChannel( &hbwLed5 );
+    hbwKey6.setFeedbackChannel( &hbwLed6 );
 
     static HBWLinkKey linkSender( 30, 0x0040 );
     static HBWLinkDimmer linkReceiver( 30, 0x00F4 );
 	
 	static HBWSD6Multikey sd6MultiKey( HMW_DEVICETYPE, HARDWARE_VERSION, FIRMWARE_VERSION,
-							           &rs485Stream,RS485_TXEN_GPIO,sizeof(config),&config,14,channels,&debugStream,
+							           &rs485Stream,RS485_TXEN_GPIO,sizeof(config),&config,&debugStream,
 							           &linkSender, &linkReceiver);
 
     device = &sd6MultiKey;
