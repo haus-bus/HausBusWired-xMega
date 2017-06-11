@@ -45,46 +45,46 @@ void HBWDimmer::set(HBWDevice* device, uint8_t length, uint8_t const * const dat
         feedbackCmdActive = false;
         return; // no logging for feedbackCmd
     }
-
-    if( length >= 6 )
+    else if( length >= 6 )
     {
         offLevel = data[1];
         onLevel = data[2];
         blinkOnTime = data[3];
         blinkOffTime = data[4];
         blinkQuantity = data[5];
-    }
-    if( isBlinkOnCmd( *data ) )
-    {
-        nextBlinkTime = Timestamp();
-        setLogicalState( BLINK_ON );
-    }
-    else if( isBlinkToggleCmd( *data ) )
-    {
-       if( logicalState != BLINK_ON )
-       {
-         nextBlinkTime = Timestamp();
-         setLogicalState( BLINK_ON );
-       }
-       else
-       {
-         nextBlinkTime.reset();
-         setLogicalState( OFF );
-       }
-    }
-    else if( isToggleCmd( *data ) )
-    {
-        if( isLogicalOn() )
+
+        if( isBlinkOnCmd( *data ) )
         {
-            currentLevel = offLevel;
-            setLogicalState( OFF );
+            nextBlinkTime = Timestamp();
+            setLogicalState( BLINK_ON );
         }
-        else
+        else if( isBlinkToggleCmd( *data ) )
         {
-            currentLevel = onLevel;
-            setLogicalState( ON );
+            if( logicalState != BLINK_ON )
+            {
+                nextBlinkTime = Timestamp();
+                setLogicalState( BLINK_ON );
+            }
+            else
+            {
+                nextBlinkTime.reset();
+                setLogicalState( OFF );
+            }
         }
-        nextBlinkTime.reset();
+        else if( isToggleCmd( *data ) )
+        {
+            if( isLogicalOn() )
+            {
+                currentLevel = offLevel;
+                setLogicalState( OFF );
+            }
+            else
+            {
+                currentLevel = onLevel;
+                setLogicalState( ON );
+            }
+            nextBlinkTime.reset();
+        }
     }
     else // toggle
     {   
