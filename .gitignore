@@ -3,3 +3,4 @@ Debug/
 Release/
 .vs/
 *.atsln
+Tools/hterm.cfg
