@@ -42,8 +42,7 @@ void HBWLinkDimmer::receiveKeyEvent( HBWDevice* device, uint32_t senderAddress, 
       }
 
       // the endianess in the EEPROM is BigEndian, we need it in LittleEndian
-      // flipEndianess( &data.sensorAddress );
-      if ( links[i].sensorAddress != senderAddress )
+      if ( changeEndianness( links[i].sensorAddress ) != senderAddress )
       {
          continue;
       }

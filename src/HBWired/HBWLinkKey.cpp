@@ -22,8 +22,6 @@ HBWLinkKey::HBWLinkKey( uint8_t _numLinks, Config* _links )
 void HBWLinkKey::sendKeyEvent( HBWDevice* device, uint8_t srcChan,
                                uint8_t keyPressNum, bool longPress )
 {
-   uint32_t bigEndianAddr = changeEndianness( device->getOwnAddress() );
-
    // care for peerings
    for ( int i = 0; i < numLinks; i++ )
    {
@@ -39,17 +37,19 @@ void HBWLinkKey::sendKeyEvent( HBWDevice* device, uint8_t srcChan,
          continue;
       }
 
+      uint32_t actorAddress = changeEndianness( links[i].actorAddress );
+
       // own address? -> internal peering
-      if ( links[i].actorAddress == bigEndianAddr )
+      if ( actorAddress == device->getOwnAddress() )
       {
-         device->receiveKeyEvent( links[i].actorAddress, srcChan, links[i].actorChannel, longPress );
+         device->receiveKeyEvent( actorAddress, srcChan, links[i].actorChannel, longPress );
       }
       else
       {
          // external peering
          // TODO: If bus busy, then try to repeat. ...aber zuerst feststellen, wie das die Original-Module machen (bzw. hier einfach so lassen)
          /* byte result = */
-         device->sendKeyEvent( srcChan, keyPressNum, longPress, links[i].actorAddress, links[i].actorChannel );
+         device->sendKeyEvent( srcChan, keyPressNum, longPress, actorAddress, links[i].actorChannel );
       }
    }
 }
