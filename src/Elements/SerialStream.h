@@ -1,46 +1,50 @@
-/* 
-* CDCStream.h
-*
-* Created: 21.04.2017 00:18:42
-* Author: Viktor Pankraz
-*/
+/*
+ * CDCStream.h
+ *
+ * Created: 21.04.2017 00:18:42
+ * Author: Viktor Pankraz
+ */
 
 
 #ifndef __SERIALSTREAM_H__
 #define __SERIALSTREAM_H__
 
-extern "C"
+#include <IoStream.h>
+#include <Peripherals/Usart.h>
+#include <PortPin.h>
+
+class SerialStream : public IoStream
 {
-	#include <asf.h>
-}
+// variables
+   public:
+   protected:
+   private:
+      Usart* serial;
 
-#include <Stream.h>
+// functions
+   public:
+      SerialStream( Usart*, PortPin _rx, PortPin _tx );
 
-class SerialStream : public Stream
-{
-//variables
-public:
-protected:
-private:
-	usart_if serial;
+      template<uint32_t baudrate, USART_CMODE_t mode = USART_CMODE_ASYNCHRONOUS_gc,
+               USART_PMODE_t parity = USART_PMODE_DISABLED_gc, USART_CHSIZE_t characterSize = USART_CHSIZE_8BIT_gc,
+               bool twoStopBits = false, bool doubleClock = true>
+      inline bool init()
+      {
+         return serial->init<baudrate, mode, parity, characterSize, twoStopBits, doubleClock>();
+      }
 
-//functions
-public:
-	SerialStream( usart_if );
+      virtual Stream::Status genericCommand( IoStream::Command command, void* data );
 
-	// realize class Print
-	virtual size_t write(uint8_t);
-	
-	// realize class Stream
-	virtual int available();
-	virtual int read();
-	virtual int peek();
-	virtual void flush();
+      virtual Stream::Status read( uint8_t& data );
 
-protected:
-private:
+      virtual Stream::Status write( uint8_t data );
+
+      virtual bool available();
+
+   protected:
+   private:
 
 
-}; //SerialStream
+}; // SerialStream
 
-#endif //__SERIALSTREAM_H__
+#endif // __SERIALSTREAM_H__

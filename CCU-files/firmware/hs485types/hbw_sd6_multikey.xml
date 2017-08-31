@@ -9,7 +9,7 @@
 
 <paramset id="HBW-SD6-Multikey_dev_master" type="MASTER">
 	<parameter id="LOGGING_TIME">
-		<logical type="float" unit="s" default="5.0" max="25.5" min="0.1"/>
+		<logical type="float" unit="s" default="5.0" max="25.0" min="0.1"/>
 		<physical size="1.0" type="integer" interface="eeprom">
 			<address index="0x0001"/>
 		</physical>
@@ -22,13 +22,19 @@
 		</physical>
 	</parameter>
 	<enforce id="CENTRAL_ADDRESS" value="1"/>
+	<parameter id="OWN_ADDRESS">
+		<logical type="integer" default="1620000000" max="1629999999" min="1620000000"/>
+		<physical size="4" type="integer" interface="eeprom">
+			<address index="0x0006"/>
+		</physical>
+	</parameter>
 	<parameter id="LED_FEEDBACK">
 		<logical type="option">
 			<option id="OFF"/>
 			<option id="ON" default="true"/>
 		</logical>
 		<physical size="0.1" type="integer" interface="eeprom">
-			<address index="0x0006"/>			
+			<address index="0x000A"/>			
 		</physical>
 	</parameter>	
 </paramset>
@@ -61,12 +67,12 @@
 	<channel index="0" type="MAINTENANCE" count="1" class="maintenance" ui_flags="internal">
 	</channel>
 
-	<channel index="1" type="KEY" count="6" physical_index_offset="-1">
+	<channel index="1" type="KEY" count="12" physical_index_offset="-1">
 	    <link_roles>
             <source name="SWITCH"/>
         </link_roles>
 
-		<paramset id="hmw_input_ch_master" type="MASTER" address_step="2" address_start="0x08">
+		<paramset id="hmw_input_ch_master" type="MASTER" address_step="2" address_start="0x10">
 			<parameter id="INPUT_LOCKED">
 				<logical type="boolean" default="false"/>
 				<physical size="0.1" type="integer" interface="eeprom">
@@ -86,7 +92,7 @@
 			</parameter>
 		</paramset>
 		
-        <paramset id="hmw_input_ch_link" type="LINK" count="30" address_start="0x040" address_step="6" peer_param="ACTUATOR" channel_param="CHANNEL">
+        <paramset id="hmw_input_ch_link" type="LINK" count="40" address_start="0x070" address_step="6" peer_param="ACTUATOR" channel_param="CHANNEL">
             <parameter id="CHANNEL" hidden="true" operations="none">
                 <logical type="integer" min="0" max="255" default="255"/>
                 <physical size="1.0" type="integer" interface="eeprom">
@@ -124,12 +130,12 @@
 		</paramset>
 	</channel>	
 
-	<channel index="7" type="DIMMER" count="6" physical_index_offset="-1">
+	<channel index="13" type="DIMMER" count="12" physical_index_offset="-1">
 	    <link_roles>
             <target name="SWITCH"/>
         </link_roles>
 
-	    <paramset id="hmw_dim_ch_master" type="MASTER" address_step="2" address_start="0x14">
+	    <paramset id="hmw_dim_ch_master" type="MASTER" address_step="2" address_start="0x28">
 			<parameter id="LOGGING">
 				<logical type="option">
 					<option id="OFF"/>
@@ -141,7 +147,7 @@
 			</parameter>
 		</paramset>
 		
-		<paramset id="hmw_switch_ch_link" type="LINK" count="30" address_start="0xF4" address_step="16" peer_param="SENSOR" channel_param="CHANNEL">
+		<paramset id="hmw_switch_ch_link" type="LINK" count="40" address_start="0x160" address_step="16" peer_param="SENSOR" channel_param="CHANNEL">
             <parameter id="SENSOR" hidden="true" operations="none">
                 <logical type="address"/>
                 <physical type="array">
@@ -256,8 +262,17 @@
 		</paramset>		
 	</channel>	
 
-	<channel index="13" count="1" physical_index_offset="-1" type="TEMPSENSOR">
-	    <paramset type="MASTER" id="hmw_temp_ch_master" address_step="16" address_start="0x20">
+	<channel index="25" count="6" physical_index_offset="-1" type="TEMPSENSOR">
+	    <paramset type="MASTER" id="hmw_temp_ch_master" address_step="6" address_start="0x40">
+			<parameter id="SENSOR_ID">
+			   <logical type="integer" default="255" max="254" min="1">
+			       <special_value id="NOT_USED" value="0"/>
+			       <special_value id="AUTO" value="255"/>
+			   </logical>	   
+               <physical size="1.0" type="integer" interface="eeprom">
+                  <address index="+0"/>
+               </physical>			   
+			</parameter>
 			<parameter id="SEND_DELTA_TEMP">
 			   <logical type="float" unit="&#x2103;" default="0.5" min="0.1" max="25.0">
 			       <special_value id="NOT_USED" value="0"/>
@@ -269,13 +284,13 @@
                <conversion type="integer_integer_map">
                  <value_map to_device="false" from_device="true" parameter_value="5" device_value="0xff"/>
                </conversion>			   
-			</parameter>
+			</parameter>			
 			<parameter id="SEND_MIN_INTERVAL">
 			   <logical type="integer" unit="s" default="10" min="5" max="3600">
 			     <special_value id="NOT_USED" value="0"/>
 			   </logical>	   
                <physical size="2.0" type="integer" interface="eeprom" endian="little">
-                  <address index="+3.0"/>
+                  <address index="+2.0"/>
                </physical>	  
                <conversion type="integer_integer_map">
                  <value_map to_device="false" from_device="true" parameter_value="10" device_value="0xffff"/>
@@ -286,7 +301,7 @@
 			     <special_value id="NOT_USED" value="0"/>
 			   </logical>	   
                <physical size="2.0" type="integer" interface="eeprom" endian="little">
-                  <address index="+5.0"/>
+                  <address index="+4.0"/>
                </physical>	
                <conversion type="integer_integer_map">
                  <value_map to_device="false" from_device="true" parameter_value="150" device_value="0xffff"/>
@@ -305,8 +320,8 @@
 		</paramset>		
 	</channel>
 
-	<channel index="14" count="1" physical_index_offset="-1" type="ANALOGSENSOR">
-	    <paramset type="MASTER" id="hmw_analog_ch_master" address_step="16" address_start="0x30">
+	<channel index="31" count="2" physical_index_offset="-1" type="ANALOGSENSOR">
+	    <paramset type="MASTER" id="hmw_analog_ch_master" address_step="6" address_start="0x64">
 			<parameter id="SEND_DELTA_ANALOG">
 			   <logical type="integer" default="50" min="1" max="250">
 			       <special_value id="NOT_USED" value="0"/>
@@ -323,7 +338,7 @@
 			     <special_value id="NOT_USED" value="0"/>
 			   </logical>	   
                <physical size="2.0" type="integer" interface="eeprom" endian="little">
-                  <address index="+3.0"/>
+                  <address index="+2.0"/>
                </physical>	  
                <conversion type="integer_integer_map">
                  <value_map to_device="false" from_device="true" parameter_value="10" device_value="0xffff"/>
@@ -334,7 +349,7 @@
 			     <special_value id="NOT_USED" value="0"/>
 			   </logical>	   
                <physical size="2.0" type="integer" interface="eeprom" endian="little">
-                  <address index="+5.0"/>
+                  <address index="+4.0"/>
                </physical>	
                <conversion type="integer_integer_map">
                  <value_map to_device="false" from_device="true" parameter_value="150" device_value="0xffff"/>

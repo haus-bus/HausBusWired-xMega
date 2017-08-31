@@ -3,214 +3,167 @@
  *
  * Created: 03.12.2016 02:31:44
  *  Author: Viktor Pankraz
- */ 
+ */
 
 
 #define HMW_DEVICETYPE 0xB1
 
 #define HARDWARE_VERSION 0x01
-#define FIRMWARE_VERSION 0x0103
+#define FIRMWARE_VERSION 0x0104
 
 
-#include <Utils/SystemTime.h>
+#include <Time/SystemTime.h>
 #include <Elements/SerialStream.h>
+#include <Peripherals/InterruptController.h>
 
 #include "HBW-SD6-MultiKey.h"
 #include "HBWired/HBWLinkKey.h"
 #include "HBWired/HBWLinkDimmer.h"
 
-
-
-struct hbw_config {
-	uint8_t  loggingTime;           // 0x0001
-	uint32_t centralAddress;        // 0x0002   - 0x0005
-    uint16_t ledFeedback : 1;       // 0x0006:1
-    uint16_t unused1 :15;           // 0x0006:2 - 0x0007
-	HBWKey::Config keycfg[6];       // 0x0008   - 0x0013
-	HBWDimmer::Config ledcfg[6];    // 0x0014   - 0x001F
-    HBWDS1820::Config ds1820cfg;    // 0x0020   - 0x002F
-    HBWAnalogIn::Config analogInCfg;// 0x0030   - 0x003F
-    // HBWLinkKey                   // 0x0040   - 0x00F3
-    // HBWLinkLed                   // 0x00F4   - 0x02E3
-    //uint8_t reserved[0x3CB];
-    //uint32_t ownAdress;
-} config;
-
-static HBWDevice* device = NULL;
-
-static usart_serial_options_t dbg_options = 
+// this is the EEPROM layout used by one device
+struct hbw_config
 {
-	.baudrate = DBG_SERIAL_BAUDRATE,
-	.charlength = DBG_SERIAL_CHAR_LENGTH,
-	.paritytype = DBG_SERIAL_PARITY,
-	.stopbits = DBG_SERIAL_STOP_BIT
+   HBWSD6Multikey::Config device;       // 0x0000 - 0x000F
+   HBWKey::Config keycfg[12];           // 0x0010 - 0x0027
+   HBWDimmer::Config ledcfg[12];        // 0x0028 - 0x003F
+   HBWDS1820::Config ds1820cfg[6];      // 0x0040 - 0x0063
+   HBWAnalogIn::Config analogInCfg[2];  // 0x0064 - 0x006F
+   HBWLinkKey::Config keyLinks[40];     // 0x0070 - 0x015F
+   HBWLinkDimmer::Config ledLinks[40];  // 0x0160 - 0x03DF
 };
 
-static usart_serial_options_t rs485_options =
+static hbw_config& config = *reinterpret_cast<hbw_config*>( MAPPED_EEPROM_START );
+
+#ifdef DEBUG
+void putc( char c )
 {
-    .baudrate = RS485_SERIAL_BAUDRATE,
-    .charlength = RS485_SERIAL_CHAR_LENGTH,
-    .paritytype = RS485_SERIAL_PARITY,
-    .stopbits = RS485_SERIAL_STOP_BIT
-};
+   Usart::instance<PortC, 1>().write( c );
+}
+#endif
 
-void adc_init()
+HBWDevice* createDevice()
 {
-    struct adc_config adc_conf;
-    struct adc_channel_config adcch_conf;
+   SystemTime::init();
+   Eeprom::MemoryMapped::enable();
 
-    adc_read_configuration(&ADC_BRIGHTNESS, &adc_conf);
-    adcch_read_configuration(&ADC_BRIGHTNESS, ADC_BRIGHTNESS_CHANNEL, &adcch_conf);
+   // Initialize interfaces
+   static SerialStream rs485Stream( &Usart::instance<PortE, 0>(), PortPin( PortE, 2 ), PortPin( PortE, 3 ) );
+   rs485Stream.init<19200, USART_CMODE_ASYNCHRONOUS_gc, USART_PMODE_EVEN_gc, USART_CHSIZE_8BIT_gc, true, false>();
 
-    adc_set_conversion_parameters(&adc_conf, ADC_SIGN_OFF, ADC_RES_12,
-    ADC_REF_BANDGAP);
-    adc_set_conversion_trigger(&adc_conf, ADC_TRIG_MANUAL, 1, 0);
-    adc_set_clock_rate(&adc_conf, 200000UL);
+#ifdef DEBUG
+   static SerialStream debugStream( &Usart::instance<PortC, 1>(), PortPin( PortC, 6 ), PortPin( PortC, 7 ) );
+   debugStream.init<115200>();
+   Logger::instance().setStream( putc );
+#endif
 
-    adcch_set_input(&adcch_conf, ADC_BRIGHTNESS_CH_POS, ADCCH_NEG_NONE, 1);
+   static HBWKey hbwKey1( PortPin( PortA, 0 ), &( config.keycfg[0] ) );
+   static HBWKey hbwKey2( PortPin( PortA, 1 ), &( config.keycfg[1] ) );
+   static HBWKey hbwKey3( PortPin( PortA, 2 ), &( config.keycfg[2] ) );
+   static HBWKey hbwKey4( PortPin( PortA, 3 ), &( config.keycfg[3] ) );
+   static HBWKey hbwKey5( PortPin( PortA, 4 ), &( config.keycfg[4] ) );
+   static HBWKey hbwKey6( PortPin( PortA, 5 ), &( config.keycfg[5] ) );
 
-    adc_write_configuration(&ADC_BRIGHTNESS, &adc_conf);
-    adcch_write_configuration(&ADC_BRIGHTNESS, ADC_BRIGHTNESS_CHANNEL, &adcch_conf);
+   static HBWKey extHbwKey1( PortPin( PortB, 0 ), &( config.keycfg[6] ) );
+   static HBWKey extHbwKey2( PortPin( PortB, 1 ), &( config.keycfg[7] ) );
+   static HBWKey extHbwKey3( PortPin( PortB, 2 ), &( config.keycfg[8] ) );
+   static HBWKey extHbwKey4( PortPin( PortB, 3 ), &( config.keycfg[9] ) );
+
+#ifdef DEBUG
+   // in DEBUG mode these pins are used for serial debug output
+   static HBWKey extHbwKey5( PortPin( PortDummy, 6 ), &( config.keycfg[10] ) );
+   static HBWKey extHbwKey6( PortPin( PortDummy, 7 ), &( config.keycfg[11] ) );
+#else
+   static HBWKey extHbwKey5( PortPin( PortC, 6 ), &( config.keycfg[10] ) );
+   static HBWKey extHbwKey6( PortPin( PortC, 7 ), &( config.keycfg[11] ) );
+#endif
+
+   static HBWDimmer hbwLed1( PortPin( PortC, 0 ), &config.ledcfg[0], true );
+   static HBWDimmer hbwLed2( PortPin( PortC, 1 ), &config.ledcfg[1], true );
+   static HBWDimmer hbwLed3( PortPin( PortC, 2 ), &config.ledcfg[2], true );
+   static HBWDimmer hbwLed4( PortPin( PortC, 3 ), &config.ledcfg[3], true );
+   static HBWDimmer hbwLed5( PortPin( PortC, 4 ), &config.ledcfg[4], true );
+   static HBWDimmer hbwLed6( PortPin( PortC, 5 ), &config.ledcfg[5], true );
+
+   static HBWDimmer extHbwLed1( PortPin( PortD, 0 ), &config.ledcfg[6] );
+   static HBWDimmer extHbwLed2( PortPin( PortD, 1 ), &config.ledcfg[7] );
+   static HBWDimmer extHbwLed3( PortPin( PortD, 2 ), &config.ledcfg[8] );
+   static HBWDimmer extHbwLed4( PortPin( PortD, 3 ), &config.ledcfg[9] );
+   static HBWDimmer extHbwLed5( PortPin( PortD, 4 ), &config.ledcfg[10] );
+   static HBWDimmer extHbwLed6( PortPin( PortD, 5 ), &config.ledcfg[11] );
+
+   static OneWire ow( PortPin( PortD, 7 ) );
+   static HBWDS1820 hbwTmp1( ow, &config.ds1820cfg[0] );
+   static HBWDS1820 hbwTmp2( ow, &config.ds1820cfg[1] );
+   static HBWDS1820 hbwTmp3( ow, &config.ds1820cfg[2] );
+   static HBWDS1820 hbwTmp4( ow, &config.ds1820cfg[3] );
+   static HBWDS1820 hbwTmp5( ow, &config.ds1820cfg[4] );
+   static HBWDS1820 hbwTmp6( ow, &config.ds1820cfg[5] );
+
+   // static HBWAnalogIn hbwBrightness(&ADC_BRIGHTNESS, ADC_BRIGHTNESS_CHANNEL, &config.analogInCfg[0] );
+
+   static HBWLinkKey linkSender( sizeof( config.keyLinks ) / sizeof( config.keyLinks[0] ), config.keyLinks );
+   static HBWLinkDimmer linkReceiver( sizeof( config.ledLinks ) / sizeof( config.ledLinks[0] ), config.ledLinks );
+
+   static HBWSD6Multikey sd6MultiKey( HMW_DEVICETYPE, HARDWARE_VERSION, FIRMWARE_VERSION,
+                                      &rs485Stream, PortPin( PortE, 1 ),
+                                      &config.device, &linkSender, &linkReceiver );
+   sd6MultiKey.setConfigPins( PortPin( PortA, 4 ), PortPin( PortA, 5 ), PortPin( PortR, 1 ) );
+   PortPin( PortR, 1 ).setInverted( true );
+
+   // Authorize interrupts
+   InterruptController::enableAllInterruptLevel();
+   GlobalInterrupt::enable();
+   return &sd6MultiKey;
 }
 
-void setup()
+void HBWSD6Multikey::checkConfig()
 {
-	// Initialize the sleep manager service
-	sleepmgr_init();
-	
-	// Initialize the clock service
-	sysclk_init();
-	board_init();
-	
-	// Initialize interfaces
-	usart_serial_init(DBG_SERIAL, &dbg_options);
-    usart_serial_init(RS485_SERIAL, &rs485_options);
+   // set global ledFeedback setting to each key object
+   for ( uint8_t i = 0; i < 12; i++ )
+   {
+      ( (HBWKey*)HBWChannel::getChannel( i ) )->setFeedbackChannel( config.device.ledFeedback ? HBWChannel::getChannel( i + 12 ) : NULL );
+   }
 
-    // Initialize ADC to measure the brightness
-    adc_init();
-
-    // Initialize system timer
-    SystemTime::init();
-
-    // Authorize interrupts
-    irq_initialize_vectors();
-    cpu_irq_enable();
-
-    static SerialStream debugStream( DBG_SERIAL );
-    static SerialStream rs485Stream( RS485_SERIAL );
-	
-    static HBWKey hbwKey1(BUTTON_S1_GPIO,&(config.keycfg[0]) );
-    static HBWKey hbwKey2(BUTTON_S2_GPIO,&(config.keycfg[1]) );
-    static HBWKey hbwKey3(BUTTON_S3_GPIO,&(config.keycfg[2]) );
-    static HBWKey hbwKey4(BUTTON_S4_GPIO,&(config.keycfg[3]) );
-    static HBWKey hbwKey5(BUTTON_S5_GPIO,&(config.keycfg[4]) );
-    static HBWKey hbwKey6(BUTTON_S6_GPIO,&(config.keycfg[5]) );
-
-    static PwmOutput led1( PWM_TCC0, PWM_CH_A, 5000 );
-    static PwmOutput led2( PWM_TCC0, PWM_CH_B, 5000 );
-    static PwmOutput led3( PWM_TCC0, PWM_CH_C, 5000 );
-    static PwmOutput led4( PWM_TCC0, PWM_CH_D, 5000 );
-    static PwmOutput led5( PWM_TCC1, PWM_CH_A, 5000 );
-    static PwmOutput led6( PWM_TCC1, PWM_CH_B, 5000 );
-
-    static HBWDimmer hbwLed1( &led1, &config.ledcfg[0] );
-    static HBWDimmer hbwLed2( &led2, &config.ledcfg[1] );
-    static HBWDimmer hbwLed3( &led3, &config.ledcfg[2] );
-    static HBWDimmer hbwLed4( &led4, &config.ledcfg[3] );
-    static HBWDimmer hbwLed5( &led5, &config.ledcfg[4] );
-    static HBWDimmer hbwLed6( &led6, &config.ledcfg[5] );
-
-    static HBWDS1820 hbwDs1820( OneWire( ONE_WIRE_GPIO ), &config.ds1820cfg );
-    static HBWAnalogIn hbwBrightness(&ADC_BRIGHTNESS, ADC_BRIGHTNESS_CHANNEL, &config.analogInCfg );
-
-    hbwKey1.setFeedbackChannel( &hbwLed1 );
-    hbwKey2.setFeedbackChannel( &hbwLed2 );
-    hbwKey3.setFeedbackChannel( &hbwLed3 );
-    hbwKey4.setFeedbackChannel( &hbwLed4 );
-    hbwKey5.setFeedbackChannel( &hbwLed5 );
-    hbwKey6.setFeedbackChannel( &hbwLed6 );
-
-    static HBWLinkKey linkSender( 30, 0x0040 );
-    static HBWLinkDimmer linkReceiver( 30, 0x00F4 );
-	
-	static HBWSD6Multikey sd6MultiKey( HMW_DEVICETYPE, HARDWARE_VERSION, FIRMWARE_VERSION,
-							           &rs485Stream,RS485_TXEN_GPIO,sizeof(config),&config,&debugStream,
-							           &linkSender, &linkReceiver);
-
-    device = &sd6MultiKey;
-
-	hbwdebug(F("B: 2A\n"));
+   // call base implementation
+   HBWDevice::checkConfig();
 }
 
-int main (void)
+
+#include <Peripherals/WatchDog.h>
+#include <Peripherals/Oscillator.h>
+#include <Peripherals/Clock.h>
+
+static void
+__attribute__( ( section( ".init3" ), naked, used ) )
+lowLevelInit( void )
 {
-	setup();
-	while( 1 )
-	{
-		device->loop();
-	}
+        #ifdef EIND
+   __asm volatile ( "ldi r24,pm_hh8(__trampolines_start)\n\t"
+                    "out %i0,r24" ::"n" ( &EIND ) : "r24", "memory" );
+        #endif
+        #ifdef DEBUG
+   WatchDog::disable();
+        #else
+   WatchDog::enable( WatchDog::_4S );
+        #endif
+   InterruptController::selectAppInterruptSection();
+
+   Clock::configPrescalers( CLK_PSADIV_1_gc, CLK_PSBCDIV_1_1_gc );
+
+   // Enable internal 32 MHz and 32kHz ring oscillator and wait until they are stable.
+   Oscillator::enable( OSC_RC32MEN_bm | OSC_RC32KEN_bm );
+   Oscillator::waitUntilOscillatorIsReady( OSC_RC32MEN_bm | OSC_RC32KEN_bm );
+
+   // Set the 32 MHz ring oscillator as the main clock source.
+   Clock::selectMainClockSource( CLK_SCLKSEL_RC32M_gc );
 }
 
-void HBWSD6Multikey::afterReadConfig()
+int main( void )
 {
-    // set global ledFeedback setting to each key object
-    ::config.keycfg[0].ledFeedbackEnabled = ::config.ledFeedback;
-    ::config.keycfg[1].ledFeedbackEnabled = ::config.ledFeedback;
-    ::config.keycfg[2].ledFeedbackEnabled = ::config.ledFeedback;
-    ::config.keycfg[3].ledFeedbackEnabled = ::config.ledFeedback;
-    ::config.keycfg[4].ledFeedbackEnabled = ::config.ledFeedback;
-    ::config.keycfg[5].ledFeedbackEnabled = ::config.ledFeedback;
-
-    checkAndCorrectConfig( &::config.keycfg[0] );
-    checkAndCorrectConfig( &::config.keycfg[1] );
-    checkAndCorrectConfig( &::config.keycfg[2] );
-    checkAndCorrectConfig( &::config.keycfg[3] );
-    checkAndCorrectConfig( &::config.keycfg[4] );
-    checkAndCorrectConfig( &::config.keycfg[5] );
-
-    checkAndCorrectConfig( &::config.ledcfg[0] );
-    checkAndCorrectConfig( &::config.ledcfg[1] );
-    checkAndCorrectConfig( &::config.ledcfg[2] );
-    checkAndCorrectConfig( &::config.ledcfg[3] );
-    checkAndCorrectConfig( &::config.ledcfg[4] );
-    checkAndCorrectConfig( &::config.ledcfg[5] );
-
-    checkAndCorrectConfig( &::config.ds1820cfg );
-
+   HBWDevice* device = createDevice();
+   while ( 1 )
+   {
+      device->loop();
+      WatchDog::reset();
+   }
 }
-
-// following functions are realizations of some basic Arduino functions
-unsigned long millis(void)
-{
-	return SystemTime::now();
-}
-
-void pinMode( uint8_t pin, uint8_t mode)
-{
-	if( mode == OUTPUT )
-	{
-		ioport_set_pin_dir( pin, IOPORT_DIR_OUTPUT );
-	}
-    else
-    {
-        ioport_set_pin_dir( pin, IOPORT_DIR_INPUT );
-    }
-}
-
-void digitalWrite(uint8_t pin, uint8_t state)
-{
-	if( state ) 
-    {
-        ioport_set_pin_high( pin );
-    }
-	else 
-    {
-        ioport_set_pin_low( pin );
-    }
-}
-
-int digitalRead( uint8_t pin )
-{
-	return ioport_get_pin_level( pin );
-} 
-  

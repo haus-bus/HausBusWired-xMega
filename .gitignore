@@ -1,3 +1,5 @@
 # Generated Code
 Debug/
 Release/
+.vs/
+*.atsln

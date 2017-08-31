@@ -1,45 +1,42 @@
-/* 
-* SerialStream.cpp
-*
-* Created: 21.04.2017 00:18:42
-* Author: Viktor Pankraz
-*/
-
+/*
+ * SerialStream.cpp
+ *
+ * Created: 21.04.2017 00:18:42
+ * Author: Viktor Pankraz
+ */
 
 #include "SerialStream.h"
 
 
-SerialStream::SerialStream( usart_if _serial )
+SerialStream::SerialStream( Usart* _serial, PortPin _rx, PortPin _tx )
 {
-	serial = _serial;
+   serial = _serial;
+   _tx.configOutput();
+   _rx.configInput();
 }
 
-size_t SerialStream::write( uint8_t c )
+Stream::Status SerialStream::genericCommand( IoStream::Command command, void* buffer )
 {
-	if( usart_putchar( serial, c ) == STATUS_OK )
-	{
-		return 1;
-	}
-	return 0;
+   if ( command == IoStream::FLUSH )
+   {
+      serial->waitUntilTransferCompleted();
+      return Stream::SUCCESS;
+   }
+   return Stream::ABORTED;
 }
 
-int SerialStream::available()
+Stream::Status SerialStream::read( uint8_t& data )
 {
-	return usart_rx_is_complete( serial );	
+
+   return serial->read( data ) ? Stream::SUCCESS : Stream::STOPPED;
 }
 
-int SerialStream::read()
+Stream::Status SerialStream::write( uint8_t data )
 {
-	return usart_getchar(serial); 
+   return serial->write( data ) ? Stream::SUCCESS : Stream::ABORTED;
 }
 
-int SerialStream::peek()
+bool SerialStream::available()
 {
-	return -1;
-}
-
-void SerialStream::flush()
-{
-	usart_clear_tx_complete( serial );
-	while( !usart_tx_is_complete( serial ) );
+   return serial->isReceiveCompleted();
 }

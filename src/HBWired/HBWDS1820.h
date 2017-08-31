@@ -9,154 +9,152 @@
 #define HwUnits_DS1820_H
 
 #include <Protocols/OneWire.h>
-#include <Utils/Timestamp.h>
+#include <Time/Timestamp.h>
 
 #include "HBWired.h"
 
-class Crc8;
-
-class Event;
-
-class Scheduler;
 
 class HBWDS1820 : public HBWChannel
 {
-public:
+   public:
 
-  static const uint8_t CONVERT_T = 0x44;
-  static const uint8_t READ_POWER_SUPPLY = 0xB4;
-  static const uint8_t READ = 0xBE;
-  static const uint8_t WRITE = 0x4E;
-  static const uint8_t WRITE_EE = 0x48;
-  static const uint8_t RECALL_EE = 0xB8;
+      static const uint8_t CONVERT_T = 0x44;
+      static const uint8_t READ_POWER_SUPPLY = 0xB4;
+      static const uint8_t READ = 0xBE;
+      static const uint8_t WRITE = 0x4E;
+      static const uint8_t WRITE_EE = 0x48;
+      static const uint8_t RECALL_EE = 0xB8;
 
-  enum HwStatus
-  {
-    OK,
-    START_FAIL,
-    FAILTURE,
-    CRC_FAILTURE,
-    OUT_OF_MEMORY
-  };
+      enum HwStatus
+      {
+         OK,
+         START_FAIL,
+         FAILTURE,
+         CRC_FAILTURE,
+         OUT_OF_MEMORY
+      };
 
-    enum State
-    {
-        SEARCH_SENSOR,   
-        START_MEASUREMENT,
-        SEND_FEEDBACK
-    };
+      enum State
+      {
+         SEARCH_SENSOR,
+         START_MEASUREMENT,
+         SEND_FEEDBACK
+      };
 
-  	struct Config
-  	{
-      	uint8_t     unused1;           
-      	uint8_t     minDelta;
-        uint8_t     unused2;
-        uint16_t    minInterval;
-        uint16_t    maxInterval;
-        uint8_t     unused3[9]; 
-  	};
+      struct Config
+      {
+         uint8_tx id;
+         uint8_tx minDelta;
+         uint16_tx minInterval;
+         uint16_tx maxInterval;
+      };
 
-  static const uint8_t SCRATCHPAD_SIZE = 9;
+      static const uint8_t SCRATCHPAD_SIZE = 9;
 
-  static const uint8_t DS18B20_CONF_REG = 4;
-  static const uint8_t DS18B20_9_BIT = 0;
-  static const uint8_t DS18B20_10_BIT = (1 << 5);
-  static const uint8_t DS18B20_11_BIT = (1 << 6);
-  static const uint8_t DS18B20_12_BIT = ((1 << 6) | (1 << 5));
+      static const uint8_t DS18B20_CONF_REG = 4;
+      static const uint8_t DS18B20_9_BIT = 0;
+      static const uint8_t DS18B20_10_BIT = ( 1 << 5 );
+      static const uint8_t DS18B20_11_BIT = ( 1 << 6 );
+      static const uint8_t DS18B20_12_BIT = ( ( 1 << 6 ) | ( 1 << 5 ) );
 
-  // indefined bits in LSB if 18B20 != 12bit
-  static const uint8_t DS18B20_9_BIT_UNDF = ((1 << 0) | (1 << 1) | (1 << 2));
-  static const uint8_t DS18B20_10_BIT_UNDF = ((1 << 0) | (1 << 1));
-  static const uint8_t DS18B20_11_BIT_UNDF = ((1 << 0));
-  static const uint8_t DS18B20_12_BIT_UNDF = 0;
+      // indefined bits in LSB if 18B20 != 12bit
+      static const uint8_t DS18B20_9_BIT_UNDF = ( ( 1 << 0 ) | ( 1 << 1 ) | ( 1 << 2 ) );
+      static const uint8_t DS18B20_10_BIT_UNDF = ( ( 1 << 0 ) | ( 1 << 1 ) );
+      static const uint8_t DS18B20_11_BIT_UNDF = ( ( 1 << 0 ) );
+      static const uint8_t DS18B20_12_BIT_UNDF = 0;
 
-  // family ids
-  static const uint8_t DS18S20_ID = 0x10;
-  static const uint8_t DS18B20_ID = 0x28;
+      // family ids
+      static const uint8_t DS18S20_ID = 0x10;
+      static const uint8_t DS18B20_ID = 0x28;
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  HBWDS1820( const OneWire& _hardware, Config* _config );
+      HBWDS1820( OneWire& _hardware, Config* _config );
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  bool isSelfPowered();
+      bool isSelfPowered();
 
-  static bool isSensor( uint8_t familiyCode );
-  
-  HwStatus readMeasurement();
+      static bool isSensor( uint8_t familiyCode );
 
-  HwStatus startMeasurement( bool allSensors = true );
+      HwStatus readMeasurement();
 
-    // definition of needed functions from HBWChannel class
-    virtual uint8_t get(uint8_t* data);
-    virtual void loop(HBWDevice*, uint8_t channel);
+      HwStatus startMeasurement( bool allSensors = true );
 
-private:
+      // definition of needed functions from HBWChannel class
+      virtual uint8_t get( uint8_t* data );
+      virtual void loop( HBWDevice*, uint8_t channel );
+      virtual void checkConfig();
 
-  int16_t convertToCentiCelsius( uint8_t* scratchPad );
+   private:
 
-  ////    Additional operations    ////
+      int16_t convertToCentiCelsius( uint8_t* scratchPad );
 
-public:
+      ////    Additional operations    ////
 
-  inline OneWire* getHardware() const
-  {
-    return (OneWire*) &hardware;
-  }
+   public:
 
-  inline static bool getSelfPowered()
-  {
-    return selfPowered;
-  }
+      static bool isUsed( uint8_t id );
 
-  inline static void setSelfPowered( bool p_selfPowered )
-  {
-    selfPowered = p_selfPowered;
-  }
+      inline OneWire* getHardware() const
+      {
+         return hardware;
+      }
 
-private:
+      inline static bool getSelfPowered()
+      {
+         return selfPowered;
+      }
 
-  inline OneWire::RomCode getRomCode() const
-  {
-    return romCode;
-  }
+      inline static void setSelfPowered( bool p_selfPowered )
+      {
+         selfPowered = p_selfPowered;
+      }
 
-  inline void setRomCode( OneWire::RomCode p_romCode )
-  {
-    romCode = p_romCode;
-  }
+      inline uint8_t getConfigId()
+      {
+         return config->id;
+      }
 
-  ////    Attributes    ////
+   private:
 
-public:
+      inline OneWire::RomCode getRomCode() const
+      {
+         return romCode;
+      }
 
-  static bool selfPowered;
+      inline void setRomCode( OneWire::RomCode p_romCode )
+      {
+         romCode = p_romCode;
+      }
 
-  OneWire hardware;
+      ////    Attributes    ////
 
-private:
+   public:
 
+      static bool selfPowered;
 
-    Config* config;
+      OneWire* hardware;
 
-    State state;
+   private:
 
-    OneWire::RomCode romCode;
+      static const uint8_t debugLevel;
 
-    uint16_t nextActionDelay;
+      Config* config;
 
-    int16_t currentCentiCelsius;
+      State state;
 
-    int16_t lastSentCentiCelsius;
+      OneWire::RomCode romCode;
 
-    Timestamp lastActionTime;
-    
-    Timestamp lastSentTime;
+      uint16_t nextActionDelay;
 
-    
-    
+      int16_t currentCentiCelsius;
 
+      int16_t lastSentCentiCelsius;
+
+      Timestamp lastActionTime;
+
+      Timestamp lastSentTime;
 };
 
 

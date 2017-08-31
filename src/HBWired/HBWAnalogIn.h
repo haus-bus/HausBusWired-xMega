@@ -8,78 +8,76 @@
 #ifndef HwUnits_HBWAnalogIn_H
 #define HwUnits_HBWAnalogIn_H
 
-#include <Utils/Timestamp.h>
+#include <Time/Timestamp.h>
 
 #include "HBWired.h"
 
 
 class HBWAnalogIn : public HBWChannel
 {
-public:
+   public:
 
-    enum State
-    {  
-        INIT_ADC,
-        START_MEASUREMENT,
-        SAMPLE_VALUES, 
-        SEND_FEEDBACK
-    };
+      enum State
+      {
+         INIT_ADC,
+         START_MEASUREMENT,
+         SAMPLE_VALUES,
+         SEND_FEEDBACK
+      };
 
-  	struct Config
-  	{
-      	uint8_t     unused1;           
-      	uint8_t     minDelta;
-        uint8_t     unused2;
-        uint16_t    minInterval;
-        uint16_t    maxInterval;
-        uint8_t     unused3[9]; 
-  	};
+      struct Config
+      {
+         uint8_tx unused;
+         uint8_tx minDelta;
+         uint16_tx minInterval;
+         uint16_tx maxInterval;
+      };
 
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  HBWAnalogIn( ADC_t* _adc, uint8_t _adcChannel, Config* _config );
+      HBWAnalogIn( ADC_t* _adc, uint8_t _adcChannel, Config* _config );
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-    // definition of needed functions from HBWChannel class
-    virtual uint8_t get(uint8_t* data);
-    virtual void loop(HBWDevice*, uint8_t channel);
+      // definition of needed functions from HBWChannel class
+      virtual uint8_t get( uint8_t* data );
+      virtual void loop( HBWDevice*, uint8_t channel );
 
-private:
-
-
-  ////    Additional operations    ////
-
-public:
+   private:
 
 
-private:
+      ////    Additional operations    ////
+
+   public:
 
 
-  ////    Attributes    ////
+   private:
 
-public:
 
-private:
+      ////    Attributes    ////
 
-    ADC_t* adc;
-    
-    uint8_t adcChannel;
+   public:
 
-    Config* config;
+   private:
 
-    State state;
+      ADC_t* adc;
 
-    uint16_t nextActionDelay;
+      uint8_t adcChannel;
 
-    uint16_t currentValue;
+      Config* config;
 
-    uint16_t lastSentValue;
+      State state;
 
-    Timestamp lastActionTime;
-    
-    Timestamp lastSentTime;
+      uint16_t nextActionDelay;
+
+      uint16_t currentValue;
+
+      uint16_t lastSentValue;
+
+      Timestamp lastActionTime;
+
+      Timestamp lastSentTime;
 
 };
 

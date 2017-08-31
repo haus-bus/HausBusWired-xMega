@@ -1,40 +1,66 @@
-
 #ifndef HBWKey_h
 #define HBWKey_h
-#include <inttypes.h>
-#include "Arduino.h"
-#include "HBWired.h"
 
+#include "HBWired.h"
+#include <DigitalInput.h>
 
 
 // Class HBWKey
-class HBWKey : public HBWChannel 
+class HBWKey : public HBWChannel
 {
-	public:
+   public:
 
-        struct Config 
-        {
-            uint8_t isPushButton:1;
-            uint8_t isUnlocked:1;
-            uint8_t :5;
-            uint8_t ledFeedbackEnabled:1;
-            uint8_t long_press_time;
-        };
+      class Config
+      {
+         enum OptionMask
+         {
+            PUSHBUTTON_MASK = 0x01,
+            UNLOCKED_MASK = 0x02,
+         };
 
-		HBWKey(uint8_t _pin, Config* _config, HBWChannel* _feedbackChannel = NULL);
+         uint8_tx options;
+         uint8_tx long_press_time;
 
-        inline void setFeedbackChannel( HBWChannel* _feedbackChannel ) { feedbackChannel = _feedbackChannel; }
+         public:
+            inline bool isPushButton() const
+            {
+               return options & PUSHBUTTON_MASK;
+            }
+            inline bool isUnlocked() const
+            {
+               return options & UNLOCKED_MASK;
+            }
+            inline uint8_t getLongPressTime() const
+            {
+               return long_press_time;
+            }
 
-		virtual void loop(HBWDevice*, uint8_t channel);
+            inline void setLongPressTime( uint8_t time )
+            {
+               long_press_time.update( time );
+            }
 
-	private:
-  	    uint8_t pin;   // Pin
-		uint8_t keyPressNum;
-		Config* config;
-        HBWChannel* feedbackChannel;
 
-        uint32_t keyPressedMillis;  // Zeit, zu der die Taste gedrueckt wurde (fuer's Entprellen)
-        uint32_t lastSentLong;      // Zeit, zu der das letzte Mal longPress gesendet wurde
+      };
+
+      HBWKey( PortPin _pin, Config* _config, HBWChannel* _feedbackChannel = NULL, bool _inverted = false );
+
+      inline void setFeedbackChannel( HBWChannel* _feedbackChannel )
+      {
+         feedbackChannel = _feedbackChannel;
+      }
+
+      virtual void loop( HBWDevice*, uint8_t channel );
+      virtual void checkConfig();
+
+   private:
+      uint8_t keyPressNum;
+      Config* config;
+      HBWChannel* feedbackChannel;
+      DigitalInput digitalIn;
+
+      uint32_t keyPressedMillis;    // Zeit, zu der die Taste gedrueckt wurde (fuer's Entprellen)
+      uint32_t lastSentLong;        // Zeit, zu der das letzte Mal longPress gesendet wurde
 };
 
-#endif 
+#endif

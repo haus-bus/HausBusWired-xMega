@@ -1,4 +1,4 @@
-/* 
+/*
 ** HBWLinkKey
 **
 ** Einfache direkte Verknuepfung (Peering), vom Tastereingang ausgehend
@@ -13,22 +13,25 @@
 
 #include "HBWired.h"
 
-class HBWLinkKey : public HBWLinkSender {
-  public:
+class HBWLinkKey : public HBWLinkSender
+{
+   public:
 
-      HBWLinkKey(uint8_t _numLinks, uint16_t _eepromStart);
-	  void sendKeyEvent(HBWDevice* device, uint8_t srcChan, uint8_t keyPressNum, boolean longPress);
-  private:
+      struct Config
+      {
+         uint8_t ownChannel;
+         uint32_t actorAddress;
+         uint8_t actorChannel;
+      };
 
-        struct Config
-        {
-            uint8_t ownChannel;
-            uint32_t actorAddress;
-            uint8_t actorChannel;
-        };
+      HBWLinkKey( uint8_t _numLinks, Config* _links );
+      void sendKeyEvent( HBWDevice* device, uint8_t srcChan, uint8_t keyPressNum, bool longPress );
 
-      uint8_t numLinks;         // number of links of this type  
-      uint16_t eepromStart;     //size sollte konstant sein -> als define in .cpp
+
+
+   private:
+      uint8_t numLinks;         // number of links of this type
+      Config* links;     // size sollte konstant sein -> als define in .cpp
 };
 
 #endif

@@ -12,27 +12,51 @@
 
 class Crc8
 {
-  ////    Operations    ////
+   ////    Operations    ////
 
-public:
+   public:
 
-  inline static void calculateNextCrc( uint8_t& crc, uint8_t data );
+      inline static void calculateNextCrc( uint8_t& crc, uint8_t data );
 
-  static uint8_t hasError( void * pData, uint16_t length, uint8_t crc = 0 );
+      static uint8_t hasError( void* pData, uint16_t length, uint8_t crc = 0 );
 };
 
 inline void Crc8::calculateNextCrc( uint8_t& crc, uint8_t data )
 {
-  data ^= crc;
-  crc = 0;
-  if ( data & 0x01 ) crc = 0x5E;
-  if ( data & 0x02 ) crc ^= 0xBC;
-  if ( data & 0x04 ) crc ^= 0x61;
-  if ( data & 0x08 ) crc ^= 0xC2;
-  if ( data & 0x10 ) crc ^= 0x9D;
-  if ( data & 0x20 ) crc ^= 0x23;
-  if ( data & 0x40 ) crc ^= 0x46;
-  if ( data & 0x80 ) crc ^= 0x8C;
+   data ^= crc;
+   crc = 0;
+   if ( data & 0x01 )
+   {
+      crc = 0x5E;
+   }
+   if ( data & 0x02 )
+   {
+      crc ^= 0xBC;
+   }
+   if ( data & 0x04 )
+   {
+      crc ^= 0x61;
+   }
+   if ( data & 0x08 )
+   {
+      crc ^= 0xC2;
+   }
+   if ( data & 0x10 )
+   {
+      crc ^= 0x9D;
+   }
+   if ( data & 0x20 )
+   {
+      crc ^= 0x23;
+   }
+   if ( data & 0x40 )
+   {
+      crc ^= 0x46;
+   }
+   if ( data & 0x80 )
+   {
+      crc ^= 0x8C;
+   }
 }
 
 #endif
