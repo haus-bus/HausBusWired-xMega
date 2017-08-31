@@ -16,6 +16,7 @@ class HBWKey : public HBWChannel
          {
             PUSHBUTTON_MASK = 0x01,
             UNLOCKED_MASK = 0x02,
+            ACTIVE_LOW_MASK = 0x04,
          };
 
          uint8_tx options;
@@ -30,6 +31,10 @@ class HBWKey : public HBWChannel
             {
                return options & UNLOCKED_MASK;
             }
+            inline bool isActiveLow() const
+            {
+               return options & ACTIVE_LOW_MASK;
+            }
             inline uint8_t getLongPressTime() const
             {
                return long_press_time;
@@ -39,11 +44,9 @@ class HBWKey : public HBWChannel
             {
                long_press_time.update( time );
             }
-
-
       };
 
-      HBWKey( PortPin _pin, Config* _config, HBWChannel* _feedbackChannel = NULL, bool _inverted = false );
+      HBWKey( PortPin _pin, Config* _config, HBWChannel* _feedbackChannel = NULL );
 
       inline void setFeedbackChannel( HBWChannel* _feedbackChannel )
       {
@@ -52,6 +55,10 @@ class HBWKey : public HBWChannel
 
       virtual void loop( HBWDevice*, uint8_t channel );
       virtual void checkConfig();
+
+   protected:
+
+      void resetChannel();
 
    private:
       uint8_t keyPressNum;

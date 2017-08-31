@@ -80,6 +80,13 @@
 				</physical>
 				<conversion type="boolean_integer" invert="true"/>
 			</parameter>
+			<parameter id="ACTIVE_LOW">
+				<logical type="boolean" default="true"/>
+				<physical size="0.1" type="integer" interface="eeprom">
+					<address index="+0.2"/>
+				</physical>
+				<conversion type="boolean_integer"/>
+			</parameter>			
 			<parameter id="LONG_PRESS_TIME">
 				<logical type="float" unit="s" default="1.0" max="5.0" min="0.4"/>
 				<physical size="1.0" type="integer" interface="eeprom">
@@ -310,7 +317,9 @@
 		</paramset>
 		<paramset type="VALUES" id="hmw_temp_input_values">
 			<parameter id="TEMPERATURE" operations="read,event">
-				<logical type="float" min="-273.15" max="327.67" unit="&#x2103;"/>
+				<logical type="float" min="-273.15" max="327.67" unit="&#x2103;">
+				  <special_value id="NOT_USED" value="-273.15"/>
+				</logical>
 				<physical type="integer" interface="command" value_id="TEMPERATURE">
 					<get request="LEVEL_GET" response="TEMP_EVENT"/>
 					<event frame="TEMP_EVENT"/>

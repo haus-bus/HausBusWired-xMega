@@ -1,15 +1,12 @@
 #include "HBWKey.h"
 
 // Class HBWKey
-HBWKey::HBWKey( PortPin _pin, Config* _config, HBWChannel* _feedbackChannel, bool _inverted ) : digitalIn( _pin )
+HBWKey::HBWKey( PortPin _pin, Config* _config, HBWChannel* _feedbackChannel ) : digitalIn( _pin )
 {
    type = HBWChannel::HBW_KEY;
-   digitalIn.enablePullup();
-   digitalIn.setInverted( _inverted );
-   keyPressedMillis = 0;
-   keyPressNum = 0;
    config = _config;
    feedbackChannel = _feedbackChannel;
+   resetChannel();
 }
 
 
@@ -79,10 +76,27 @@ void HBWKey::loop( HBWDevice* device, uint8_t channel )
    }
 }
 
+void HBWKey::resetChannel()
+{
+   if ( config->isActiveLow() )
+   {
+      digitalIn.setInverted( false );
+      digitalIn.enablePullup();
+   }
+   else
+   {
+      digitalIn.setInverted( true );
+      digitalIn.enablePulldown();
+   }
+   keyPressedMillis = 0;
+   keyPressNum = 0;
+}
+
 void HBWKey::checkConfig()
 {
    if ( ( config->getLongPressTime() < 4 ) || ( config->getLongPressTime() > 50 ) )
    {
       config->setLongPressTime( 10 );
    }
+   resetChannel();
 }

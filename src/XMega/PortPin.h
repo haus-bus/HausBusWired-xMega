@@ -51,6 +51,11 @@ class PortPin
          getIoPort().setPinMode( pinNumber, PORT_OPC_PULLUP_gc );
       }
 
+      inline void enablePulldown()
+      {
+         getIoPort().setPinMode( pinNumber, PORT_OPC_PULLDOWN_gc );
+      }
+
       inline void setInverted( bool inverted );
 
       ////    Additional operations    ////

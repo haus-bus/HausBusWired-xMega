@@ -9,7 +9,7 @@
 #define HMW_DEVICETYPE 0xB1
 
 #define HARDWARE_VERSION 0x01
-#define FIRMWARE_VERSION 0x0105
+#define FIRMWARE_VERSION 0x0106
 
 
 #include <Time/SystemTime.h>
