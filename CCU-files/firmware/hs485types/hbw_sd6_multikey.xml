@@ -28,15 +28,6 @@
 			<address index="0x0006"/>
 		</physical>
 	</parameter>
-	<parameter id="LED_FEEDBACK">
-		<logical type="option">
-			<option id="OFF"/>
-			<option id="ON" default="true"/>
-		</logical>
-		<physical size="0.1" type="integer" interface="eeprom">
-			<address index="0x000A"/>			
-		</physical>
-	</parameter>	
 </paramset>
 
 <frames>
@@ -73,20 +64,38 @@
         </link_roles>
 
 		<paramset id="hmw_input_ch_master" type="MASTER" address_step="2" address_start="0x10">
+			<parameter id="INPUT_TYPE">
+				<logical type="option">
+					<option id="PUSHBUTTON" default="true"/>
+					<option id="SWITCH"/>
+				</logical>
+				<physical size="0.3" type="integer" interface="eeprom">
+					<address index="+0.0"/>
+				</physical>
+			</parameter>
 			<parameter id="INPUT_LOCKED">
 				<logical type="boolean" default="false"/>
 				<physical size="0.1" type="integer" interface="eeprom">
-					<address index="+0.1"/>
+					<address index="+0.3"/>
 				</physical>
 				<conversion type="boolean_integer" invert="true"/>
 			</parameter>
 			<parameter id="ACTIVE_LOW">
 				<logical type="boolean" default="true"/>
 				<physical size="0.1" type="integer" interface="eeprom">
-					<address index="+0.2"/>
+					<address index="+0.4"/>
 				</physical>
 				<conversion type="boolean_integer"/>
-			</parameter>			
+			</parameter>
+			<parameter id="LED_FEEDBACK">
+				<logical type="option">
+					<option id="OFF"/>
+					<option id="ON" default="true"/>
+				</logical>
+				<physical size="0.1" type="integer" interface="eeprom">
+					<address index="+0.7"/>			
+				</physical>
+			</parameter>				
 			<parameter id="LONG_PRESS_TIME">
 				<logical type="float" unit="s" default="1.0" max="5.0" min="0.4"/>
 				<physical size="1.0" type="integer" interface="eeprom">
@@ -155,6 +164,10 @@
 		</paramset>
 		
 		<paramset id="hmw_switch_ch_link" type="LINK" count="40" address_start="0x160" address_step="16" peer_param="SENSOR" channel_param="CHANNEL">
+			<parameter id="UI_HINT">
+				<logical type="string" default="" use_default_on_failure="true"/>
+				<physical id="UI_HINT" type="string" interface="store" save_on_change="true"/>
+			</parameter>		
             <parameter id="SENSOR" hidden="true" operations="none">
                 <logical type="address"/>
                 <physical type="array">
