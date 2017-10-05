@@ -13,6 +13,8 @@
 
 const uint8_t HmwMessage::debugLevel( DEBUG_LEVEL_LOW );
 
+uint32_t HmwMessage::ownAddress( 0 );
+
 // default constructor
 HmwMessage::HmwMessage()
 {
@@ -23,8 +25,11 @@ void HmwMessage::changeIntoACK()
 {
    if ( isInfo() )
    {
-      controlByte.ack.receiverNum = controlByte.info.senderNum;
+      targetAddress = senderAddress;
+      senderAddress = ownAddress;
+      uint8_t senderNum = controlByte.info.senderNum;
       controlByte = 0x19;
+      controlByte.ack.receiverNum = senderNum;
       frameDataLength = 0;
    }
 }
@@ -127,7 +132,7 @@ bool HmwMessage::nextByteReceived( uint8_t data )
 
 bool HmwMessage::getNextByteToSend( uint8_t& data )
 {
-   volatile uint8_t* dataPointer = &addressPointer;
+   uint8_t* dataIdx = &addressPointer;
    bool updateChecksum = true;
    if ( addressPointer == 0 )
    {
@@ -135,39 +140,44 @@ bool HmwMessage::getNextByteToSend( uint8_t& data )
       crc16checksum = 0xFFFF;
       data = FRAME_STARTBYTE;
       crc16Shift( data, crc16checksum );
-      DEBUG_M3( FSTR( "T: " ), data, ':' );
+      DEBUG_M3( FSTR( "T: " ), data, '|' );
       addressPointer++;
       return true;
    }
-   else if ( addressPointer < ( sizeof( FRAME_STARTBYTE ) + sizeof( targetAddress ) ) )
+   else if ( addressPointer <= sizeof( targetAddress ) )
    {
       uint8_t* pTargetAddress = (uint8_t*)&targetAddress;
       data = pTargetAddress[ sizeof( targetAddress ) - addressPointer];
    }
-   else if ( addressPointer == ( sizeof( FRAME_STARTBYTE ) + sizeof( targetAddress ) ) )
+   else if ( addressPointer == ( sizeof( targetAddress ) + 1 ) )
    {
       data = controlByte.get();
    }
-   else if ( controlByte.hasSenderAddress() && ( addressPointer < ( sizeof( FRAME_STARTBYTE ) + sizeof( targetAddress ) + sizeof( controlByte ) + sizeof( senderAddress ) ) ) )
+   else if ( controlByte.hasSenderAddress() && ( addressPointer <= ( sizeof( targetAddress ) + sizeof( controlByte ) + sizeof( senderAddress ) ) ) )
    {
       uint8_t* pSenderAddress = (uint8_t*)&senderAddress;
       data = pSenderAddress[ sizeof( targetAddress ) + sizeof( controlByte ) + sizeof( senderAddress ) - addressPointer];
    }
-   else if ( ( controlByte.hasSenderAddress() && ( addressPointer == ( sizeof( FRAME_STARTBYTE ) + sizeof( targetAddress ) + sizeof( controlByte ) + sizeof( senderAddress ) ) ) )
-           || ( !controlByte.hasSenderAddress() && ( addressPointer == ( sizeof( FRAME_STARTBYTE ) + sizeof( targetAddress ) + sizeof( controlByte ) ) ) ) )
+   else if ( ( controlByte.hasSenderAddress() && ( addressPointer == ( 1 + sizeof( targetAddress ) + sizeof( controlByte ) + sizeof( senderAddress ) ) ) )
+           || ( !controlByte.hasSenderAddress() && ( addressPointer == ( 1 + sizeof( targetAddress ) + sizeof( controlByte ) ) ) ) )
    {
       data = frameDataLength + 2;   // data + 2 bytes checksum
    }
    else
    {
       // sending data now
-      dataPointer = &framePointer;
+      dataIdx = &framePointer;
       if ( framePointer < frameDataLength )
       {
          data = frameData[framePointer];
       }
       else if ( framePointer < ( frameDataLength + sizeof( crc16checksum ) ) )
       {
+         if ( framePointer == frameDataLength )
+         {
+            crc16Shift( 0, crc16checksum );
+            crc16Shift( 0, crc16checksum );
+         }
          uint8_t* pChecksum = (uint8_t*)&crc16checksum;
          data = pChecksum[ 1 + frameDataLength - framePointer];
          updateChecksum = false;
@@ -180,7 +190,7 @@ bool HmwMessage::getNextByteToSend( uint8_t& data )
 
    if ( !pendingEscape )
    {
-      DEBUG_L2( data, ':' );
+      DEBUG_L2( data, '|' );
       if ( updateChecksum )
       {
          crc16Shift( data, crc16checksum );
@@ -192,14 +202,14 @@ bool HmwMessage::getNextByteToSend( uint8_t& data )
       }
       else
       {
-         *dataPointer++;
+         ( *dataIdx )++;
       }
    }
    else
    {
       data &= 0x7F;
       pendingEscape = false;
-      *dataPointer++;
+      ( *dataIdx )++;
    }
    return true;
 }
@@ -219,14 +229,14 @@ void HmwMessage::crc16Shift( uint8_t newByte, uint16_t& crc )
       {
          stat = 0;
       }
-      crc = ( crc << 1 );
+      crc <<= 1;
       if ( newByte & 0x80 )
       {
-         crc = ( crc | 1 );
+         crc |= 1;
       }
       if ( stat )
       {
-         crc = ( crc ^ CRC16_POLYNOM );
+         crc ^= CRC16_POLYNOM;
       }
       newByte = newByte << 1;
    }

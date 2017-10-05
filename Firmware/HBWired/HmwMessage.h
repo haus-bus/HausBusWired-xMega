@@ -10,11 +10,14 @@
 #define __HMWMESSAGE_H__
 
 #include <Time/Timestamp.h>
+#include <stdio.h>
 
 class HmwMessage
 {
 // variables
    public:
+      static uint32_t ownAddress;
+
       enum Consts
       {
          FRAME_STARTBYTE = 0xFD,
@@ -67,27 +70,27 @@ class HmwMessage
          uint8_t controlByte;
          struct Info
          {
-            uint8_t sync : 1;
-            uint8_t receiverNum : 2;
-            uint8_t isLastPaket : 1;
-            uint8_t hasSenderAddr : 1;
-            uint8_t senderNum : 2;
             uint8_t infoID : 1; // should be always 0
+            uint8_t senderNum : 2;
+            uint8_t hasSenderAddr : 1;
+            uint8_t isLastPaket : 1;
+            uint8_t receiverNum : 2;
+            uint8_t sync : 1;
          } info;
 
          struct Ack
          {
-            uint8_t alwaysZero : 1;
-            uint8_t receiverNum : 2;
-            uint8_t isLastPaket : 1;
-            uint8_t hasSenderAddr : 1;
             uint8_t ackID : 3; // should be always 1
+            uint8_t hasSenderAddr : 1;
+            uint8_t isLastPaket : 1;
+            uint8_t receiverNum : 2;
+            uint8_t alwaysZero : 1;
          } ack;
 
          struct Discovery
          {
-            uint8_t addressMask : 5;
             uint8_t discoveryID : 3; // should be always 3
+            uint8_t addressMask : 5;
          } discovery;
 
          inline bool isInfo()
@@ -149,9 +152,9 @@ class HmwMessage
 
       void changeIntoACK();
 
-      inline bool isForMe( uint32_t address )
+      inline bool isForMe()
       {
-         return frameComplete && ( ( targetAddress == address ) || isBroadcast() );
+         return frameComplete && ( ( targetAddress == ownAddress ) || isBroadcast() );
       }
 
       inline Command getCommand()
@@ -188,6 +191,41 @@ class HmwMessage
       {
          addressPointer = 0;
          framePointer = 0;
+      }
+
+      inline void setupAnnounce( uint32_t targetAddr, uint8_t channel, uint8_t deviceType, uint8_t hwVersion, uint16_t fwVersion )
+      {
+         senderAddress = ownAddress;
+         targetAddress = targetAddr;
+         controlByte = 0xF8;
+         frameData[0] = ANNOUNCE;
+         frameData[1] = channel;
+         frameData[2] = deviceType;
+         frameData[3] = hwVersion;
+         frameData[4] = fwVersion / 0x100;
+         frameData[5] = fwVersion & 0xFF;
+         convertToHmwSerialString( ownAddress, &frameData[6] );
+         frameDataLength = 16;
+      }
+
+      inline void convertToHmwSerialString( uint32_t address, uint8_t* buffer )
+      {
+         buffer[0] = 'H';
+         buffer[1] = 'B';
+         buffer[2] = 'W';
+
+         for ( uint8_t i = 9; i > 2; i-- )
+         {
+            if ( address )
+            {
+               buffer[i] = '0' + ( address % 10 );
+            }
+            else
+            {
+               buffer[i] = '0';
+            }
+            address /= 10;
+         }
       }
 
    protected:
