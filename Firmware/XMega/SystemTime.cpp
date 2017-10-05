@@ -10,17 +10,29 @@
 #include "Peripherals/Oscillator.h"
 #include "Peripherals/RealTimeCounter.h"
 
-#include <Time/Calender.h>
 #include <Time/SystemTime.h>
 
-uint16_t SystemTime::ticks( 0 );
+#ifdef SUPPORT_CALENDAR
 
-void SystemTime::init( ClockSources cs, uint16_t frequency )
+#include <Time/Calender.h>
+
+SIGNAL(RTC_COMP_vect)
+{
+   RealTimeCounter::setCompareValue(RealTimeCounter::getCompareValue() + 1024);
+   Calender::now.addSecond();
+   PORTR.OUTTGL = 1;
+}
+
+#endif
+
+uint16_t SystemTime::ticks(0);
+
+void SystemTime::init(ClockSources cs,uint16_t frequency)
 {
    CLK_RTCSRC_t rtcSource;
    RTC_PRESCALER_t prescaler;
 
-   RealTimeCounter::setPrescaler( RTC_PRESCALER_OFF_gc );
+   RealTimeCounter::setPrescaler(RTC_PRESCALER_OFF_gc);
    Clock::disableRTCClockSource();
 
    if ( ( cs == RTCSRC_EXTCLK ) && ( frequency == 8192 ) )
@@ -35,11 +47,12 @@ void SystemTime::init( ClockSources cs, uint16_t frequency )
       prescaler = RTC_PRESCALER_DIV1_gc;
    }
 
-   Clock::enableRTCClockSource( rtcSource );
-   RealTimeCounter::init( 0xFFFF, RealTimeCounter::getCount(), RealTimeCounter::getCount() + 1024, prescaler );
+   Clock::enableRTCClockSource(rtcSource);
+   RealTimeCounter::init(0xFFFF,RealTimeCounter::getCount(),RealTimeCounter::getCount() + 1024,prescaler);
+#ifdef SUPPORT_CALENDAR
    RealTimeCounter::clearCompareFlag();
-   RealTimeCounter::setCompareIntLevel( RTC_COMPINTLVL_HI_gc );
-
+   RealTimeCounter::setCompareIntLevel(RTC_COMPINTLVL_HI_gc);
+#endif
 }
 
 SystemTime::time_t SystemTime::now()
@@ -62,9 +75,9 @@ SystemTime::time_t SystemTime::now()
    return actualTime.dword;
 }
 
-SystemTime::time_t SystemTime::since( const SystemTime::time_t& lastTime )
+SystemTime::time_t SystemTime::since(const SystemTime::time_t& lastTime)
 {
-   time_t elapsedTime, timestamp = now();
+   time_t elapsedTime,timestamp = now();
 
    // was there an overun
    if ( lastTime > timestamp )
@@ -87,27 +100,20 @@ SystemTime::time_t SystemTime::since( const SystemTime::time_t& lastTime )
    return elapsedTime;
 }
 
-void SystemTime::waitMs( uint16_t ms )
+void SystemTime::waitMs(uint16_t ms)
 {
    time_t timestamp = now();
-   while ( since( timestamp ) < ms )
+   while ( since(timestamp) < ms )
    {
    }
 }
 
-void SystemTime::set( SystemTime::time_t value )
+void SystemTime::set(SystemTime::time_t value)
 {
    RTC_PRESCALER_t presc = RealTimeCounter::getPrescaler();
-   RealTimeCounter::setPrescaler( RTC_PRESCALER_OFF_gc );
-   RealTimeCounter::setCount( value );
+   RealTimeCounter::setPrescaler(RTC_PRESCALER_OFF_gc);
+   RealTimeCounter::setCount(value);
    ticks = value >> 16;
-   RealTimeCounter::setPrescaler( presc );
-}
-
-SIGNAL(RTC_COMP_vect)
-{
-   RealTimeCounter::setCompareValue(RealTimeCounter::getCompareValue() + 1024);
-   Calender::now.addSecond();
-   PORTR.OUTTGL = 1;
+   RealTimeCounter::setPrescaler(presc);
 }
 

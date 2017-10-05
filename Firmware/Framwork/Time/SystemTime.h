@@ -9,6 +9,7 @@
 #define SystemTime_H
 
 #include <stdint.h>
+#include "Time.h"
 
 class SystemTime
 {
