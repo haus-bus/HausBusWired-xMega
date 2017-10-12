@@ -141,12 +141,13 @@
   </avrgcccpp.linker.libraries.Libraries>
   <avrgcccpp.linker.memorysettings.Flash>
     <ListValues>
-      <Value>.BOOT=0x47DE</Value>
+      <Value>.BOOT=0x47DC</Value>
       <Value>.text=0x4000</Value>
     </ListValues>
   </avrgcccpp.linker.memorysettings.Flash>
 </AvrGccCpp>
     </ToolchainSettings>
+    <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .BOOT -j .data -O binary  $(OutputFileName).elf  $(OutputFileName).bin  &amp;&amp; "$(SolutionDir)tools\modid" $(OutputFileName).bin "$(SolutionDir)Binaries\HMW-SD6-Booter"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>
@@ -211,12 +212,13 @@
   </avrgcccpp.linker.libraries.Libraries>
   <avrgcccpp.linker.memorysettings.Flash>
     <ListValues>
-      <Value>.BOOT=0x47DE</Value>
+      <Value>.BOOT=0x47DC</Value>
     </ListValues>
   </avrgcccpp.linker.memorysettings.Flash>
   <avrgcccpp.assembler.debugging.DebugLevel>Default (-Wa,-g)</avrgcccpp.assembler.debugging.DebugLevel>
 </AvrGccCpp>
     </ToolchainSettings>
+    <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .boot -j .data -O binary  $(OutputFileName).elf  $(OutputFileName).bin</PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Booter\" />
@@ -231,9 +233,6 @@
     <Folder Include="XMega\Peripherals\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Booter\Booter.cpp">
-      <SubType>compile</SubType>
-    </None>
     <Compile Include="Booter\Booter.h">
       <SubType>compile</SubType>
     </Compile>
