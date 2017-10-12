@@ -5,45 +5,134 @@
  *  Author: Viktor Pankraz
  */
 
-
-#define HMW_DEVICETYPE 0xB1
-
-#define HARDWARE_VERSION 0x01
-#define FIRMWARE_VERSION 0x0101
-
 #include "HBW-SD6-Booter.h"
-#include "HBWired/HBWired.h"
 
 #include <Peripherals/InterruptController.h>
 #include <Peripherals/WatchDog.h>
 #include <Peripherals/Oscillator.h>
 #include <Peripherals/Clock.h>
 #include <Peripherals/Flash.h>
+#include <DigitalOutput.h>
+#include <Release.h>
 
 #include <Time/SystemTime.h>
-#include <Elements/SerialStream.h>
 #include <HBWired/HmwMessage.h>
+#include <Elements/SerialStream.h>
 
 
 const ModuleId moduleId =
 {
-   "$MOD$ HBW-SD6-B",
+   "$MOD$ HmwBooter",
    0,
-   FIRMWARE_VERSION >> 8,
-   FIRMWARE_VERSION & 0xFF,
-   HMW_DEVICETYPE,
+   Release::MAJOR,
+   Release::MINOR,
+   Release::HMW_SD6_ID,
    0
 };
 
-static HBWDevice::BasicConfig& config = *reinterpret_cast<HBWDevice::BasicConfig*>( MAPPED_EEPROM_START );
+static const uint8_t debugLevel( DEBUG_LEVEL_LOW );
+
+#define getId() FSTR( "BOOTER" )
+
+static Timestamp lastReceivedTime( 0 );
+
+static bool isFirmwareValid = false;
+static bool startFirmware = false;
 
 #ifdef DEBUG
-void putc( char c )
+void putChar( char c )
 {
    Usart::instance<PortC, 1>().write( c );
 }
 #endif
 
+bool isBusIdle()
+{
+   return lastReceivedTime.since() > ( 100 + ( HmwDevice::ownAddress& 0x7F ) );
+}
+
+Usart& getRs485Stream()
+{
+   static DigitalInput rx( PortE, 2 );
+   static DigitalOutput tx( PortE, 3 );
+   return Usart::instance<PortE, 0>();
+}
+
+Stream::Status sendMessage( HmwMessage& msg )
+{
+   static DigitalOutput txEnable( PortE, 1 );
+
+   uint8_t data;
+   Stream::Status status = Stream::SUCCESS;
+
+   msg.prepareToSend();
+   txEnable.set();
+   while ( msg.getNextByteToSend( data ) )
+   {
+      if ( !getRs485Stream().write( data ) )
+      {
+         status = Stream::ABORTED;
+      }
+   }
+   getRs485Stream().waitUntilTransferCompleted();
+   txEnable.clear();
+   return status;
+}
+
+void handleAnnouncement()
+{
+   static bool announced = false;
+   if ( !announced && ( SystemTime::now() > 500 ) && isBusIdle() )
+   {
+      HmwMessage msg;
+      msg.setupAnnounce( 0 );
+      announced = sendMessage( msg ) == Stream::SUCCESS;
+   }
+}
+
+void checkFirmware()
+{
+   DEBUG_H1( FSTR( ".checkFirmware()" ) );
+
+   ModuleId installedMod;
+
+   if ( Flash::read( _VECTORS_SIZE, &installedMod, sizeof( ModuleId ) ) != sizeof( ModuleId ) )
+   {
+      ERROR_1( FSTR( "Flash::read() failed" ) );
+      return;
+   }
+
+   if ( moduleId.getFirmwareId() == installedMod.getFirmwareId() )
+   {
+      uint32_t fCrc;
+      uint32_t cCrc = Flash::getRangeCRC( 0, installedMod.getSize() - 1 );
+      Flash::read( installedMod.getSize(), &fCrc, sizeof( fCrc ) );
+
+      DEBUG_M2( FSTR( "name:    " ), installedMod.name );
+      DEBUG_M2( FSTR( "size:    0x" ), installedMod.size );
+      DEBUG_M4( FSTR( "release: " ), installedMod.majorRelease, '.', installedMod.minorRelease );
+      DEBUG_M2( FSTR( "cCRC:    0x" ), cCrc );
+      DEBUG_M2( FSTR( "fCRC:    0x" ), fCrc );
+
+      if ( ( fCrc == cCrc ) && ( Release::MAJOR == installedMod.majorRelease ) )
+      {
+         isFirmwareValid = true;
+         startFirmware = true;
+         return;
+      }
+   }
+   ERROR_1( FSTR( "invalid" ) );
+}
+
+void startApplication()
+{
+     #ifdef EIND
+   EIND = 0;
+     #endif
+
+   void ( *start )( void ) = NULL;
+   start();
+}
 
 int main( void )
 {
@@ -51,59 +140,53 @@ int main( void )
    Eeprom::MemoryMapped::enable();
 
    // Initialize interfaces
-   SerialStream rs485Stream( &Usart::instance<PortE, 0>(), PortPin( PortE, 2 ), PortPin( PortE, 3 ) );
-   rs485Stream.init<19200, USART_CMODE_ASYNCHRONOUS_gc, USART_PMODE_EVEN_gc, USART_CHSIZE_8BIT_gc, true, false>();
+   DigitalOutput rxEnable( PortE, 0 ), txEnable( PortE, 1 );
+   getRs485Stream().init<19200, USART_CMODE_ASYNCHRONOUS_gc, USART_PMODE_EVEN_gc, USART_CHSIZE_8BIT_gc, true, false>();
 
-    #ifdef DEBUG
-   SerialStream debugStream( &Usart::instance<PortC, 1>(), PortPin( PortC, 6 ), PortPin( PortC, 7 ) );
-   debugStream.init<115200>();
-   Logger::instance().setStream( putc );
-    #endif
-
+#ifdef DEBUG
+   DigitalInput rx( PortC, 6 );
+   DigitalOutput tx( PortC, 7 );
+   Usart::instance<PortC, 1>().init<115200>();
+   Logger::instance().setStream( putChar );
+#endif
 
    // Authorize interrupts
-   InterruptController::enableAllInterruptLevel();
-   GlobalInterrupt::enable();
+   // InterruptController::enableAllInterruptLevel();
+   // GlobalInterrupt::enable();
+   HmwDevice::deviceType = Release::HMW_SD6_ID;
+   HmwDevice::firmwareVersion = ( ( Release::MAJOR << 8 ) | Release::MINOR );
+   HmwDevice::hardwareVersion = Release::REV_0;
+   HmwDevice::basicConfig = reinterpret_cast<HmwDevice::BasicConfig*>( MAPPED_EEPROM_START );
 
-   HmwMessage receivedMessage, sentMessage;
-   Timestamp lastReceivedTime = Timestamp();
+   checkFirmware();
+
+   HmwMessage inMessage;
    uint8_t data;
    while ( 1 )
    {
-      if ( rs485Stream.available() && ( rs485Stream.read( data ) == Stream::SUCCESS ) )
+      if ( getRs485Stream().isReceiveCompleted() )
       {
          lastReceivedTime = Timestamp();
-         if ( receivedMessage.nextByteReceived( data ) )
+         if ( getRs485Stream().read( data ) )
          {
-            if ( receivedMessage.isForMe( changeEndianness( config.ownAdress ) ) && !receivedMessage.isDiscovery() )
+            if ( inMessage.nextByteReceived( data ) )
             {
-               if ( receivedMessage.isCommand( HmwMessage::GET_FW_VERSION ) )
+               if ( inMessage.isForMe() && !inMessage.isDiscovery() )
                {
-                  receivedMessage.prepareToSend();
-                  while ( receivedMessage.getNextByteToSend( data ) )
+                  if ( inMessage.generateResponse() )
                   {
-                     if ( rs485Stream.write( data ) != Stream::SUCCESS )
-                     {
-                        break;
-                     }
-                  }
-               }
-               else if ( !receivedMessage.isBroadcast() )
-               {
-                  receivedMessage.changeIntoACK();
-                  receivedMessage.prepareToSend();
-                  while ( receivedMessage.getNextByteToSend( data ) )
-                  {
-                     if ( rs485Stream.write( data ) != Stream::SUCCESS )
-                     {
-                        break;
-                     }
+                     sendMessage( inMessage );
                   }
                }
             }
          }
       }
+      handleAnnouncement();
       WatchDog::reset();
+      if ( startFirmware )
+      {
+         startApplication();
+      }
    }
    return 0;
 }
@@ -113,16 +196,18 @@ static void
 __attribute__( ( section( ".init3" ), naked, used ) )
 lowLevelInit( void )
 {
-        #ifdef EIND
+#ifdef EIND
    __asm volatile ( "ldi r24,pm_hh8(__trampolines_start)\n\t"
                     "out %i0,r24" ::"n" ( &EIND ) : "r24", "memory" );
-        #endif
-        #ifdef DEBUG
+#endif
+
+#ifdef DEBUG
    WatchDog::disable();
-        #else
+ #else
    WatchDog::enable( WatchDog::_4S );
-        #endif
    InterruptController::selectBootInterruptSection();
+#endif
+
 
    Clock::configPrescalers( CLK_PSADIV_1_gc, CLK_PSBCDIV_1_1_gc );
 

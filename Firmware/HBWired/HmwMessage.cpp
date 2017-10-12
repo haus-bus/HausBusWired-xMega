@@ -7,13 +7,16 @@
 
 
 #include "HmwMessage.h"
+#include "HmwDevice.h"
 
+#include <Peripherals/Flash.h>
 #include <SwFramework.h>
 #include <string.h>
 
 const uint8_t HmwMessage::debugLevel( DEBUG_LEVEL_LOW );
 
-uint32_t HmwMessage::ownAddress( 0 );
+uint8_t HmwMessage::senderNum( 0 );
+uint8_t HmwMessage::receiverNum( 0 );
 
 // default constructor
 HmwMessage::HmwMessage()
@@ -21,17 +24,132 @@ HmwMessage::HmwMessage()
    memset( this, 0, sizeof( *this ) );
 }
 
+bool HmwMessage::generateResponse()
+{
+   if ( !isInfo() )
+   {
+      return false;
+   }
+
+   bool isValid = true;
+   uint8_t msgSenderNum = controlByte.info.senderNum;
+
+   // if sync bit is set, reset the static senderNum
+   if ( controlByte.info.sync )
+   {
+      senderNum = 0;
+      receiverNum = controlByte.info.senderNum;
+   }
+
+   if ( isCommand( GET_FW_VERSION ) )
+   {
+      DEBUG_M1( FSTR( "C: get FW version" ) );
+      DEBUG_M1( FSTR( "E: get FW version" ) );
+      isValid = false;
+   }
+   else if ( isCommand( GET_HARDWARE_VERSION ) )
+   {
+      DEBUG_M1( FSTR( "T: HWVer,Typ" ) );
+      frameData[0] = HmwDevice::deviceType;
+      frameData[1] = HmwDevice::hardwareVersion;
+      frameDataLength = 2;
+      controlByte = 0x18;
+   }
+   else if ( isCommand( READ_EEPROM ) )
+   {
+      DEBUG_M1( FSTR( "C: Read EEPROM" ) );
+      if ( frameDataLength == 4 )    // Length of incoming data must be 4
+      {
+         uint16_t address = ( frameData[1] << 8 ) | frameData[2];
+         uint8_t length = frameData[3];
+         memcpy( frameData, (void*)( MAPPED_EEPROM_START | address ), length );
+         frameDataLength = length;
+         controlByte = 0x18;
+      }
+      else
+      {
+         DEBUG_M2( FSTR( "E: wrong data length :" ), frameDataLength );
+         isValid = false;
+      }
+
+   }
+   else if ( isCommand( WRITE_FLASH ) )
+   {
+      DEBUG_M1( FSTR( "C: Write Flash" ) );
+      if ( frameDataLength > 6 )
+      {
+         static uint8_t buffer[ APP_SECTION_PAGE_SIZE ];
+         Flash::address_t address = ( frameData[3] << 8 ) | frameData[4];
+         uint8_t length = frameData[5];
+         memcpy( &buffer[address & ( Flash::getPageSize() - 1 )], &frameData[6], length );
+
+         if ( ( address + length ) % Flash::getPageSize() )
+         {
+            // read more bytes
+            changeIntoACK();
+         }
+         else if ( Flash::write( address & ~( Flash::getPageSize() - 1 ), buffer, Flash::getPageSize() ) == Flash::getPageSize() )
+         {
+            changeIntoACK();
+         }
+         else
+         {
+            DEBUG_M2( FSTR( "E: Flash::write failed:" ), frameDataLength );
+            isValid = false;
+         }
+      }
+      else
+      {
+         DEBUG_M2( FSTR( "E: wrong data length :" ), frameDataLength );
+         isValid = false;
+      }
+
+   }
+   else
+   {
+      return false;
+   }
+
+   if ( isValid )
+   {
+      targetAddress = senderAddress;
+      senderAddress = HmwDevice::ownAddress;
+      controlByte.info.receiverNum = msgSenderNum;
+      if ( isInfo() )
+      {
+         controlByte.info.senderNum = senderNum;
+      }
+   }
+   return isValid;
+}
+
 void HmwMessage::changeIntoACK()
 {
    if ( isInfo() )
    {
-      targetAddress = senderAddress;
-      senderAddress = ownAddress;
-      uint8_t senderNum = controlByte.info.senderNum;
       controlByte = 0x19;
-      controlByte.ack.receiverNum = senderNum;
       frameDataLength = 0;
    }
+}
+
+bool HmwMessage::isForMe()
+{
+   return status.frameValid && ( ( targetAddress == HmwDevice::ownAddress ) || isBroadcast() );
+}
+
+void HmwMessage::setupAnnounce( uint8_t channel )
+{
+   senderAddress = HmwDevice::ownAddress;
+   targetAddress = 0xFFFFFFFF;
+   controlByte = 0xF8;
+   frameData[0] = ANNOUNCE;
+   frameData[1] = channel;
+   frameData[2] = HmwDevice::deviceType;
+   frameData[3] = HmwDevice::hardwareVersion;
+   frameData[4] = HmwDevice::firmwareVersion / 0x100;
+   frameData[5] = HmwDevice::firmwareVersion& 0xFF;
+   convertToHmwSerialString( HmwDevice::ownAddress, &frameData[6] );
+   frameDataLength = 16;
 }
 
 bool HmwMessage::nextByteReceived( uint8_t data )
@@ -49,82 +167,71 @@ bool HmwMessage::nextByteReceived( uint8_t data )
 
    if ( data == ESCAPE_BYTE )
    {
-      if ( pendingEscape )
+      if ( status.pendingEscape )
       {
          // TODO: Wenn frameEscape gesetzt ist, dann sind das zwei Escapes hintereinander
          // Das ist eigentlich ein Fehler -> Fehlerbehandlung
       }
-      pendingEscape = true;
+      status.pendingEscape = true;
    }
    else
    {
       if ( data == FRAME_STARTBYTE )   // Startzeichen empfangen
       {
-         frameStart = true;
-         pendingEscape = false;
-         frameComplete = false;
-         framePointer = 0;
-         addressPointer = 0;
-         senderAddress = 0;
-         targetAddress = 0;
+         status.receiving = true;
+         status.pendingEscape = false;
+         status.frameValid = false;
+         status.dataIdx = 0;
+         frameDataLength = 0;
          crc16checksum = 0xFFFF;
          crc16Shift( data, crc16checksum );
       }
-      else if ( frameStart )   // Startbyte wurde gefunden und Frame wird nicht ignoriert
+      else if ( status.receiving )   // Startbyte wurde gefunden und Frame wird nicht ignoriert
       {
-         if ( pendingEscape )
+         if ( status.pendingEscape )
          {
             data |= 0x80;
-            pendingEscape = false;
+            status.pendingEscape = false;
          }
          crc16Shift( data, crc16checksum );
-         if ( addressPointer < ADDRESS_LENGTH )    // Adressbyte Zieladresse empfangen
+         uint8_t* pData = (uint8_t*)&targetAddress;
+         pData[status.dataIdx] = data;
+
+         if ( status.dataIdx == sizeof( targetAddress ) )
          {
-            targetAddress <<= 8;
-            targetAddress |= data;
-            addressPointer++;
-         }
-         else if ( addressPointer == ADDRESS_LENGTH )    // Controlbyte empfangen
-         {
-            addressPointer++;
-            controlByte = data;
-         }
-         else if ( controlByte.hasSenderAddress() && addressPointer < ADDRESS_LENGTH_LONG )
-         {
-            // Adressbyte Sender empfangen wenn CTRL_HAS_SENDER und FRAME_START_LONG
-            senderAddress <<= 8;
-            senderAddress |= data;
-            addressPointer++;
-         }
-         else if ( addressPointer != 0xFF )    // Datenlänge empfangen
-         {
-            addressPointer = 0xFF;
-            frameDataLength = data;
-            if ( frameDataLength > MAX_FRAME_LENGTH )     // Maximale Puffergöße checken.
+            // controlByte was read
+            if ( !controlByte.hasSenderAddress() )
             {
-               frameStart = false;
+               status.dataIdx += sizeof( senderAddress );
+            }
+         }
+         else if ( status.dataIdx == ( sizeof( targetAddress ) + sizeof( controlByte ) + sizeof( senderAddress ) ) )
+         {
+            // frameDataLength was read
+            if ( frameDataLength > MAX_FRAME_LENGTH )       // Maximale Puffergöße checken
+            {
+               status.receiving = false;
                DEBUG_M1( FSTR( "E: MsgTooLong" ) );
             }
          }
-         else                     // Daten empfangen
+         else if ( status.dataIdx == ( sizeof( targetAddress ) + sizeof( controlByte ) + sizeof( senderAddress ) + frameDataLength ) )
          {
-            frameData[framePointer] = data;     // Daten in Puffer speichern
-            framePointer++;
-            if ( framePointer == frameDataLength )     // Daten komplett
+            // Daten komplett
+            if ( crc16checksum == 0 )      //
             {
-               if ( crc16checksum == 0 )      //
-               {
-                  frameStart = false;
-                  frameDataLength -= 2;
-                  frameComplete = true;
-                  return true;
-               }
-               else
-               {
-                  DEBUG_M1( FSTR( "E: CRC" ) );
-               }
+               targetAddress = changeEndianness( targetAddress );
+               senderAddress = changeEndianness( senderAddress );
+               frameDataLength -= 2;
+               status.receiving = false;
+               status.frameValid = true;
+               return true;
+            }
+            else
+            {
+               DEBUG_M1( FSTR( "E: CRC" ) );
             }
          }
+         status.dataIdx++;
       }
    }
    return false;
@@ -132,86 +239,70 @@ bool HmwMessage::nextByteReceived( uint8_t data )
 
 bool HmwMessage::getNextByteToSend( uint8_t& data )
 {
-   uint8_t* dataIdx = &addressPointer;
    bool updateChecksum = true;
-   if ( addressPointer == 0 )
+   if ( ( status.dataIdx == 0 ) && !status.sending )
    {
-      framePointer = 0;
+      status.sending = true;
       crc16checksum = 0xFFFF;
       data = FRAME_STARTBYTE;
       crc16Shift( data, crc16checksum );
       DEBUG_M3( FSTR( "T: " ), data, '|' );
-      addressPointer++;
       return true;
    }
-   else if ( addressPointer <= sizeof( targetAddress ) )
+   else if ( status.sending )
    {
-      uint8_t* pTargetAddress = (uint8_t*)&targetAddress;
-      data = pTargetAddress[ sizeof( targetAddress ) - addressPointer];
-   }
-   else if ( addressPointer == ( sizeof( targetAddress ) + 1 ) )
-   {
-      data = controlByte.get();
-   }
-   else if ( controlByte.hasSenderAddress() && ( addressPointer <= ( sizeof( targetAddress ) + sizeof( controlByte ) + sizeof( senderAddress ) ) ) )
-   {
-      uint8_t* pSenderAddress = (uint8_t*)&senderAddress;
-      data = pSenderAddress[ sizeof( targetAddress ) + sizeof( controlByte ) + sizeof( senderAddress ) - addressPointer];
-   }
-   else if ( ( controlByte.hasSenderAddress() && ( addressPointer == ( 1 + sizeof( targetAddress ) + sizeof( controlByte ) + sizeof( senderAddress ) ) ) )
-           || ( !controlByte.hasSenderAddress() && ( addressPointer == ( 1 + sizeof( targetAddress ) + sizeof( controlByte ) ) ) ) )
-   {
-      data = frameDataLength + 2;   // data + 2 bytes checksum
-   }
-   else
-   {
-      // sending data now
-      dataIdx = &framePointer;
-      if ( framePointer < frameDataLength )
+      uint8_t* pData = (uint8_t*)&targetAddress;
+      data = pData[status.dataIdx];
+
+      if ( status.dataIdx == sizeof( targetAddress ) )
       {
-         data = frameData[framePointer];
-      }
-      else if ( framePointer < ( frameDataLength + sizeof( crc16checksum ) ) )
-      {
-         if ( framePointer == frameDataLength )
+         // controlByte was sent
+         if ( !controlByte.hasSenderAddress() )
          {
-            crc16Shift( 0, crc16checksum );
-            crc16Shift( 0, crc16checksum );
+            status.dataIdx += sizeof( senderAddress );
          }
-         uint8_t* pChecksum = (uint8_t*)&crc16checksum;
-         data = pChecksum[ 1 + frameDataLength - framePointer];
-         updateChecksum = false;
       }
-      else
+      else if ( status.dataIdx == ( sizeof( targetAddress ) + sizeof( controlByte ) + sizeof( senderAddress ) + frameDataLength - sizeof( crc16checksum ) ) )
       {
+         // last data byte was sent, calculate crc
+         crc16Shift( 0, crc16checksum );
+         crc16Shift( 0, crc16checksum );
+         pData[status.dataIdx + 1] = HBYTE( crc16checksum );
+         pData[status.dataIdx + 2] = LBYTE( crc16checksum );
+      }
+      else if ( status.dataIdx > ( sizeof( targetAddress ) + sizeof( controlByte ) + sizeof( senderAddress ) + frameDataLength ) )
+      {
+         // sending complete, no data available
          return false;
       }
-   }
 
-   if ( !pendingEscape )
-   {
-      DEBUG_L2( data, '|' );
-      if ( updateChecksum )
+      if ( !status.pendingEscape )
       {
-         crc16Shift( data, crc16checksum );
-      }
-      if ( ( data == FRAME_STARTBYTE ) || ( data == FRAME_STARTBYTE_SHORT ) || ( data == ESCAPE_BYTE ) )
-      {
-         pendingEscape = true;
-         data = ESCAPE_BYTE;
+         DEBUG_L2( data, '|' );
+         if ( updateChecksum )
+         {
+            crc16Shift( data, crc16checksum );
+         }
+         if ( ( data == FRAME_STARTBYTE ) || ( data == FRAME_STARTBYTE_SHORT ) || ( data == ESCAPE_BYTE ) )
+         {
+            status.pendingEscape = true;
+            data = ESCAPE_BYTE;
+         }
+         else
+         {
+            status.dataIdx++;
+         }
       }
       else
       {
-         ( *dataIdx )++;
+         data &= 0x7F;
+         status.pendingEscape = false;
+         status.dataIdx++;
       }
+      return true;
    }
-   else
-   {
-      data &= 0x7F;
-      pendingEscape = false;
-      ( *dataIdx )++;
-   }
-   return true;
+
+   return false;
 }
 
 // calculate crc16 checksum for each byte

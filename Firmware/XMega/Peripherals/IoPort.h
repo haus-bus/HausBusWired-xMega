@@ -116,6 +116,50 @@ class IoPort
 
       static IoPort& instance( uint8_t portNumber );
 
+      template<uint8_t portNumber>
+      static inline IoPort& instance()
+      {
+
+         switch ( portNumber )
+         {
+        #ifdef PORTA
+            case PortA:
+               return *reinterpret_cast<IoPort*>( &PORTA );
+        #endif
+
+        #ifdef PORTB
+            case PortB:
+               return *reinterpret_cast<IoPort*>( &PORTB );
+        #endif
+
+        #ifdef PORTC
+            case PortC:
+               return *reinterpret_cast<IoPort*>( &PORTC );
+        #endif
+
+        #ifdef PORTD
+            case PortD:
+               return *reinterpret_cast<IoPort*>( &PORTD );
+        #endif
+
+        #ifdef PORTE
+            case PortE:
+               return *reinterpret_cast<IoPort*>( &PORTE );
+        #endif
+
+        #ifdef PORTF
+            case PortF:
+               return *reinterpret_cast<IoPort*>( &PORTF );
+        #endif
+
+        #ifdef PORTR
+            case PortR:
+               return *reinterpret_cast<IoPort*>( &PORTR );
+        #endif
+         }
+         return dummyPort;
+      }
+
       inline uint8_t isPinInverted( uint8_t pinNumber )
       {
          if ( pinNumber < 8 )
@@ -192,6 +236,8 @@ class IoPort
       ////    Attributes    ////
 
    protected:
+
+      static IoPort dummyPort;
 
       PORT_t reg;       // ## attribute reg
 };

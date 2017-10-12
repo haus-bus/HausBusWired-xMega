@@ -10,7 +10,10 @@
 #define HBW_SD6_BOOTER_H_
 
 #include <Security/ModuleId.h>
+#include "HBWired/HmwDevice.h"
 
 extern __attribute__( ( section( ".vectors" ) ) ) const ModuleId moduleId;
+
+
 
 #endif

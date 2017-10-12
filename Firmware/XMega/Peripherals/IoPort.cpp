@@ -7,6 +7,7 @@
 
 #include "IoPort.h"
 
+IoPort IoPort::dummyPort;
 
 IoPort& IoPort::instance( uint8_t portNumber )
 {
@@ -48,6 +49,5 @@ IoPort& IoPort::instance( uint8_t portNumber )
          return *reinterpret_cast<IoPort*>( &PORTR );
 #endif
    }
-   static IoPort dummyPort;
    return dummyPort;
 }

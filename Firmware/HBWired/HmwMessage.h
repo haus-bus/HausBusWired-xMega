@@ -16,7 +16,6 @@ class HmwMessage
 {
 // variables
    public:
-      static uint32_t ownAddress;
 
       enum Consts
       {
@@ -26,7 +25,7 @@ class HmwMessage
 
          ADDRESS_LENGTH = 4,
          ADDRESS_LENGTH_LONG = 9,
-         MAX_FRAME_LENGTH = 64,
+         MAX_FRAME_LENGTH = 72,
 
          CRC16_POLYNOM = 0x1002
       };
@@ -61,6 +60,7 @@ class HmwMessage
          SET_ACTOR = 's',
          START_BOOTER = 'u',
          GET_FW_VERSION = 'v',
+         WRITE_FLASH = 'w',
          SET_LEVEL = 'x',
          KEY_SIM = 0xCB // 'Ë'
       };
@@ -126,25 +126,35 @@ class HmwMessage
 
    protected:
 
-      uint32_t senderAddress;
+      struct Status
+      {
+         uint8_t dataIdx;
+         uint8_t pendingEscape : 1;
+         uint8_t sending       : 1;
+         uint8_t receiving     : 1;
+         uint8_t frameValid    : 1;
+      } status;
+
       uint32_t targetAddress;
-      uint16_t crc16checksum;
-      uint8_t framePointer;
-      uint8_t addressPointer;
+      ControlByte controlByte;
+      uint32_t senderAddress;
       uint8_t frameDataLength;
       uint8_t frameData[MAX_FRAME_LENGTH];
-      ControlByte controlByte;
-      bool pendingEscape;
-      bool frameStart;
-      bool frameComplete;
+      uint16_t crc16checksum;
 
    private:
 
       static const uint8_t debugLevel;
 
+      static uint8_t senderNum;
+
+      static uint8_t receiverNum;
+
 // functions
    public:
       HmwMessage();
+
+      bool generateResponse();
 
       bool nextByteReceived( uint8_t data );
 
@@ -152,19 +162,16 @@ class HmwMessage
 
       void changeIntoACK();
 
-      inline bool isForMe()
-      {
-         return frameComplete && ( ( targetAddress == ownAddress ) || isBroadcast() );
-      }
+      bool isForMe();
 
       inline Command getCommand()
       {
-         return frameComplete ? (Command)frameData[0] : INVALID;
+         return status.frameValid ? (Command)frameData[0] : INVALID;
       }
 
       inline bool isCommand( Command cmd )
       {
-         return frameComplete && ( cmd == frameData[0] );
+         return status.frameValid && ( cmd == frameData[0] );
       }
 
       inline bool isACK()
@@ -189,24 +196,14 @@ class HmwMessage
 
       inline void prepareToSend()
       {
-         addressPointer = 0;
-         framePointer = 0;
+         targetAddress = changeEndianness( targetAddress );
+         senderAddress = changeEndianness( senderAddress );
+         frameDataLength += 2;
+         status.dataIdx = 0;
+         status.sending = false;
       }
 
-      inline void setupAnnounce( uint32_t targetAddr, uint8_t channel, uint8_t deviceType, uint8_t hwVersion, uint16_t fwVersion )
-      {
-         senderAddress = ownAddress;
-         targetAddress = targetAddr;
-         controlByte = 0xF8;
-         frameData[0] = ANNOUNCE;
-         frameData[1] = channel;
-         frameData[2] = deviceType;
-         frameData[3] = hwVersion;
-         frameData[4] = fwVersion / 0x100;
-         frameData[5] = fwVersion & 0xFF;
-         convertToHmwSerialString( ownAddress, &frameData[6] );
-         frameDataLength = 16;
-      }
+      void setupAnnounce( uint8_t channel );
 
       inline void convertToHmwSerialString( uint32_t address, uint8_t* buffer )
       {
@@ -230,8 +227,6 @@ class HmwMessage
 
    protected:
    private:
-      HmwMessage( const HmwMessage& c );
-      HmwMessage& operator=( const HmwMessage& c );
 
       void crc16Shift( uint8_t newByte, uint16_t& crc );
 

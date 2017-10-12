@@ -204,10 +204,9 @@ class HBWDevice
       // 1 -> nothing sent because bus busy
       uint8_t broadcastAnnounce( uint8_t );  // channel
 
-      uint8_t deviceType;
-
       BasicConfig* basicConfig;          // pointer to config object
 
+      uint8_t deviceType;
       uint8_t hardware_version;
       uint16_t firmware_version;
 

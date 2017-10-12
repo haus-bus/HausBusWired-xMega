@@ -41,6 +41,8 @@
 
 #define NO_RETURN       __attribute__( ( __noreturn__ ) )
 
+#define MOD_ID_SECTION __attribute__( ( section( ".vectors" ) ) )
+
 #define STACK_POINTER() ( (char*)AVR_STACK_POINTER_REG )
 
 #define CYCLES_PER_LOOP 8

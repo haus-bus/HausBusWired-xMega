@@ -5,13 +5,7 @@
  *  Author: Viktor Pankraz
  */
 
-
-#define HMW_DEVICETYPE 0xB1
-
-#define HARDWARE_VERSION 0x01
-#define FIRMWARE_VERSION 0x0107
-
-
+#include <Release.h>
 #include <Time/SystemTime.h>
 #include <Elements/SerialStream.h>
 #include <Peripherals/InterruptController.h>
@@ -25,9 +19,9 @@ const ModuleId moduleId =
 {
    "$MOD$ HBW-SD6  ",
    0,
-   FIRMWARE_VERSION >> 8,
-   FIRMWARE_VERSION & 0xFF,
-   HMW_DEVICETYPE,
+   Release::MAJOR,
+   Release::MINOR,
+   Release::HMW_SD6_ID,
    0
 };
 
@@ -119,7 +113,7 @@ HBWDevice* createDevice()
    static HBWLinkKey linkSender( sizeof( config.keyLinks ) / sizeof( config.keyLinks[0] ), config.keyLinks );
    static HBWLinkDimmer linkReceiver( sizeof( config.ledLinks ) / sizeof( config.ledLinks[0] ), config.ledLinks );
 
-   static HBWSD6Multikey sd6MultiKey( HMW_DEVICETYPE, HARDWARE_VERSION, FIRMWARE_VERSION,
+   static HBWSD6Multikey sd6MultiKey( Release::HMW_SD6_ID, Release::REV_0, Release::MAJOR << 8 | Release::MINOR,
                                       &rs485Stream, PortPin( PortE, 1 ),
                                       &config.device, &linkSender, &linkReceiver );
    sd6MultiKey.setConfigPins( PortPin( PortA, 4 ), PortPin( PortA, 5 ), PortPin( PortR, 1 ) );
