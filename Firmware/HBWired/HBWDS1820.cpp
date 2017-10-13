@@ -54,7 +54,7 @@ uint8_t HBWDS1820::get( uint8_t* data )
 
 void HBWDS1820::loop( HBWDevice* device, uint8_t channel )
 {
-   if ( !nextActionDelay || config->id == 0 )
+   if ( !nextActionDelay || ( ( config->id == 0 ) && ( state != SEND_INVALID_VALUE ) ) )
    {
       return;
    }
@@ -122,12 +122,8 @@ void HBWDS1820::loop( HBWDevice* device, uint8_t channel )
       }
       // no sensor found, stop channel
       DEBUG_H1( FSTR( " No sensor for this channel" ) );
-      nextActionDelay = 0;
-
-      // send the INVALID_VALUE one time
-      uint8_t data[2];
-      device->sendInfoMessage( channel, get( data ), data );
-
+      nextActionDelay = 5000;
+      state = SEND_INVALID_VALUE;
    }
    else if ( state == START_MEASUREMENT )
    {
@@ -166,8 +162,15 @@ void HBWDS1820::loop( HBWDevice* device, uint8_t channel )
       // start next measurement after 5s
       state = START_MEASUREMENT;
       nextActionDelay = 5000;
-
    }
+   else if ( state == SEND_INVALID_VALUE )
+   {
+      // send the INVALID_VALUE one time
+      uint8_t data[2];
+      device->sendInfoMessage( channel, get( data ), data );
+      nextActionDelay = 0;
+   }
+
 }
 
 void HBWDS1820::checkConfig()

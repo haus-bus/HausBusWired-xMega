@@ -2,6 +2,8 @@
 
 set searchdir=%CD%
 
+ren *.cppproj *.uncrustify
+
 :runC
 FOR /F "tokens=*" %%G IN ('DIR /B /S %searchdir%\*.cpp') DO (
 echo Indenting file "%%G"
@@ -16,3 +18,4 @@ echo Indenting file "%%G"
 move /Y indentoutput.tmp "%%G"
 )
 
+ren *.uncrustify*.cppproj 

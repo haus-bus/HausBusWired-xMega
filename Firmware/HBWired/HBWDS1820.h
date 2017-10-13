@@ -38,7 +38,8 @@ class HBWDS1820 : public HBWChannel
       {
          SEARCH_SENSOR,
          START_MEASUREMENT,
-         SEND_FEEDBACK
+         SEND_FEEDBACK,
+         SEND_INVALID_VALUE
       };
 
       struct Config

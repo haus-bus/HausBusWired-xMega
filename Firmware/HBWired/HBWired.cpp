@@ -11,6 +11,7 @@
 #include "HBWired.h"
 #include <stdio.h>
 #include <string.h>
+#include <Peripherals/ResetSystem.h>
 
 #define getId() FSTR( "HBWDevice" )
 const uint8_t HBWDevice::debugLevel( DEBUG_LEVEL_LOW );
@@ -554,11 +555,9 @@ void HBWDevice::processEvent( uint8_t const* const frameData, uint8_t frameDataL
       /* case 'q':                                                               // Zieladresse hinzufügen?
          // TODO: ???
              break; */
-      /* case 'u':                                                              // Update (Bootloader starten)
-         // Bootloader neu starten
-         // Goto $7c00                                                          ' Adresse des Bootloaders
-             // TODO: Bootloader?
-             break; */
+      case 'u':                                                              // Update (Bootloader starten)
+         ResetSystem::reset();
+         break;
       case 'v':                                                                  // get firmware version
          DEBUG_M1( FSTR( "T: FWVer" ) );
          onlyAck = false;

@@ -27,7 +27,7 @@ uint16_t Flash::read( Flash::address_t address, void* pData, uint16_t length )
 
 uint16_t Flash::write( Flash::address_t address, void* pData, uint16_t length )
 {
-   if ( ( address & ( getPageSize() - 1 ) ) || ( ( address + length ) > getMaxApplicationSize() ) )
+   if ( ( address & ( getPageSize() - 1 ) ) || ( ( address + length ) > PROGMEM_SIZE ) )
    {
       return 0;
    }

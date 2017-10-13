@@ -12,6 +12,7 @@
 #include <Peripherals/Oscillator.h>
 #include <Peripherals/Clock.h>
 #include <Peripherals/Flash.h>
+#include <Peripherals/ResetSystem.h>
 #include <DigitalOutput.h>
 #include <Release.h>
 
@@ -51,22 +52,20 @@ bool isBusIdle()
    return lastReceivedTime.since() > ( 100 + ( HmwDevice::ownAddress& 0x7F ) );
 }
 
-Usart& getRs485Stream()
-{
-   static DigitalInput rx( PortE, 2 );
-   static DigitalOutput tx( PortE, 3 );
-   return Usart::instance<PortE, 0>();
-}
+#define getRs485Stream() Usart::instance<PortE, 0>()
+
 
 Stream::Status sendMessage( HmwMessage& msg )
 {
-   static DigitalOutput txEnable( PortE, 1 );
+   // static DigitalOutput txEnable( PortE, 1 );
 
    uint8_t data;
    Stream::Status status = Stream::SUCCESS;
 
    msg.prepareToSend();
-   txEnable.set();
+
+   // txEnable.set()
+   PORTE.OUTSET = Pin1;
    while ( msg.getNextByteToSend( data ) )
    {
       if ( !getRs485Stream().write( data ) )
@@ -75,14 +74,15 @@ Stream::Status sendMessage( HmwMessage& msg )
       }
    }
    getRs485Stream().waitUntilTransferCompleted();
-   txEnable.clear();
+   // txEnable.clear();
+   PORTE.OUTCLR = Pin1;
    return status;
 }
 
 void handleAnnouncement()
 {
    static bool announced = false;
-   if ( !announced && ( SystemTime::now() > 500 ) && isBusIdle() )
+   if ( !announced && ( SystemTime::now() > 1500 ) && isBusIdle() )
    {
       HmwMessage msg;
       msg.setupAnnounce( 0 );
@@ -124,6 +124,48 @@ void checkFirmware()
    ERROR_1( FSTR( "invalid" ) );
 }
 
+static const uint8_t LED_MASK = 0x3F;
+static uint8_t ledData[] = { 0x00, 0x01, 0x05, 0x15, 0x35, 0x3D, 0x3F, 0x3E, 0x3A, 0x2A, 0x0A, 0x02 };
+static uint8_t ledIdx = 0;
+static bool isDownloadRunning = false;
+
+void notifyNextDownloadPacket()
+{
+   if ( ++ledIdx >= sizeof( ledData ) )
+   {
+      ledIdx = 0;
+   }
+}
+
+void handleLeds()
+{
+   static Timestamp lastTime;
+   if ( isDownloadRunning )
+   {
+      uint8_t otherPins = PORTC.OUT & ~LED_MASK;
+      PORTC.OUT = ledData[ledIdx] | otherPins;
+   }
+   else
+   {
+      if ( PORTC.IN & LED_MASK )
+      {
+         if ( lastTime.since() > 990 )
+         {
+            PORTC.OUTTGL = LED_MASK;
+            lastTime = Timestamp();
+         }
+      }
+      else
+      {
+         if ( lastTime.since() > 10 )
+         {
+            PORTC.OUTTGL = LED_MASK;
+            lastTime = Timestamp();
+         }
+      }
+   }
+}
+
 void startApplication()
 {
      #ifdef EIND
@@ -140,8 +182,13 @@ int main( void )
    Eeprom::MemoryMapped::enable();
 
    // Initialize interfaces
-   DigitalOutput rxEnable( PortE, 0 ), txEnable( PortE, 1 );
+   // DigitalOutput rxEnable( PortE, 0 ), txEnable( PortE, 1 );
+   // DigitalInput rx( PortE, 2 );
+   // DigitalOutput tx( PortE, 3 );
+   PORTE.DIR = Pin0 | Pin1 | Pin3;
+
    getRs485Stream().init<19200, USART_CMODE_ASYNCHRONOUS_gc, USART_PMODE_EVEN_gc, USART_CHSIZE_8BIT_gc, true, false>();
+   PORTC.DIR = LED_MASK;
 
 #ifdef DEBUG
    DigitalInput rx( PortC, 6 );
@@ -157,10 +204,19 @@ int main( void )
    HmwDevice::firmwareVersion = ( ( Release::MAJOR << 8 ) | Release::MINOR );
    HmwDevice::hardwareVersion = Release::REV_0;
    HmwDevice::basicConfig = reinterpret_cast<HmwDevice::BasicConfig*>( MAPPED_EEPROM_START );
+   HmwDevice::ownAddress = changeEndianness( HmwDevice::basicConfig->ownAdress );
 
    checkFirmware();
 
    HmwMessage inMessage;
+
+   // special case: if FW starts the booter with UPDATE command, send ANNONCE by setting the system time to 1500ms
+   if ( ResetSystem::isSoftwareReset() )
+   {
+      SystemTime::set( 1500 );
+   }
+
+
    uint8_t data;
    while ( 1 )
    {
@@ -173,6 +229,17 @@ int main( void )
             {
                if ( inMessage.isForMe() && !inMessage.isDiscovery() )
                {
+                  if ( inMessage.isCommand( HmwMessage::WRITE_FLASH ) )
+                  {
+                     isDownloadRunning = true;
+                     startFirmware = false;
+                     notifyNextDownloadPacket();
+                  }
+                  if ( inMessage.isCommand( HmwMessage::READ_CONFIG ) )
+                  {
+                     ResetSystem::clearSources();
+                     checkFirmware();
+                  }
                   if ( inMessage.generateResponse() )
                   {
                      sendMessage( inMessage );
@@ -182,8 +249,9 @@ int main( void )
          }
       }
       handleAnnouncement();
+      handleLeds();
       WatchDog::reset();
-      if ( startFirmware )
+      if ( startFirmware && !ResetSystem::isSoftwareReset() )
       {
          startApplication();
       }

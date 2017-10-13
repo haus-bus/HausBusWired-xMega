@@ -40,12 +40,18 @@ bool HmwMessage::generateResponse()
       senderNum = 0;
       receiverNum = controlByte.info.senderNum;
    }
-
-   if ( isCommand( GET_FW_VERSION ) )
+   if ( isCommand( READ_CONFIG ) )
+   {
+      DEBUG_M1( FSTR( "C: read config" ) );
+      changeIntoACK();
+   }
+   else if ( isCommand( GET_FW_VERSION ) )
    {
       DEBUG_M1( FSTR( "C: get FW version" ) );
-      DEBUG_M1( FSTR( "E: get FW version" ) );
-      isValid = false;
+      frameData[0] = HmwDevice::firmwareVersion >> 8;
+      frameData[1] = HmwDevice::firmwareVersion& 0xFF;
+      frameDataLength = 2;
+      controlByte = 0x18;
    }
    else if ( isCommand( GET_HARDWARE_VERSION ) )
    {
