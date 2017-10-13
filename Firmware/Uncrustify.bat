@@ -18,4 +18,4 @@ echo Indenting file "%%G"
 move /Y indentoutput.tmp "%%G"
 )
 
-ren *.uncrustify*.cppproj 
+ren *.uncrustify *.cppproj 
