@@ -9,6 +9,11 @@
 #ifndef __HMWDEVICE_H__
 #define __HMWDEVICE_H__
 
+#include "HmwStream.h"
+#include "HmwMsgAnnounce.h"
+#include "HmwLinkReceiver.h"
+#include "HmwLinkSender.h"
+
 #include <xEeprom.h>
 
 class HmwDevice
@@ -23,6 +28,14 @@ class HmwDevice
          uint32_tx ownAdress;                   // 0x0006   - 0x0009
       };
 
+      struct PendingActions
+      {
+         uint8_t readConfig : 1;
+         uint8_t announce : 1;
+         uint8_t resetSystem : 1;
+         uint8_t startBooter : 1;
+      };
+
       static uint8_t deviceType;
 
       static uint8_t hardwareVersion;
@@ -33,8 +46,17 @@ class HmwDevice
 
       static uint32_t ownAddress;
 
+      static PendingActions pendingActions;
+
+      static HmwLinkReceiver* linkReceiver;
+
+      static HmwLinkSender* linkSender;
+
    protected:
+
    private:
+
+      static const uint8_t debugLevel;
 
 
 // functions
@@ -45,10 +67,47 @@ class HmwDevice
          return hmwDevice;
       }
 
-   protected:
-   private:
-      HmwDevice();
+      static inline Stream::Status announce()
+      {
+         HmwMsgAnnounce msg( 0, ownAddress, deviceType, hardwareVersion, firmwareVersion );
+         return HmwStream::sendMessage( &msg );
+      }
 
+      static inline bool isReadConfigPending()
+      {
+         return pendingActions.readConfig;
+      }
+
+      static inline void clearPendingReadConfig()
+      {
+         pendingActions.readConfig = false;
+      }
+
+      static inline bool isAnnouncementPending()
+      {
+         return pendingActions.announce;
+      }
+
+      static inline void clearPendingAnnouncement()
+      {
+         pendingActions.announce = false;
+      }
+
+      static void loop();
+
+      static bool processMessage( HmwMessageBase* msg );
+
+      static void handleAnnouncement();
+
+   protected:
+
+      static uint8_t get( uint8_t channel, uint8_t* data );
+
+      static void set( uint8_t channel, uint8_t length, uint8_t const* const data );
+
+   private:
+
+      static void handlePendingActions();
 
 }; // HmwDevice
 

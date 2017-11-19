@@ -9,16 +9,13 @@
 
 #include <Peripherals/InterruptController.h>
 #include <Peripherals/WatchDog.h>
-#include <Peripherals/Oscillator.h>
-#include <Peripherals/Clock.h>
 #include <Peripherals/Flash.h>
 #include <Peripherals/ResetSystem.h>
 #include <DigitalOutput.h>
 #include <Release.h>
 
 #include <Time/SystemTime.h>
-#include <HBWired/HmwMessage.h>
-#include <Elements/SerialStream.h>
+#include <HBWired/HmwStream.h>
 
 
 const ModuleId moduleId =
@@ -35,8 +32,6 @@ static const uint8_t debugLevel( DEBUG_LEVEL_LOW );
 
 #define getId() FSTR( "BOOTER" )
 
-static Timestamp lastReceivedTime( 0 );
-
 static bool isFirmwareValid = false;
 static bool startFirmware = false;
 
@@ -46,49 +41,6 @@ void putChar( char c )
    Usart::instance<PortC, 1>().write( c );
 }
 #endif
-
-bool isBusIdle()
-{
-   return lastReceivedTime.since() > ( 100 + ( HmwDevice::ownAddress& 0x7F ) );
-}
-
-#define getRs485Stream() Usart::instance<PortE, 0>()
-
-
-Stream::Status sendMessage( HmwMessage& msg )
-{
-   // static DigitalOutput txEnable( PortE, 1 );
-
-   uint8_t data;
-   Stream::Status status = Stream::SUCCESS;
-
-   msg.prepareToSend();
-
-   // txEnable.set()
-   PORTE.OUTSET = Pin1;
-   while ( msg.getNextByteToSend( data ) )
-   {
-      if ( !getRs485Stream().write( data ) )
-      {
-         status = Stream::ABORTED;
-      }
-   }
-   getRs485Stream().waitUntilTransferCompleted();
-   // txEnable.clear();
-   PORTE.OUTCLR = Pin1;
-   return status;
-}
-
-void handleAnnouncement()
-{
-   static bool announced = false;
-   if ( !announced && ( SystemTime::now() > 1500 ) && isBusIdle() )
-   {
-      HmwMessage msg;
-      msg.setupAnnounce( 0 );
-      announced = sendMessage( msg ) == Stream::SUCCESS;
-   }
-}
 
 void checkFirmware()
 {
@@ -186,8 +138,6 @@ int main( void )
    // DigitalInput rx( PortE, 2 );
    // DigitalOutput tx( PortE, 3 );
    PORTE.DIR = Pin0 | Pin1 | Pin3;
-
-   getRs485Stream().init<19200, USART_CMODE_ASYNCHRONOUS_gc, USART_PMODE_EVEN_gc, USART_CHSIZE_8BIT_gc, true, false>();
    PORTC.DIR = LED_MASK;
 
 #ifdef DEBUG
@@ -198,6 +148,7 @@ int main( void )
 #endif
 
    // Authorize interrupts
+   // InterruptController::selectBootInterruptSection();
    // InterruptController::enableAllInterruptLevel();
    // GlobalInterrupt::enable();
    HmwDevice::deviceType = Release::HMW_SD6_ID;
@@ -206,83 +157,33 @@ int main( void )
    HmwDevice::basicConfig = reinterpret_cast<HmwDevice::BasicConfig*>( MAPPED_EEPROM_START );
    HmwDevice::ownAddress = changeEndianness( HmwDevice::basicConfig->ownAdress );
 
+   HmwStream::setStream( Usart::instance<PortE, 0>() );
+
    checkFirmware();
 
-   HmwMessage inMessage;
-
-   // special case: if FW starts the booter with UPDATE command, send ANNONCE by setting the system time to 1500ms
-   if ( ResetSystem::isSoftwareReset() )
-   {
-      SystemTime::set( 1500 );
-   }
-
-
-   uint8_t data;
    while ( 1 )
    {
-      if ( getRs485Stream().isReceiveCompleted() )
-      {
-         lastReceivedTime = Timestamp();
-         if ( getRs485Stream().read( data ) )
-         {
-            if ( inMessage.nextByteReceived( data ) )
-            {
-               if ( inMessage.isForMe() && !inMessage.isDiscovery() )
-               {
-                  if ( inMessage.isCommand( HmwMessage::WRITE_FLASH ) )
-                  {
-                     isDownloadRunning = true;
-                     startFirmware = false;
-                     notifyNextDownloadPacket();
-                  }
-                  if ( inMessage.isCommand( HmwMessage::READ_CONFIG ) )
-                  {
-                     ResetSystem::clearSources();
-                     checkFirmware();
-                  }
-                  if ( inMessage.generateResponse() )
-                  {
-                     sendMessage( inMessage );
-                  }
-               }
-            }
-         }
-      }
-      handleAnnouncement();
-      handleLeds();
-      WatchDog::reset();
       if ( startFirmware && !ResetSystem::isSoftwareReset() )
       {
          startApplication();
       }
+      if ( HmwDevice::isReadConfigPending() )
+      {
+         HmwDevice::clearPendingReadConfig();
+         ResetSystem::clearSources();
+         checkFirmware();
+      }
+      HmwMessageBase* msg = HmwStream::pollMessageReceived();
+      if ( msg && msg->isCommand( HmwMessageBase::WRITE_FLASH ) )
+      {
+         isDownloadRunning = true;
+         startFirmware = false;
+         notifyNextDownloadPacket();
+      }
+      HmwDevice::processMessage( msg );
+      HmwDevice::handleAnnouncement();
+      handleLeds();
+      WatchDog::reset();
    }
    return 0;
-}
-
-
-static void
-__attribute__( ( section( ".init3" ), naked, used ) )
-lowLevelInit( void )
-{
-#ifdef EIND
-   __asm volatile ( "ldi r24,pm_hh8(__trampolines_start)\n\t"
-                    "out %i0,r24" ::"n" ( &EIND ) : "r24", "memory" );
-#endif
-
-#ifdef DEBUG
-   WatchDog::disable();
- #else
-   WatchDog::enable( WatchDog::_4S );
-   InterruptController::selectBootInterruptSection();
-#endif
-
-
-   Clock::configPrescalers( CLK_PSADIV_1_gc, CLK_PSBCDIV_1_1_gc );
-
-   // Enable internal 32 MHz and 32kHz ring oscillator and wait until they are stable.
-   Oscillator::enable( OSC_RC32MEN_bm | OSC_RC32KEN_bm );
-   Oscillator::waitUntilOscillatorIsReady( OSC_RC32MEN_bm | OSC_RC32KEN_bm );
-
-   // Set the 32 MHz ring oscillator as the main clock source.
-   Clock::selectMainClockSource( CLK_SCLKSEL_RC32M_gc );
 }
