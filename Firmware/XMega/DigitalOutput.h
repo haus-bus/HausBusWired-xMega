@@ -41,5 +41,37 @@ class DigitalOutput : public DigitalInput
       void toggle();
 };
 
+template<uint8_t portNumber, uint8_t pinNumber>
+class DigitalOutputTmpl : public DigitalInputTmpl<portNumber, pinNumber>
+{
+   ////    Constructors and destructors    ////
+
+   public:
+
+      inline DigitalOutputTmpl()
+      {
+         if ( this->isValid() )
+         {
+            this->configOutput();
+         }
+      }
+
+      ////    Operations    ////
+
+      inline void clear()
+      {
+         this->getIoPort().clearPins( this->getPin() );
+      }
+
+      inline void set()
+      {
+         this->getIoPort().setPins( this->getPin() );
+      }
+
+      inline void toggle()
+      {
+         this->getIoPort().togglePins( this->getPin() );
+      }
+};
 #endif
 

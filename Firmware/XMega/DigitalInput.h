@@ -40,5 +40,27 @@ class DigitalInput : public PortPin
       uint16_t getPulseWidth( bool level, uint16_t timeout ) const;
 };
 
+template<uint8_t portNumber, uint8_t pinNumber>
+class DigitalInputTmpl : public PortPinTmpl<portNumber, pinNumber>
+{
+   ////    Constructors and destructors    ////
+
+   public:
+
+      inline DigitalInputTmpl()
+      {
+         if ( this->isValid() )
+         {
+            this->configInput();
+         }
+      }
+
+      ////    Operations    ////
+      inline uint8_t isSet() const
+      {
+         return this->getIoPort().get() & this->getPin();
+      }
+};
+
 #endif
 

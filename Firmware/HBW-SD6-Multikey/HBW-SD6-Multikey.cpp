@@ -10,6 +10,7 @@
 #include <Elements/SerialStream.h>
 #include <Peripherals/InterruptController.h>
 
+#include <HBWired/HmwDevice.h>
 #include "HBW-SD6-MultiKey.h"
 #include "HBWired/HBWLinkKey.h"
 #include "HBWired/HBWLinkDimmer.h"
@@ -46,18 +47,20 @@ void putc( char c )
 }
 #endif
 
-HBWDevice* createDevice()
+void createDevice()
 {
    SystemTime::init();
    Eeprom::MemoryMapped::enable();
 
-   // Initialize interfaces
-   PortPin rxEnable( PortE, 0 ), txEnable( PortE, 1 );
-   rxEnable.configOutput();
-   txEnable.configOutput();
+   HmwDevice::deviceType = Release::HMW_SD6_ID;
+   HmwDevice::firmwareVersion = ( ( Release::MAJOR << 8 ) | Release::MINOR );
+   HmwDevice::hardwareVersion = Release::REV_0;
+   HmwDevice::basicConfig = reinterpret_cast<HmwDevice::BasicConfig*>( MAPPED_EEPROM_START );
+   HmwDevice::ownAddress = changeEndianness( HmwDevice::basicConfig->ownAdress );
 
-   static SerialStream rs485Stream( &Usart::instance<PortE, 0>(), PortPin( PortE, 2 ), PortPin( PortE, 3 ) );
-   rs485Stream.init<19200, USART_CMODE_ASYNCHRONOUS_gc, USART_PMODE_EVEN_gc, USART_CHSIZE_8BIT_gc, true, false>();
+   // Initialize interfaces
+   DigitalOutput rxEnable( PortE, 0 ), txEnable( PortE, 1 );
+   HmwStream::setStream( Usart::instance<PortE, 0>() );
 
 #ifdef DEBUG
    static SerialStream debugStream( &Usart::instance<PortC, 1>(), PortPin( PortC, 6 ), PortPin( PortC, 7 ) );
@@ -108,15 +111,10 @@ HBWDevice* createDevice()
    static HBWDS1820 hbwTmp5( ow, &config.ds1820cfg[4] );
    static HBWDS1820 hbwTmp6( ow, &config.ds1820cfg[5] );
 
-   // static HBWAnalogIn hbwBrightness(&ADC_BRIGHTNESS, ADC_BRIGHTNESS_CHANNEL, &config.analogInCfg[0] );
-
    static HBWLinkKey linkSender( sizeof( config.keyLinks ) / sizeof( config.keyLinks[0] ), config.keyLinks );
    static HBWLinkDimmer linkReceiver( sizeof( config.ledLinks ) / sizeof( config.ledLinks[0] ), config.ledLinks );
 
-   static HBWSD6Multikey sd6MultiKey( Release::HMW_SD6_ID, Release::REV_0, Release::MAJOR << 8 | Release::MINOR,
-                                      &rs485Stream, PortPin( PortE, 1 ),
-                                      &config.device, &linkSender, &linkReceiver );
-   sd6MultiKey.setConfigPins( PortPin( PortA, 4 ), PortPin( PortA, 5 ), PortPin( PortR, 1 ) );
+   // sd6MultiKey.setConfigPins( PortPin( PortA, 4 ), PortPin( PortA, 5 ), PortPin( PortR, 1 ) );
    PortPin( PortR, 1 ).setInverted( true );
 
    // set ledFeedback channels
@@ -126,53 +124,17 @@ HBWDevice* createDevice()
    }
 
    // Authorize interrupts
+   InterruptController::selectAppInterruptSection();
    InterruptController::enableAllInterruptLevel();
    GlobalInterrupt::enable();
-   return &sd6MultiKey;
 }
 
-void HBWSD6Multikey::checkConfig()
-{
-   // call base implementation
-   HBWDevice::checkConfig();
-}
-
-
-#include <Peripherals/WatchDog.h>
-#include <Peripherals/Oscillator.h>
-#include <Peripherals/Clock.h>
-
-static void
-__attribute__( ( section( ".init3" ), naked, used ) )
-lowLevelInit( void )
-{
-        #ifdef EIND
-   __asm volatile ( "ldi r24,pm_hh8(__trampolines_start)\n\t"
-                    "out %i0,r24" ::"n" ( &EIND ) : "r24", "memory" );
-        #endif
-        #ifdef DEBUG
-   WatchDog::disable();
-        #else
-   WatchDog::enable( WatchDog::_4S );
-        #endif
-   InterruptController::selectAppInterruptSection();
-
-   Clock::configPrescalers( CLK_PSADIV_1_gc, CLK_PSBCDIV_1_1_gc );
-
-   // Enable internal 32 MHz and 32kHz ring oscillator and wait until they are stable.
-   Oscillator::enable( OSC_RC32MEN_bm | OSC_RC32KEN_bm );
-   Oscillator::waitUntilOscillatorIsReady( OSC_RC32MEN_bm | OSC_RC32KEN_bm );
-
-   // Set the 32 MHz ring oscillator as the main clock source.
-   Clock::selectMainClockSource( CLK_SCLKSEL_RC32M_gc );
-}
 
 int main( void )
 {
-   HBWDevice* device = createDevice();
+   createDevice();
    while ( 1 )
    {
-      device->loop();
-      WatchDog::reset();
+      HmwDevice::loop();
    }
 }
