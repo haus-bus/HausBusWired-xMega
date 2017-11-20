@@ -9,6 +9,7 @@
 #ifndef __HMWLINKRECEIVER_H__
 #define __HMWLINKRECEIVER_H__
 
+#include <stdio.h>
 
 class HmwLinkReceiver
 {

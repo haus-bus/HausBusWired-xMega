@@ -1,31 +1,32 @@
-#include "HBWKey.h"
+#include "HmwKey.h"
+#include "HmwDevice.h"
 
-// Class HBWKey
-HBWKey::HBWKey( PortPin _pin, Config* _config, HBWChannel* _feedbackChannel ) : digitalIn( _pin )
+// Class HmwKey
+HmwKey::HmwKey( PortPin _pin, Config* _config, HmwChannel* _feedbackChannel ) : digitalIn( _pin )
 {
-   type = HBWChannel::HBW_KEY;
+   type = HmwChannel::HMW_KEY;
    config = _config;
    feedbackChannel = _feedbackChannel;
    resetChannel();
 }
 
 
-void HBWKey::loop( HBWDevice* device, uint8_t channel )
+void HmwKey::loop( uint8_t channel )
 {
    if ( config->isUnlocked() )
    {
       if ( config->isPushButton() )
       {
-         handlePushButtonSignal( device, channel );
+         handlePushButtonSignal( channel );
       }
       else if ( config->isSwitch() )
       {
-         handleSwitchSignal( device, channel );
+         handleSwitchSignal( channel );
       }
    }
 }
 
-void HBWKey::handleSwitchSignal( HBWDevice* device, uint8_t channel )
+void HmwKey::handleSwitchSignal( uint8_t channel )
 {
    if ( digitalIn.isSet() )
    {
@@ -33,7 +34,7 @@ void HBWKey::handleSwitchSignal( HBWDevice* device, uint8_t channel )
       {
 
          // if return value is 1, bus is not idle, retry next time
-         if ( device->sendKeyEvent( channel, keyPressNum, false ) != 1 )
+         if ( HmwDevice::sendKeyEvent( channel, keyPressNum, false ) != 1 )
          {
             keyPressNum++;
             lastSentLong.reset();
@@ -43,7 +44,7 @@ void HBWKey::handleSwitchSignal( HBWDevice* device, uint8_t channel )
       if ( feedbackChannel && config->isFeedbackEnabled() )
       {
          uint8_t cmd = KEY_FEEDBACK_OFF;
-         feedbackChannel->set( device, 1, &cmd );
+         feedbackChannel->set( 1, &cmd );
       }
    }
    else
@@ -56,7 +57,7 @@ void HBWKey::handleSwitchSignal( HBWDevice* device, uint8_t channel )
       else if ( ( keyPressedTimestamp.since() >= 100 ) && !lastSentLong.isValid() )
       {
          // if return value is 1, bus is not idle, retry next time
-         if ( device->sendKeyEvent( channel, keyPressNum, false ) != 1 )
+         if ( HmwDevice::sendKeyEvent( channel, keyPressNum, false ) != 1 )
          {
             keyPressNum++;
             lastSentLong = Timestamp();
@@ -65,12 +66,12 @@ void HBWKey::handleSwitchSignal( HBWDevice* device, uint8_t channel )
       if ( feedbackChannel && config->isFeedbackEnabled() )
       {
          uint8_t cmd = KEY_FEEDBACK_ON;
-         feedbackChannel->set( device, 1, &cmd );
+         feedbackChannel->set( 1, &cmd );
       }
    }
 }
 
-void HBWKey::handlePushButtonSignal( HBWDevice* device, uint8_t channel )
+void HmwKey::handlePushButtonSignal( uint8_t channel )
 {
    if ( digitalIn.isSet() )
    {
@@ -84,13 +85,13 @@ void HBWKey::handlePushButtonSignal( HBWDevice* device, uint8_t channel )
          if ( ( keyPressedTimestamp.since() >= 50 ) && !lastSentLong.isValid() )
          {
             keyPressNum++;
-            device->sendKeyEvent( channel, keyPressNum, false );
+            HmwDevice::sendKeyEvent( channel, keyPressNum, false );
          }
          keyPressedTimestamp.reset();
          if ( feedbackChannel && config->isFeedbackEnabled() )
          {
             uint8_t cmd = KEY_FEEDBACK_OFF;
-            feedbackChannel->set( device, 1, &cmd );
+            feedbackChannel->set( 1, &cmd );
          }
       }
    }
@@ -107,7 +108,7 @@ void HBWKey::handlePushButtonSignal( HBWDevice* device, uint8_t channel )
             {           // alle 300ms wiederholen
                // keyPressNum nicht erhoehen
                lastSentLong = Timestamp();
-               device->sendKeyEvent( channel, keyPressNum, true );                  // long press
+               HmwDevice::sendKeyEvent( channel, keyPressNum, true );                  // long press
             }
          }
          else if ( keyPressedTimestamp.since() >= long(config->getLongPressTime() ) * 100 )
@@ -115,7 +116,7 @@ void HBWKey::handlePushButtonSignal( HBWDevice* device, uint8_t channel )
             // erstes LONG
             keyPressNum++;
             lastSentLong = Timestamp();
-            device->sendKeyEvent( channel, keyPressNum, true );                    // long press
+            HmwDevice::sendKeyEvent( channel, keyPressNum, true );                    // long press
          }
       }
       else
@@ -126,13 +127,13 @@ void HBWKey::handlePushButtonSignal( HBWDevice* device, uint8_t channel )
          if ( feedbackChannel && config->isFeedbackEnabled() )
          {
             uint8_t cmd = KEY_FEEDBACK_ON;
-            feedbackChannel->set( device, 1, &cmd );
+            feedbackChannel->set( 1, &cmd );
          }
       }
    }
 }
 
-void HBWKey::resetChannel()
+void HmwKey::resetChannel()
 {
    if ( config->isActiveLow() )
    {
@@ -149,7 +150,7 @@ void HBWKey::resetChannel()
    keyPressNum = 0;
 }
 
-void HBWKey::checkConfig()
+void HmwKey::checkConfig()
 {
    if ( ( config->getLongPressTime() < 4 ) || ( config->getLongPressTime() > 50 ) )
    {

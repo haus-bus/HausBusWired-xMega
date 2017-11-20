@@ -1,5 +1,5 @@
 /*
-** HBWLinkDimmer
+** HmwLinkDimmer
 **
 ** Direkte Verknuepfung (Peering), zu Dimmern
 ** Ein Link-Objekt steht immer fuer alle (direkt aufeinander folgenden) Verknuepfungen
@@ -7,12 +7,12 @@
 **
 */
 
-#ifndef HBWLinkDimmer_h
-#define HBWLinkDimmer_h
+#ifndef HmwLinkDimmer_h
+#define HmwLinkDimmer_h
 
-#include "HBWired.h"
+#include "HmwLinkReceiver.h"
 
-class HBWLinkDimmer : public HBWLinkReceiver
+class HmwLinkDimmer : public HmwLinkReceiver
 {
    public:
 
@@ -33,8 +33,8 @@ class HBWLinkDimmer : public HBWLinkReceiver
          uint8_t reserved[2];
       };
 
-      HBWLinkDimmer( uint8_t _numLinks, Config* _links );
-      void receiveKeyEvent( HBWDevice* device, uint32_t senderAddress, uint8_t senderChannel,
+      HmwLinkDimmer( uint8_t _numLinks, Config* _links );
+      void receiveKeyEvent( const uint32_t&  senderAddress, uint8_t senderChannel,
                             uint8_t targetChannel, bool longPress );
 
 

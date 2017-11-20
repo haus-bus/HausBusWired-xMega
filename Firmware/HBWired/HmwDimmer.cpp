@@ -6,11 +6,12 @@
  */
 
 
-#include "HBWDimmer.h"
+#include "HmwDimmer.h"
+#include "HmwDevice.h"
 
-HBWDimmer::HBWDimmer( PortPin _portPin, Config* _config, bool _inverted ) : pwmOutput( _portPin.getPortNumber(), _portPin.getPinNumber(), MAX_LEVEL )
+HmwDimmer::HmwDimmer( PortPin _portPin, Config* _config, bool _inverted ) : pwmOutput( _portPin.getPortNumber(), _portPin.getPinNumber(), MAX_LEVEL )
 {
-   type = HBWChannel::HBW_DIMMER;
+   type = HmwChannel::HMW_DIMMER;
    config = _config;
    pwmOutput.setInverted( _inverted );
    feedbackCmdActive = false;
@@ -27,7 +28,7 @@ HBWDimmer::HBWDimmer( PortPin _portPin, Config* _config, bool _inverted ) : pwmO
 } // HBWDimmer
 
 
-void HBWDimmer::set( HBWDevice* device, uint8_t length, uint8_t const* const data )
+void HmwDimmer::set( uint8_t length, uint8_t const* const data )
 {
 
    if ( *data <= MAX_LEVEL )
@@ -105,19 +106,19 @@ void HBWDimmer::set( HBWDevice* device, uint8_t length, uint8_t const* const dat
    if ( !nextFeedbackTime.isValid() && config->isLogging() )
    {
       nextFeedbackTime = Timestamp();
-      nextFeedbackTime += ( device->getLoggingTime() * 100 );
+      nextFeedbackTime += ( HmwDevice::getLoggingTime() * 100 );
    }
 }
 
 
-uint8_t HBWDimmer::get( uint8_t* data )
+uint8_t HmwDimmer::get( uint8_t* data )
 {
    // map 0-100% to 0-200
    ( *data ) = currentLevel;
    return 1;
 }
 
-void HBWDimmer::loop( HBWDevice* device, uint8_t channel )
+void HmwDimmer::loop( uint8_t channel )
 {
    if ( nextBlinkTime.isValid() && nextBlinkTime.since() )
    {
@@ -167,7 +168,7 @@ void HBWDimmer::loop( HBWDevice* device, uint8_t channel )
    }
 
    uint8_t level;
-   uint8_t errcode = device->sendInfoMessage( channel, get( &level ), &level );
+   uint8_t errcode = HmwDevice::sendInfoMessage( channel, get( &level ), &level );
 
    // sendInfoMessage returns 0 on success, 1 if bus busy, 2 if failed
    if ( errcode )

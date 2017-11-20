@@ -11,6 +11,8 @@
 
 #include "HmwStream.h"
 #include "HmwMsgAnnounce.h"
+#include "HmwMsgKeyEvent.h"
+#include "HmwMsgInfo.h"
 #include "HmwLinkReceiver.h"
 #include "HmwLinkSender.h"
 
@@ -61,11 +63,6 @@ class HmwDevice
 
 // functions
    public:
-      static inline HmwDevice& instance()
-      {
-         static HmwDevice hmwDevice;
-         return hmwDevice;
-      }
 
       static inline Stream::Status announce()
       {
@@ -93,17 +90,51 @@ class HmwDevice
          pendingActions.announce = false;
       }
 
+      static inline uint8_t getLoggingTime()
+      {
+         return basicConfig->loggingTime;
+      }
+
       static void loop();
 
       static bool processMessage( HmwMessageBase* msg );
 
       static void handleAnnouncement();
 
-   protected:
-
       static uint8_t get( uint8_t channel, uint8_t* data );
 
       static void set( uint8_t channel, uint8_t length, uint8_t const* const data );
+
+      static inline void receiveKeyEvent( const uint32_t& senderAddress, uint8_t srcChan, uint8_t dstChan, bool longPress )
+      {
+         if ( linkReceiver )
+         {
+            linkReceiver->receiveKeyEvent( senderAddress, srcChan, dstChan, longPress );
+         }
+      }
+
+      static inline uint8_t sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress )
+      {
+         if ( linkSender )
+         {
+            linkSender->sendKeyEvent( srcChan, keyPressNum, longPress );
+         }
+         return sendKeyEvent( srcChan, keyPressNum, longPress, 0xFFFFFFFF, 0 ); // only if bus is free
+      }
+
+      static inline uint8_t sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress, uint32_t targetAddr, uint8_t targetChan )
+      {
+         HmwMsgKeyEvent msg( ownAddress, targetAddr, srcChan, targetChan, keyPressNum, longPress );
+         return HmwStream::sendMessage( &msg );
+      }
+
+      static inline uint8_t sendInfoMessage( uint8_t channel, uint8_t length, uint8_t const* const data, uint32_t target_address = 0 )
+      {
+         HmwMsgInfo msg( ownAddress, target_address ? target_address : changeEndianness( basicConfig->centralAddress ), channel, data, length );
+         return HmwStream::sendMessage( &msg );
+      }
+
+   protected:
 
    private:
 

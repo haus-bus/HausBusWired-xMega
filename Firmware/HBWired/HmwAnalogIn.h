@@ -1,19 +1,17 @@
 /*
- * HBWAnalogIn.h
+ * HmwAnalogIn.h
  *
  *  Created on: 26.04.2017
  *      Author: Viktor Pankraz
  */
 
-#ifndef HwUnits_HBWAnalogIn_H
-#define HwUnits_HBWAnalogIn_H
+#ifndef HmwAnalogIn_H
+#define HmwAnalogIn_H
 
+#include "HmwChannel.h"
 #include <Time/Timestamp.h>
 
-#include "HBWired.h"
-
-
-class HBWAnalogIn : public HBWChannel
+class HmwAnalogIn : public HmwChannel
 {
    public:
 
@@ -36,13 +34,13 @@ class HBWAnalogIn : public HBWChannel
 
       ////    Constructors and destructors    ////
 
-      HBWAnalogIn( ADC_t* _adc, uint8_t _adcChannel, Config* _config );
+      HmwAnalogIn( ADC_t* _adc, uint8_t _adcChannel, Config* _config );
 
       ////    Operations    ////
 
       // definition of needed functions from HBWChannel class
       virtual uint8_t get( uint8_t* data );
-      virtual void loop( HBWDevice*, uint8_t channel );
+      virtual void loop( uint8_t channel );
 
    private:
 

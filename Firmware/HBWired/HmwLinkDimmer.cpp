@@ -7,10 +7,12 @@
 **
 */
 
-#include "HBWLinkDimmer.h"
+#include "HmwLinkDimmer.h"
+#include "HmwChannel.h"
+#include "HmwDevice.h"
 
 
-HBWLinkDimmer::HBWLinkDimmer( uint8_t _numLinks, Config* _links )
+HmwLinkDimmer::HmwLinkDimmer( uint8_t _numLinks, Config* _links )
 {
    numLinks = _numLinks;
    links = _links;
@@ -18,7 +20,7 @@ HBWLinkDimmer::HBWLinkDimmer( uint8_t _numLinks, Config* _links )
 
 // processKeyEvent wird aufgerufen, wenn ein Tastendruck empfangen wurde
 
-void HBWLinkDimmer::receiveKeyEvent( HBWDevice* device, uint32_t senderAddress, uint8_t senderChannel,
+void HmwLinkDimmer::receiveKeyEvent( const uint32_t&  senderAddress, uint8_t senderChannel,
                                      uint8_t targetChannel, bool longPress )
 {
    // read what to do from EEPROM
@@ -73,17 +75,17 @@ void HBWLinkDimmer::receiveKeyEvent( HBWDevice* device, uint32_t senderAddress, 
             }
             case 3:   // -> TOGGLE
             {
-               cmdData[0] = HBWChannel::TOGGLE;
+               cmdData[0] = HmwChannel::TOGGLE;
                break;
             }
             case 4:   // -> BLINK_ON
             {
-               cmdData[0] = HBWChannel::BLINK_ON;
+               cmdData[0] = HmwChannel::BLINK_ON;
                break;
             }
             case 5:   // -> BLINK_TOGGLE
             {
-               cmdData[0] = HBWChannel::BLINK_TOGGLE;
+               cmdData[0] = HmwChannel::BLINK_TOGGLE;
                break;
             }
 
@@ -113,17 +115,17 @@ void HBWLinkDimmer::receiveKeyEvent( HBWDevice* device, uint32_t senderAddress, 
             }
             case 3:   // -> TOGGLE
             {
-               cmdData[0] = HBWChannel::TOGGLE;
+               cmdData[0] = HmwChannel::TOGGLE;
                break;
             }
             case 4:   // -> BLINK_ON
             {
-               cmdData[0] = HBWChannel::BLINK_ON;
+               cmdData[0] = HmwChannel::BLINK_ON;
                break;
             }
             case 5:   // -> BLINK_TOGGLE
             {
-               cmdData[0] = HBWChannel::BLINK_TOGGLE;
+               cmdData[0] = HmwChannel::BLINK_TOGGLE;
                break;
             }
             case 2:   // -> INACTIVE
@@ -133,7 +135,7 @@ void HBWLinkDimmer::receiveKeyEvent( HBWDevice* device, uint32_t senderAddress, 
             }
          }
       }
-      device->set( targetChannel, length, cmdData );    // channel, data length, data
+      HmwDevice::set( targetChannel, length, cmdData );    // channel, data length, data
    }
 }
 

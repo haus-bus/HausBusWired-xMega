@@ -20,6 +20,19 @@ class HmwMsgKeyEvent : public HmwMessageBase
 
 // functions
    public:
+      inline HmwMsgKeyEvent( uint32_t ownAddress, uint32_t dstAddress, uint8_t srcChannel, uint8_t dstChannel, uint8_t keyPressNum, bool longPress )
+      {
+         frameData[0] = KEY_EVENT;
+         frameData[1] = srcChannel;
+         frameData[2] = dstChannel;
+         frameData[3] = ( longPress ? 3 : 2 ) + ( keyPressNum << 2 );
+
+         senderAddress = ownAddress;
+         targetAddress = dstAddress;
+         controlByte = 0x18;
+         frameDataLength = 0x04;
+      }
+
       inline uint8_t getSourceChannel()
       {
          return frameData[1];

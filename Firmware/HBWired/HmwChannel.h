@@ -34,9 +34,9 @@ class HmwChannel
       enum Type
       {
          UNKNOWN,
-         HBW_KEY,
-         HBW_DIMMER,
-         HBW_DS18X20
+         HMW_KEY,
+         HMW_DIMMER,
+         HMW_DS18X20
       };
 
    protected:

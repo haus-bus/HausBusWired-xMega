@@ -8,12 +8,12 @@
 */
 
 
-#ifndef HBWLinkKey_h
-#define HBWLinkKey_h
+#ifndef HmwLinkKey_h
+#define HmwLinkKey_h
 
-#include "HBWired.h"
+#include "HmwLinkSender.h"
 
-class HBWLinkKey : public HBWLinkSender
+class HmwLinkKey : public HmwLinkSender
 {
    public:
 
@@ -24,14 +24,14 @@ class HBWLinkKey : public HBWLinkSender
          uint8_t actorChannel;
       };
 
-      HBWLinkKey( uint8_t _numLinks, Config* _links );
-      void sendKeyEvent( HBWDevice* device, uint8_t srcChan, uint8_t keyPressNum, bool longPress );
+      HmwLinkKey( uint8_t _numLinks, Config* _links );
+      void sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress );
 
 
 
    private:
       uint8_t numLinks;         // number of links of this type
-      Config* links;     // size sollte konstant sein -> als define in .cpp
+      Config* links;            // size sollte konstant sein -> als define in .cpp
 };
 
 #endif

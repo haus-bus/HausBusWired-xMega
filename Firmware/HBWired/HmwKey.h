@@ -1,12 +1,14 @@
-#ifndef HBWKey_h
-#define HBWKey_h
+#ifndef HmwKey_h
+#define HmwKey_h
 
-#include "HBWired.h"
+#include "HmwChannel.h"
 #include <DigitalInput.h>
+#include <Time/Timestamp.h>
+#include <xEeprom.h>
 
 
 // Class HBWKey
-class HBWKey : public HBWChannel
+class HmwKey : public HmwChannel
 {
    public:
 
@@ -81,33 +83,33 @@ class HBWKey : public HBWChannel
             }
       };
 
-      HBWKey( PortPin _pin, Config* _config, HBWChannel* _feedbackChannel = NULL );
+      HmwKey( PortPin _pin, Config* _config, HmwChannel* _feedbackChannel = NULL );
 
-      inline void setFeedbackChannel( HBWChannel* _feedbackChannel )
+      inline void setFeedbackChannel( HmwChannel* _feedbackChannel )
       {
          feedbackChannel = _feedbackChannel;
       }
 
-      virtual void loop( HBWDevice*, uint8_t channel );
+      virtual void loop( uint8_t channel );
       virtual void checkConfig();
 
    protected:
 
       void resetChannel();
 
-      void handlePushButtonSignal( HBWDevice* device, uint8_t channel );
+      void handlePushButtonSignal( uint8_t channel );
 
-      void handleSwitchSignal( HBWDevice* device, uint8_t channel );
+      void handleSwitchSignal( uint8_t channel );
 
    private:
       uint8_t keyPressNum;
       Config* config;
-      HBWChannel* feedbackChannel;
+      HmwChannel* feedbackChannel;
       DigitalInput digitalIn;
 
 
       Timestamp keyPressedTimestamp;   // Zeit, zu der die Taste gedrueckt wurde (fuer's Entprellen)
-      Timestamp lastSentLong;        // Zeit, zu der das letzte Mal longPress gesendet wurde
+      Timestamp lastSentLong;          // Zeit, zu der das letzte Mal longPress gesendet wurde
 };
 
 #endif

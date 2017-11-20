@@ -1,13 +1,14 @@
 /*
- * HBWAnalogIn.cpp
+ * HmwAnalogIn.cpp
  *
  *  Created on: 26.04.2017
  *      Author: Viktor Pankraz
  */
 
-#include "HBWAnalogIn.h"
+#include "HmwAnalogIn.h"
+#include "HmwDevice.h"
 
-HBWAnalogIn::HBWAnalogIn( ADC_t* _adc, uint8_t _adcChannel, Config* _config ) :
+HmwAnalogIn::HmwAnalogIn( ADC_t* _adc, uint8_t _adcChannel, Config* _config ) :
    adc( _adc ), adcChannel( _adcChannel ), config( _config ), state( START_MEASUREMENT )
 {
    nextActionDelay = 10;
@@ -15,7 +16,7 @@ HBWAnalogIn::HBWAnalogIn( ADC_t* _adc, uint8_t _adcChannel, Config* _config ) :
 }
 
 
-uint8_t HBWAnalogIn::get( uint8_t* data )
+uint8_t HmwAnalogIn::get( uint8_t* data )
 {
    // MSB first
    *data++ = ( currentValue >> 8 ) & 0xFF;
@@ -23,7 +24,7 @@ uint8_t HBWAnalogIn::get( uint8_t* data )
    return 2;
 }
 
-void HBWAnalogIn::loop( HBWDevice* device, uint8_t channel )
+void HmwAnalogIn::loop( uint8_t channel )
 {
 
    // TODO debug
@@ -88,7 +89,7 @@ void HBWAnalogIn::loop( HBWDevice* device, uint8_t channel )
       if ( doSend )
       {
          uint8_t data[2];
-         uint8_t errcode = device->sendInfoMessage( channel, get( data ), data );
+         uint8_t errcode = HmwDevice::sendInfoMessage( channel, get( data ), data );
 
          // sendInfoMessage returns 0 on success, 1 if bus busy, 2 if failed
          if ( errcode )

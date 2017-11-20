@@ -5,29 +5,31 @@
  *      Author: Viktor Pankraz
  */
 
-#include "HBWDS1820.h"
+#include "HmwDS1820.h"
+#include "HmwDevice.h"
+
 #include <Security/Crc8.h>
 #include <Tracing/Logger.h>
 #include <stdlib.h>
 
-#define getId() FSTR( "HBWDS1820." ) << channel
+#define getId() FSTR( "HmwDS1820." ) << channel
 
 #define INVALID_VALUE -27315
 
-const uint8_t HBWDS1820::debugLevel( DEBUG_LEVEL_LOW );
+const uint8_t HmwDS1820::debugLevel( DEBUG_LEVEL_LOW );
 
-bool HBWDS1820::selfPowered( true );
+bool HmwDS1820::selfPowered( true );
 
-HBWDS1820::HBWDS1820( OneWire& _hardware, Config* _config ) :
+HmwDS1820::HmwDS1820( OneWire& _hardware, Config* _config ) :
    hardware( &_hardware ), state( SEARCH_SENSOR )
 {
-   type = HBWChannel::HBW_DS18X20;
+   type = HmwChannel::HMW_DS18X20;
    config = _config;
    nextActionDelay = 2000;
    lastActionTime = 0;
 }
 
-bool HBWDS1820::isSelfPowered()
+bool HmwDS1820::isSelfPowered()
 {
    hardware->reset();
    hardware->sendCommand( READ_POWER_SUPPLY, (uint8_t*) &romCode );
@@ -38,13 +40,13 @@ bool HBWDS1820::isSelfPowered()
    return selfPowered;
 }
 
-bool HBWDS1820::isSensor( uint8_t familiyCode )
+bool HmwDS1820::isSensor( uint8_t familiyCode )
 {
    return ( ( familiyCode == DS18B20_ID ) || ( familiyCode == DS18S20_ID ) );
 }
 
 
-uint8_t HBWDS1820::get( uint8_t* data )
+uint8_t HmwDS1820::get( uint8_t* data )
 {
    // MSB first
    *data++ = ( currentCentiCelsius >> 8 ) & 0xFF;
@@ -52,7 +54,7 @@ uint8_t HBWDS1820::get( uint8_t* data )
    return 2;
 }
 
-void HBWDS1820::loop( HBWDevice* device, uint8_t channel )
+void HmwDS1820::loop( uint8_t channel )
 {
    if ( !nextActionDelay || ( ( config->id == 0 ) && ( state != SEND_INVALID_VALUE ) ) )
    {
@@ -150,7 +152,7 @@ void HBWDS1820::loop( HBWDevice* device, uint8_t channel )
       if ( doSend )
       {
          uint8_t data[2];
-         uint8_t errcode = device->sendInfoMessage( channel, get( data ), data );
+         uint8_t errcode = HmwDevice::sendInfoMessage( channel, get( data ), data );
 
          // sendInfoMessage returns 0 on success, 1 if bus busy, 2 if failed
          if ( errcode == 0 )
@@ -167,13 +169,13 @@ void HBWDS1820::loop( HBWDevice* device, uint8_t channel )
    {
       // send the INVALID_VALUE one time
       uint8_t data[2];
-      device->sendInfoMessage( channel, get( data ), data );
+      HmwDevice::sendInfoMessage( channel, get( data ), data );
       nextActionDelay = 0;
    }
 
 }
 
-void HBWDS1820::checkConfig()
+void HmwDS1820::checkConfig()
 {
    if ( config->minDelta > 250 )
    {
@@ -198,7 +200,7 @@ void HBWDS1820::checkConfig()
 }
 
 
-HBWDS1820::HwStatus HBWDS1820::startMeasurement( bool allSensors )
+HmwDS1820::HwStatus HmwDS1820::startMeasurement( bool allSensors )
 {
    hardware->reset();
 
@@ -218,7 +220,7 @@ HBWDS1820::HwStatus HBWDS1820::startMeasurement( bool allSensors )
    }
 }
 
-HBWDS1820::HwStatus HBWDS1820::readMeasurement()
+HmwDS1820::HwStatus HmwDS1820::readMeasurement()
 {
 
    uint8_t sp[SCRATCHPAD_SIZE];
@@ -239,7 +241,7 @@ HBWDS1820::HwStatus HBWDS1820::readMeasurement()
    return OK;
 }
 
-int16_t HBWDS1820::convertToCentiCelsius( uint8_t* scratchPad )
+int16_t HmwDS1820::convertToCentiCelsius( uint8_t* scratchPad )
 {
    uint16_t measurement = scratchPad[0];        // LSB
    measurement |= ( (uint16_t) scratchPad[1] ) << 8; // MSB
@@ -297,14 +299,14 @@ int16_t HBWDS1820::convertToCentiCelsius( uint8_t* scratchPad )
 }
 
 
-bool HBWDS1820::isUsed( uint8_t id )
+bool HmwDS1820::isUsed( uint8_t id )
 {
-   for ( uint8_t i = 0; i < HBWChannel::getNumChannels(); i++ )
+   for ( uint8_t i = 0; i < HmwChannel::getNumChannels(); i++ )
    {
-      HBWChannel* channel = HBWChannel::getChannel( i );
-      if ( channel->isOfType( HBWChannel::HBW_DS18X20 ) )
+      HmwChannel* channel = HmwChannel::getChannel( i );
+      if ( channel->isOfType( HmwChannel::HMW_DS18X20 ) )
       {
-         HBWDS1820* sensor = reinterpret_cast<HBWDS1820*>( channel );
+         HmwDS1820* sensor = reinterpret_cast<HmwDS1820*>( channel );
          if ( sensor->getConfigId() == id )
          {
             return true;

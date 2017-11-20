@@ -5,16 +5,17 @@
  *      Author: Viktor Pankraz
  */
 
-#ifndef HwUnits_DS1820_H
-#define HwUnits_DS1820_H
+#ifndef HmwDS1820_H
+#define HmwDS1820_H
 
 #include <Protocols/OneWire.h>
 #include <Time/Timestamp.h>
+#include <xEeprom.h>
 
-#include "HBWired.h"
+#include "HmwChannel.h"
 
 
-class HBWDS1820 : public HBWChannel
+class HmwDS1820 : public HmwChannel
 {
    public:
 
@@ -70,7 +71,7 @@ class HBWDS1820 : public HBWChannel
 
       ////    Constructors and destructors    ////
 
-      HBWDS1820( OneWire& _hardware, Config* _config );
+      HmwDS1820( OneWire& _hardware, Config* _config );
 
       ////    Operations    ////
 
@@ -84,7 +85,7 @@ class HBWDS1820 : public HBWChannel
 
       // definition of needed functions from HBWChannel class
       virtual uint8_t get( uint8_t* data );
-      virtual void loop( HBWDevice*, uint8_t channel );
+      virtual void loop( uint8_t channel );
       virtual void checkConfig();
 
    private:

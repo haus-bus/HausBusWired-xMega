@@ -1,19 +1,21 @@
 /*
- * HBWDimmer.h
+ * HmwDimmer.h
  *
  * Created: 26.04.2017 09:01:56
  * Author: viktor.pankraz
  */
 
 
-#ifndef __HBWDIMMER_H__
-#define __HBWDIMMER_H__
+#ifndef __HMWDIMMER_H__
+#define __HMWDIMMER_H__
 
-#include "HBWired.h"
+#include "HmwChannel.h"
 #include <PwmOutput.h>
+#include <Time/Timestamp.h>
+#include <xEeprom.h>
 
 
-class HBWDimmer : public HBWChannel
+class HmwDimmer : public HmwChannel
 {
 
    public:
@@ -53,12 +55,12 @@ class HBWDimmer : public HBWChannel
 
 // functions
    public:
-      HBWDimmer( PortPin _portPin, Config* _config, bool _inverted = false );
+      HmwDimmer( PortPin _portPin, Config* _config, bool _inverted = false );
 
       // definition of needed functions from HBWChannel class
       virtual uint8_t get( uint8_t* data );
-      virtual void loop( HBWDevice*, uint8_t channel );
-      virtual void set( HBWDevice*, uint8_t length, uint8_t const* const data );
+      virtual void loop( uint8_t channel );
+      virtual void set( uint8_t length, uint8_t const* const data );
 
    protected:
 
@@ -98,6 +100,6 @@ class HBWDimmer : public HBWChannel
          logicalState = state;
       }
 
-}; // HBWDimmer
+}; // HmwDimmer
 
-#endif // __HBWDIMMER_H__
+#endif // __HMWDIMMER_H__

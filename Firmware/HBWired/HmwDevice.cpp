@@ -13,7 +13,6 @@
 #include "HmwMsgReadEeprom.h"
 #include "HmwMsgWriteFlash.h"
 #include "HmwMsgEepromMap.h"
-#include "HmwMsgKeyEvent.h"
 #include "HmwMsgGetLevel.h"
 #include "HmwMsgGetSerial.h"
 #include "HmwMsgWriteEeprom.h"

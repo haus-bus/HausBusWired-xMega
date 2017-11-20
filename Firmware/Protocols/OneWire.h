@@ -10,7 +10,7 @@
 
 #include <PortPin.h>
 
-class HBWDS1820;
+class HmwDS1820;
 
 class PortPin;
 

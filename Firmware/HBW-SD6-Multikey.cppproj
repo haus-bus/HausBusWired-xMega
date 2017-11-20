@@ -284,49 +284,40 @@
     <Compile Include="HBW-SD6-Multikey\HBW-SD6-Multikey.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBW-SD6-Multikey\HBW-SD6-MultiKey.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <None Include="HBWired\HBWAnalogIn.cpp">
+    <None Include="HBWired\HmwAnalogIn.cpp">
       <SubType>compile</SubType>
     </None>
-    <Compile Include="HBWired\HBWAnalogIn.h">
+    <Compile Include="HBWired\HmwAnalogIn.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HBWDimmer.cpp">
+    <Compile Include="HBWired\HmwDimmer.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HBWDimmer.h">
+    <Compile Include="HBWired\HmwDimmer.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HBWDS1820.cpp">
+    <Compile Include="HBWired\HmwDS1820.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HBWDS1820.h">
+    <Compile Include="HBWired\HmwDS1820.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HBWired.cpp">
+    <Compile Include="HBWired\HmwKey.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HBWired.h">
+    <Compile Include="HBWired\HmwKey.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HBWKey.cpp">
+    <Compile Include="HBWired\HmwLinkDimmer.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HBWKey.h">
+    <Compile Include="HBWired\HmwLinkDimmer.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HBWLinkDimmer.cpp">
+    <Compile Include="HBWired\HmwLinkKey.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HBWLinkDimmer.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="HBWired\HBWLinkKey.cpp">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="HBWired\HBWLinkKey.h">
+    <Compile Include="HBWired\HmwLinkKey.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="HBWired\HmwChannel.cpp">
@@ -375,6 +366,9 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="HBWired\HmwMsgGetSerial.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HBWired\HmwMsgInfo.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="HBWired\HmwMsgKeyEvent.h">
