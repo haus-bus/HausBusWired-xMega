@@ -24,7 +24,7 @@ class HmwDevice
    public:
       struct BasicConfig
       {
-         uint8_tx doNotUse;                     // 0x0000
+         uint8_tx hwVersion;                    // 0x0000
          uint8_tx loggingTime;                  // 0x0001
          uint32_tx centralAddress;              // 0x0002   - 0x0005
          uint32_tx ownAdress;                   // 0x0006   - 0x0009
@@ -39,10 +39,6 @@ class HmwDevice
       };
 
       static uint8_t deviceType;
-
-      static uint8_t hardwareVersion;
-
-      static uint16_t firmwareVersion;
 
       static BasicConfig* basicConfig;
 
@@ -64,9 +60,17 @@ class HmwDevice
 // functions
    public:
 
-      static inline Stream::Status announce()
+      static inline void setup( uint8_t _deviceType, BasicConfig* _config )
       {
-         HmwMsgAnnounce msg( 0, ownAddress, deviceType, hardwareVersion, firmwareVersion );
+         deviceType = _deviceType;
+         basicConfig = _config;
+         ownAddress = changeEndianness( basicConfig->ownAdress );
+         pendingActions.announce = true;
+      }
+
+      static inline Stream::Status announce( uint8_t channel = 0 )
+      {
+         HmwMsgAnnounce msg( channel, ownAddress, deviceType, basicConfig->hwVersion, ( Release::MAJOR << 8 ) | Release::MINOR );
          return HmwStream::sendMessage( &msg );
       }
 
@@ -125,7 +129,12 @@ class HmwDevice
       static inline uint8_t sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress, uint32_t targetAddr, uint8_t targetChan )
       {
          HmwMsgKeyEvent msg( ownAddress, targetAddr, srcChan, targetChan, keyPressNum, longPress );
-         return HmwStream::sendMessage( &msg );
+         Stream::Status status = HmwStream::sendMessage( &msg );
+         if ( msg.isBroadcast() )
+         {
+            return announce( srcChan );
+         }
+         return status;
       }
 
       static inline uint8_t sendInfoMessage( uint8_t channel, uint8_t length, uint8_t const* const data, uint32_t target_address = 0 )

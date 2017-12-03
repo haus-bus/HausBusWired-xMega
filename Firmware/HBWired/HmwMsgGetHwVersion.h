@@ -25,7 +25,6 @@ class HmwMsgGetHwVersion : public HmwMessageBase
          frameData[0] = deviceType;
          frameData[1] = hwVersion;
          frameDataLength = 2;
-         controlByte = 0x18;
       }
    protected:
    private:

@@ -6,6 +6,7 @@
  */
 
 #include "HBW-SD6-Booter.h"
+#include "HmwBooterHw.h"
 
 #include <Peripherals/InterruptController.h>
 #include <Peripherals/WatchDog.h>
@@ -20,11 +21,11 @@
 
 const ModuleId moduleId =
 {
-   "$MOD$ HmwBooter",
-   0,
+   "$MOD$ " MOD_ID,
+   BOOTER_SIZE,
    Release::MAJOR,
    Release::MINOR,
-   Release::HMW_SD6_ID,
+   Release::CONTROLLER_ID,
    0
 };
 
@@ -32,15 +33,11 @@ static const uint8_t debugLevel( DEBUG_LEVEL_LOW );
 
 #define getId() FSTR( "BOOTER" )
 
+static bool isDownloadRunning = false;
 static bool isFirmwareValid = false;
 static bool startFirmware = false;
 
-#ifdef DEBUG
-void putChar( char c )
-{
-   Usart::instance<PortC, 1>().write( c );
-}
-#endif
+static HmwBooterHw hardware;
 
 void checkFirmware()
 {
@@ -76,48 +73,6 @@ void checkFirmware()
    ERROR_1( FSTR( "invalid" ) );
 }
 
-static const uint8_t LED_MASK = 0x3F;
-static uint8_t ledData[] = { 0x00, 0x01, 0x05, 0x15, 0x35, 0x3D, 0x3F, 0x3E, 0x3A, 0x2A, 0x0A, 0x02 };
-static uint8_t ledIdx = 0;
-static bool isDownloadRunning = false;
-
-void notifyNextDownloadPacket()
-{
-   if ( ++ledIdx >= sizeof( ledData ) )
-   {
-      ledIdx = 0;
-   }
-}
-
-void handleLeds()
-{
-   static Timestamp lastTime;
-   if ( isDownloadRunning )
-   {
-      uint8_t otherPins = PORTC.OUT & ~LED_MASK;
-      PORTC.OUT = ledData[ledIdx] | otherPins;
-   }
-   else
-   {
-      if ( PORTC.IN & LED_MASK )
-      {
-         if ( lastTime.since() > 990 )
-         {
-            PORTC.OUTTGL = LED_MASK;
-            lastTime = Timestamp();
-         }
-      }
-      else
-      {
-         if ( lastTime.since() > 10 )
-         {
-            PORTC.OUTTGL = LED_MASK;
-            lastTime = Timestamp();
-         }
-      }
-   }
-}
-
 void startApplication()
 {
      #ifdef EIND
@@ -133,31 +88,8 @@ int main( void )
    SystemTime::init();
    Eeprom::MemoryMapped::enable();
 
-   // Initialize interfaces
-   // DigitalOutput rxEnable( PortE, 0 ), txEnable( PortE, 1 );
-   // DigitalInput rx( PortE, 2 );
-   // DigitalOutput tx( PortE, 3 );
-   PORTE.DIR = Pin0 | Pin1 | Pin3;
-   PORTC.DIR = LED_MASK;
-
-#ifdef DEBUG
-   DigitalInput rx( PortC, 6 );
-   DigitalOutput tx( PortC, 7 );
-   Usart::instance<PortC, 1>().init<115200>();
-   Logger::instance().setStream( putChar );
-#endif
-
-   // Authorize interrupts
-   // InterruptController::selectBootInterruptSection();
-   // InterruptController::enableAllInterruptLevel();
-   // GlobalInterrupt::enable();
-   HmwDevice::deviceType = Release::HMW_SD6_ID;
-   HmwDevice::firmwareVersion = ( ( Release::MAJOR << 8 ) | Release::MINOR );
-   HmwDevice::hardwareVersion = Release::REV_0;
-   HmwDevice::basicConfig = reinterpret_cast<HmwDevice::BasicConfig*>( MAPPED_EEPROM_START );
-   HmwDevice::ownAddress = changeEndianness( HmwDevice::basicConfig->ownAdress );
-
-   HmwStream::setStream( Usart::instance<PortE, 0>() );
+   HmwStream::setHardware( &hardware );
+   HmwDevice::setup( Release::HMW_SD6_ID, reinterpret_cast<HmwDevice::BasicConfig*>( MAPPED_EEPROM_START ) );
 
    checkFirmware();
 
@@ -178,11 +110,11 @@ int main( void )
       {
          isDownloadRunning = true;
          startFirmware = false;
-         notifyNextDownloadPacket();
+         hardware.notifyNextDownloadPacket();
       }
       HmwDevice::processMessage( msg );
       HmwDevice::handleAnnouncement();
-      handleLeds();
+      hardware.handleLeds( isDownloadRunning );
       WatchDog::reset();
    }
    return 0;

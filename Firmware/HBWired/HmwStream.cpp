@@ -8,7 +8,7 @@
 
 #include "HmwStream.h"
 
-Usart* HmwStream::usart( NULL );
+HmwStreamHw* HmwStream::hardware( NULL );
 
 uint8_t HmwStream::senderNum( 0 );
 
@@ -27,12 +27,15 @@ const uint8_t HmwStream::debugLevel( DEBUG_LEVEL_LOW );
 #include "DigitalOutput.h"
 Stream::Status HmwStream::sendMessage( HmwMessageBase* msg )
 {
-   if ( !usart )
+   if ( !hardware )
    {
       return Stream::LOCKED;
    }
 
-   static DigitalOutputTmpl<PortE, 1> txEnable;
+   // wait for bus to be idle
+   while ( !isIdle() && !msg->isACK() )
+   {
+   }
 
    uint8_t data;
    Stream::Status status = Stream::SUCCESS;
@@ -44,28 +47,39 @@ Stream::Status HmwStream::sendMessage( HmwMessageBase* msg )
    if ( msg->isInfo() )
    {
       msg->setSenderNum( senderNum );
+      if ( msg->isBroadcast() )
+      {
+         msg->setSyncBit();
+      }
    }
 
-   txEnable.set();
+   hardware->enableTranceiver( true );
    while ( HmwStream::getNextByteToSend( data ) )
    {
-      if ( !usart->write( data ) )
+      if ( !hardware->serial->write( data ) )
       {
          status = Stream::ABORTED;
       }
    }
-   usart->waitUntilTransferCompleted();
-   txEnable.clear();
+   hardware->serial->waitUntilTransferCompleted();
+   hardware->enableTranceiver( false );
+
+   if ( status == Stream::SUCCESS )
+   {
+      senderNum++;
+   }
+   lastReceivedTime = Timestamp();
+
    return status;
 }
 
 HmwMessageBase* HmwStream::pollMessageReceived()
 {
-   if ( usart && usart->isReceiveCompleted() )
+   if ( hardware && hardware->serial->isReceiveCompleted() )
    {
       lastReceivedTime = Timestamp();
       uint8_t data;
-      if ( usart->read( data ) )
+      if ( hardware->serial->read( data ) )
       {
          if ( HmwStream::nextByteReceived( data ) )
          {
@@ -179,7 +193,6 @@ bool HmwStream::getNextByteToSend( uint8_t& data )
       return false;
    }
 
-   bool updateChecksum = true;
    if ( ( statusSending.dataIdx == 0 ) && !statusSending.transmitting )
    {
       statusSending.transmitting = true;
@@ -207,14 +220,6 @@ bool HmwStream::getNextByteToSend( uint8_t& data )
          // modify the frameDataLength by the size of checksum
          data += sizeof( statusSending.crc16checksum );
       }
-      else if ( statusSending.dataIdx == ( HmwMessageBase::HEADER_SIZE + statusSending.msg->getFrameDataLength() ) )
-      {
-         // last data byte was sent, calculate crc
-         HmwMessageBase::crc16Shift( 0, statusSending.crc16checksum );
-         HmwMessageBase::crc16Shift( 0, statusSending.crc16checksum );
-         statusSending.msg->setRawByte( statusSending.dataIdx + 1, HBYTE( statusSending.crc16checksum ) );
-         statusSending.msg->setRawByte( statusSending.dataIdx + 2, LBYTE( statusSending.crc16checksum ) );
-      }
       else if ( statusSending.dataIdx > ( HmwMessageBase::HEADER_SIZE + statusSending.msg->getFrameDataLength() + sizeof( statusSending.crc16checksum ) ) )
       {
          // sending complete, no data available
@@ -224,9 +229,14 @@ bool HmwStream::getNextByteToSend( uint8_t& data )
       if ( !statusSending.pendingEscape )
       {
          DEBUG_L2( data, '|' );
-         if ( updateChecksum )
+         HmwMessageBase::crc16Shift( data, statusSending.crc16checksum );
+         if ( statusSending.dataIdx == ( HmwMessageBase::HEADER_SIZE + statusSending.msg->getFrameDataLength() ) )
          {
-            HmwMessageBase::crc16Shift( data, statusSending.crc16checksum );
+            // last data byte will be sent, calculate crc
+            HmwMessageBase::crc16Shift( 0, statusSending.crc16checksum );
+            HmwMessageBase::crc16Shift( 0, statusSending.crc16checksum );
+            statusSending.msg->setRawByte( statusSending.dataIdx + 1, HBYTE( statusSending.crc16checksum ) );
+            statusSending.msg->setRawByte( statusSending.dataIdx + 2, LBYTE( statusSending.crc16checksum ) );
          }
          if ( ( data == HmwMessageBase::FRAME_STARTBYTE ) || ( data == HmwMessageBase::FRAME_STARTBYTE_SHORT ) || ( data == HmwMessageBase::ESCAPE_BYTE ) )
          {

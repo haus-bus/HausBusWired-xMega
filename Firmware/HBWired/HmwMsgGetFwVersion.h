@@ -26,7 +26,6 @@ class HmwMsgGetFwVersion : public HmwMessageBase
          frameData[0] = fwVersion >> 8;
          frameData[1] = fwVersion & 0xFF;
          frameDataLength = 2;
-         controlByte = 0x18;
       }
    protected:
    private:

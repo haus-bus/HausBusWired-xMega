@@ -120,7 +120,7 @@ class Usart
          }
 
          setBaudrate( getPrescaler<baudrate, doubleClock>(), 0 );
-         setFormat( characterSize, parity, twoStopBits );
+         setFormat( mode, characterSize, parity, twoStopBits );
          reg.CTRLB = ( USART_TXEN_bm | USART_RXEN_bm
                        | ( doubleClock ? USART_CLK2X_bm : 0 ) );
 
@@ -231,10 +231,10 @@ class Usart
          reg.BAUDCTRLA = (uint8_t) prescaler;
       }
 
-      inline void setFormat( USART_CHSIZE_t characterSize, USART_PMODE_t parityMode,
-                             bool twoStopBits )
+      inline void setFormat( USART_CMODE_t mode, USART_CHSIZE_t characterSize,
+                             USART_PMODE_t parityMode, bool twoStopBits )
       {
-         reg.CTRLC = ( characterSize | parityMode
+         reg.CTRLC = ( mode | characterSize | parityMode
                        | ( twoStopBits ? USART_SBMODE_bm : 0 ) );
       }
 

@@ -23,6 +23,7 @@ class Release
       {
          REV_0,
          REV_1
+
       };
 
       static const uint8_t MAJOR = 1;

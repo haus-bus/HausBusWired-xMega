@@ -22,7 +22,7 @@
     <preserveEEPROM>true</preserveEEPROM>
     <OverrideVtorValue>exception_table</OverrideVtorValue>
     <BootSegment>2</BootSegment>
-    <eraseonlaunchrule>2</eraseonlaunchrule>
+    <eraseonlaunchrule>1</eraseonlaunchrule>
     <ExternalProgrammingToolCommand />
     <avrtool>com.atmel.avrdbg.tool.atmelice</avrtool>
     <avrtoolserialnumber>J41800037616</avrtoolserialnumber>
@@ -287,6 +287,12 @@
     <None Include="HBWired\HmwAnalogIn.cpp">
       <SubType>compile</SubType>
     </None>
+    <Compile Include="HBW-SD6-Multikey\MultiKeyHw.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HBW-SD6-Multikey\MultiKeyHw.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="HBWired\HmwAnalogIn.h">
       <SubType>compile</SubType>
     </Compile>

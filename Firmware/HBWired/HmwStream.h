@@ -10,7 +10,7 @@
 #define __HMWSTREAM_H__
 
 #include "HmwMessageBase.h"
-#include <Peripherals/Usart.h>
+#include "HmwStreamHw.h"
 
 class HmwStream
 {
@@ -22,10 +22,16 @@ class HmwStream
 // functions
    public:
 
-      static inline void setStream( Usart& _usart )
+      static inline void setHardware( HmwStreamHw* _hardware )
       {
-         usart = &_usart;
-         usart->init<19200, USART_CMODE_ASYNCHRONOUS_gc, USART_PMODE_EVEN_gc, USART_CHSIZE_8BIT_gc, true, false>();
+         hardware = _hardware;
+         hardware->serial->init<19200, USART_CMODE_ASYNCHRONOUS_gc, USART_PMODE_EVEN_gc, USART_CHSIZE_8BIT_gc, false, false>();
+         /*
+            hardware->serial->setBaudrate( 106, 0 ); // 19185 bps at 32MHz, clock not doubled
+            hardware->serial->setFormat( USART_CMODE_ASYNCHRONOUS_gc, USART_CHSIZE_8BIT_gc, USART_PMODE_EVEN_gc, false );
+            hardware->serial->enableTransmitter();
+            hardware->serial->enableReceiver();
+          */
       }
 
       static Stream::Status sendMessage( HmwMessageBase* msg );
@@ -34,8 +40,8 @@ class HmwStream
 
       static inline bool isIdle()
       {
-         // toDo random number
-         return lastReceivedTime.since() > ( 100 );
+         // toDo
+         return lastReceivedTime.since() > 7;
       }
 
    protected:
@@ -66,7 +72,7 @@ class HmwStream
 
       static Timestamp lastReceivedTime;
 
-      static Usart* usart;
+      static HmwStreamHw* hardware;
 
 
 }; // HmWStream

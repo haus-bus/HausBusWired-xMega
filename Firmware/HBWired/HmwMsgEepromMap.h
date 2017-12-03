@@ -55,7 +55,6 @@ class HmwMsgEepromMap : public HmwMessageBase
                }
             }
          }
-         controlByte = 0x18;
       }
 
    protected:

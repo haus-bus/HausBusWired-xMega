@@ -12,6 +12,7 @@
 #include <Time/Timestamp.h>
 #include <Stream.h>
 #include <stdio.h>
+#include <Release.h>
 
 class HmwMessageBase
 {
@@ -27,6 +28,7 @@ class HmwMessageBase
          ADDRESS_SIZE = 4,
          HEADER_SIZE = 9,
 
+         BROADCAST_ADDR = 0xFFFFFFFF,
          CRC16_POLYNOM = 0x1002
       };
 
@@ -150,8 +152,6 @@ class HmwMessageBase
          frameDataLength = 0;
       }
 
-      void changeIntoACK();
-
       bool isForMe();
 
       inline uint8_t getRawByte( uint8_t idx )
@@ -197,7 +197,7 @@ class HmwMessageBase
 
       inline bool isBroadcast()
       {
-         return targetAddress == 0xFFFFFFFF;
+         return targetAddress == BROADCAST_ADDR;
       }
 
       inline bool isValid()
@@ -250,11 +250,21 @@ class HmwMessageBase
          }
       }
 
-      void convertToResponse( uint32_t& ownAddress )
+      inline void convertToResponse( uint32_t& ownAddress, bool isAck )
       {
          targetAddress = senderAddress;
          senderAddress = ownAddress;
-         controlByte.info.receiverNum = getSenderNum();
+         uint8_t tmp = getSenderNum();
+         if ( isAck )
+         {
+            controlByte = 0x19;
+            frameDataLength = 0;
+         }
+         else
+         {
+            controlByte = 0x18;
+         }
+         controlByte.info.receiverNum = tmp;
       }
 
       inline bool hasSenderAddress() const
@@ -287,6 +297,11 @@ class HmwMessageBase
       inline void setFrameDataLength( uint8_t len )
       {
          frameDataLength = len;
+      }
+
+      inline void setSyncBit()
+      {
+         controlByte.info.sync = true;
       }
 
       static void crc16Shift( uint8_t newByte, uint16_t& crc );

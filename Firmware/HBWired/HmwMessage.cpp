@@ -24,111 +24,6 @@ HmwMessage::HmwMessage()
    memset( this, 0, sizeof( *this ) );
 }
 
-bool HmwMessage::generateResponse()
-{
-   if ( !isInfo() )
-   {
-      return false;
-   }
-
-   bool isValid = true;
-   uint8_t msgSenderNum = controlByte.info.senderNum;
-
-   // if sync bit is set, reset the static senderNum
-   if ( controlByte.info.sync )
-   {
-      senderNum = 0;
-      receiverNum = controlByte.info.senderNum;
-   }
-   if ( isCommand( READ_CONFIG ) )
-   {
-      DEBUG_M1( FSTR( "C: read config" ) );
-      changeIntoACK();
-   }
-   else if ( isCommand( GET_FW_VERSION ) )
-   {
-      DEBUG_M1( FSTR( "C: get FW version" ) );
-      frameData[0] = HmwDevice::firmwareVersion >> 8;
-      frameData[1] = HmwDevice::firmwareVersion& 0xFF;
-      frameDataLength = 2;
-      controlByte = 0x18;
-   }
-   else if ( isCommand( GET_HARDWARE_VERSION ) )
-   {
-      DEBUG_M1( FSTR( "T: HWVer,Typ" ) );
-      frameData[0] = HmwDevice::deviceType;
-      frameData[1] = HmwDevice::hardwareVersion;
-      frameDataLength = 2;
-      controlByte = 0x18;
-   }
-   else if ( isCommand( READ_EEPROM ) )
-   {
-      DEBUG_M1( FSTR( "C: Read EEPROM" ) );
-      if ( frameDataLength == 4 )    // Length of incoming data must be 4
-      {
-         uint16_t address = ( frameData[1] << 8 ) | frameData[2];
-         uint8_t length = frameData[3];
-         memcpy( frameData, (void*)( MAPPED_EEPROM_START | address ), length );
-         frameDataLength = length;
-         controlByte = 0x18;
-      }
-      else
-      {
-         DEBUG_M2( FSTR( "E: wrong data length :" ), frameDataLength );
-         isValid = false;
-      }
-
-   }
-   else if ( isCommand( WRITE_FLASH ) )
-   {
-      DEBUG_M1( FSTR( "C: Write Flash" ) );
-      if ( frameDataLength > 6 )
-      {
-         static uint8_t buffer[ APP_SECTION_PAGE_SIZE ];
-         Flash::address_t address = ( frameData[3] << 8 ) | frameData[4];
-         uint8_t length = frameData[5];
-         memcpy( &buffer[address & ( Flash::getPageSize() - 1 )], &frameData[6], length );
-
-         if ( ( address + length ) % Flash::getPageSize() )
-         {
-            // read more bytes
-            changeIntoACK();
-         }
-         else if ( Flash::write( address & ~( Flash::getPageSize() - 1 ), buffer, Flash::getPageSize() ) == Flash::getPageSize() )
-         {
-            changeIntoACK();
-         }
-         else
-         {
-            DEBUG_M2( FSTR( "E: Flash::write failed:" ), frameDataLength );
-            isValid = false;
-         }
-      }
-      else
-      {
-         DEBUG_M2( FSTR( "E: wrong data length :" ), frameDataLength );
-         isValid = false;
-      }
-
-   }
-   else
-   {
-      return false;
-   }
-
-   if ( isValid )
-   {
-      targetAddress = senderAddress;
-      senderAddress = HmwDevice::ownAddress;
-      controlByte.info.receiverNum = msgSenderNum;
-      if ( isInfo() )
-      {
-         controlByte.info.senderNum = senderNum;
-      }
-   }
-   return isValid;
-}
-
 void HmwMessage::changeIntoACK()
 {
    if ( isInfo() )
@@ -141,21 +36,6 @@ void HmwMessage::changeIntoACK()
 bool HmwMessage::isForMe()
 {
    return status.frameValid && ( ( targetAddress == HmwDevice::ownAddress ) || isBroadcast() );
-}
-
-void HmwMessage::setupAnnounce( uint8_t channel )
-{
-   senderAddress = HmwDevice::ownAddress;
-   targetAddress = 0xFFFFFFFF;
-   controlByte = 0xF8;
-   frameData[0] = ANNOUNCE;
-   frameData[1] = channel;
-   frameData[2] = HmwDevice::deviceType;
-   frameData[3] = HmwDevice::hardwareVersion;
-   frameData[4] = HmwDevice::firmwareVersion / 0x100;
-   frameData[5] = HmwDevice::firmwareVersion& 0xFF;
-   convertToHmwSerialString( HmwDevice::ownAddress, &frameData[6] );
-   frameDataLength = 16;
 }
 
 bool HmwMessage::nextByteReceived( uint8_t data )

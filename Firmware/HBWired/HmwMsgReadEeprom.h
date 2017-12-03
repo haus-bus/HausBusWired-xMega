@@ -29,7 +29,6 @@ class HmwMsgReadEeprom : public HmwMessageBase
          memcpy( frameData, (void*)( MAPPED_EEPROM_START | address ), length );
          // Eeprom::read( address, frameData, length );
          frameDataLength = length;
-         controlByte = 0x18;
       }
    protected:
    private:

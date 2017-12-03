@@ -21,20 +21,10 @@ HmwMessageBase::HmwMessageBase()
    memset( this, 0, sizeof( *this ) );
 }
 
-void HmwMessageBase::changeIntoACK()
-{
-   if ( isInfo() )
-   {
-      controlByte = 0x19;
-      frameDataLength = 0;
-   }
-}
-
 bool HmwMessageBase::isForMe()
 {
    return valid && ( ( targetAddress == HmwDevice::ownAddress ) || isBroadcast() );
 }
-
 
 // calculate crc16 checksum for each byte
 void HmwMessageBase::crc16Shift( uint8_t newByte, uint16_t& crc )

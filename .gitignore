@@ -1,6 +1,6 @@
 # Generated Code
-Debug/
-Release/
+Debug*/
+Release*/
 .vs/
 *.atsln
 Tools/hterm.cfg

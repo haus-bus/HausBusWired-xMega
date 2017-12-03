@@ -34,7 +34,6 @@ class HmwMsgGetLevel : public HmwMessageBase
       {
          frameData[0] = HmwMessageBase::INFO_LEVEL;
          frameDataLength = dataLength + 2;
-         controlByte = 0x18;
       }
 
    protected:

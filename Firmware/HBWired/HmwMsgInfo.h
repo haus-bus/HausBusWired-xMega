@@ -27,9 +27,9 @@ class HmwMsgInfo : public HmwMessageBase
          frameData[1] = srcChannel;
          memcpy( &frameData[2], data, length );
 
+         controlByte = 0x18;
          senderAddress = ownAddress;
          targetAddress = dstAddress;
-         controlByte = 0x18;
          frameDataLength = 0x02 + length;
 
       }
