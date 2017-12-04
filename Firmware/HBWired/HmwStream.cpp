@@ -32,7 +32,7 @@ Stream::Status HmwStream::sendMessage( HmwMessageBase* msg )
       return Stream::LOCKED;
    }
 
-   // wait for bus to be idle
+   // wait for bus to be idle, only ACKs are sent immediately
    while ( !isIdle() && !msg->isACK() )
    {
    }
@@ -77,7 +77,6 @@ HmwMessageBase* HmwStream::pollMessageReceived()
 {
    if ( hardware && hardware->serial->isReceiveCompleted() )
    {
-      lastReceivedTime = Timestamp();
       uint8_t data;
       if ( hardware->serial->read( data ) )
       {
@@ -92,6 +91,8 @@ HmwMessageBase* HmwStream::pollMessageReceived()
 
 bool HmwStream::nextByteReceived( uint8_t data )
 {
+   lastReceivedTime = Timestamp();
+
    if ( statusReceiving.msg == NULL )
    {
       statusReceiving.msg = &inMessage;

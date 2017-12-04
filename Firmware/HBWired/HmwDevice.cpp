@@ -81,38 +81,12 @@ bool HmwDevice::processMessage( HmwMessageBase* msg )
    }
 
    bool isValid = true;
-   bool isAck = true;
+   bool ackOnly = true;
 
    if ( msg->isCommand( HmwMessageBase::READ_CONFIG ) )
    {
       DEBUG_M1( FSTR( "C: read config" ) );
       pendingActions.readConfig = true;
-   }
-   else if ( msg->isCommand( HmwMessageBase::GET_FW_VERSION ) )
-   {
-      DEBUG_M1( FSTR( "C: get FW version" ) );
-      ( (HmwMsgGetFwVersion*)msg )->setupResponse( ( Release::MAJOR << 8 ) | Release::MINOR );
-      isAck = false;
-   }
-   else if ( msg->isCommand( HmwMessageBase::GET_HARDWARE_VERSION ) )
-   {
-      DEBUG_M1( FSTR( "C: HWVer,Typ" ) );
-      ( (HmwMsgGetHwVersion*)msg )->setupResponse( HmwDevice::deviceType, basicConfig->hwVersion );
-      isAck = false;
-   }
-   else if ( msg->isCommand( HmwMessageBase::READ_EEPROM ) )
-   {
-      DEBUG_M1( FSTR( "C: Read EEPROM" ) );
-      if ( msg->getFrameDataLength() == 4 )       // Length of incoming data must be 4
-      {
-         ( (HmwMsgReadEeprom*)msg )->setupResponse();
-         isAck = false;
-      }
-      else
-      {
-         DEBUG_M2( FSTR( "E: wrong data length :" ), msg->getFrameDataLength() );
-         isValid = false;
-      }
    }
    else if ( msg->isCommand( HmwMessageBase::WRITE_FLASH ) )
    {
@@ -143,11 +117,37 @@ bool HmwDevice::processMessage( HmwMessageBase* msg )
    }
 
 #ifndef _BOOTER_
+   else if ( msg->isCommand( HmwMessageBase::GET_FW_VERSION ) )
+   {
+      DEBUG_M1( FSTR( "C: get FW version" ) );
+      ( (HmwMsgGetFwVersion*)msg )->setupResponse( ( Release::MAJOR << 8 ) | Release::MINOR );
+      ackOnly = false;
+   }
+   else if ( msg->isCommand( HmwMessageBase::GET_HARDWARE_VERSION ) )
+   {
+      DEBUG_M1( FSTR( "C: HWVer,Typ" ) );
+      ( (HmwMsgGetHwVersion*)msg )->setupResponse( HmwDevice::deviceType, basicConfig->hwVersion );
+      ackOnly = false;
+   }
+   else if ( msg->isCommand( HmwMessageBase::READ_EEPROM ) )
+   {
+      DEBUG_M1( FSTR( "C: Read EEPROM" ) );
+      if ( msg->getFrameDataLength() == 4 )        // Length of incoming data must be 4
+      {
+         ( (HmwMsgReadEeprom*)msg )->setupResponse();
+         ackOnly = false;
+      }
+      else
+      {
+         DEBUG_M2( FSTR( "E: wrong data length :" ), msg->getFrameDataLength() );
+         isValid = false;
+      }
+   }
    else if ( msg->isCommand( HmwMessageBase::GET_EEPROM_MAP ) )
    {
       DEBUG_M1( FSTR( "C: GET_EEPROM_MAP" ) );
       ( (HmwMsgEepromMap*)msg )->setupResponse();
-      isAck = false;
+      ackOnly = false;
    }
    else if ( msg->isCommand( HmwMessageBase::KEY_EVENT ) || msg->isCommand( HmwMessageBase::KEY_SIM ) )
    {
@@ -162,9 +162,8 @@ bool HmwDevice::processMessage( HmwMessageBase* msg )
    {
       DEBUG_M1( FSTR( "C: GET_LEVEL" ) );
       HmwMsgGetLevel* msgGetLevel = ( HmwMsgGetLevel* )msg;
-      uint8_t length = get( msgGetLevel->getChannel(), msgGetLevel->getData() );
-      msgGetLevel->setupResponse( length );
-      isAck = false;
+      msgGetLevel->setupResponse( get( msgGetLevel->getChannel(), msgGetLevel->getData() ) );
+      ackOnly = false;
    }
    else if ( msg->isCommand( HmwMessageBase::WRITE_EEPROM ) )
    {
@@ -184,7 +183,7 @@ bool HmwDevice::processMessage( HmwMessageBase* msg )
    {
       DEBUG_M1( FSTR( "C: GET_SERIAL" ) );
       ( (HmwMsgGetSerial*)msg )->setupResponse( ownAddress );
-      isAck = false;
+      ackOnly = false;
    }
    else if ( msg->isCommand( HmwMessageBase::START_BOOTER ) )
    {
@@ -206,7 +205,7 @@ bool HmwDevice::processMessage( HmwMessageBase* msg )
       HmwMsgGetLevel* msgGetLevel = ( HmwMsgGetLevel* )msg;
       uint8_t length = get( msgGetLevel->getChannel(), msgGetLevel->getData() );
       msgGetLevel->setupResponse( length );
-      isAck = false;
+      ackOnly = false;
    }
 #endif
 
@@ -217,7 +216,7 @@ bool HmwDevice::processMessage( HmwMessageBase* msg )
 
    if ( isValid && !msg->isBroadcast() )
    {
-      msg->convertToResponse( ownAddress, isAck );
+      msg->convertToResponse( ownAddress, ackOnly );
       HmwStream::sendMessage( msg );
    }
    return false;
