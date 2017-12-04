@@ -36,6 +36,10 @@ class MultiKeyHw : public HmwStreamHw
 
       static HmwDevice::BasicConfig* getBasicConfig();
 
+      static HmwLinkReceiver* getLinkReceiver();
+
+      static HmwLinkSender* getLinkSender();
+
       static void debug( char c );
 
    protected:

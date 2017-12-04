@@ -33,6 +33,8 @@ int main( void )
 
    HmwStream::setHardware( MultiKeyHw::create() );
    HmwDevice::setup( Release::HMW_SD6_ID, MultiKeyHw::getBasicConfig() );
+   HmwDevice::linkReceiver = MultiKeyHw::getLinkReceiver();
+   HmwDevice::linkSender = MultiKeyHw::getLinkSender();
 
    // Authorize interrupts
    InterruptController::selectAppInterruptSection();

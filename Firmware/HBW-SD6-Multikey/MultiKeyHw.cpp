@@ -141,9 +141,6 @@ MultiKeyHw* MultiKeyHw::create()
    static HmwDS1820 hbwTmp5( ow, &config.ds1820cfg[4] );
    static HmwDS1820 hbwTmp6( ow, &config.ds1820cfg[5] );
 
-   static HmwLinkKey linkSender( sizeof( config.keyLinks ) / sizeof( config.keyLinks[0] ), config.keyLinks );
-   static HmwLinkDimmer linkReceiver( sizeof( config.ledLinks ) / sizeof( config.ledLinks[0] ), config.ledLinks );
-
    // sd6MultiKey.setConfigPins( PortPin( PortA, 4 ), PortPin( PortA, 5 ), PortPin( PortR, 1 ) );
 
    // set ledFeedback channels
@@ -153,6 +150,18 @@ MultiKeyHw* MultiKeyHw::create()
    }
 
    return &hardware;
+}
+
+HmwLinkSender* MultiKeyHw::getLinkSender()
+{
+   static HmwLinkKey linkSender( sizeof( config.keyLinks ) / sizeof( config.keyLinks[0] ), config.keyLinks );
+   return &linkSender;
+}
+
+HmwLinkReceiver* MultiKeyHw::getLinkReceiver()
+{
+   static HmwLinkDimmer linkReceiver( sizeof( config.ledLinks ) / sizeof( config.ledLinks[0] ), config.ledLinks );
+   return &linkReceiver;
 }
 
 void MultiKeyHw::debug( char c )
