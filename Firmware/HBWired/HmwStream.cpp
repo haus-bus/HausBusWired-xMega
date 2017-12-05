@@ -47,10 +47,6 @@ Stream::Status HmwStream::sendMessage( HmwMessageBase* msg )
    if ( msg->isInfo() )
    {
       msg->setSenderNum( senderNum );
-      if ( msg->isBroadcast() )
-      {
-         msg->setSyncBit();
-      }
    }
 
    hardware->enableTranceiver( true );
@@ -64,7 +60,7 @@ Stream::Status HmwStream::sendMessage( HmwMessageBase* msg )
    hardware->serial->waitUntilTransferCompleted();
    hardware->enableTranceiver( false );
 
-   if ( status == Stream::SUCCESS )
+   if ( ( status == Stream::SUCCESS ) && msg->isInfo() )
    {
       senderNum++;
    }
@@ -98,6 +94,8 @@ bool HmwStream::nextByteReceived( uint8_t data )
       statusReceiving.msg = &inMessage;
    }
 
+   HmwMessageBase* msg = statusReceiving.msg;
+
    // Debug
    if ( data == HmwMessageBase::FRAME_STARTBYTE )
    {
@@ -126,7 +124,7 @@ bool HmwStream::nextByteReceived( uint8_t data )
          statusReceiving.pendingEscape = false;
          statusReceiving.dataIdx = 0;
          statusReceiving.crc16checksum = 0xFFFF;
-         statusReceiving.msg->init();
+         msg->init();
          HmwMessageBase::crc16Shift( data, statusReceiving.crc16checksum );
       }
       else if ( statusReceiving.transmitting )       // start byte was found, frame should not be ignored
@@ -137,12 +135,12 @@ bool HmwStream::nextByteReceived( uint8_t data )
             statusReceiving.pendingEscape = false;
          }
          HmwMessageBase::crc16Shift( data, statusReceiving.crc16checksum );
-         statusReceiving.msg->setRawByte( statusReceiving.dataIdx, data );
+         msg->setRawByte( statusReceiving.dataIdx, data );
 
          if ( statusReceiving.dataIdx == HmwMessageBase::ADDRESS_SIZE )
          {
             // controlByte was read
-            if ( !statusReceiving.msg->hasSenderAddress() )
+            if ( !msg->hasSenderAddress() )
             {
                statusReceiving.dataIdx += HmwMessageBase::ADDRESS_SIZE;
             }
@@ -150,29 +148,23 @@ bool HmwStream::nextByteReceived( uint8_t data )
          else if ( statusReceiving.dataIdx == HmwMessageBase::HEADER_SIZE )
          {
             // frameDataLength was read
-            if ( statusReceiving.msg->getFrameDataLength() > HmwMessageBase::MAX_FRAME_LENGTH )               // check for max farme length
+            if ( msg->getFrameDataLength() > HmwMessageBase::MAX_FRAME_LENGTH )               // check for max farme length
             {
                statusReceiving.transmitting = false;
                DEBUG_M1( FSTR( "E: MsgTooLong" ) );
             }
          }
-         else if ( statusReceiving.dataIdx == ( HmwMessageBase::HEADER_SIZE + statusReceiving.msg->getFrameDataLength() ) )
+         else if ( statusReceiving.dataIdx == ( HmwMessageBase::HEADER_SIZE + msg->getFrameDataLength() ) )
          {
             // data complete
             if ( statusReceiving.crc16checksum == 0 )              //
             {
                // correct endianess and length
-               statusReceiving.msg->convertToLittleEndian();
-               statusReceiving.msg->setFrameDataLength( statusReceiving.msg->getFrameDataLength() - sizeof( statusReceiving.crc16checksum ) );
+               msg->convertToLittleEndian();
+               msg->setFrameDataLength( msg->getFrameDataLength() - sizeof( statusReceiving.crc16checksum ) );
                statusReceiving.transmitting = false;
-               statusReceiving.msg->setValid( true );
+               msg->setValid( true );
 
-               // if sync bit is set, reset the static senderNum
-               if ( statusReceiving.msg->isSync() )
-               {
-                  senderNum = 0;
-                  receiverNum = statusReceiving.msg->getSenderNum();
-               }
                return true;
             }
             else
@@ -194,11 +186,13 @@ bool HmwStream::getNextByteToSend( uint8_t& data )
       return false;
    }
 
+   HmwMessageBase* msg = statusSending.msg;
+
    if ( ( statusSending.dataIdx == 0 ) && !statusSending.transmitting )
    {
       statusSending.transmitting = true;
       statusSending.crc16checksum = 0xFFFF;
-      statusSending.msg->convertToBigEndian();
+      msg->convertToBigEndian();
       data = HmwMessageBase::FRAME_STARTBYTE;
       HmwMessageBase::crc16Shift( data, statusSending.crc16checksum );
       DEBUG_M3( FSTR( "T: " ), data, '|' );
@@ -206,12 +200,12 @@ bool HmwStream::getNextByteToSend( uint8_t& data )
    }
    else if ( statusSending.transmitting )
    {
-      data = statusSending.msg->getRawByte( statusSending.dataIdx );
+      data = msg->getRawByte( statusSending.dataIdx );
 
       if ( statusSending.dataIdx == HmwMessageBase::ADDRESS_SIZE )
       {
          // controlByte was sent
-         if ( !statusSending.msg->hasSenderAddress() )
+         if ( !msg->hasSenderAddress() )
          {
             statusSending.dataIdx += HmwMessageBase::ADDRESS_SIZE;
          }
@@ -221,7 +215,7 @@ bool HmwStream::getNextByteToSend( uint8_t& data )
          // modify the frameDataLength by the size of checksum
          data += sizeof( statusSending.crc16checksum );
       }
-      else if ( statusSending.dataIdx > ( HmwMessageBase::HEADER_SIZE + statusSending.msg->getFrameDataLength() + sizeof( statusSending.crc16checksum ) ) )
+      else if ( statusSending.dataIdx > ( HmwMessageBase::HEADER_SIZE + msg->getFrameDataLength() + sizeof( statusSending.crc16checksum ) ) )
       {
          // sending complete, no data available
          return false;
@@ -231,13 +225,13 @@ bool HmwStream::getNextByteToSend( uint8_t& data )
       {
          DEBUG_L2( data, '|' );
          HmwMessageBase::crc16Shift( data, statusSending.crc16checksum );
-         if ( statusSending.dataIdx == ( HmwMessageBase::HEADER_SIZE + statusSending.msg->getFrameDataLength() ) )
+         if ( statusSending.dataIdx == ( HmwMessageBase::HEADER_SIZE + msg->getFrameDataLength() ) )
          {
             // last data byte will be sent, calculate crc
             HmwMessageBase::crc16Shift( 0, statusSending.crc16checksum );
             HmwMessageBase::crc16Shift( 0, statusSending.crc16checksum );
-            statusSending.msg->setRawByte( statusSending.dataIdx + 1, HBYTE( statusSending.crc16checksum ) );
-            statusSending.msg->setRawByte( statusSending.dataIdx + 2, LBYTE( statusSending.crc16checksum ) );
+            msg->setRawByte( statusSending.dataIdx + 1, HBYTE( statusSending.crc16checksum ) );
+            msg->setRawByte( statusSending.dataIdx + 2, LBYTE( statusSending.crc16checksum ) );
          }
          if ( ( data == HmwMessageBase::FRAME_STARTBYTE ) || ( data == HmwMessageBase::FRAME_STARTBYTE_SHORT ) || ( data == HmwMessageBase::ESCAPE_BYTE ) )
          {
