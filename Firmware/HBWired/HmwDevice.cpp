@@ -195,6 +195,10 @@ bool HmwDevice::processMessage( HmwMessageBase* msg )
       DEBUG_M1( FSTR( "C: RESET" ) );
       pendingActions.resetSystem = true;
    }
+   else if ( msg->isCommand( HmwMessageBase::INFO_LEVEL ) )
+   {
+      DEBUG_M1( FSTR( "C: INFO_LEVEL" ) );
+   }
    else if ( msg->isCommand( HmwMessageBase::SET_ACTOR ) || msg->isCommand( HmwMessageBase::SET_LEVEL ) )
    {
       DEBUG_M1( FSTR( "C: SET_LEVEL" ) );

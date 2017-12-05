@@ -255,6 +255,7 @@ class HmwMessageBase
          targetAddress = senderAddress;
          senderAddress = ownAddress;
          uint8_t tmp = getSenderNum();
+
          if ( isAck )
          {
             controlByte = 0x19;
@@ -262,7 +263,7 @@ class HmwMessageBase
          }
          else
          {
-            controlByte = 0x18;
+            controlByte = 0x98;
          }
          controlByte.info.receiverNum = tmp;
       }
@@ -277,6 +278,11 @@ class HmwMessageBase
          return senderAddress;
       }
 
+      inline const uint32_t& getTargetAddress() const
+      {
+         return targetAddress;
+      }
+
       inline uint8_t getSenderNum() const
       {
          // attention: this is only valid for messages of type Info
@@ -287,6 +293,11 @@ class HmwMessageBase
       {
          // attention: this is only valid for messages of type Info
          controlByte.info.senderNum = value;
+      }
+
+      inline void setReceiverNum( uint8_t value )
+      {
+         controlByte.info.receiverNum = value;
       }
 
       inline uint8_t getFrameDataLength() const

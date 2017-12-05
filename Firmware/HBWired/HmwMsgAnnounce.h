@@ -25,7 +25,7 @@ class HmwMsgAnnounce : public HmwMessageBase
       {
          senderAddress = ownAddress;
          targetAddress = 0xFFFFFFFF;
-         controlByte = 0x18;
+         controlByte = 0xF8;
          frameData[0] = ANNOUNCE;
          frameData[1] = channel;
          frameData[2] = deviceType;

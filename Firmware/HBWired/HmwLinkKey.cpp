@@ -21,8 +21,10 @@ HmwLinkKey::HmwLinkKey( uint8_t _numLinks, Config* _links )
 
 
 // keyPressed wird aufgerufen, wenn ein Tastendruck erkannt wurde
-void HmwLinkKey::sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress )
+Stream::Status HmwLinkKey::sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress )
 {
+   Stream::Status status = Stream::NO_DATA;
+
    // care for peerings
    for ( int i = 0; i < numLinks; i++ )
    {
@@ -38,6 +40,8 @@ void HmwLinkKey::sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPr
          continue;
       }
 
+      // at least one peering fired
+      status = Stream::SUCCESS;
       uint32_t actorAddress = changeEndianness( links[i].actorAddress );
 
       // own address? -> internal peering
@@ -48,11 +52,11 @@ void HmwLinkKey::sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPr
       else
       {
          // external peering
-         // TODO: If bus busy, then try to repeat. ...aber zuerst feststellen, wie das die Original-Module machen (bzw. hier einfach so lassen)
-         /* byte result = */
          HmwDevice::sendKeyEvent( srcChan, keyPressNum, longPress, actorAddress, links[i].actorChannel );
       }
    }
+
+   return status;
 }
 
 

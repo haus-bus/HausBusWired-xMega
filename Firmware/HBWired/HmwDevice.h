@@ -117,24 +117,23 @@ class HmwDevice
          }
       }
 
-      static inline uint8_t sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress )
+      static inline Stream::Status sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress )
       {
+         Stream::Status status = sendKeyEvent( srcChan, keyPressNum, longPress, 0xFFFFFFFF, 0 );
          if ( linkSender )
          {
-            linkSender->sendKeyEvent( srcChan, keyPressNum, longPress );
-         }
-         return sendKeyEvent( srcChan, keyPressNum, longPress, 0xFFFFFFFF, 0 ); // only if bus is free
-      }
-
-      static inline uint8_t sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress, uint32_t targetAddr, uint8_t targetChan )
-      {
-         HmwMsgKeyEvent msg( ownAddress, targetAddr, srcChan, targetChan, keyPressNum, longPress );
-         Stream::Status status = HmwStream::sendMessage( &msg );
-         if ( msg.isBroadcast() )
-         {
-            return announce( srcChan );
+            if( linkSender->sendKeyEvent( srcChan, keyPressNum, longPress ) != Stream::SUCCESS )
+            {
+               status = announce( srcChan );
+            }
          }
          return status;
+      }
+
+      static inline Stream::Status sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress, uint32_t targetAddr, uint8_t targetChan )
+      {
+         HmwMsgKeyEvent msg( ownAddress, targetAddr, srcChan, targetChan, keyPressNum, longPress );
+         return HmwStream::sendMessage( &msg );
       }
 
       static inline uint8_t sendInfoMessage( uint8_t channel, uint8_t length, uint8_t const* const data, uint32_t target_address = 0 )

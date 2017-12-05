@@ -44,6 +44,17 @@ class HmwStream
          return lastReceivedTime.since() > 7;
       }
 
+      static inline void sync( uint8_t _receiverNum )
+      {
+         senderNum = 0;
+         receiverNum = _receiverNum;
+      }
+
+      static inline void notifyMsgReceived( const uint32_t& senderAddress )
+      {
+         receiverNum++;
+      }
+
    protected:
 
       struct CommunicationStatus
@@ -73,7 +84,6 @@ class HmwStream
       static Timestamp lastReceivedTime;
 
       static HmwStreamHw* hardware;
-
 
 }; // HmWStream
 

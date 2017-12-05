@@ -25,7 +25,7 @@ class HmwLinkKey : public HmwLinkSender
       };
 
       HmwLinkKey( uint8_t _numLinks, Config* _links );
-      void sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress );
+      Stream::Status sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress );
 
 
 

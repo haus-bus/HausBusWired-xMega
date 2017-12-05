@@ -9,12 +9,12 @@
 #ifndef __HMWLINKSENDER_H__
 #define __HMWLINKSENDER_H__
 
-#include <stdio.h>
+#include <Stream.h>
 
 class HmwLinkSender
 {
    public:
-      virtual void sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress ) = 0;
+      virtual Stream::Status sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress ) = 0;
 }; // HmwLinkSender
 
 #endif // __HMWLINKSENDER_H__

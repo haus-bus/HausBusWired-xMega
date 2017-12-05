@@ -26,8 +26,7 @@ class HmwMsgKeyEvent : public HmwMessageBase
          frameData[1] = srcChannel;
          frameData[2] = dstChannel;
          frameData[3] = ( longPress ? 3 : 2 ) + ( keyPressNum << 2 );
-         // set sync bit on broadcast messages
-         controlByte = 0x18;
+         controlByte = 0xF8;
          senderAddress = ownAddress;
          targetAddress = dstAddress;
          frameDataLength = 0x04;
