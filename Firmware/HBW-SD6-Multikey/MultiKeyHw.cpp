@@ -72,6 +72,8 @@ MultiKeyHw* MultiKeyHw::create()
    switch ( getBasicConfig()->hwVersion )
    {
       case Release::REV_0:
+      // allow also 0xFF that is REV_0 but with an old booter, that did not set correct revision
+      case 0xFF:
       {
          ppRxEnable.configOutput();
 #ifdef DEBUG

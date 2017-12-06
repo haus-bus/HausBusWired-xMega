@@ -12,6 +12,8 @@
 #include <Time/Timestamp.h>
 #include <Stream.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <Release.h>
 
 class HmwMessageBase
@@ -143,7 +145,10 @@ class HmwMessageBase
 
 // functions
    public:
-      HmwMessageBase();
+      inline HmwMessageBase()
+      {
+         memset( this, 0, sizeof( *this ) );
+      }
 
       inline void init()
       {
@@ -216,17 +221,15 @@ class HmwMessageBase
          buffer[1] = 'B';
          buffer[2] = 'W';
 
-         for ( uint8_t i = 9; i > 2; i-- )
+         // string has max 7 digits
+         uint8_t* pEnd = &buffer[9];
+         while ( pEnd != &buffer[2] )
          {
+            *pEnd-- = '0' + ( address % 10 );
             if ( address )
             {
-               buffer[i] = '0' + ( address % 10 );
+               address /= 10;
             }
-            else
-            {
-               buffer[i] = '0';
-            }
-            address /= 10;
          }
       }
 

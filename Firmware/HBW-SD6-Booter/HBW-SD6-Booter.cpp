@@ -12,11 +12,10 @@
 #include <Peripherals/WatchDog.h>
 #include <Peripherals/Flash.h>
 #include <Peripherals/ResetSystem.h>
-#include <DigitalOutput.h>
 #include <Release.h>
 
 #include <Time/SystemTime.h>
-#include <HBWired/HmwStream.h>
+#include <avr/eeprom.h>
 
 
 const ModuleId moduleId =
@@ -83,8 +82,16 @@ void startApplication()
    start();
 }
 
+
 int main( void )
 {
+   // make sure we have setup the correct hardware id for the FW located at position 0
+   // this must always be done before enabling mapped memory
+   if ( eeprom_read_byte( 0 ) != HARDWARE_ID )
+   {
+      eeprom_write_byte( 0, HARDWARE_ID );
+   }
+
    SystemTime::init();
    Eeprom::MemoryMapped::enable();
 

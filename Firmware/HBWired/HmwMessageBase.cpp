@@ -11,15 +11,8 @@
 
 #include <Peripherals/Flash.h>
 #include <SwFramework.h>
-#include <string.h>
 
 const uint8_t HmwMessageBase::debugLevel( DEBUG_LEVEL_LOW );
-
-// default constructor
-HmwMessageBase::HmwMessageBase()
-{
-   memset( this, 0, sizeof( *this ) );
-}
 
 bool HmwMessageBase::isForMe()
 {

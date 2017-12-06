@@ -122,7 +122,7 @@ class HmwDevice
          Stream::Status status = sendKeyEvent( srcChan, keyPressNum, longPress, 0xFFFFFFFF, 0 );
          if ( linkSender )
          {
-            if( linkSender->sendKeyEvent( srcChan, keyPressNum, longPress ) != Stream::SUCCESS )
+            if ( linkSender->sendKeyEvent( srcChan, keyPressNum, longPress ) != Stream::SUCCESS )
             {
                status = announce( srcChan );
             }
