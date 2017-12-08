@@ -119,7 +119,10 @@ int main( void )
          startFirmware = false;
          hardware.notifyNextDownloadPacket();
       }
-      HmwDevice::processMessage( msg );
+      if ( HmwDevice::processMessage( *msg ) )
+      {
+         HmwStream::sendMessage( *msg );
+      }
       HmwDevice::handleAnnouncement();
       hardware.handleLeds( isDownloadRunning );
       WatchDog::reset();

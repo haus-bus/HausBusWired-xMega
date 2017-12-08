@@ -142,6 +142,8 @@ class HmwMessageBase
 
       static const uint8_t debugLevel;
 
+      static uint8_t messagesInUse;
+
 
 // functions
    public:
@@ -158,6 +160,10 @@ class HmwMessageBase
       }
 
       bool isForMe();
+
+      HmwMessageBase* copy();
+
+      void operator delete( void* obj, size_t size );
 
       inline uint8_t getRawByte( uint8_t idx )
       {

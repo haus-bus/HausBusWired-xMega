@@ -132,16 +132,24 @@ class Stream;
          while ( 1 ) {; }                                              \
       }                                                         \
    }
-#define ERROR_1( a1 )              Logger::instance() << newTraceLine << "ERROR> " << a1;
-#define ERROR_2( a1, a2 )          Logger::instance() << newTraceLine << "ERROR> " << a1 << a2;
-#define ERROR_3( a1, a2, a3 )      Logger::instance() << newTraceLine << "ERROR> " << a1 << a2 << a3;
-#define ERROR_4( a1, a2, a3, a4 )  Logger::instance() << newTraceLine << "ERROR> " << a1 << a2 << a3 << a4;
+#define ERROR_1( a1 )                   Logger::instance() << newTraceLine << "ERROR> " << a1;
+#define ERROR_2( a1, a2 )               Logger::instance() << newTraceLine << "ERROR> " << a1 << a2;
+#define ERROR_3( a1, a2, a3 )           Logger::instance() << newTraceLine << "ERROR> " << a1 << a2 << a3;
+#define ERROR_4( a1, a2, a3, a4 )       Logger::instance() << newTraceLine << "ERROR> " << a1 << a2 << a3 << a4;
+#define ERROR_DATA_1( a1 )              Logger::instance() << a1;
+#define ERROR_DATA_2( a1, a2 )          Logger::instance() << a1 << a2;
+#define ERROR_DATA_3( a1, a2, a3 )      Logger::instance() << a1 << a2 << a3;
+#define ERROR_DATA_4( a1, a2, a3, a4 )  Logger::instance() << a1 << a2 << a3 << a4;
 #else
 #define ASSERT( expr )
 #define ERROR_1( a1 )
 #define ERROR_2( a1, a2 )
 #define ERROR_3( a1, a2, a3 )
 #define ERROR_4( a1, a2, a3, a4 )
+#define ERROR_DATA_1( a1 )
+#define ERROR_DATA_2( a1, a2 )
+#define ERROR_DATA_3( a1, a2, a3 )
+#define ERROR_DATA_4( a1, a2, a3, a4 )
 #endif
 
 #define DEBUG_STATE_MASK     0x0C

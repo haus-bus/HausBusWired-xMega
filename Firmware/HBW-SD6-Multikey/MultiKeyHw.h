@@ -42,6 +42,12 @@ class MultiKeyHw : public HmwStreamHw
 
       static void debug( char c );
 
+      static inline HmwStream::MessageQueue* getInMessageQueue()
+      {
+         static HmwStream::MessageQueue inMessageQueue;
+         return &inMessageQueue;
+      }
+
    protected:
    private:
 

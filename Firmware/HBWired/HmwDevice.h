@@ -71,7 +71,7 @@ class HmwDevice
       static inline Stream::Status announce( uint8_t channel = 0 )
       {
          HmwMsgAnnounce msg( channel, ownAddress, deviceType, basicConfig->hwVersion, ( Release::MAJOR << 8 ) | Release::MINOR );
-         return HmwStream::sendMessage( &msg );
+         return HmwStream::sendMessage( msg );
       }
 
       static inline bool isReadConfigPending()
@@ -101,7 +101,7 @@ class HmwDevice
 
       static void loop();
 
-      static bool processMessage( HmwMessageBase* msg );
+      static bool processMessage( HmwMessageBase& msg );
 
       static void handleAnnouncement();
 
@@ -133,13 +133,13 @@ class HmwDevice
       static inline Stream::Status sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress, uint32_t targetAddr, uint8_t targetChan )
       {
          HmwMsgKeyEvent msg( ownAddress, targetAddr, srcChan, targetChan, keyPressNum, longPress );
-         return HmwStream::sendMessage( &msg );
+         return HmwStream::sendMessage( msg );
       }
 
       static inline uint8_t sendInfoMessage( uint8_t channel, uint8_t length, uint8_t const* const data, uint32_t target_address = 0 )
       {
          HmwMsgInfo msg( ownAddress, target_address ? target_address : changeEndianness( basicConfig->centralAddress ), channel, data, length );
-         return HmwStream::sendMessage( &msg );
+         return HmwStream::sendMessage( msg );
       }
 
    protected:
@@ -147,6 +147,8 @@ class HmwDevice
    private:
 
       static void handlePendingActions();
+
+      static void handleMessages();
 
 }; // HmwDevice
 

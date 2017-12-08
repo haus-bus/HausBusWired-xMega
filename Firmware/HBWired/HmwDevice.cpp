@@ -39,11 +39,25 @@ const uint8_t HmwDevice::debugLevel( DEBUG_LEVEL_LOW );
 // The loop function is called in an endless loop
 void HmwDevice::loop()
 {
-   HmwDevice::processMessage( HmwStream::pollMessageReceived() );
+   handleMessages();
    HmwChannel::loop();
    handlePendingActions();
    // handleConfigButton();
    WatchDog::reset();
+}
+
+void HmwDevice::handleMessages()
+{
+   HmwMessageBase* request = HmwStream::getMessageFromQueue();
+   if ( request )
+   {
+      HmwMessageBase answer( *request );
+      if ( processMessage( answer ) )
+      {
+         HmwStream::sendMessage( answer );
+      }
+      delete request;
+   }
 }
 
 void HmwDevice::handlePendingActions()
@@ -73,9 +87,9 @@ void HmwDevice::handleAnnouncement()
    }
 }
 
-bool HmwDevice::processMessage( HmwMessageBase* msg )
+bool HmwDevice::processMessage( HmwMessageBase& msg )
 {
-   if ( !msg || !msg->isForMe() || !msg->isInfo() )
+   if ( !msg.isForMe() || !msg.isInfo() )
    {
       return false;
    }
@@ -83,17 +97,17 @@ bool HmwDevice::processMessage( HmwMessageBase* msg )
    bool isValid = true;
    bool ackOnly = true;
 
-   if ( msg->isCommand( HmwMessageBase::READ_CONFIG ) )
+   if ( msg.isCommand( HmwMessageBase::READ_CONFIG ) )
    {
       DEBUG_M1( FSTR( "C: read config" ) );
       pendingActions.readConfig = true;
    }
-   else if ( msg->isCommand( HmwMessageBase::WRITE_FLASH ) )
+   else if ( msg.isCommand( HmwMessageBase::WRITE_FLASH ) )
    {
       DEBUG_M1( FSTR( "C: Write Flash" ) );
-      if ( msg->getFrameDataLength() > 6 )
+      if ( msg.getFrameDataLength() > 6 )
       {
-         HmwMsgWriteFlash* msgWriteFlash = (HmwMsgWriteFlash*)msg;
+         HmwMsgWriteFlash* msgWriteFlash = (HmwMsgWriteFlash*)&msg;
          static uint8_t buffer[ APP_SECTION_PAGE_SIZE ];
          Flash::address_t address = msgWriteFlash->getAddress();
          uint8_t length = msgWriteFlash->getLength();
@@ -105,108 +119,108 @@ bool HmwDevice::processMessage( HmwMessageBase* msg )
          }
          else if ( Flash::write( address & ~( Flash::getPageSize() - 1 ), buffer, Flash::getPageSize() ) != Flash::getPageSize() )
          {
-            DEBUG_M2( FSTR( "E: Flash::write failed:" ), msg->getFrameDataLength() );
+            DEBUG_M2( FSTR( "E: Flash::write failed:" ), msg.getFrameDataLength() );
             isValid = false;
          }
       }
       else
       {
-         DEBUG_M2( FSTR( "E: wrong data length :" ), msg->getFrameDataLength() );
+         DEBUG_M2( FSTR( "E: wrong data length :" ), msg.getFrameDataLength() );
          isValid = false;
       }
    }
 
 #ifndef _BOOTER_
-   else if ( msg->isCommand( HmwMessageBase::GET_FW_VERSION ) )
+   else if ( msg.isCommand( HmwMessageBase::GET_FW_VERSION ) )
    {
       DEBUG_M1( FSTR( "C: get FW version" ) );
-      ( (HmwMsgGetFwVersion*)msg )->setupResponse( ( Release::MAJOR << 8 ) | Release::MINOR );
+      ( (HmwMsgGetFwVersion*)&msg )->setupResponse( ( Release::MAJOR << 8 ) | Release::MINOR );
       ackOnly = false;
    }
-   else if ( msg->isCommand( HmwMessageBase::GET_HARDWARE_VERSION ) )
+   else if ( msg.isCommand( HmwMessageBase::GET_HARDWARE_VERSION ) )
    {
       DEBUG_M1( FSTR( "C: HWVer,Typ" ) );
-      ( (HmwMsgGetHwVersion*)msg )->setupResponse( HmwDevice::deviceType, basicConfig->hwVersion );
+      ( (HmwMsgGetHwVersion*)&msg )->setupResponse( HmwDevice::deviceType, basicConfig->hwVersion );
       ackOnly = false;
    }
-   else if ( msg->isCommand( HmwMessageBase::READ_EEPROM ) )
+   else if ( msg.isCommand( HmwMessageBase::READ_EEPROM ) )
    {
       DEBUG_M1( FSTR( "C: Read EEPROM" ) );
-      if ( msg->getFrameDataLength() == 4 )        // Length of incoming data must be 4
+      if ( msg.getFrameDataLength() == 4 )        // Length of incoming data must be 4
       {
-         ( (HmwMsgReadEeprom*)msg )->setupResponse();
+         ( (HmwMsgReadEeprom*)&msg )->setupResponse();
          ackOnly = false;
       }
       else
       {
-         DEBUG_M2( FSTR( "E: wrong data length :" ), msg->getFrameDataLength() );
+         DEBUG_M2( FSTR( "E: wrong data length :" ), msg.getFrameDataLength() );
          isValid = false;
       }
    }
-   else if ( msg->isCommand( HmwMessageBase::GET_EEPROM_MAP ) )
+   else if ( msg.isCommand( HmwMessageBase::GET_EEPROM_MAP ) )
    {
       DEBUG_M1( FSTR( "C: GET_EEPROM_MAP" ) );
-      ( (HmwMsgEepromMap*)msg )->setupResponse();
+      ( (HmwMsgEepromMap*)&msg )->setupResponse();
       ackOnly = false;
    }
-   else if ( msg->isCommand( HmwMessageBase::KEY_EVENT ) || msg->isCommand( HmwMessageBase::KEY_SIM ) )
+   else if ( msg.isCommand( HmwMessageBase::KEY_EVENT ) || msg.isCommand( HmwMessageBase::KEY_SIM ) )
    {
       DEBUG_M1( FSTR( "C: KEY_EVENT" ) );
       if ( linkReceiver )
       {
-         HmwMsgKeyEvent* event = ( HmwMsgKeyEvent* )msg;
+         HmwMsgKeyEvent* event = ( HmwMsgKeyEvent* )&msg;
          linkReceiver->receiveKeyEvent( event->getSenderAddress(), event->getSourceChannel(), event->getDestinationChannel(), event->isLongPress() );
       }
    }
-   else if ( msg->isCommand( HmwMessageBase::GET_LEVEL ) )
+   else if ( msg.isCommand( HmwMessageBase::GET_LEVEL ) )
    {
       DEBUG_M1( FSTR( "C: GET_LEVEL" ) );
-      HmwMsgGetLevel* msgGetLevel = ( HmwMsgGetLevel* )msg;
+      HmwMsgGetLevel* msgGetLevel = ( HmwMsgGetLevel* )&msg;
       msgGetLevel->setupResponse( get( msgGetLevel->getChannel(), msgGetLevel->getData() ) );
       ackOnly = false;
    }
-   else if ( msg->isCommand( HmwMessageBase::WRITE_EEPROM ) )
+   else if ( msg.isCommand( HmwMessageBase::WRITE_EEPROM ) )
    {
       DEBUG_M1( FSTR( "C: WRITE_EEPROM" ) );
-      HmwMsgWriteEeprom* msgWriteEeprom = ( HmwMsgWriteEeprom* )msg;
-      if ( msg->getFrameDataLength() == ( msgWriteEeprom->getLength() + 4 ) )
+      HmwMsgWriteEeprom* msgWriteEeprom = ( HmwMsgWriteEeprom* )&msg;
+      if ( msg.getFrameDataLength() == ( msgWriteEeprom->getLength() + 4 ) )
       {
          Eeprom::write( msgWriteEeprom->getOffset(), msgWriteEeprom->getData(), msgWriteEeprom->getLength() );
       }
       else
       {
-         DEBUG_M2( FSTR( "E: wrong data length :" ), msg->getFrameDataLength() );
+         DEBUG_M2( FSTR( "E: wrong data length :" ), msg.getFrameDataLength() );
          isValid = false;
       }
    }
-   else if ( msg->isCommand( HmwMessageBase::GET_SERIAL ) )
+   else if ( msg.isCommand( HmwMessageBase::GET_SERIAL ) )
    {
       DEBUG_M1( FSTR( "C: GET_SERIAL" ) );
-      ( (HmwMsgGetSerial*)msg )->setupResponse( ownAddress );
+      ( (HmwMsgGetSerial*)&msg )->setupResponse( ownAddress );
       ackOnly = false;
    }
-   else if ( msg->isCommand( HmwMessageBase::START_BOOTER ) )
+   else if ( msg.isCommand( HmwMessageBase::START_BOOTER ) )
    {
       DEBUG_M1( FSTR( "C: START_BOOTER" ) );
       pendingActions.startBooter = true;
    }
-   else if ( msg->isCommand( HmwMessageBase::RESET ) )
+   else if ( msg.isCommand( HmwMessageBase::RESET ) )
    {
       DEBUG_M1( FSTR( "C: RESET" ) );
       pendingActions.resetSystem = true;
    }
-   else if ( msg->isCommand( HmwMessageBase::INFO_LEVEL ) )
+   else if ( msg.isCommand( HmwMessageBase::INFO_LEVEL ) )
    {
       DEBUG_M1( FSTR( "C: INFO_LEVEL" ) );
    }
-   else if ( msg->isCommand( HmwMessageBase::SET_ACTOR ) || msg->isCommand( HmwMessageBase::SET_LEVEL ) )
+   else if ( msg.isCommand( HmwMessageBase::SET_ACTOR ) || msg.isCommand( HmwMessageBase::SET_LEVEL ) )
    {
       DEBUG_M1( FSTR( "C: SET_LEVEL" ) );
-      HmwMsgSetLevel* msgSetLevel = (HmwMsgSetLevel*)msg;
+      HmwMsgSetLevel* msgSetLevel = (HmwMsgSetLevel*)&msg;
       set( msgSetLevel->getChannel(), msgSetLevel->getLength(), msgSetLevel->getData() );
 
       // return immediately the current data for this channel as feedback
-      HmwMsgGetLevel* msgGetLevel = ( HmwMsgGetLevel* )msg;
+      HmwMsgGetLevel* msgGetLevel = ( HmwMsgGetLevel* )&msg;
       uint8_t length = get( msgGetLevel->getChannel(), msgGetLevel->getData() );
       msgGetLevel->setupResponse( length );
       ackOnly = false;
@@ -218,10 +232,10 @@ bool HmwDevice::processMessage( HmwMessageBase* msg )
       return false;
    }
 
-   if ( isValid && !msg->isBroadcast() )
+   if ( isValid && !msg.isBroadcast() )
    {
-      msg->convertToResponse( ownAddress, ackOnly );
-      HmwStream::sendMessage( msg );
+      msg.convertToResponse( ownAddress, ackOnly );
+      return true;
    }
    return false;
 }
@@ -239,10 +253,10 @@ uint8_t HmwDevice::get( uint8_t channel, uint8_t* data )
 
 void HmwDevice::set( uint8_t channel, uint8_t length, uint8_t const* const data )
 {
-   DEBUG_M3( FSTR( "S: " ), channel, ' ' );
+   DEBUG_M3( FSTR( "SetC:" ), channel, ':' );
    for ( uint8_t i = 0; i < length; i++ )
    {
-      DEBUG_L1( data[i] );
+      DEBUG_L2( ' ', data[i] );
    }
 
    // to avoid crashes, do not try to set any channels, which do not exist

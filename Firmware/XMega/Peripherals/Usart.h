@@ -225,6 +225,11 @@ class Usart
 
       uint16_t read( void* pData, uint16_t length );
 
+      inline uint8_t readDataRegisterFromISR()
+      {
+         return reg.DATA;
+      }
+
       inline void setBaudrate( uint16_t prescaler, int8_t scaleFactor )
       {
          reg.BAUDCTRLB = ( scaleFactor << USART_BSCALE0_bp ) | ( ( prescaler >> 8 ) & 0x0F );

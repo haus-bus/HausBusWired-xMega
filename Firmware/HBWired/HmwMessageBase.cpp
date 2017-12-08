@@ -14,9 +14,36 @@
 
 const uint8_t HmwMessageBase::debugLevel( DEBUG_LEVEL_LOW );
 
+uint8_t HmwMessageBase::messagesInUse( 0 );
+
 bool HmwMessageBase::isForMe()
 {
    return valid && ( ( targetAddress == HmwDevice::ownAddress ) || isBroadcast() );
+}
+
+void HmwMessageBase::operator delete( void* obj, size_t size )
+{
+   CriticalSection cs;
+   delete (uint8_t*) obj;
+   if ( messagesInUse )
+   {
+      messagesInUse--;
+   }
+   DEBUG_M4( FSTR( "del " ), (uintptr_t ) obj, FSTR( " use " ), messagesInUse );
+}
+
+HmwMessageBase* HmwMessageBase::copy()
+{
+   CriticalSection doNotInterrupt;
+   uint8_t completeLength = getFrameDataLength() + HEADER_SIZE;
+   HmwMessageBase* newMsg = (HmwMessageBase*) new uint8_t[( completeLength + 7 ) & 0xFFF8];
+   if ( newMsg )
+   {
+      memcpy( (uint8_t*) newMsg, this, completeLength );
+      messagesInUse++;
+      DEBUG_M4( FSTR( "new " ), (uintptr_t ) newMsg, FSTR( " use " ), messagesInUse );
+   }
+   return newMsg;
 }
 
 // calculate crc16 checksum for each byte

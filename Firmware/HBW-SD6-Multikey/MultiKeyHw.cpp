@@ -66,8 +66,6 @@ MultiKeyHw* MultiKeyHw::create()
 
    PortPin ppRxEnable( PortE, 0 );
    PortPin ppTxEnable( PortE, 1 );
-   PortPin ppRx( PortE, 2 );
-   PortPin ppTx( PortE, 3 );
 
    switch ( getBasicConfig()->hwVersion )
    {
@@ -90,7 +88,8 @@ MultiKeyHw* MultiKeyHw::create()
       {
          ppTxEnable = PortPin( PortR, 0 );
          ppOneWire = PortPin( PortR, 1 );
-
+         DigitalInputTmpl< PortD, 6 > rxD1;
+         DigitalOutputTmpl<PortD, 7> txD1;
          debugSerial = &Usart::instance<PortD, 1>();
          break;
       }
@@ -102,9 +101,8 @@ MultiKeyHw* MultiKeyHw::create()
    }
 
    Logger::instance().setStream( MultiKeyHw::debug );
-   ppRx.configInput();
-   ppTx.configOutput();
-
+   DigitalInputTmpl< PortE, 2 > rxE0;
+   DigitalOutputTmpl<PortE, 3> txE0;
    static MultiKeyHw hardware( ppTxEnable, &Usart::instance<PortE, 0>() );
 
    static HmwKey hbwKey1( ppKey1, &( config.keycfg[0] ) );
@@ -174,4 +172,9 @@ void MultiKeyHw::debug( char c )
 void MultiKeyHw::enableTranceiver( bool enable )
 {
    enable ? txEnable.set() : txEnable.clear();
+}
+
+SIGNAL(USARTE0_RXC_vect)
+{
+   HmwStream::nextByteReceivedFromISR(Usart::instance<PortE,0>().readDataRegisterFromISR());
 }
