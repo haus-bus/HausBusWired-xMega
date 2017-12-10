@@ -75,8 +75,6 @@ MultiKeyHw* MultiKeyHw::create()
       {
          ppRxEnable.configOutput();
 #ifdef DEBUG
-         ppExtKey5 = PortPin( PortDummy, 6 );
-         ppExtKey6 = PortPin( PortDummy, 7 );
          DigitalInputTmpl< PortC, 6 > rx;
          DigitalOutputTmpl<PortC, 7> tx;
          Usart::instance<PortC, 1>().init<115200>();
@@ -99,6 +97,18 @@ MultiKeyHw* MultiKeyHw::create()
          {
          }
    }
+
+   #ifdef DEBUG
+   ppExtKey1 = PortPin( PortDummy, 0 );
+   ppExtKey2 = PortPin( PortDummy, 1 );
+   ppExtKey3 = PortPin( PortDummy, 2 );
+   ppExtKey4 = PortPin( PortDummy, 3 );
+   ppExtKey5 = PortPin( PortDummy, 6 );
+   ppExtKey6 = PortPin( PortDummy, 7 );
+
+   // used Port for tracing is PortB Pin0-3
+   TRACE_PORT_INIT( 0x0F );
+   #endif
 
    Logger::instance().setStream( MultiKeyHw::debug );
    DigitalInputTmpl< PortE, 2 > rxE0;

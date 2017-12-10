@@ -26,6 +26,9 @@ HmwMessageBase HmwStream::inMessage;
 
 const uint8_t HmwStream::debugLevel( DEBUG_LEVEL_OFF );
 
+#define RX_TRACE_PIN    Pin0
+#define CRC_TRACE_PIN   Pin1
+
 #include "DigitalOutput.h"
 Stream::Status HmwStream::sendMessage( HmwMessageBase& msg )
 {
@@ -86,6 +89,7 @@ HmwMessageBase* HmwStream::pollMessageReceived()
 
 HmwMessageBase* HmwStream::nextByteReceived( uint8_t data )
 {
+   TRACE_PORT_SET( RX_TRACE_PIN );
    lastReceivedTime = Timestamp();
 
    // Debug
@@ -156,10 +160,12 @@ HmwMessageBase* HmwStream::nextByteReceived( uint8_t data )
                inMessage.setFrameDataLength( inMessage.getFrameDataLength() - sizeof( statusReceiving.crc16checksum ) );
                statusReceiving.transmitting = false;
                inMessage.setValid( true );
+               TRACE_PORT_CLEAR( RX_TRACE_PIN );
                return &inMessage;
             }
             else
             {
+               TRACE_PORT_TOGGLE( CRC_TRACE_PIN );
                ERROR_1( FSTR( "CRC " ) );
                for ( uint8_t i = 0; i < statusReceiving.dataIdx; i++ )
                {
@@ -170,6 +176,7 @@ HmwMessageBase* HmwStream::nextByteReceived( uint8_t data )
          statusReceiving.dataIdx++;
       }
    }
+   TRACE_PORT_CLEAR( RX_TRACE_PIN );
    return NULL;
 }
 

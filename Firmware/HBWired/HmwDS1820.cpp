@@ -16,7 +16,7 @@
 
 #define INVALID_VALUE -27315
 
-const uint8_t HmwDS1820::debugLevel( DEBUG_LEVEL_LOW );
+const uint8_t HmwDS1820::debugLevel( DEBUG_LEVEL_OFF );
 
 bool HmwDS1820::selfPowered( true );
 
