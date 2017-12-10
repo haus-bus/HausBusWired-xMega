@@ -29,6 +29,7 @@ class HmwMessageBase
          MAX_FRAME_LENGTH = 72,
          ADDRESS_SIZE = 4,
          HEADER_SIZE = 9,
+         STATUS_SIZE = 1,
 
          BROADCAST_ADDR = 0xFFFFFFFF,
          CRC16_POLYNOM = 0x1002
@@ -130,13 +131,13 @@ class HmwMessageBase
 
    protected:
 
+      uint8_t valid : 1;
+      uint8_t isBigEndian : 1;
       uint32_t targetAddress;
       ControlByte controlByte;
       uint32_t senderAddress;
       uint8_t frameDataLength;
       uint8_t frameData[MAX_FRAME_LENGTH];
-      uint8_t valid : 1;
-      uint8_t isBigEndian : 1;
 
    private:
 
@@ -169,12 +170,12 @@ class HmwMessageBase
 
       inline uint8_t getRawByte( uint8_t idx )
       {
-         return ( (uint8_t*)this )[idx];
+         return ( (uint8_t*)&targetAddress )[idx];
       }
 
       inline void setRawByte( uint8_t idx, uint8_t data )
       {
-         ( (uint8_t*)this )[idx] = data;
+         ( (uint8_t*)&targetAddress )[idx] = data;
       }
 
       inline Command getCommand()

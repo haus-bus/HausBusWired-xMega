@@ -40,7 +40,7 @@ void HmwMessageBase::operator delete( void* obj, size_t size )
 HmwMessageBase* HmwMessageBase::copy()
 {
    CriticalSection doNotInterrupt;
-   uint8_t completeLength = getFrameDataLength() + HEADER_SIZE;
+   uint8_t completeLength = STATUS_SIZE + HEADER_SIZE + getFrameDataLength();
    HmwMessageBase* newMsg = (HmwMessageBase*) new uint8_t[( completeLength + 7 ) & 0xFFF8];
    if ( newMsg )
    {

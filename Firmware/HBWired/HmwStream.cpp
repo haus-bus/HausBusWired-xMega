@@ -26,8 +26,8 @@ HmwMessageBase HmwStream::inMessage;
 
 const uint8_t HmwStream::debugLevel( DEBUG_LEVEL_OFF );
 
-#define RX_TRACE_PIN    Pin0
-#define CRC_TRACE_PIN   Pin1
+#define RX_TRACE_PIN            Pin0
+#define RX_ERROR_TRACE_PIN      Pin1
 
 #include "DigitalOutput.h"
 Stream::Status HmwStream::sendMessage( HmwMessageBase& msg )
@@ -148,6 +148,7 @@ HmwMessageBase* HmwStream::nextByteReceived( uint8_t data )
             {
                statusReceiving.transmitting = false;
                ERROR_1( FSTR( "MsgTooLong" ) );
+               TRACE_PORT_TOGGLE( RX_ERROR_TRACE_PIN );
             }
          }
          else if ( statusReceiving.dataIdx == ( HmwMessageBase::HEADER_SIZE + inMessage.getFrameDataLength() ) )
@@ -165,7 +166,7 @@ HmwMessageBase* HmwStream::nextByteReceived( uint8_t data )
             }
             else
             {
-               TRACE_PORT_TOGGLE( CRC_TRACE_PIN );
+               TRACE_PORT_TOGGLE( RX_ERROR_TRACE_PIN );
                ERROR_1( FSTR( "CRC " ) );
                for ( uint8_t i = 0; i < statusReceiving.dataIdx; i++ )
                {
