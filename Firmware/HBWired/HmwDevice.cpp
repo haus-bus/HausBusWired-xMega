@@ -39,8 +39,12 @@ const uint8_t HmwDevice::debugLevel( DEBUG_LEVEL_LOW );
 // The loop function is called in an endless loop
 void HmwDevice::loop()
 {
-   handleMessages();
-   HmwChannel::loop();
+
+   for ( uint8_t i = 0; i < HmwChannel::getNumChannels(); i++ )
+   {
+      HmwChannel::getChannel( i )->loop( i );
+      handleMessages();
+   }
    handlePendingActions();
    // handleConfigButton();
    WatchDog::reset();

@@ -87,10 +87,13 @@ class HmwStream
       {
          // this function is not secured because it should be called from ISR only
          HmwMessageBase* msg = nextByteReceived( data );
-         if ( msg && inMessageQueue )
+         if ( msg )
          {
-            HmwMessageBase* msg = inMessage.copy();
-            inMessageQueue->push( msg );
+            if ( !msg->isFromMe() && inMessageQueue )
+            {
+               HmwMessageBase* msg = inMessage.copy();
+               inMessageQueue->push( msg );
+            }
          }
       }
 

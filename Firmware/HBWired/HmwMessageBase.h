@@ -161,6 +161,8 @@ class HmwMessageBase
 
       bool isForMe();
 
+      bool isFromMe();
+
       HmwMessageBase* copy();
 
       void operator delete( void* obj, size_t size );

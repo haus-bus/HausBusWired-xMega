@@ -12,13 +12,18 @@
 #include <Peripherals/Flash.h>
 #include <SwFramework.h>
 
-const uint8_t HmwMessageBase::debugLevel( DEBUG_LEVEL_LOW );
+const uint8_t HmwMessageBase::debugLevel( DEBUG_LEVEL_OFF );
 
 uint8_t HmwMessageBase::messagesInUse( 0 );
 
 bool HmwMessageBase::isForMe()
 {
    return valid && ( ( targetAddress == HmwDevice::ownAddress ) || isBroadcast() );
+}
+
+bool HmwMessageBase::isFromMe()
+{
+   return ( senderAddress == HmwDevice::ownAddress );
 }
 
 void HmwMessageBase::operator delete( void* obj, size_t size )

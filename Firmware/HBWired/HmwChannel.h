@@ -50,13 +50,6 @@ class HmwChannel
 
 // functions
    public:
-      static inline void loop()
-      {
-         for ( uint8_t i = 0; i < HmwChannel::getNumChannels(); i++ )
-         {
-            HmwChannel::getChannel( i )->loop( i );
-         }
-      }
 
       static inline uint8_t getNumChannels()
       {
