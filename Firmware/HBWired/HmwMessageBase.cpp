@@ -16,12 +16,17 @@ const uint8_t HmwMessageBase::debugLevel( DEBUG_LEVEL_OFF );
 
 uint8_t HmwMessageBase::messagesInUse( 0 );
 
-bool HmwMessageBase::isForMe()
+bool HmwMessageBase::isForMe() const
 {
    return valid && ( ( targetAddress == HmwDevice::ownAddress ) || isBroadcast() );
 }
 
-bool HmwMessageBase::isFromMe()
+bool HmwMessageBase::isOnlyForMe() const
+{
+   return ( targetAddress == HmwDevice::ownAddress );
+}
+
+bool HmwMessageBase::isFromMe() const
 {
    return ( senderAddress == HmwDevice::ownAddress );
 }
@@ -37,10 +42,10 @@ void HmwMessageBase::operator delete( void* obj, size_t size )
    DEBUG_M4( FSTR( "del " ), (uintptr_t ) obj, FSTR( " use " ), messagesInUse );
 }
 
-HmwMessageBase* HmwMessageBase::copy()
+HmwMessageBase* HmwMessageBase::copy() const
 {
    CriticalSection doNotInterrupt;
-   uint8_t completeLength = STATUS_SIZE + HEADER_SIZE + getFrameDataLength();
+   uint8_t completeLength = getObjectSize();
    HmwMessageBase* newMsg = (HmwMessageBase*) new uint8_t[( completeLength + 7 ) & 0xFFF8];
    if ( newMsg )
    {

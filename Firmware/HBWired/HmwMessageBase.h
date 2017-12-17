@@ -28,8 +28,10 @@ class HmwMessageBase
          ESCAPE_BYTE = 0xFC,
          MAX_FRAME_LENGTH = 72,
          ADDRESS_SIZE = 4,
-         HEADER_SIZE = 9,
-         STATUS_SIZE = 1,
+         FRAME_HEADER_SIZE = 9,
+
+         MAX_RETRIES = 3,
+         RETRY_DELAY_TIME = 150,
 
          BROADCAST_ADDR = 0xFFFFFFFF,
          CRC16_POLYNOM = 0x1002
@@ -133,6 +135,9 @@ class HmwMessageBase
 
       uint8_t valid : 1;
       uint8_t isBigEndian : 1;
+      uint8_t sendingTries : 2;
+      uint8_t reserve : 4;
+      Timestamp nextSendTime;
       uint32_t targetAddress;
       ControlByte controlByte;
       uint32_t senderAddress;
@@ -160,15 +165,17 @@ class HmwMessageBase
          frameDataLength = 0;
       }
 
-      bool isForMe();
+      bool isForMe() const;
 
-      bool isFromMe();
+      bool isOnlyForMe() const;
 
-      HmwMessageBase* copy();
+      bool isFromMe() const;
+
+      HmwMessageBase* copy() const;
 
       void operator delete( void* obj, size_t size );
 
-      inline uint8_t getRawByte( uint8_t idx )
+      inline uint8_t getRawByte( uint8_t idx ) const
       {
          return ( (uint8_t*)&targetAddress )[idx];
       }
@@ -178,43 +185,43 @@ class HmwMessageBase
          ( (uint8_t*)&targetAddress )[idx] = data;
       }
 
-      inline Command getCommand()
+      inline Command getCommand() const
       {
          return valid ? (Command)frameData[0] : INVALID;
       }
 
-      inline bool isCommand( Command cmd )
+      inline bool isCommand( Command cmd ) const
       {
          return valid && ( cmd == frameData[0] );
       }
 
-      inline bool isACK()
+      inline bool isACK() const
       {
          return controlByte.isAck();
       }
 
-      inline bool isDiscovery()
+      inline bool isDiscovery() const
       {
          return controlByte.isDiscovery();
       }
 
-      inline bool isInfo()
+      inline bool isInfo() const
       {
          return controlByte.isInfo();
       }
 
-      inline bool isSync()
+      inline bool isSync() const
       {
          // attention: this is only valid for messages of type Info
          return controlByte.info.sync;
       }
 
-      inline bool isBroadcast()
+      inline bool isBroadcast() const
       {
          return targetAddress == BROADCAST_ADDR;
       }
 
-      inline bool isValid()
+      inline bool isValid() const
       {
          return valid;
       }
@@ -224,7 +231,7 @@ class HmwMessageBase
          valid = _valid;
       }
 
-      inline void convertToHmwSerialString( uint32_t address, uint8_t* buffer )
+      inline void convertToHmwSerialString( uint32_t address, uint8_t* buffer ) const
       {
          buffer[0] = 'H';
          buffer[1] = 'B';
@@ -262,7 +269,7 @@ class HmwMessageBase
          }
       }
 
-      inline void convertToResponse( uint32_t& ownAddress, bool isAck )
+      inline void convertToResponse( const uint32_t& ownAddress, bool isAck )
       {
          targetAddress = senderAddress;
          senderAddress = ownAddress;
@@ -307,6 +314,11 @@ class HmwMessageBase
          controlByte.info.senderNum = value;
       }
 
+      inline uint8_t getReceiverNum() const
+      {
+         return controlByte.info.receiverNum;
+      }
+
       inline void setReceiverNum( uint8_t value )
       {
          controlByte.info.receiverNum = value;
@@ -325,6 +337,55 @@ class HmwMessageBase
       inline void setSyncBit()
       {
          controlByte.info.sync = true;
+      }
+
+      inline uint8_t getObjectSize() const
+      {
+         return (uint8_t*)&targetAddress - (uint8_t*)this + FRAME_HEADER_SIZE + sizeof( frameDataLength ) + frameDataLength;
+      }
+
+      inline bool isKeyEvent() const
+      {
+         return isInfo() && ( frameDataLength == 4 ) && ( frameData[0] == KEY_EVENT );
+      }
+
+      inline bool isInfoLevel() const
+      {
+         return isInfo() && ( frameDataLength > 1 ) && ( frameData[0] == INFO_LEVEL );
+      }
+
+      inline bool isAcknowledgedBy( const HmwMessageBase& ackMsg ) const
+      {
+         if ( ( isInfo() && ackMsg.isACK() )              // generic INFO messages are acknowledged by ACK
+            || ( isKeyEvent() && ackMsg.isInfoLevel() ) ) // KeyEvents are acknowledged by INFO_LEVEL
+         {
+            bool isAcked = ( senderAddress == ackMsg.getTargetAddress() );
+            isAcked &= ( targetAddress == ackMsg.getSenderAddress() );
+            isAcked &= getSenderNum() == ackMsg.getReceiverNum();
+            return isAcked;
+         }
+         return false;
+      }
+
+      inline void notifySending()
+      {
+         sendingTries++;
+         nextSendTime = Timestamp( SystemTime::now() + RETRY_DELAY_TIME );
+      }
+
+      inline uint8_t getSendingTries()
+      {
+         return sendingTries;
+      }
+
+      inline bool hasSendingTriesLeft()
+      {
+         return sendingTries < MAX_RETRIES;
+      }
+
+      inline const Timestamp& getNextSendTime() const
+      {
+         return nextSendTime;
       }
 
       static void crc16Shift( uint8_t newByte, uint16_t& crc );

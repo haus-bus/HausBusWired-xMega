@@ -31,7 +31,6 @@ int main( void )
    SystemTime::init();
    Eeprom::MemoryMapped::enable();
    HmwStream::setHardware( MultiKeyHw::create() );
-   HmwStream::setInMessageQueue( MultiKeyHw::getInMessageQueue() );
    HmwDevice::setup( Release::HMW_SD6_ID, MultiKeyHw::getBasicConfig() );
    HmwDevice::linkReceiver = MultiKeyHw::getLinkReceiver();
    HmwDevice::linkSender = MultiKeyHw::getLinkSender();

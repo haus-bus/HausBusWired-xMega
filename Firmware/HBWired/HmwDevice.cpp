@@ -36,6 +36,7 @@ HmwLinkSender* HmwDevice::linkSender( NULL );
 
 const uint8_t HmwDevice::debugLevel( DEBUG_LEVEL_LOW );
 
+
 // The loop function is called in an endless loop
 void HmwDevice::loop()
 {
@@ -43,23 +44,32 @@ void HmwDevice::loop()
    for ( uint8_t i = 0; i < HmwChannel::getNumChannels(); i++ )
    {
       HmwChannel::getChannel( i )->loop( i );
-      handleMessages();
+      handlePendingInMessages();
+      HmwStream::handlePendingOutMessages();
    }
    handlePendingActions();
    // handleConfigButton();
    WatchDog::reset();
 }
 
-void HmwDevice::handleMessages()
+void HmwDevice::handlePendingInMessages()
 {
-   HmwMessageBase* request = HmwStream::getMessageFromQueue();
+   HmwMessageBase* request = HmwStream::getMessage();
    if ( request )
    {
-      HmwMessageBase answer( *request );
-      if ( processMessage( answer ) )
+      if ( request->isOnlyForMe() && ( request->isACK() || request->isInfoLevel() ) )
       {
-         HmwStream::sendMessage( answer );
+         HmwStream::notifyReceivedAckOrInfoLevel( *request );
       }
+      if ( !request->isACK() )
+      {
+         HmwMessageBase answer( *request );
+         if ( processMessage( answer ) )
+         {
+            HmwStream::sendMessage( answer );
+         }
+      }
+
       delete request;
    }
 }

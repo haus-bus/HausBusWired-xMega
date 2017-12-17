@@ -321,9 +321,6 @@
     <Compile Include="Framwork\StorageInterface.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Framwork\Stream.cpp">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="Framwork\Stream.h">
       <SubType>compile</SubType>
     </Compile>
@@ -393,10 +390,13 @@
     <Compile Include="HBWired\HmwMsgWriteFlash.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HmwStreamHw.h">
+    <Compile Include="HBWired\HmwStreamBase.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HmwStream.cpp">
+    <Compile Include="HBWired\HmwStreamBase.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HBWired\HmwStreamHw.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="HBWired\HmwStream.h">

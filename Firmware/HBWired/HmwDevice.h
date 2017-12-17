@@ -71,7 +71,11 @@ class HmwDevice
       static inline Stream::Status announce( uint8_t channel = 0 )
       {
          HmwMsgAnnounce msg( channel, ownAddress, deviceType, basicConfig->hwVersion, ( Release::MAJOR << 8 ) | Release::MINOR );
+      #ifdef _BOOTER_
+         return HmwStreamBase::sendMessage( msg );
+      #else
          return HmwStream::sendMessage( msg );
+      #endif
       }
 
       static inline bool isReadConfigPending()
@@ -148,7 +152,7 @@ class HmwDevice
 
       static void handlePendingActions();
 
-      static void handleMessages();
+      static void handlePendingInMessages();
 
 }; // HmwDevice
 

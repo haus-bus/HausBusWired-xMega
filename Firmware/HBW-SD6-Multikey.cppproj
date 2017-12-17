@@ -232,6 +232,9 @@
     <Compile Include="Elements\SerialStream.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="Framwork\Containers\ArrayVector.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="Framwork\Containers\BasicQueue.h">
       <SubType>compile</SubType>
     </Compile>
@@ -401,6 +404,15 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="HBWired\HmwStream.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HBWired\HmwStreamBase.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HBWired\HmwStreamBase.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HBWired\HmwStreamHw.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Protocols\OneWire.cpp">

@@ -10,21 +10,21 @@
 #define __HMWSTREAM_H__
 
 #include "HmwMessageBase.h"
-#include "HmwStreamHw.h"
+#include "HmwStreamBase.h"
 
 #include <Containers/StaticQueue.h>
+#include <Containers/ArrayVector.h>
 
-class HmwStream
+class HmwStream : public HmwStreamBase
 {
 // variables
    public:
 
-      static const uint8_t MESSAGE_QUEUE_SIZE = 16;
-      static const uint8_t MAX_RETRIES = 3;
-      static const uint8_t RETRY_DELAY_TIME = 100;
-      static const uint8_t MIN_IDLE_TIME = 7;
+      static const uint8_t MESSAGE_QUEUE_SIZE = 8;
+      static const uint8_t ARRAY_VECTOR_SIZE = 16;
 
       typedef StaticQueue<HmwMessageBase*, uint8_t, MESSAGE_QUEUE_SIZE> MessageQueue;
+      typedef ArrayVector<HmwMessageBase*, ARRAY_VECTOR_SIZE> MessageVector;
 
    protected:
    private:
@@ -32,104 +32,84 @@ class HmwStream
 // functions
    public:
 
-      static inline void setHardware( HmwStreamHw* _hardware, MessageQueue* inQueue = NULL )
+      static inline void setHardware( HmwStreamHw* _hardware )
       {
          hardware = _hardware;
          hardware->serial->init<19200, USART_CMODE_ASYNCHRONOUS_gc, USART_PMODE_EVEN_gc, USART_CHSIZE_8BIT_gc, false, false>();
-      }
-
-      static inline void setInMessageQueue( MessageQueue* queue )
-      {
-         inMessageQueue = queue;
-         if ( inMessageQueue )
-         {
-            hardware->serial->enableReceiveCompleteInterrupt();
-         }
-         else
-         {
-            hardware->serial->disableReceiveCompleteInterrupt();
-         }
+         hardware->serial->enableReceiveCompleteInterrupt();
       }
 
       static Stream::Status sendMessage( HmwMessageBase& msg );
 
-      static HmwMessageBase* pollMessageReceived();
-
-      static inline HmwMessageBase* getMessageFromQueue()
+      static inline HmwMessageBase* getMessage()
       {
          HmwMessageBase* msg = NULL;
-         if ( inMessageQueue && !inMessageQueue->isEmpty() )
+         if ( !inMessageQueue.isEmpty() )
          {
             CriticalSection doNotInterrupt;
-            inMessageQueue->pop( msg );
+            inMessageQueue.pop( msg );
          }
          return msg;
       }
 
-      static inline bool isIdle()
+      static void handlePendingOutMessages()
       {
-         // toDo
-         return lastReceivedTime.since() > MIN_IDLE_TIME;
+         for ( uint8_t i = 0; i < outMessageVector.size(); i++ )
+         {
+            HmwMessageBase* outMsg = outMessageVector.getElement( i );
+            const Timestamp& nextSendTime = outMsg->getNextSendTime();
+            if ( nextSendTime.isValid() && nextSendTime.since() )
+            {
+               sendMessage( *outMsg );
+               if ( !outMsg->hasSendingTriesLeft() )
+               {
+                  // all retires were done, remove message from vector
+                  outMessageVector.remove( outMsg );
+                  delete outMsg;
+               }
+               return;
+            }
+         }
       }
 
-      static inline void sync( uint8_t _receiverNum )
+      static inline void notifyReceivedAckOrInfoLevel( const HmwMessageBase& inMsg )
       {
-         senderNum = 0;
-         receiverNum = _receiverNum;
+         for ( uint8_t i = 0; i < outMessageVector.size(); i++ )
+         {
+            HmwMessageBase* outMsg = outMessageVector.getElement( i );
+            if ( outMsg->isAcknowledgedBy( inMsg ) )
+            {
+               outMessageVector.remove( outMsg );
+               delete outMsg;
+               return;
+            }
+         }
       }
 
-      static inline void notifyMsgReceived( const uint32_t& senderAddress )
-      {
-         receiverNum++;
-      }
-
-      static void nextByteReceivedFromISR( uint8_t data )
+      static inline void nextByteReceivedFromISR( uint8_t data )
       {
          // this function is not secured because it should be called from ISR only
          HmwMessageBase* msg = nextByteReceived( data );
          if ( msg )
          {
-            if ( !msg->isFromMe() && inMessageQueue )
+            if ( !msg->isFromMe() )
             {
-               HmwMessageBase* msg = inMessage.copy();
-               inMessageQueue->push( msg );
+               HmwMessageBase* newMsg = inMessage.copy();
+               if ( newMsg )
+               {
+                  inMessageQueue.push( newMsg );
+               }
             }
          }
       }
 
    protected:
 
-      struct CommunicationStatus
-      {
-         HmwMessageBase* msg;
-         uint16_t crc16checksum;
-         uint8_t dataIdx;
-         uint8_t transmitRetry;
-         uint8_t pendingEscape : 1;
-         uint8_t transmitting  : 1;
-      };
-
-      static CommunicationStatus statusSending, statusReceiving;
-
-      static HmwMessageBase* nextByteReceived( uint8_t data );
-
-      static bool getNextByteToSend( uint8_t& data );
-
    private:
 
-      static const uint8_t debugLevel;
+      static MessageQueue inMessageQueue;
 
-      static uint8_t senderNum;
-
-      static uint8_t receiverNum;
-
-      static Timestamp lastReceivedTime;
-
-      static HmwMessageBase inMessage;
-
-      static HmwStreamHw* hardware;
-
-      static MessageQueue* inMessageQueue;
+      static MessageVector outMessageVector;
 
 }; // HmWStream
 
