@@ -77,6 +77,7 @@
         </dependencies>
       </framework-data>
     </AsfFrameworkConfig>
+    <Name>HMW-SD6-Booter</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'ReleaseRev0' ">
     <ToolchainSettings>
@@ -299,8 +300,8 @@
     <Folder Include="Framwork\" />
     <Folder Include="Framwork\Time\" />
     <Folder Include="Framwork\Tracing\" />
-    <Folder Include="HBW-SD6-Booter\" />
-    <Folder Include="HBWired\" />
+    <Folder Include="HMW-SD6-Booter" />
+    <Folder Include="HMWired" />
     <Folder Include="Security\" />
     <Folder Include="XMega\" />
     <Folder Include="XMega\Peripherals\" />
@@ -345,61 +346,61 @@
     <Compile Include="Framwork\Tracing\Logger.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBW-SD6-Booter\HBW-SD6-Booter.cpp">
+    <Compile Include="HMW-SD6-Booter\HMW-SD6-Booter.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBW-SD6-Booter\HBW-SD6-Booter.h">
+    <Compile Include="HMW-SD6-Booter\HMW-SD6-Booter.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBW-SD6-Booter\BooterSystemTime.cpp">
+    <Compile Include="HMW-SD6-Booter\BooterSystemTime.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBW-SD6-Booter\HmwBooterHw.cpp">
+    <Compile Include="HMW-SD6-Booter\HmwBooterHw.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBW-SD6-Booter\HmwBooterHw.h">
+    <Compile Include="HMW-SD6-Booter\HmwBooterHw.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HmwChannel.h">
+    <Compile Include="HMWired\HmwChannel.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HmwDevice.cpp">
+    <Compile Include="HMWired\HmwDevice.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HmwDevice.h">
+    <Compile Include="HMWired\HmwDevice.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HmwMessageBase.cpp">
+    <Compile Include="HMWired\HmwMessageBase.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HmwMessageBase.h">
+    <Compile Include="HMWired\HmwMessageBase.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HmwMsgAnnounce.h">
+    <Compile Include="HMWired\HmwMsgAnnounce.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HmwMsgGetFwVersion.h">
+    <Compile Include="HMWired\HmwMsgGetFwVersion.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HmwMsgGetHwVersion.h">
+    <Compile Include="HMWired\HmwMsgGetHwVersion.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HmwMsgReadEeprom.h">
+    <Compile Include="HMWired\HmwMsgReadEeprom.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HmwMsgWriteFlash.h">
+    <Compile Include="HMWired\HmwMsgWriteFlash.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HmwStreamBase.cpp">
+    <Compile Include="HMWired\HmwStreamBase.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HmwStreamBase.h">
+    <Compile Include="HMWired\HmwStreamBase.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HmwStreamHw.h">
+    <Compile Include="HMWired\HmwStreamHw.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HBWired\HmwStream.h">
+    <Compile Include="HMWired\HmwStream.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Release.h">

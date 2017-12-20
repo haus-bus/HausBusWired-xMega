@@ -27,7 +27,7 @@ class HmwDevice
          uint8_tx hwVersion;                    // 0x0000
          uint8_tx loggingTime;                  // 0x0001
          uint32_tx centralAddress;              // 0x0002   - 0x0005
-         uint32_tx ownAdress;                   // 0x0006   - 0x0009
+         uint32_tx ownAddress;                  // 0x0006   - 0x0009
       };
 
       struct PendingActions
@@ -56,6 +56,12 @@ class HmwDevice
 
       static const uint8_t debugLevel;
 
+      static const uint32_t MIN_ADDRESS = 1620000000;
+
+      static const uint32_t MAX_ADDRESS = 1629999999;
+
+      static const uint32_t DEFAULT_ADDRESS = MIN_ADDRESS;
+
 
 // functions
    public:
@@ -64,8 +70,16 @@ class HmwDevice
       {
          deviceType = _deviceType;
          basicConfig = _config;
-         ownAddress = changeEndianness( basicConfig->ownAdress );
+         setOwnAddress( changeEndianness( basicConfig->ownAddress ) );
          pendingActions.announce = true;
+      }
+
+      static inline void setOwnAddress( uint32_t address )
+      {
+         if ( ( address >= MIN_ADDRESS ) && ( address <= MAX_ADDRESS ) )
+         {
+            ownAddress = address;
+         }
       }
 
       static inline Stream::Status announce( uint8_t channel = 0 )
@@ -104,6 +118,8 @@ class HmwDevice
       }
 
       static void loop();
+
+      static void checkConfig();
 
       static bool processMessage( HmwMessageBase& msg );
 

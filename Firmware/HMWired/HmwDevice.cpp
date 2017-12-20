@@ -24,7 +24,7 @@
 
 uint8_t HmwDevice::deviceType( 0 );
 
-uint32_t HmwDevice::ownAddress( 0x60000000 );
+uint32_t HmwDevice::ownAddress( DEFAULT_ADDRESS );
 
 HmwDevice::BasicConfig* HmwDevice::basicConfig( 0 );
 
@@ -76,7 +76,11 @@ void HmwDevice::handlePendingInMessages()
 
 void HmwDevice::handlePendingActions()
 {
-   handleAnnouncement();
+   if ( pendingActions.readConfig )
+   {
+      checkConfig();
+      pendingActions.readConfig = false;
+   }
    if ( pendingActions.startBooter )
    {
       ResetSystem::reset();
@@ -88,6 +92,7 @@ void HmwDevice::handlePendingActions()
       {
       }
    }
+   handleAnnouncement();
 }
 
 void HmwDevice::handleAnnouncement()
@@ -98,6 +103,27 @@ void HmwDevice::handleAnnouncement()
       {
          clearPendingAnnouncement();
       }
+   }
+}
+
+void HmwDevice::checkConfig()
+{
+   uint32_t address = changeEndianness( basicConfig->ownAddress );
+   if ( ownAddress != address )
+   {
+      // address was changed, update and send new announce message
+      setOwnAddress( address );
+      pendingActions.announce = true;
+   }
+   if ( ( basicConfig->loggingTime < 50 ) || ( basicConfig->loggingTime > 250 ) )
+   {
+      basicConfig->loggingTime = 50;
+   }
+
+   // check all channels
+   for ( uint8_t i = 0; i < HmwChannel::getNumChannels(); i++ )
+   {
+      HmwChannel::getChannel( i )->checkConfig();
    }
 }
 
@@ -199,7 +225,19 @@ bool HmwDevice::processMessage( HmwMessageBase& msg )
       HmwMsgWriteEeprom* msgWriteEeprom = ( HmwMsgWriteEeprom* )&msg;
       if ( msg.getFrameDataLength() == ( msgWriteEeprom->getLength() + 4 ) )
       {
-         Eeprom::write( msgWriteEeprom->getOffset(), msgWriteEeprom->getData(), msgWriteEeprom->getLength() );
+         uint16_t offset = msgWriteEeprom->getOffset();
+         uint8_t length = msgWriteEeprom->getLength();
+         uint8_t* data = msgWriteEeprom->getData();
+
+         // at offset 0 the HW_REV is stored to share between BOOTER and FW
+         // it is not allowed to change it with external WRITE_EEPROM command
+         if ( offset == 0 )
+         {
+            offset++;
+            data++;
+            length--;
+         }
+         Eeprom::write( offset, data, length );
       }
       else
       {

@@ -9,7 +9,7 @@
 #ifndef __HMWBOOTERSTREAMHW_H__
 #define __HMWBOOTERSTREAMHW_H__
 
-#include <HBWired/HmwStreamHw.h>
+#include <HMWired/HmwStreamHw.h>
 
 class HmwBooterHw : public HmwStreamHw
 {

@@ -8,6 +8,12 @@
 </supported_types>
 
 <paramset id="HBW-SD6-Multikey_dev_master" type="MASTER">
+	<parameter id="HW_REV" hidden="true">
+		<logical type="integer"/>
+		<physical size="1" type="integer" interface="eeprom">
+			<address index="0x0000"/>
+		</physical>
+	</parameter>
 	<parameter id="LOGGING_TIME">
 		<logical type="float" unit="s" default="5.0" max="25.0" min="0.1"/>
 		<physical size="1.0" type="integer" interface="eeprom">

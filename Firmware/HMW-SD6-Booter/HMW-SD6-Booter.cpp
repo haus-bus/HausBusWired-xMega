@@ -5,7 +5,7 @@
  *  Author: Viktor Pankraz
  */
 
-#include "HBW-SD6-Booter.h"
+#include "HMW-SD6-Booter.h"
 #include "HmwBooterHw.h"
 
 #include <Peripherals/InterruptController.h>

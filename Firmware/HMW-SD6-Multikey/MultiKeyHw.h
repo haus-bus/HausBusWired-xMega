@@ -10,14 +10,14 @@
 #define __MULTIKEYHW_H__
 
 #include <DigitalOutput.h>
-#include <HBWired/HmwStreamHw.h>
-#include <HBWired/HmwKey.h>
-#include <HBWired/HmwDimmer.h>
-#include <HBWired/HmwDS1820.h>
-#include <HBWired/HmwAnalogIn.h>
-#include <HBWired/HmwDevice.h>
-#include <HBWired/HmwLinkKey.h>
-#include <HBWired/HmwLinkDimmer.h>
+#include <HMWired/HmwStreamHw.h>
+#include <HMWired/HmwKey.h>
+#include <HMWired/HmwDimmer.h>
+#include <HMWired/HmwDS1820.h>
+#include <HMWired/HmwAnalogIn.h>
+#include <HMWired/HmwDevice.h>
+#include <HMWired/HmwLinkKey.h>
+#include <HMWired/HmwLinkDimmer.h>
 
 
 class MultiKeyHw : public HmwStreamHw

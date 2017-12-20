@@ -34,6 +34,7 @@ int main( void )
    HmwDevice::setup( Release::HMW_SD6_ID, MultiKeyHw::getBasicConfig() );
    HmwDevice::linkReceiver = MultiKeyHw::getLinkReceiver();
    HmwDevice::linkSender = MultiKeyHw::getLinkSender();
+   HmwDevice::checkConfig();
 
    // Authorize interrupts
    InterruptController::selectAppInterruptSection();
