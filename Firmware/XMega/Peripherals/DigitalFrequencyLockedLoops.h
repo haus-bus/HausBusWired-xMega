@@ -26,15 +26,27 @@ class DigitalFrequencyLockedLoops
 
    public:
 
-      ///*! \brief This function disables the automatic calibration of the internal oscillator.
-      // *
-      // */
+      // This function enables the automatic calibration of the internal oscillator.
+      inline void enableAutoCalibration()
+      {
+         reg.CTRL |= DFLL_ENABLE_bm;
+      }
+
+      // This function disables the automatic calibration of the internal oscillator.
       inline void disableAutoCalibration()
       {
          reg.CTRL &= ~DFLL_ENABLE_bm;
       }
 
-      static DigitalFrequencyLockedLoops& instance( bool for32MHz );
+      static inline DigitalFrequencyLockedLoops& instance( bool for32MHz )
+      {
+         if ( for32MHz )
+         {
+            return *reinterpret_cast<DigitalFrequencyLockedLoops*> ( &DFLLRC32M );
+         }
+
+         return *reinterpret_cast<DigitalFrequencyLockedLoops*> ( &DFLLRC2M );
+      }
 
       ////    Attributes    ////
 

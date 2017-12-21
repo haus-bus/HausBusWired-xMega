@@ -448,9 +448,6 @@
     <Compile Include="XMega\Peripherals\Clock.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="XMega\Peripherals\DigitalFrequencyLockedLoops.cpp">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="XMega\Peripherals\DigitalFrequencyLockedLoops.h">
       <SubType>compile</SubType>
     </Compile>

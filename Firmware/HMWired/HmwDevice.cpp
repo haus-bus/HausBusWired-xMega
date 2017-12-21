@@ -321,6 +321,7 @@ void HmwDevice::set( uint8_t channel, uint8_t length, uint8_t const* const data 
 
 #include <Peripherals/Oscillator.h>
 #include <Peripherals/Clock.h>
+#include <Peripherals/DigitalFrequencyLockedLoops.h>
 
 static void
 __attribute__( ( section( ".init3" ), naked, used ) )
@@ -346,5 +347,10 @@ lowLevelInit( void )
 
    // Set the 32 MHz ring oscillator as the main clock source.
    Clock::selectMainClockSource( CLK_SCLKSEL_RC32M_gc );
+
+   // save some power and disable the 2MHz oscillator
+   Oscillator::disable( OSC_RC2MEN_bm );
+
+   DigitalFrequencyLockedLoops::instance( true ).enableAutoCalibration();
 }
 
