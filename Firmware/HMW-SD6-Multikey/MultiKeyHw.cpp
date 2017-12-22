@@ -67,11 +67,14 @@ MultiKeyHw* MultiKeyHw::create()
    PortPin ppRxEnable( PortE, 0 );
    PortPin ppTxEnable( PortE, 1 );
 
-   switch ( getBasicConfig()->hwVersion )
+   switch ( config.basicConfig.hwVersion )
    {
-      case Release::REV_0:
       // allow also 0xFF that is REV_0 but with an old booter, that did not set correct revision
       case 0xFF:
+         // update the cell so that HW_REV is reported correctly
+         config.basicConfig.hwVersion = Release::REV_0;
+
+      case Release::REV_0:
       {
          ppRxEnable.configOutput();
 #ifdef DEBUG
