@@ -100,9 +100,15 @@ class Eeprom
 inline void Eeprom::erase()
 {
    WARN_1( "ee.erase" );
+   bool mapped = MemoryMapped::isEnabled();
+   MemoryMapped::disable();
    fillBufferWithValue( 0xFF );
    NvmController::waitWhileBusy();
    executeCommand( NVM_CMD_ERASE_EEPROM_gc );
+   if ( mapped )
+   {
+      MemoryMapped::enable();
+   }
 }
 
 inline void Eeprom::flushBuffer()

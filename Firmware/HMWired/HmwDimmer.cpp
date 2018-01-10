@@ -9,7 +9,7 @@
 #include "HmwDimmer.h"
 #include "HmwDevice.h"
 
-HmwDimmer::HmwDimmer( PortPin _portPin, Config* _config, bool _inverted ) : pwmOutput( _portPin.getPortNumber(), _portPin.getPinNumber(), MAX_LEVEL )
+HmwDimmer::HmwDimmer( PortPin _portPin, Config* _config, bool _inverted, uint16_t _period ) : pwmOutput( _portPin.getPortNumber(), _portPin.getPinNumber(), _period )
 {
    type = HmwChannel::HMW_DIMMER;
    config = _config;
@@ -25,12 +25,11 @@ HmwDimmer::HmwDimmer( PortPin _portPin, Config* _config, bool _inverted ) : pwmO
    nextFeedbackTime.reset();
    nextBlinkTime.reset();
 
-} // HBWDimmer
+}
 
 
 void HmwDimmer::set( uint8_t length, uint8_t const* const data )
 {
-
    if ( *data <= MAX_LEVEL )
    {
       currentLevel = *data;
@@ -97,7 +96,7 @@ void HmwDimmer::set( uint8_t length, uint8_t const* const data )
       }
       else
       {
-         currentLevel = 200;
+         currentLevel = MAX_LEVEL;
       }
       nextBlinkTime.reset();
    }

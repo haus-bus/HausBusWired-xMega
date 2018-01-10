@@ -90,7 +90,28 @@ class HmwKey : public HmwChannel
          feedbackChannel = _feedbackChannel;
       }
 
+      inline void setUnlocked( bool _unlocked )
+      {
+         unlocked = _unlocked;
+         if ( feedbackChannel && !unlocked )
+         {
+            uint8_t data = KEY_FEEDBACK_OFF;
+            feedbackChannel->set( sizeof( data ), &data );
+         }
+      }
+
+      inline bool isUnlocked()
+      {
+         return config->isUnlocked() && unlocked;
+      }
+
+      inline bool isPressed()
+      {
+         return !digitalIn.isSet();
+      }
+
       virtual void loop( uint8_t channel );
+
       virtual void checkConfig();
 
    protected:
@@ -102,13 +123,18 @@ class HmwKey : public HmwChannel
       void handleSwitchSignal( uint8_t channel );
 
    private:
+      bool unlocked;
+
       uint8_t keyPressNum;
+
       Config* config;
+
       HmwChannel* feedbackChannel;
+
       DigitalInput digitalIn;
 
-
       Timestamp keyPressedTimestamp;   // Zeit, zu der die Taste gedrueckt wurde (fuer's Entprellen)
+
       Timestamp lastSentLong;          // Zeit, zu der das letzte Mal longPress gesendet wurde
 };
 

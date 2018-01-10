@@ -55,7 +55,7 @@ class HmwDimmer : public HmwChannel
 
 // functions
    public:
-      HmwDimmer( PortPin _portPin, Config* _config, bool _inverted = false );
+      HmwDimmer( PortPin _portPin, Config* _config, bool _inverted = false, uint16_t _period = MAX_LEVEL );
 
       // definition of needed functions from HBWChannel class
       virtual uint8_t get( uint8_t* data );

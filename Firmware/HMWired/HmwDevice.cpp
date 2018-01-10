@@ -17,6 +17,7 @@
 #include "HmwMsgGetSerial.h"
 #include "HmwMsgWriteEeprom.h"
 #include "HmwMsgSetLevel.h"
+#include "HmwMsgResetWifi.h"
 
 #include <Peripherals/WatchDog.h>
 #include <Peripherals/ResetSystem.h>
@@ -26,13 +27,11 @@ uint8_t HmwDevice::deviceType( 0 );
 
 uint32_t HmwDevice::ownAddress( DEFAULT_ADDRESS );
 
-HmwDevice::BasicConfig* HmwDevice::basicConfig( 0 );
+HmwDeviceHw::BasicConfig* HmwDevice::basicConfig( 0 );
 
 HmwDevice::PendingActions HmwDevice::pendingActions;
 
-HmwLinkReceiver* HmwDevice::linkReceiver( NULL );
-
-HmwLinkSender* HmwDevice::linkSender( NULL );
+HmwDeviceHw* HmwDevice::hardware( NULL );
 
 const uint8_t HmwDevice::debugLevel( DEBUG_LEVEL_LOW );
 
@@ -40,7 +39,6 @@ const uint8_t HmwDevice::debugLevel( DEBUG_LEVEL_LOW );
 // The loop function is called in an endless loop
 void HmwDevice::loop()
 {
-
    for ( uint8_t i = 0; i < HmwChannel::getNumChannels(); i++ )
    {
       HmwChannel::getChannel( i )->loop( i );
@@ -48,7 +46,7 @@ void HmwDevice::loop()
       HmwStream::handlePendingOutMessages();
    }
    handlePendingActions();
-   // handleConfigButton();
+   handleConfigButton();
    WatchDog::reset();
 }
 
@@ -87,10 +85,19 @@ void HmwDevice::handlePendingActions()
    }
    if ( pendingActions.resetSystem )
    {
-      // wait for WatchDog to reset
+      WatchDog::reset();
+      WatchDog::enable( WatchDog::_500MS );
+
+      // wait for WatchDog
       while ( 1 )
       {
       }
+   }
+   if ( pendingActions.resetWifiConnection )
+   {
+      HmwMsgResetWifi msg( ownAddress, 2 );
+      HmwStream::sendMessage( msg );
+      pendingActions.resetWifiConnection = false;
    }
    handleAnnouncement();
 }
@@ -99,12 +106,144 @@ void HmwDevice::handleAnnouncement()
 {
    if ( isAnnouncementPending() && HmwStream::isIdle() )
    {
-      if ( HmwDevice::announce() == Stream::SUCCESS )
+      if ( announce() == Stream::SUCCESS )
       {
          clearPendingAnnouncement();
       }
    }
 }
+
+void HmwDevice::factoryReset()
+{
+   // clean up eeprom data but do not change hwVersion and ownAddress
+   uint8_t _hwVersion = basicConfig->hwVersion;
+   uint32_t _ownAddress = basicConfig->ownAddress;
+
+   Eeprom::erase();
+
+   // restore the data
+   basicConfig->hwVersion = _hwVersion;
+   basicConfig->ownAddress = _ownAddress;
+
+   // reset the system after factory reset
+   pendingActions.resetSystem = true;
+}
+
+void HmwDevice::handleConfigButton()
+{
+   // langer Tastendruck (5s) -> LED blinkt hektisch
+   // dann innerhalb 10s langer Tastendruck (3s) -> LED geht aus, EEPROM-Reset
+
+   // do we have a hardware associated?
+   if ( !hardware )
+   {
+      return;
+   }
+
+   static Timestamp lastTime;
+   static HmwDeviceHw::ConfigButtonState buttonState = HmwDeviceHw::IDLE;
+
+   bool buttonPressed = hardware->isConfigButtonPressed();
+
+   switch ( buttonState )
+   {
+      case HmwDeviceHw::IDLE:
+      {
+         if ( buttonPressed )
+         {
+            buttonState = HmwDeviceHw::FIRST_PRESS;
+         }
+         lastTime = Timestamp();
+         break;
+      }
+
+      case HmwDeviceHw::FIRST_PRESS:
+      {
+         if ( buttonPressed )
+         {  // button still pressed
+            if ( lastTime.since() > 5000 )
+            {
+               buttonState = HmwDeviceHw::FIRST_LONG_PRESS;
+            }
+         }
+         else
+         {  // button released
+            if ( lastTime.since() > 100 )
+            {  // announce on short press
+               pendingActions.announce = true;
+            }
+            buttonState = HmwDeviceHw::IDLE;
+         }
+         break;
+      }
+
+      case HmwDeviceHw::FIRST_LONG_PRESS:
+      {
+         if ( !buttonPressed )
+         {  // button released
+            buttonState = HmwDeviceHw::WAIT_SECOND_PRESS;
+            lastTime = Timestamp();
+            pendingActions.resetWifiConnection = true;
+         }
+         break;
+      }
+
+      case HmwDeviceHw::WAIT_SECOND_PRESS:
+      {
+         // debounce 100ms
+         if ( lastTime.since() < 100 )
+         {
+            break;
+         }
+         if ( buttonPressed )
+         {  // second button press
+            buttonState = HmwDeviceHw::SECOND_PRESS;
+            lastTime = Timestamp();
+         }
+         else
+         {  // if second button press does not occur within 5s, continue with normal operation
+            if ( lastTime.since() > 5000 )
+            {
+               buttonState = HmwDeviceHw::IDLE;
+            }
+         }
+         break;
+      }
+
+      case HmwDeviceHw::SECOND_PRESS:
+      {
+         if ( lastTime.since() < 100 ) // entprellen
+         {
+            break;
+         }
+         if ( buttonPressed )
+         {    // immer noch gedrueckt
+            if ( lastTime.since() > 3000 )
+            {
+               buttonState = HmwDeviceHw::SECOND_LONG_PRESS;
+            }
+         }
+         else
+         {               // nicht mehr gedrueckt
+            buttonState = HmwDeviceHw::IDLE;
+         }
+         break;
+      }
+
+      case HmwDeviceHw::SECOND_LONG_PRESS: // zweiter Druck erkannt
+      {
+         if ( !buttonPressed )
+         {  // erst wenn losgelassen
+            // Factory-Reset
+            factoryReset();
+            buttonState = HmwDeviceHw::IDLE;
+         }
+         break;
+      }
+   }
+   hardware->notifyConfigButtonState( buttonState );
+}
+
 
 void HmwDevice::checkConfig()
 {
@@ -169,7 +308,15 @@ bool HmwDevice::processMessage( HmwMessageBase& msg )
          isValid = false;
       }
    }
-
+   else if ( msg.isCommand( HmwMessageBase::START_BOOTER ) )
+   {
+      DEBUG_M1( FSTR( "C: START_BOOTER" ) );
+#ifdef _BOOTER_
+      pendingActions.announce = true;
+#else
+      pendingActions.startBooter = true;
+#endif
+   }
 #ifndef _BOOTER_
    else if ( msg.isCommand( HmwMessageBase::GET_FW_VERSION ) )
    {
@@ -206,11 +353,8 @@ bool HmwDevice::processMessage( HmwMessageBase& msg )
    else if ( msg.isCommand( HmwMessageBase::KEY_EVENT ) || msg.isCommand( HmwMessageBase::KEY_SIM ) )
    {
       DEBUG_M1( FSTR( "C: KEY_EVENT" ) );
-      if ( linkReceiver )
-      {
-         HmwMsgKeyEvent* event = ( HmwMsgKeyEvent* )&msg;
-         linkReceiver->receiveKeyEvent( event->getSenderAddress(), event->getSourceChannel(), event->getDestinationChannel(), event->isLongPress() );
-      }
+      HmwMsgKeyEvent* event = ( HmwMsgKeyEvent* )&msg;
+      HmwLinkReceiver::notifyKeyEvent( event->getSenderAddress(), event->getSourceChannel(), event->getDestinationChannel(), event->isLongPress() );
    }
    else if ( msg.isCommand( HmwMessageBase::GET_LEVEL ) )
    {
@@ -251,11 +395,6 @@ bool HmwDevice::processMessage( HmwMessageBase& msg )
       ( (HmwMsgGetSerial*)&msg )->setupResponse( ownAddress );
       ackOnly = false;
    }
-   else if ( msg.isCommand( HmwMessageBase::START_BOOTER ) )
-   {
-      DEBUG_M1( FSTR( "C: START_BOOTER" ) );
-      pendingActions.startBooter = true;
-   }
    else if ( msg.isCommand( HmwMessageBase::RESET ) )
    {
       DEBUG_M1( FSTR( "C: RESET" ) );
@@ -284,7 +423,7 @@ bool HmwDevice::processMessage( HmwMessageBase& msg )
       return false;
    }
 
-   if ( isValid && !msg.isBroadcast() )
+   if ( isValid ) // && !msg.isBroadcast() )
    {
       msg.convertToResponse( ownAddress, ackOnly );
       return true;
@@ -317,7 +456,6 @@ void HmwDevice::set( uint8_t channel, uint8_t length, uint8_t const* const data 
       HmwChannel::getChannel( channel )->set( length, data );
    }
 }
-
 
 #include <Peripherals/Oscillator.h>
 #include <Peripherals/Clock.h>

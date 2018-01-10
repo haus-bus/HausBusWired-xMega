@@ -5,7 +5,7 @@
  *  Author: Viktor Pankraz
  */
 
-#include "MultiKeyHw.h"
+#include "HmwMultiKeyFactory.h"
 
 #include <Release.h>
 #include <Time/SystemTime.h>
@@ -22,7 +22,7 @@ const ModuleId moduleId =
    0,
    Release::MAJOR,
    Release::MINOR,
-   Release::HMW_SD6_ID,
+   Release::HMW_SD6,
    0
 };
 
@@ -30,11 +30,7 @@ int main( void )
 {
    SystemTime::init();
    Eeprom::MemoryMapped::enable();
-   HmwStream::setHardware( MultiKeyHw::create() );
-   HmwDevice::setup( Release::HMW_SD6_ID, MultiKeyHw::getBasicConfig() );
-   HmwDevice::linkReceiver = MultiKeyHw::getLinkReceiver();
-   HmwDevice::linkSender = MultiKeyHw::getLinkSender();
-   HmwDevice::checkConfig();
+   HmwDevice::setHardware( Release::HMW_SD6, HmwMultiKeyFactory::createHardware() );
 
    // Authorize interrupts
    InterruptController::selectAppInterruptSection();

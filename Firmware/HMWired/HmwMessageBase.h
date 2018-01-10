@@ -47,6 +47,7 @@ class HmwMessageBase
       enum Command
       {
          INVALID = 0,
+         RESET_WIFI = '#',
          RESET = '!',
          ANNOUNCE = 'A',
          READ_CONFIG = 'C',

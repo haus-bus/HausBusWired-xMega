@@ -14,15 +14,16 @@ class Release
 {
    public:
 
-      enum FIRMWARE_IDS
+      enum FirmwareId
       {
-         HMW_SD6_ID = 0xB1
+         HMW_SD6 = 0xB1
       };
 
-      enum HARDWARE_IDS
+      enum HardwareId
       {
          REV_0,
-         REV_1
+         REV_1,
+         REV_2
 
       };
 

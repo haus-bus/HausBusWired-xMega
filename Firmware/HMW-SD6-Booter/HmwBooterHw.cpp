@@ -19,9 +19,9 @@ static DigitalOutputTmpl<PortE, 1> txEnable;
 static DigitalInputTmpl<PortE, 2> rx;
 static DigitalOutputTmpl<PortE, 3> tx;
 
-#elif ( HARDWARE_ID == 1 )
+#elif ( HARDWARE_ID == 1 ) || ( HARDWARE_ID == 2 )
 
-static DigitalOutputTmpl<PortE, 1> txEnable;
+static DigitalOutputTmpl<PortR, 0> txEnable;
 static DigitalInputTmpl<PortE, 2> rx;
 static DigitalOutputTmpl<PortE, 3> tx;
 
@@ -42,9 +42,9 @@ HmwBooterHw::HmwBooterHw()
    PORTC.DIR = LED_MASK;
 
 #ifdef DEBUG
-   DigitalInputTmpl< PortC, 6 > rx;
-   DigitalOutputTmpl<PortC, 7> tx;
-   Usart::instance<PortC, 1>().init<115200>();
+   DigitalInputTmpl< PortD, 6 > rx;
+   DigitalOutputTmpl<PortD, 7> tx;
+   Usart::instance<PortD, 1>().init<115200>();
    Logger::instance().setStream( HmwBooterHw::debug );
 #endif
 }
@@ -56,7 +56,7 @@ void HmwBooterHw::enableTranceiver( bool enable )
 
 void HmwBooterHw::debug( char c )
 {
-   Usart::instance<PortC, 1>().write( c );
+   Usart::instance<PortD, 1>().write( c );
 }
 
 void HmwBooterHw::notifyNextDownloadPacket()

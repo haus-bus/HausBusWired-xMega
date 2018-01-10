@@ -96,7 +96,7 @@ int main( void )
    Eeprom::MemoryMapped::enable();
 
    HmwStreamBase::setHardware( &hardware );
-   HmwDevice::setup( Release::HMW_SD6_ID, reinterpret_cast<HmwDevice::BasicConfig*>( MAPPED_EEPROM_START ) );
+   HmwDevice::setup( Release::HMW_SD6, reinterpret_cast<HmwDeviceHw::BasicConfig*>( MAPPED_EEPROM_START ) );
 
    checkFirmware();
 
@@ -113,15 +113,18 @@ int main( void )
          checkFirmware();
       }
       HmwMessageBase* msg = HmwStreamBase::pollMessageReceived();
-      if ( msg && msg->isCommand( HmwMessageBase::WRITE_FLASH ) )
+      if ( msg )
       {
-         isDownloadRunning = true;
-         startFirmware = false;
-         hardware.notifyNextDownloadPacket();
-      }
-      if ( HmwDevice::processMessage( *msg ) )
-      {
-         HmwStreamBase::sendMessage( *msg );
+         if ( msg->isCommand( HmwMessageBase::WRITE_FLASH ) )
+         {
+            isDownloadRunning = true;
+            startFirmware = false;
+            hardware.notifyNextDownloadPacket();
+         }
+         if ( HmwDevice::processMessage( *msg ) )
+         {
+            HmwStreamBase::sendMessage( *msg );
+         }
       }
       HmwDevice::handleAnnouncement();
       hardware.handleLeds( isDownloadRunning );

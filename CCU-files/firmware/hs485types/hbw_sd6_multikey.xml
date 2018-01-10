@@ -5,6 +5,14 @@
 		<parameter const_value="0xB1" size="1" index="0"/>
 		<parameter const_value="0" size="1" index="1"/>
 	</type>
+	<type priority="2" id="HBW-Multikey-SD6_1" name="Haus-Bus.de 6-Fach Taster mit 1-Wire (version 1)">
+		<parameter const_value="0xB1" size="1" index="0"/>
+		<parameter const_value="1" size="1" index="1"/>
+	</type>	
+	<type priority="2" id="HBW-IO-12-1W-UP" name="Haus-Bus.de 12-Fach IO Expander mit 1-Wire">
+		<parameter const_value="0xB1" size="1" index="0"/>
+		<parameter const_value="2" size="1" index="1"/>
+	</type>		
 </supported_types>
 
 <paramset id="HBW-SD6-Multikey_dev_master" type="MASTER">

@@ -2,18 +2,21 @@
 #include "HmwDevice.h"
 
 // Class HmwKey
-HmwKey::HmwKey( PortPin _pin, Config* _config, HmwChannel* _feedbackChannel ) : digitalIn( _pin )
+HmwKey::HmwKey( PortPin _pin, Config* _config, HmwChannel* _feedbackChannel ) :
+   unlocked( true ),
+   keyPressNum( 0 ),
+   config( _config ),
+   feedbackChannel( _feedbackChannel ),
+   digitalIn( _pin )
 {
    type = HmwChannel::HMW_KEY;
-   config = _config;
-   feedbackChannel = _feedbackChannel;
    resetChannel();
 }
 
 
 void HmwKey::loop( uint8_t channel )
 {
-   if ( config->isUnlocked() )
+   if ( isUnlocked() )
    {
       if ( config->isPushButton() )
       {
@@ -28,7 +31,7 @@ void HmwKey::loop( uint8_t channel )
 
 void HmwKey::handleSwitchSignal( uint8_t channel )
 {
-   if ( digitalIn.isSet() )
+   if ( !isPressed() )
    {
       if ( lastSentLong.isValid() )
       {

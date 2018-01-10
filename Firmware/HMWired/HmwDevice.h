@@ -13,22 +13,15 @@
 #include "HmwMsgAnnounce.h"
 #include "HmwMsgKeyEvent.h"
 #include "HmwMsgInfo.h"
-#include "HmwLinkReceiver.h"
-#include "HmwLinkSender.h"
+#include "HmwDeviceHw.h"
 
-#include <xEeprom.h>
+#include <DigitalOutput.h>
 
 class HmwDevice
 {
 // variables
    public:
-      struct BasicConfig
-      {
-         uint8_tx hwVersion;                    // 0x0000
-         uint8_tx loggingTime;                  // 0x0001
-         uint32_tx centralAddress;              // 0x0002   - 0x0005
-         uint32_tx ownAddress;                  // 0x0006   - 0x0009
-      };
+
 
       struct PendingActions
       {
@@ -36,21 +29,22 @@ class HmwDevice
          uint8_t announce : 1;
          uint8_t resetSystem : 1;
          uint8_t startBooter : 1;
+         uint8_t resetWifiConnection : 1;
+
       };
 
-      static uint8_t deviceType;
-
-      static BasicConfig* basicConfig;
-
-      static uint32_t ownAddress;
+      static HmwDeviceHw::BasicConfig* basicConfig;
 
       static PendingActions pendingActions;
 
-      static HmwLinkReceiver* linkReceiver;
+      static uint8_t deviceType;
 
-      static HmwLinkSender* linkSender;
+      static uint32_t ownAddress;
+
 
    protected:
+
+      static HmwDeviceHw* hardware;
 
    private:
 
@@ -66,12 +60,23 @@ class HmwDevice
 // functions
    public:
 
-      static inline void setup( uint8_t _deviceType, BasicConfig* _config )
+      static inline void setup( uint8_t _deviceType, HmwDeviceHw::BasicConfig* _config )
       {
          deviceType = _deviceType;
          basicConfig = _config;
          setOwnAddress( changeEndianness( basicConfig->ownAddress ) );
          pendingActions.announce = true;
+      }
+
+      static void setHardware( uint8_t _deviceType, HmwDeviceHw* _hardware )
+      {
+         if ( _hardware )
+         {
+            hardware = _hardware;
+            HmwStream::setHardware( _hardware );
+            pendingActions.readConfig = true;
+            setup( _deviceType, _hardware->getBasicConfig() );
+         }
       }
 
       static inline void setOwnAddress( uint32_t address )
@@ -121,6 +126,8 @@ class HmwDevice
 
       static void checkConfig();
 
+      static void factoryReset();
+
       static bool processMessage( HmwMessageBase& msg );
 
       static void handleAnnouncement();
@@ -131,21 +138,15 @@ class HmwDevice
 
       static inline void receiveKeyEvent( const uint32_t& senderAddress, uint8_t srcChan, uint8_t dstChan, bool longPress )
       {
-         if ( linkReceiver )
-         {
-            linkReceiver->receiveKeyEvent( senderAddress, srcChan, dstChan, longPress );
-         }
+         HmwLinkReceiver::notifyKeyEvent( senderAddress, srcChan, dstChan, longPress );
       }
 
       static inline Stream::Status sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress )
       {
          Stream::Status status = sendKeyEvent( srcChan, keyPressNum, longPress, 0xFFFFFFFF, 0 );
-         if ( linkSender )
+         if ( HmwLinkSender::notifyKeyEvent( srcChan, keyPressNum, longPress ) != Stream::SUCCESS )
          {
-            if ( linkSender->sendKeyEvent( srcChan, keyPressNum, longPress ) != Stream::SUCCESS )
-            {
-               status = announce( srcChan );
-            }
+            status = announce( srcChan );
          }
          return status;
       }
@@ -169,6 +170,8 @@ class HmwDevice
       static void handlePendingActions();
 
       static void handlePendingInMessages();
+
+      static void handleConfigButton();
 
 }; // HmwDevice
 

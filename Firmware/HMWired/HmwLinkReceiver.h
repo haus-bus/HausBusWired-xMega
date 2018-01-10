@@ -13,8 +13,29 @@
 
 class HmwLinkReceiver
 {
+
+   protected:
+
+      inline HmwLinkReceiver()
+      {
+         instance = this;
+      }
+
+   private:
+
+      static HmwLinkReceiver* instance;
+
+      // functions
    public:
       virtual void receiveKeyEvent( const uint32_t& senderAddress, uint8_t senderChannel, uint8_t targetChannel, bool longPress ) = 0;
+
+      static inline void notifyKeyEvent( const uint32_t& senderAddress, uint8_t senderChannel, uint8_t targetChannel, bool longPress )
+      {
+         if ( instance )
+         {
+            instance->receiveKeyEvent( senderAddress, senderChannel, targetChannel, longPress );
+         }
+      }
 }; // HmwLinkReceiver
 
 #endif // __HMWLINKRECEIVER_H__

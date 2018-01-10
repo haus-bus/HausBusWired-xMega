@@ -35,7 +35,6 @@ class DigitalInput : public PortPin
       }
 
       ////    Operations    ////
-      uint8_t isSet() const;
 
       uint16_t getPulseWidth( bool level, uint16_t timeout ) const;
 };

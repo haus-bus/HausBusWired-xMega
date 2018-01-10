@@ -59,11 +59,11 @@ uint16_t PwmOutput::isSet()
    {
       if ( pinNumber == 4 )
       {
-         tc1->getCaptureA();
+         return tc1->getCaptureA();
       }
       else
       {
-         tc1->getCaptureB();
+         return tc1->getCaptureB();
       }
    }
    return 0;

@@ -111,7 +111,7 @@
         <avrgcccpp.compiler.symbols.DefSymbols>
           <ListValues>
             <Value>F_CPU=32000000UL</Value>
-            <Value>_HEAP_SIZE_=1024</Value>
+            <Value>_HEAP_SIZE_=2048</Value>
             <Value>NDEBUG</Value>
           </ListValues>
         </avrgcccpp.compiler.symbols.DefSymbols>
@@ -166,11 +166,9 @@
             <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\include</Value>
           </ListValues>
         </avrgcc.compiler.directories.IncludePaths>
-        <avrgcc.compiler.optimization.level>Optimize (-O1)</avrgcc.compiler.optimization.level>
         <avrgcc.compiler.optimization.OtherFlags>-fdata-sections</avrgcc.compiler.optimization.OtherFlags>
         <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
         <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
-        <avrgcc.compiler.optimization.DebugLevel>Maximum (-g3)</avrgcc.compiler.optimization.DebugLevel>
         <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
         <avrgcc.compiler.miscellaneous.OtherFlags>-fno-jump-tables -std=gnu99 -fno-strict-aliasing -Wstrict-prototypes -Wmissing-prototypes -Werror-implicit-function-declaration -Wpointer-arith -mrelax</avrgcc.compiler.miscellaneous.OtherFlags>
         <avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>
@@ -178,7 +176,7 @@
         <avrgcccpp.compiler.symbols.DefSymbols>
           <ListValues>
             <Value>F_CPU=32000000UL</Value>
-            <Value>_HEAP_SIZE_=1024</Value>
+            <Value>_HEAP_SIZE_=2048</Value>
             <Value>DEBUG</Value>
             <Value>_TRACE_PORT_=PORTB</Value>
           </ListValues>
@@ -191,7 +189,6 @@
             <Value>..</Value>
           </ListValues>
         </avrgcccpp.compiler.directories.IncludePaths>
-        <avrgcccpp.compiler.optimization.level>Optimize (-O1)</avrgcccpp.compiler.optimization.level>
         <avrgcccpp.compiler.optimization.PackStructureMembers>True</avrgcccpp.compiler.optimization.PackStructureMembers>
         <avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>
         <avrgcccpp.compiler.optimization.DebugLevel>Maximum (-g3)</avrgcccpp.compiler.optimization.DebugLevel>
@@ -207,6 +204,9 @@
             <Value>.BOOT=0x47DC</Value>
           </ListValues>
         </avrgcccpp.linker.memorysettings.Flash>
+        <avrgcc.compiler.optimization.level>Optimize (-O1)</avrgcc.compiler.optimization.level>
+        <avrgcc.compiler.optimization.DebugLevel>Maximum (-g3)</avrgcc.compiler.optimization.DebugLevel>
+        <avrgcccpp.compiler.optimization.level>Optimize (-O1)</avrgcccpp.compiler.optimization.level>
         <avrgcccpp.assembler.debugging.DebugLevel>Default (-Wa,-g)</avrgcccpp.assembler.debugging.DebugLevel>
       </AvrGccCpp>
     </ToolchainSettings>
@@ -219,7 +219,7 @@
     <Folder Include="Framwork\Containers\" />
     <Folder Include="Framwork\Time\" />
     <Folder Include="Framwork\Tracing\" />
-    <Folder Include="HMW-SD6-Multikey" />
+    <Folder Include="HMW-Multikey-SD6" />
     <Folder Include="HMWired" />
     <Folder Include="Protocols\" />
     <Folder Include="Security\" />
@@ -296,19 +296,34 @@
     <Compile Include="Framwork\Tracing\Logger.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMW-SD6-Multikey\HMW-SD6-Multikey.cpp">
+    <Compile Include="HMW-Multikey-SD6\HMW-Multikey-SD6.cpp">
       <SubType>compile</SubType>
     </Compile>
     <None Include="HMWired\HmwAnalogIn.cpp">
       <SubType>compile</SubType>
     </None>
-    <Compile Include="HMW-SD6-Multikey\MultiKeyHw.cpp">
+    <Compile Include="HMW-Multikey-SD6\HmwMultiKeyFactory.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMW-SD6-Multikey\MultiKeyHw.h">
+    <Compile Include="HMW-Multikey-SD6\HmwMultiKeySD6v0Hw.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HMW-Multikey-SD6\HmwMultiKeySD6BaseHw.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HMW-Multikey-SD6\HmwMultiKeySD6BaseHw.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HMW-Multikey-SD6\HmwMultiKeySD6v1Hw.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HMW-Multikey-SD6\HmwMultiKeySD6v2Hw.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="HMWired\HmwAnalogIn.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HMWired\HmwDeviceHw.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="HMWired\HmwDimmer.cpp">
@@ -353,7 +368,13 @@
     <Compile Include="HMWired\HmwDevice.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="HMWired\HmwLinkReceiver.cpp">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="HMWired\HmwLinkReceiver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HMWired\HmwLinkSender.cpp">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="HMWired\HmwLinkSender.h">
@@ -390,6 +411,9 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="HMWired\HmwMsgReadEeprom.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HMWired\HmwMsgResetWifi.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="HMWired\HmwMsgSetLevel.h">

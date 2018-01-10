@@ -58,6 +58,8 @@ class PortPin
 
       inline void setInverted( bool inverted );
 
+      uint8_t isSet() const;
+
       ////    Additional operations    ////
 
       inline uint8_t getPinNumber() const
