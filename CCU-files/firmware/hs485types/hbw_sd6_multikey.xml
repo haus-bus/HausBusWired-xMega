@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <device eep_size="1024" version="01">
 <supported_types>
-	<type priority="2" id="HBW-SD6-Multikey" name="Haus-Bus.de 6-fach Taster">
+	<type priority="2" id="HBW-Multikey-SD6" name="Haus-Bus.de 6-Fach Taster mit 1-Wire (version 0)">
 		<parameter const_value="0xB1" size="1" index="0"/>
 		<parameter const_value="0" size="1" index="1"/>
 	</type>
-	<type priority="2" id="HBW-Multikey-SD6_1" name="Haus-Bus.de 6-Fach Taster mit 1-Wire (version 1)">
+	<type priority="2" id="HBW-Multikey-SD6_v1" name="Haus-Bus.de 6-Fach Taster mit 1-Wire (version 1)">
 		<parameter const_value="0xB1" size="1" index="0"/>
 		<parameter const_value="1" size="1" index="1"/>
 	</type>	

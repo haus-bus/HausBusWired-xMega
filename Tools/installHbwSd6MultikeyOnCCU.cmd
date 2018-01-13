@@ -14,26 +14,35 @@ set /p password=Hier bitte das vergebene Passwort fuer den SSH Zugang eingeben:
 set user=root
 
 echo. 
-echo.
-plink %user%@%ip% -pw %password% mount -o remount,rw /
-echo Erstelle Backup (falls nicht vorhanden)...
+echo INFO: Bei der ersten Verbindung zur CCU kommt eine Meldung, dass der Server bisher unbekannt ist. Dort bitte bestaetigen mit 'y'
+echo. 
 
-if not exist webui.js.org ( pscp -pw %password% %user%@%ip%:/www/webui/webui.js webui.js.org )
-if not exist DEVDB.tcl.org ( pscp -pw %password% %user%@%ip%:/www/config/devdescr/DEVDB.tcl DEVDB.tcl.org )
 echo.
-
 echo Kopiere neue Dateien
-pscp -pw %password% ../CCU-files/firmware/hs485types/hbw_sd6_multikey.xml            		%user%@%ip%:/firmware/hs485types/hbw_sd6_multikey.xml
-pscp -pw %password% ../CCU-files/www/webui/webui.js                        					%user%@%ip%:/www/webui/webui.js
-pscp -pw %password% ../CCU-files/www/config/devdescr/DEVDB.tcl                         		%user%@%ip%:/www/config/devdescr/DEVDB.tcl
-pscp -pw %password% ../CCU-files/www/config/img/devices/50/177_hbw-sd6-multikey_thumb.png  	%user%@%ip%:/www/config/img/devices/50/177_hbw-sd6-multikey_thumb.png
-pscp -pw %password% ../CCU-files/www/config/img/devices/50/177_hbw-sd6-multikey.png 		%user%@%ip%:/www/config/img/devices/250/177_hbw-sd6-multikey.png
+plink %user%@%ip% -pw %password% mount -o remount,rw /
+pscp  -batch -pw %password% ../CCU-files/firmware/hs485types/hbw_sd6_multikey.xml %user%@%ip%:/firmware/hs485types/
+plink -batch %user%@%ip% -pw %password% chmod 755 /firmware/hs485types/hbw_sd6_multikey.xml
 
-plink %user%@%ip% -pw %password% chmod 755 /firmware/hs485types/hbw_sd6_multikey.xml
-plink %user%@%ip% -pw %password% chmod 755 /www/webui/webui.js
-plink %user%@%ip% -pw %password% chmod 755 /www/config/devdescr/DEVDB.tcl
-plink %user%@%ip% -pw %password% chmod 755 /www/config/img/devices/50/177_hbw-sd6-multikey_thumb.png
-plink %user%@%ip% -pw %password% chmod 755 /www/config/img/devices/250/177_hbw-sd6-multikey.png
+pscp  -batch -pw %password% addCcu.sh %user%@%ip%:/
+plink -batch %user%@%ip% -pw %password% chmod 755 /addCcu.sh
+plink -batch %user%@%ip% -pw %password% /addCcu.sh
+plink -batch %user%@%ip% -pw %password% rm /addCcu.sh
+
+pscp  -batch -pw %password% ../CCU-files/www/config/img/devices/250/177_hbw-sd6-multikey.png %user%@%ip%:/www/config/img/devices/250/177_hbw-sd6-multikey.png
+pscp  -batch -pw %password% ../CCU-files/www/config/img/devices/250/177_hbw-sd6-multikey.png %user%@%ip%:/www/config/img/devices/250/177_hbw-sd6-multikey_v1.png
+plink -batch %user%@%ip% -pw %password% chmod 755 /www/config/img/devices/250/177_hbw-sd6-multikey.png
+plink -batch %user%@%ip% -pw %password% chmod 755 /www/config/img/devices/250/177_hbw-sd6-multikey_v1.png
+
+pscp  -batch -pw %password% ../CCU-files/www/config/img/devices/50/177_hbw-sd6-multikey_thumb.png %user%@%ip%:/www/config/img/devices/50/177_hbw-sd6-multikey_thumb.png
+pscp  -batch -pw %password% ../CCU-files/www/config/img/devices/50/177_hbw-sd6-multikey_thumb.png %user%@%ip%:/www/config/img/devices/50/177_hbw-sd6-multikey_v1_thumb.png
+plink -batch %user%@%ip% -pw %password% chmod 755 /www/config/img/devices/50/177_hbw-sd6-multikey_thumb.png
+plink -batch %user%@%ip% -pw %password% chmod 755 /www/config/img/devices/50/177_hbw-sd6-multikey_v1_thumb.png
+
+
+pscp -pw %password% %user%@%ip%:/www/webui/webui.js webui.js
+pscp -pw %password% %user%@%ip%:/www/config/devdescr/DEVDB.tcl DEVDB.tcl
+
+
 plink %user%@%ip% -pw %password% mount -o remount,ro /
 echo.
 echo Alle klar. Fertig!

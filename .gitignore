@@ -4,3 +4,6 @@ Release*/
 .vs/
 *.atsln
 Tools/hterm.cfg
+Tools/restoreHbwSd6MultikeyOnCCU.cmd
+Tools/webui.js.org
+Tools/DEVDB.tcl.org
