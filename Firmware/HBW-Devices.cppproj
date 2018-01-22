@@ -76,7 +76,7 @@
         </dependencies>
       </framework-data>
     </AsfFrameworkConfig>
-    <Name>HMW-SD6-Multikey</Name>
+    <Name>HBW-Devices</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
@@ -142,7 +142,7 @@
         <avrgcccpp.compiler.optimization.level>Optimize for size (-Os)</avrgcccpp.compiler.optimization.level>
       </AvrGccCpp>
     </ToolchainSettings>
-    <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .data -O binary  $(OutputFileName).elf  $(OutputFileName).bin &amp;&amp;  "$(SolutionDir)tools\modid" $(OutputFileName).bin "$(SolutionDir)Binaries\HMW-SD6-MultiKey"</PostBuildEvent>
+    <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .data -O binary  $(OutputFileName).elf  $(OutputFileName).bin &amp;&amp; "$(ToolchainDir)\avr-objcopy" -j .text -j .data -O ihex $(OutputFileName).elf  "$(SolutionDir)Binaries\HBW-Devices_0000.hex" &amp;&amp; "$(SolutionDir)tools\modid" $(OutputFileName).bin "$(SolutionDir)Binaries\HBW-Devices"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>
@@ -219,7 +219,7 @@
     <Folder Include="Framwork\Containers\" />
     <Folder Include="Framwork\Time\" />
     <Folder Include="Framwork\Tracing\" />
-    <Folder Include="HMW-Multikey-SD6" />
+    <Folder Include="HBW-Devices" />
     <Folder Include="HMWired" />
     <Folder Include="Protocols\" />
     <Folder Include="Security\" />
@@ -296,28 +296,40 @@
     <Compile Include="Framwork\Tracing\Logger.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMW-Multikey-SD6\HMW-Multikey-SD6.cpp">
-      <SubType>compile</SubType>
-    </Compile>
     <None Include="HMWired\HmwAnalogIn.cpp">
       <SubType>compile</SubType>
     </None>
-    <Compile Include="HMW-Multikey-SD6\HmwMultiKeyFactory.h">
+    <Compile Include="HBW-Devices\HBWDeviceFactory.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMW-Multikey-SD6\HmwMultiKeySD6v0Hw.h">
+    <Compile Include="HBW-Devices\HBWGenericDevice.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMW-Multikey-SD6\HmwMultiKeySD6BaseHw.cpp">
+    <Compile Include="HBW-Devices\HBWGenericDeviceHw.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMW-Multikey-SD6\HmwMultiKeySD6BaseHw.h">
+    <Compile Include="HBW-Devices\HBWGenericDeviceHw.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMW-Multikey-SD6\HmwMultiKeySD6v1Hw.h">
+    <Compile Include="HBW-Devices\HBWLC4IN4DRHw.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMW-Multikey-SD6\HmwMultiKeySD6v2Hw.h">
+    <Compile Include="HBW-Devices\HBWLC4IN4DRHw.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HBW-Devices\HBWMultiKeySD6BaseHw.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HBW-Devices\HBWMultiKeySD6BaseHw.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HBW-Devices\HBWMultiKeySD6v0Hw.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HBW-Devices\HBWMultiKeySD6v1Hw.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HBW-Devices\HBWIo12OneWireUpHw.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="HMWired\HmwAnalogIn.h">

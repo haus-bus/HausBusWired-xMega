@@ -1,19 +1,19 @@
 /*
- * HmwMulltiKeySD6v0Hw.h
+ * HBWMulltiKeySD6v0Hw.h
  *
  * Created: 09.01.2018 18:07:15
  * Author: viktor.pankraz
  */
 
 
-#ifndef __HMWMULTIKEYSD6V0HW_H__
-#define __HMWMULTIKEYSD6V0HW_H__
+#ifndef __HBWMULTIKEYSD6V0HW_H__
+#define __HBWMULTIKEYSD6V0HW_H__
 
-#include "HmwMultiKeySD6BaseHw.h"
+#include "HBWMultiKeySD6BaseHw.h"
 
 #include <DigitalOutput.h>
 
-class HmwMultiKeySD6v0Hw : public HmwMultiKeySD6BaseHw
+class HBWMultiKeySD6v0Hw : public HBWMultiKeySD6BaseHw
 {
 // variables
    public:
@@ -26,7 +26,7 @@ class HmwMultiKeySD6v0Hw : public HmwMultiKeySD6BaseHw
 
 // functions
    public:
-      inline HmwMultiKeySD6v0Hw() : HmwMultiKeySD6BaseHw( PortPin( PortE, 1 ), PortPin( PortD, 7 ) )
+      inline HBWMultiKeySD6v0Hw() : HBWMultiKeySD6BaseHw( PortPin( PortE, 1 ), PortPin( PortD, 7 ), true )
       {
          // set ledFeedback channels
          for ( uint8_t i = 0; i < 12; i++ )
@@ -41,6 +41,6 @@ class HmwMultiKeySD6v0Hw : public HmwMultiKeySD6BaseHw
    private:
 
 
-}; // HmwMultiKeySD6v0Hw
+}; // HBWMultiKeySD6v0Hw
 
-#endif // __HMWMULTIKEYSD6V0HW_H__
+#endif // __HBWMULTIKEYSD6V0HW_H__

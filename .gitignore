@@ -3,7 +3,18 @@ Debug*/
 Release*/
 .vs/
 *.atsln
+
+# for testing only
 Tools/hterm.cfg
 Tools/restoreHbwSd6MultikeyOnCCU.cmd
+Tools/webui.js
+Tools/DEVDB.tcl
 Tools/webui.js.org
 Tools/DEVDB.tcl.org
+
+# build directories
+Firmware/HBW-SD6-v0/
+Firmware/HBW-SD6-v1/
+Firmware/HBW-LC4-IN4-DR/
+Firmware/HBW-IO12-1W-UP/
+

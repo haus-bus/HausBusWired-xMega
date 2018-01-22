@@ -24,11 +24,16 @@ class PwmOutput : public PortPin
 
       ////    Operations    ////
 
-      inline void clear();
+      inline void clear()
+      {
+         set( 0 );
+      }
 
       uint16_t isSet();
 
       void set( uint8_t value = 100 );
+
+      void setPeriode( uint16_t period );
 
    protected:
 
@@ -36,11 +41,6 @@ class PwmOutput : public PortPin
       TimerCounter1* getTC1();
 
 };
-
-inline void PwmOutput::clear()
-{
-   set( 0 );
-}
 
 #endif
 

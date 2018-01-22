@@ -6,7 +6,7 @@
  */
 
 
-#include "HmwMultiKeySD6BaseHw.h"
+#include "HBWMultiKeySD6BaseHw.h"
 
 // this is the EEPROM layout used by one device
 struct hbw_config
@@ -23,24 +23,8 @@ struct hbw_config
 
 static hbw_config& config = *reinterpret_cast<hbw_config*>( MAPPED_EEPROM_START );
 
-void debug( char c )
-{
-   Usart::instance<PortD, 1>().write( c );
-}
-
-uint8_t HmwMultiKeySD6BaseHw::getVersion()
-{
-   // allow also 0xFF that is REV_0 but with an old booter, that did not set correct revision
-   if ( config.basicConfig.hwVersion == 0xFF )
-   {
-      // update the cell so that HW_REV is reported correctly
-      config.basicConfig.hwVersion = Release::REV_0;
-   }
-   return config.basicConfig.hwVersion;
-}
-
 // default constructor
-HmwMultiKeySD6BaseHw::HmwMultiKeySD6BaseHw( PortPin txEnablePin, PortPin owPin ) :
+HBWMultiKeySD6BaseHw::HBWMultiKeySD6BaseHw( PortPin txEnablePin, PortPin owPin, bool invertLed1To6 ) :
    hbwKey1( PortPin( PortA, 0 ), &( config.keycfg[0] ) ),
    hbwKey2( PortPin( PortA, 1 ), &( config.keycfg[1] ) ),
    hbwKey3( PortPin( PortA, 2 ), &( config.keycfg[2] ) ),
@@ -55,12 +39,12 @@ HmwMultiKeySD6BaseHw::HmwMultiKeySD6BaseHw( PortPin txEnablePin, PortPin owPin )
    extHbwKey5( PortPin( PortC, 6 ), &( config.keycfg[10] ) ),
    extHbwKey6( PortPin( PortC, 7 ), &( config.keycfg[11] ) ),
 
-   hbwLed1( PortPin( PortC, 0 ), &config.ledcfg[0], true ),
-   hbwLed2( PortPin( PortC, 1 ), &config.ledcfg[1], true ),
-   hbwLed3( PortPin( PortC, 2 ), &config.ledcfg[2], true ),
-   hbwLed4( PortPin( PortC, 3 ), &config.ledcfg[3], true ),
-   hbwLed5( PortPin( PortC, 4 ), &config.ledcfg[4], true ),
-   hbwLed6( PortPin( PortC, 5 ), &config.ledcfg[5], true ),
+   hbwLed1( PortPin( PortC, 0 ), &config.ledcfg[0], invertLed1To6 ),
+   hbwLed2( PortPin( PortC, 1 ), &config.ledcfg[1], invertLed1To6 ),
+   hbwLed3( PortPin( PortC, 2 ), &config.ledcfg[2], invertLed1To6 ),
+   hbwLed4( PortPin( PortC, 3 ), &config.ledcfg[3], invertLed1To6 ),
+   hbwLed5( PortPin( PortC, 4 ), &config.ledcfg[4], invertLed1To6 ),
+   hbwLed6( PortPin( PortC, 5 ), &config.ledcfg[5], invertLed1To6 ),
 
    extHbwLed1( PortPin( PortD, 0 ), &config.ledcfg[6] ),
    extHbwLed2( PortPin( PortD, 1 ), &config.ledcfg[7] ),
@@ -82,33 +66,17 @@ HmwMultiKeySD6BaseHw::HmwMultiKeySD6BaseHw( PortPin txEnablePin, PortPin owPin )
 
    txEnable( txEnablePin )
 {
-   // setup debug console
-#ifdef DEBUG
-   DigitalInputTmpl< PortD, 6 > rxDebug;
-   DigitalOutputTmpl<PortD, 7> txDebug;
-   Usart::instance<PortD, 1>().init<115200>();
-   Logger::instance().setStream( debug );
-#endif
-
-   // setup the serial for HmwStream, the txEnable/rxEnable lines have to be set in the special HW version
-   DigitalInputTmpl< PortE, 2 > rxHmwStream;
-   DigitalOutputTmpl<PortE, 3> txHmwStream;
-   serial = &Usart::instance<PortE, 0>();
 
 } // HmwMultiKeySD6BaseHw
 
 
-HmwDeviceHw::BasicConfig* HmwMultiKeySD6BaseHw::getBasicConfig()
+HmwDeviceHw::BasicConfig* HBWMultiKeySD6BaseHw::getBasicConfig()
 {
    return &config.basicConfig;
 }
 
-void HmwMultiKeySD6BaseHw::enableTranceiver( bool enable )
+void HBWMultiKeySD6BaseHw::enableTranceiver( bool enable )
 {
    enable ? txEnable.set() : txEnable.clear();
 }
 
-SIGNAL(USARTE0_RXC_vect)
-{
-   HmwStream::nextByteReceivedFromISR(Usart::instance<PortE,0>().readDataRegisterFromISR());
-}

@@ -1,5 +1,5 @@
 /*
- * HmwBooterStreamHw.h
+ * HbwBooterHw.h
  *
  * Created: 23.11.2017 19:23:55
  * Author: viktor.pankraz
@@ -11,7 +11,7 @@
 
 #include <HMWired/HmwStreamHw.h>
 
-class HmwBooterHw : public HmwStreamHw
+class HBWBooterHw : public HmwStreamHw
 {
 // variables
    public:
@@ -20,7 +20,7 @@ class HmwBooterHw : public HmwStreamHw
 
 // functions
    public:
-      HmwBooterHw();
+      HBWBooterHw();
 
       void enableTranceiver( bool enable );
 

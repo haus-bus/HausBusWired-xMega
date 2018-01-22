@@ -27,12 +27,23 @@ class HmwDimmer : public HmwChannel
          };
 
          uint8_tx options;
-         uint8_tx reserved;
+
+         uint8_tx periodMultiplier;
 
          public:
             inline bool isLogging() const
             {
                return options & LOGGING_MASK;
+            }
+
+            inline uint8_t getPeriodMultiplier()
+            {
+               return periodMultiplier;
+            }
+
+            inline void setPeriodMultiplier( uint8_t value )
+            {
+               periodMultiplier = value;
             }
       };
 
@@ -53,14 +64,17 @@ class HmwDimmer : public HmwChannel
       Timestamp nextBlinkTime;
       uint8_t logicalState;
 
+      const uint8_t defaultPeriodMultiplier;
+
 // functions
    public:
-      HmwDimmer( PortPin _portPin, Config* _config, bool _inverted = false, uint16_t _period = MAX_LEVEL );
+      HmwDimmer( PortPin _portPin, Config* _config, bool _inverted = false, uint8_t _defaultPeriodMultiplier = 100 );
 
       // definition of needed functions from HBWChannel class
       virtual uint8_t get( uint8_t* data );
       virtual void loop( uint8_t channel );
       virtual void set( uint8_t length, uint8_t const* const data );
+      virtual void checkConfig();
 
    protected:
 

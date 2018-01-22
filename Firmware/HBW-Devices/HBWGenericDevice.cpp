@@ -1,14 +1,15 @@
 /*
- * HBW-SD6-Multikey.cpp
+ * HBWGenericDevice.cpp
  *
  * Created: 03.12.2016 02:31:44
  *  Author: Viktor Pankraz
  */
 
-#include "HmwMultiKeyFactory.h"
+#include "HBWDeviceFactory.h"
 
 #include <Release.h>
 #include <Time/SystemTime.h>
+#include <Peripherals/Flash.h>
 #include <Peripherals/InterruptController.h>
 #include <DigitalOutput.h>
 
@@ -18,11 +19,11 @@ extern __attribute__( ( section( ".vectors" ) ) ) const ModuleId moduleId;
 
 const ModuleId moduleId =
 {
-   "$MOD$ HBW-SD6  ",
+   "$MOD$ HBW-DEV  ",
    0,
    Release::MAJOR,
    Release::MINOR,
-   Release::HMW_SD6,
+   Release::HBW_GENERIC,
    0
 };
 
@@ -30,7 +31,15 @@ int main( void )
 {
    SystemTime::init();
    Eeprom::MemoryMapped::enable();
-   HmwDevice::setHardware( Release::HMW_SD6, HmwMultiKeyFactory::createHardware() );
+
+   // The Booter module id specifies the device hardware, so get the id to create the correct device
+   ModuleId booterModId;
+   if ( Flash::read( BOOT_SECTION_START + _VECTORS_SIZE, &booterModId, sizeof( ModuleId ) ) != sizeof( ModuleId ) )
+   {
+      ERROR_1( FSTR( "Flash::read() failed" ) );
+      booterModId.firmwareId = Release::HBW_GENERIC;
+   }
+   HmwDevice::setHardware( booterModId.firmwareId, HBWDeviceFactory::createDevice( (Release::FirmwareId)booterModId.firmwareId ) );
 
    // Authorize interrupts
    InterruptController::selectAppInterruptSection();

@@ -1,12 +1,12 @@
 /*
- * HBW-SD6-Booter.cpp
+ * HBW-Booter.cpp
  *
  * Created: 30.09.2017 02:31:44
  *  Author: Viktor Pankraz
  */
 
-#include "HMW-SD6-Booter.h"
-#include "HmwBooterHw.h"
+#include "HBWBooter.h"
+#include "HBWBooterHw.h"
 
 #include <Peripherals/InterruptController.h>
 #include <Peripherals/WatchDog.h>
@@ -24,7 +24,7 @@ const ModuleId moduleId =
    BOOTER_SIZE,
    Release::MAJOR,
    Release::MINOR,
-   Release::CONTROLLER_ID,
+   DEVICE_ID,
    0
 };
 
@@ -36,7 +36,7 @@ static bool isDownloadRunning = false;
 static bool isFirmwareValid = false;
 static bool startFirmware = false;
 
-static HmwBooterHw hardware;
+static HBWBooterHw hardware;
 
 void checkFirmware()
 {
@@ -50,7 +50,8 @@ void checkFirmware()
       return;
    }
 
-   if ( moduleId.getFirmwareId() == installedMod.getFirmwareId() )
+   // check for HBW-GENERIC FW ID
+   if ( ( moduleId.getFirmwareId() == installedMod.getFirmwareId() ) || ( Release::HBW_GENERIC == installedMod.getFirmwareId() ) )
    {
       uint32_t fCrc;
       uint32_t cCrc = Flash::getRangeCRC( 0, installedMod.getSize() - 1 );
@@ -96,7 +97,7 @@ int main( void )
    Eeprom::MemoryMapped::enable();
 
    HmwStreamBase::setHardware( &hardware );
-   HmwDevice::setup( Release::HMW_SD6, reinterpret_cast<HmwDeviceHw::BasicConfig*>( MAPPED_EEPROM_START ) );
+   HmwDevice::setup( moduleId.getFirmwareId(), reinterpret_cast<HmwDeviceHw::BasicConfig*>( MAPPED_EEPROM_START ) );
 
    checkFirmware();
 
@@ -115,9 +116,10 @@ int main( void )
       HmwMessageBase* msg = HmwStreamBase::pollMessageReceived();
       if ( msg )
       {
-         if ( msg->isCommand( HmwMessageBase::WRITE_FLASH ) )
+         isDownloadRunning = msg->isCommand( HmwMessageBase::WRITE_FLASH );
+
+         if ( isDownloadRunning )
          {
-            isDownloadRunning = true;
             startFirmware = false;
             hardware.notifyNextDownloadPacket();
          }

@@ -106,6 +106,20 @@ void PwmOutput::set( uint8_t value )
    }
 }
 
+void PwmOutput::setPeriode( uint16_t period )
+      {
+         TimerCounter0* tc0 = getTC0();
+         TimerCounter1* tc1 = getTC1();
+         if( tc0 )
+         {
+            tc0->setPeriod(period);
+         }
+         else if( tc1 )
+         {
+            tc1->setPeriod(period);
+         }
+      }
+
 TimerCounter0* PwmOutput::getTC0()
 {
    if ( pinNumber < 4 )

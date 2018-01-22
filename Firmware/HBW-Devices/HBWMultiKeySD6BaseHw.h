@@ -1,26 +1,26 @@
 /*
- * HmwMultiKeySD6BaseHw.h
+ * HBWMultiKeySD6BaseHw.h
  *
  * Created: 09.01.2018 18:36:42
  * Author: viktor.pankraz
  */
 
 
-#ifndef __HMWMULTIKEYSD6BASEHW_H__
-#define __HMWMULTIKEYSD6BASEHW_H__
+#ifndef __HBWMULTIKEYSD6BASEHW_H__
+#define __HBWMULTIKEYSD6BASEHW_H__
 
-#include <HMWired/HmwDeviceHw.h>
+#include "HBWGenericDeviceHw.h"
+
 #include <HMWired/HmwKey.h>
 #include <HMWired/HmwDimmer.h>
 #include <HMWired/HmwDS1820.h>
 #include <HMWired/HmwLinkKey.h>
 #include <HMWired/HmwLinkDimmer.h>
 #include <HMWired/HmwAnalogIn.h>
-#include <HMWired/HmwDevice.h>
 #include <PortPin.h>
 
 
-class HmwMultiKeySD6BaseHw : public HmwDeviceHw
+class HBWMultiKeySD6BaseHw : public HBWGenericDeviceHw
 {
 // variables
    public:
@@ -45,8 +45,6 @@ class HmwMultiKeySD6BaseHw : public HmwDeviceHw
 
 // functions
    public:
-
-      static uint8_t getVersion();
 
       HmwDeviceHw::BasicConfig* getBasicConfig();
 
@@ -90,7 +88,7 @@ class HmwMultiKeySD6BaseHw : public HmwDeviceHw
 
             case FIRST_LONG_PRESS:
             {
-               uint8_t data[] = { HmwChannel::BLINK_ON, 0, HmwDimmer::MAX_LEVEL, 6, 6, 0xFF };
+               uint8_t data[] = { HmwChannel::BLINK_ON, 0, HmwDimmer::MAX_LEVEL, 5, 5, 0xFF };
                hbwLed5.set( sizeof( data ), data );
                hbwLed6.set( sizeof( data ), data );
                break;
@@ -113,10 +111,10 @@ class HmwMultiKeySD6BaseHw : public HmwDeviceHw
 
    protected:
 
-      HmwMultiKeySD6BaseHw( PortPin txEnablePin, PortPin owPin );
+      HBWMultiKeySD6BaseHw( PortPin txEnablePin, PortPin owPin, bool invertLed1To6 );
 
    private:
 
-}; // HmwMultiKeySD6BaseHw
+}; // HBWMultiKeySD6BaseHw
 
-#endif // __HMWMULTIKEYSD6BASEHW_H__
+#endif // __HBWMULTIKEYSD6BASEHW_H__

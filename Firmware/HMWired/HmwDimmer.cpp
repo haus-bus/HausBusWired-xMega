@@ -9,7 +9,9 @@
 #include "HmwDimmer.h"
 #include "HmwDevice.h"
 
-HmwDimmer::HmwDimmer( PortPin _portPin, Config* _config, bool _inverted, uint16_t _period ) : pwmOutput( _portPin.getPortNumber(), _portPin.getPinNumber(), _period )
+HmwDimmer::HmwDimmer( PortPin _portPin, Config* _config, bool _inverted, uint8_t _defaultPeriodMultiplier ) :
+pwmOutput( _portPin.getPortNumber(), _portPin.getPinNumber(), MAX_LEVEL / 100 * _defaultPeriodMultiplier ),
+defaultPeriodMultiplier( _defaultPeriodMultiplier )
 {
    type = HmwChannel::HMW_DIMMER;
    config = _config;
@@ -24,7 +26,6 @@ HmwDimmer::HmwDimmer( PortPin _portPin, Config* _config, bool _inverted, uint16_
    blinkQuantity = 255;
    nextFeedbackTime.reset();
    nextBlinkTime.reset();
-
 }
 
 
@@ -180,4 +181,13 @@ void HmwDimmer::loop( uint8_t channel )
    {
       nextFeedbackTime.reset();
    }
+}
+
+void HmwDimmer::checkConfig()
+{
+   if ( ( config->getPeriodMultiplier() == 0 ) || ( config->getPeriodMultiplier() > 200 ) )
+   {
+      config->setPeriodMultiplier( defaultPeriodMultiplier );
+   }
+   pwmOutput.setPeriode( MAX_LEVEL / 100 * config->getPeriodMultiplier() );
 }

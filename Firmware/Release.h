@@ -16,7 +16,10 @@ class Release
 
       enum FirmwareId
       {
-         HMW_SD6 = 0xB1
+         HBW_GENERIC = 0xB0,
+         HBW_MultiKeySD6 = 0xB1,
+         HBW_IO12_1W_UP = 0xB2,
+         HBW_LC4_IN4_DR = 0xB3
       };
 
       enum HardwareId
@@ -29,7 +32,7 @@ class Release
 
       static const uint8_t MAJOR = 1;
 
-      static const uint8_t MINOR = 13;
+      static const uint8_t MINOR = 14;
 };
 
 #endif

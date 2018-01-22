@@ -21,23 +21,31 @@ echo.
 echo Kopiere neue Dateien
 plink %user%@%ip% -pw %password% mount -o remount,rw /
 pscp  -batch -pw %password% ../CCU-files/firmware/hs485types/hbw_sd6_multikey.xml %user%@%ip%:/firmware/hs485types/
+pscp  -batch -pw %password% ../CCU-files/firmware/hs485types/hbw_lc4_in4_dr.xml %user%@%ip%:/firmware/hs485types/
+
 plink -batch %user%@%ip% -pw %password% chmod 755 /firmware/hs485types/hbw_sd6_multikey.xml
+plink -batch %user%@%ip% -pw %password% chmod 755 /firmware/hs485types/hbw_lc4_in4_dr.xml
 
 pscp  -batch -pw %password% addCcu.sh %user%@%ip%:/
 plink -batch %user%@%ip% -pw %password% chmod 755 /addCcu.sh
 plink -batch %user%@%ip% -pw %password% /addCcu.sh
 plink -batch %user%@%ip% -pw %password% rm /addCcu.sh
 
-pscp  -batch -pw %password% ../CCU-files/www/config/img/devices/250/177_hbw-sd6-multikey.png %user%@%ip%:/www/config/img/devices/250/177_hbw-sd6-multikey.png
-pscp  -batch -pw %password% ../CCU-files/www/config/img/devices/250/177_hbw-sd6-multikey.png %user%@%ip%:/www/config/img/devices/250/177_hbw-sd6-multikey_v1.png
+pscp  -batch -pw %password% ../CCU-files/www/config/img/devices/250/177_hbw-sd6-multikey.png %user%@%ip%:/www/config/img/devices/250/
+pscp  -batch -pw %password% ../CCU-files/www/config/img/devices/250/178_hbw-io12-1w-up.png %user%@%ip%:/www/config/img/devices/250/
+pscp  -batch -pw %password% ../CCU-files/www/config/img/devices/250/179_hbw-lc4-in4-dr.png %user%@%ip%:/www/config/img/devices/250/
+
 plink -batch %user%@%ip% -pw %password% chmod 755 /www/config/img/devices/250/177_hbw-sd6-multikey.png
-plink -batch %user%@%ip% -pw %password% chmod 755 /www/config/img/devices/250/177_hbw-sd6-multikey_v1.png
+plink -batch %user%@%ip% -pw %password% chmod 755 /www/config/img/devices/250/178_hbw-io12-1w-up.png
+plink -batch %user%@%ip% -pw %password% chmod 755 /www/config/img/devices/250/179_hbw-lc4-in4-dr.png
 
-pscp  -batch -pw %password% ../CCU-files/www/config/img/devices/50/177_hbw-sd6-multikey_thumb.png %user%@%ip%:/www/config/img/devices/50/177_hbw-sd6-multikey_thumb.png
-pscp  -batch -pw %password% ../CCU-files/www/config/img/devices/50/177_hbw-sd6-multikey_thumb.png %user%@%ip%:/www/config/img/devices/50/177_hbw-sd6-multikey_v1_thumb.png
+pscp  -batch -pw %password% ../CCU-files/www/config/img/devices/50/177_hbw-sd6-multikey_thumb.png %user%@%ip%:/www/config/img/devices/50/
+pscp  -batch -pw %password% ../CCU-files/www/config/img/devices/50/178_hbw-io12-1w-up_thumb.png %user%@%ip%:/www/config/img/devices/50/
+pscp  -batch -pw %password% ../CCU-files/www/config/img/devices/50/179_hbw-lc4-in4-dr_thumb.png %user%@%ip%:/www/config/img/devices/50/
+
 plink -batch %user%@%ip% -pw %password% chmod 755 /www/config/img/devices/50/177_hbw-sd6-multikey_thumb.png
-plink -batch %user%@%ip% -pw %password% chmod 755 /www/config/img/devices/50/177_hbw-sd6-multikey_v1_thumb.png
-
+plink -batch %user%@%ip% -pw %password% chmod 755 /www/config/img/devices/50/178_hbw-io12-1w-up_thumb.png
+plink -batch %user%@%ip% -pw %password% chmod 755 /www/config/img/devices/50/179_hbw-lc4-in4-dr_thumb.png
 
 pscp -pw %password% %user%@%ip%:/www/webui/webui.js webui.js
 pscp -pw %password% %user%@%ip%:/www/config/devdescr/DEVDB.tcl DEVDB.tcl

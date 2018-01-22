@@ -1,21 +1,13 @@
 <?xml version="1.0"?>
 <device eep_size="1024" version="01">
 <supported_types>
-	<type priority="2" id="HBW-SD6-Multikey" name="Haus-Bus.de 6-Fach Taster mit 1-Wire (version 0)">
-		<parameter const_value="0xB1" size="1" index="0"/>
+	<type priority="2" id="HBW-LC4-IN4-DR" name="Haus-Bus.de LightController (version 0)">
+		<parameter const_value="0xB3" size="1" index="0"/>
 		<parameter const_value="0" size="1" index="1"/>
-	</type>
-	<type priority="2" id="HBW-SD6-Multikey-v1" name="Haus-Bus.de 6-Fach Taster mit 1-Wire (version 1)">
-		<parameter const_value="0xB1" size="1" index="0"/>
-		<parameter const_value="1" size="1" index="1"/>
 	</type>	
-	<type priority="2" id="HBW-IO-12-1W-UP" name="Haus-Bus.de 12-Fach IO Expander mit 1-Wire">
-		<parameter const_value="0xB2" size="1" index="0"/>
-		<parameter const_value="0" size="1" index="1"/>
-	</type>		
 </supported_types>
 
-<paramset id="HBW-SD6-Multikey_dev_master" type="MASTER">
+<paramset id="HBW-LC4-IN4-DR_dev_master" type="MASTER">
 	<parameter id="HW_REV" hidden="true">
 		<logical type="integer"/>
 		<physical size="1" type="integer" interface="eeprom">
@@ -60,19 +52,13 @@
 		<parameter const_value="1" size="0.1" index="12.0" type="integer"/>
 		<parameter size="0.6" index="12.2" type="integer" param="COUNTER"/>
 	</frame>
-	<frame id="TEMP_EVENT" direction="from_device" event="true" type="#i" channel_field="10">
-		<parameter type="integer" signed="true" index="11.0" size="2.0" param="TEMPERATURE"/>
-	</frame>
-	<frame id="ANALOG_EVENT" direction="from_device" event="true" type="#i" channel_field="10">
-		<parameter type="integer" index="11.0" size="2.0" param="ANALOGVALUE"/>
-	</frame>
 </frames>
 
 <channels>
 	<channel index="0" type="MAINTENANCE" count="1" class="maintenance" ui_flags="internal">
 	</channel>
 
-	<channel index="1" type="KEY" count="12" physical_index_offset="-1">
+	<channel index="1" type="KEY" count="4" physical_index_offset="-1">
 	    <link_roles>
             <source name="SWITCH"/>
         </link_roles>
@@ -101,15 +87,6 @@
 				</physical>
 				<conversion type="boolean_integer"/>
 			</parameter>
-			<parameter id="LED_FEEDBACK">
-				<logical type="option">
-					<option id="OFF"/>
-					<option id="ON" default="true"/>
-				</logical>
-				<physical size="0.1" type="integer" interface="eeprom">
-					<address index="+0.7"/>			
-				</physical>
-			</parameter>				
 			<parameter id="LONG_PRESS_TIME">
 				<logical type="float" unit="s" default="1.0" max="5.0" min="0.4"/>
 				<physical size="1.0" type="integer" interface="eeprom">
@@ -160,7 +137,7 @@
 		</paramset>
 	</channel>	
 
-	<channel index="13" type="DIMMER" count="12" physical_index_offset="-1">
+	<channel index="5" type="DIMMER" count="4" physical_index_offset="-1">
 	    <link_roles>
             <target name="SWITCH"/>
         </link_roles>
@@ -295,113 +272,6 @@
 			</parameter>
 		</paramset>		
 	</channel>	
-
-	<channel index="25" count="6" physical_index_offset="-1" type="TEMPSENSOR">
-	    <paramset type="MASTER" id="hmw_temp_ch_master" address_step="6" address_start="0x40">
-			<parameter id="SENSOR_ID">
-			   <logical type="integer" default="255" max="254" min="1">
-			       <special_value id="NOT_USED" value="0"/>
-			       <special_value id="AUTO" value="255"/>
-			   </logical>	   
-               <physical size="1.0" type="integer" interface="eeprom">
-                  <address index="+0"/>
-               </physical>			   
-			</parameter>
-			<parameter id="SEND_DELTA_TEMP">
-			   <logical type="float" unit="&#x2103;" default="0.5" min="0.1" max="25.0">
-			       <special_value id="NOT_USED" value="0"/>
-			   </logical>	   
-               <physical size="1.0" type="integer" interface="eeprom">
-                  <address index="+1.0"/>
-               </physical>	
-               <conversion type="float_integer_scale" factor="10"/>		
-               <conversion type="integer_integer_map">
-                 <value_map to_device="false" from_device="true" parameter_value="5" device_value="0xff"/>
-               </conversion>			   
-			</parameter>			
-			<parameter id="SEND_MIN_INTERVAL">
-			   <logical type="integer" unit="s" default="10" min="5" max="3600">
-			     <special_value id="NOT_USED" value="0"/>
-			   </logical>	   
-               <physical size="2.0" type="integer" interface="eeprom" endian="little">
-                  <address index="+2.0"/>
-               </physical>	  
-               <conversion type="integer_integer_map">
-                 <value_map to_device="false" from_device="true" parameter_value="10" device_value="0xffff"/>
-               </conversion>				   
-			</parameter>
-			<parameter id="SEND_MAX_INTERVAL">
-			   <logical type="integer" unit="s" default="150" min="5" max="3600">
-			     <special_value id="NOT_USED" value="0"/>
-			   </logical>	   
-               <physical size="2.0" type="integer" interface="eeprom" endian="little">
-                  <address index="+4.0"/>
-               </physical>	
-               <conversion type="integer_integer_map">
-                 <value_map to_device="false" from_device="true" parameter_value="150" device_value="0xffff"/>
-               </conversion>				   
-			</parameter>
-		</paramset>
-		<paramset type="VALUES" id="hmw_temp_input_values">
-			<parameter id="TEMPERATURE" operations="read,event">
-				<logical type="float" min="-273.15" max="327.67" unit="&#x2103;">
-				  <special_value id="NOT_USED" value="-273.15"/>
-				</logical>
-				<physical type="integer" interface="command" value_id="TEMPERATURE">
-					<get request="LEVEL_GET" response="TEMP_EVENT"/>
-					<event frame="TEMP_EVENT"/>
-				</physical>
-				<conversion type="float_integer_scale" factor="100"/>
-			</parameter>
-		</paramset>		
-	</channel>
-
-	<channel index="31" count="2" physical_index_offset="-1" type="ANALOGSENSOR">
-	    <paramset type="MASTER" id="hmw_analog_ch_master" address_step="6" address_start="0x64">
-			<parameter id="SEND_DELTA_ANALOG">
-			   <logical type="integer" default="50" min="1" max="250">
-			       <special_value id="NOT_USED" value="0"/>
-			   </logical>	   
-               <physical size="1.0" type="integer" interface="eeprom">
-                  <address index="+1.0"/>
-               </physical>	
-               <conversion type="integer_integer_map">
-                 <value_map to_device="false" from_device="true" parameter_value="50" device_value="0xff"/>
-               </conversion>			   
-			</parameter>
-			<parameter id="SEND_MIN_INTERVAL">
-			   <logical type="integer" unit="s" default="10" min="5" max="3600">
-			     <special_value id="NOT_USED" value="0"/>
-			   </logical>	   
-               <physical size="2.0" type="integer" interface="eeprom" endian="little">
-                  <address index="+2.0"/>
-               </physical>	  
-               <conversion type="integer_integer_map">
-                 <value_map to_device="false" from_device="true" parameter_value="10" device_value="0xffff"/>
-               </conversion>				   
-			</parameter>
-			<parameter id="SEND_MAX_INTERVAL">
-			   <logical type="integer" unit="s" default="150" min="5" max="3600">
-			     <special_value id="NOT_USED" value="0"/>
-			   </logical>	   
-               <physical size="2.0" type="integer" interface="eeprom" endian="little">
-                  <address index="+4.0"/>
-               </physical>	
-               <conversion type="integer_integer_map">
-                 <value_map to_device="false" from_device="true" parameter_value="150" device_value="0xffff"/>
-               </conversion>				   
-			</parameter>
-		</paramset>
-		<paramset type="VALUES" id="hmw_analog_input_values">
-			<parameter id="VALUE" operations="read,event">
-				<logical type="integer" min="0" max="1023"/>
-				<physical type="integer" interface="command" value_id="ANALOGVALUE">
-					<get request="LEVEL_GET" response="ANALOG_EVENT"/>
-					<event frame="ANALOG_EVENT"/>
-				</physical>
-			</parameter>
-		</paramset>		
-	</channel>
 	
 </channels>
 
