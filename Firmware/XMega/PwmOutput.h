@@ -20,7 +20,7 @@ class PwmOutput : public PortPin
 
    public:
 
-      PwmOutput( uint8_t _portNumber, uint8_t _pinNumber, uint16_t _period = 100 );
+      PwmOutput( uint8_t _portNumber, uint8_t _pinNumber, uint16_t _period );
 
       ////    Operations    ////
 
@@ -29,16 +29,16 @@ class PwmOutput : public PortPin
          set( 0 );
       }
 
-      uint16_t isSet();
+      uint16_t isSet() const;
 
-      void set( uint8_t value = 100 );
+      void set( uint16_t value );
 
       void setPeriode( uint16_t period );
 
    protected:
 
-      TimerCounter0* getTC0();
-      TimerCounter1* getTC1();
+      TimerCounter0* getTC0() const;
+      TimerCounter1* getTC1() const;
 
 };
 

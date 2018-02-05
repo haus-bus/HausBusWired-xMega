@@ -28,14 +28,14 @@ HBWLC4IN4DRHw::HBWLC4IN4DRHw() :
    key2( PortPin( PortA, 1 ), &config.keyCfg[1] ),
    key3( PortPin( PortA, 2 ), &config.keyCfg[2] ),
    key4( PortPin( PortA, 3 ), &config.keyCfg[3] ),
-   lightControl1( PortPin( PortC, 0 ), &config.lcCfg[0], false, DEFAULT_PERIOD_MULTIPLIER ),
-   lightControl2( PortPin( PortC, 1 ), &config.lcCfg[1], false, DEFAULT_PERIOD_MULTIPLIER ),
-   lightControl3( PortPin( PortC, 2 ), &config.lcCfg[2], false, DEFAULT_PERIOD_MULTIPLIER ),
-   lightControl4( PortPin( PortC, 3 ), &config.lcCfg[3], false, DEFAULT_PERIOD_MULTIPLIER ),
+   lightControl1( PortPin( PortC, 0 ), &config.lcCfg[0], false, DEFAULT_PWM_RANGE ),
+   lightControl2( PortPin( PortC, 1 ), &config.lcCfg[1], false, DEFAULT_PWM_RANGE ),
+   lightControl3( PortPin( PortC, 2 ), &config.lcCfg[2], false, DEFAULT_PWM_RANGE ),
+   lightControl4( PortPin( PortC, 3 ), &config.lcCfg[3], false, DEFAULT_PWM_RANGE ),
    linkSender( sizeof( config.keyLinks ) / sizeof( config.keyLinks[0] ), config.keyLinks ),
    linkReceiver( sizeof( config.lcLinks ) / sizeof( config.lcLinks[0] ), config.lcLinks )
 {
-   configLed.setInverted(true);
+   configLed.setInverted( true );
    configbutton.enablePullup();
 }
 

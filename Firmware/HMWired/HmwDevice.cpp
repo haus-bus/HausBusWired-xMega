@@ -99,7 +99,10 @@ void HmwDevice::handlePendingActions()
       HmwStream::sendMessage( msg );
       pendingActions.resetWifiConnection = false;
    }
-   handleAnnouncement();
+   if ( SystemTime::now() > FIRST_ANNOUNCEMENT_TIME )
+   {
+      handleAnnouncement();
+   }
 }
 
 void HmwDevice::handleAnnouncement()

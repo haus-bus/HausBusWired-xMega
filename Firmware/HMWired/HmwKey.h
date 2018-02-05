@@ -34,6 +34,11 @@ class HmwKey : public HmwChannel
                MAX_INPUTTYPE
             };
 
+            enum Consts
+            {
+               DEFAULT_LONG_PRESS_TIME = 4
+            };
+
             inline uint8_t getInputType() const
             {
                return ( options & INPUTTYPE_MASK );

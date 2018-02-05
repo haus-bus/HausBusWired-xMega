@@ -9,9 +9,9 @@
 #include "HmwDimmer.h"
 #include "HmwDevice.h"
 
-HmwDimmer::HmwDimmer( PortPin _portPin, Config* _config, bool _inverted, uint8_t _defaultPeriodMultiplier ) :
-pwmOutput( _portPin.getPortNumber(), _portPin.getPinNumber(), MAX_LEVEL / 100 * _defaultPeriodMultiplier ),
-defaultPeriodMultiplier( _defaultPeriodMultiplier )
+HmwDimmer::HmwDimmer( PortPin _portPin, Config* _config, bool _inverted, uint8_t _defaultPwmRange ) :
+   pwmOutput( _portPin.getPortNumber(), _portPin.getPinNumber(), MAX_LEVEL_PERIOD ),
+   defaultPwmRange( _defaultPwmRange )
 {
    type = HmwChannel::HMW_DIMMER;
    config = _config;
@@ -39,7 +39,7 @@ void HmwDimmer::set( uint8_t length, uint8_t const* const data )
    }
    else if ( isKeyFeedbackOnCmd( *data ) )
    {
-      pwmOutput.set( MAX_LEVEL );
+      setLevel( MAX_LEVEL );
       feedbackCmdActive = true;
       return;   // no logging for feedbackCmd
    }
@@ -123,11 +123,11 @@ void HmwDimmer::loop( uint8_t channel )
    if ( nextBlinkTime.isValid() && nextBlinkTime.since() )
    {
       // handle blinking
-      if ( pwmOutput.isSet() == onLevel )
+      if ( getLevel() == onLevel )
       {
          // is ON
          nextBlinkTime += ( blinkOffTime * 100 );
-         pwmOutput.set( offLevel );
+         setLevel( offLevel );
       }
       else
       {
@@ -135,7 +135,7 @@ void HmwDimmer::loop( uint8_t channel )
          if ( blinkQuantity )
          {
             nextBlinkTime += ( blinkOnTime * 100 );
-            pwmOutput.set( onLevel );
+            setLevel( onLevel );
 
             if ( blinkQuantity != 255 )
             {
@@ -153,7 +153,7 @@ void HmwDimmer::loop( uint8_t channel )
    if ( !feedbackCmdActive && !nextBlinkTime.isValid() )
    {
       // the default range is 0-200, this must be mapped to 0-100% duty cycle
-      pwmOutput.set( currentLevel );
+      setLevel( currentLevel );
    }
 
    // feedback trigger set?
@@ -185,9 +185,31 @@ void HmwDimmer::loop( uint8_t channel )
 
 void HmwDimmer::checkConfig()
 {
-   if ( ( config->getPeriodMultiplier() == 0 ) || ( config->getPeriodMultiplier() > 200 ) )
+   if ( config->getPwmRange() > 100 )
    {
-      config->setPeriodMultiplier( defaultPeriodMultiplier );
+      config->setPwmRange( defaultPwmRange );
    }
-   pwmOutput.setPeriode( MAX_LEVEL / 100 * config->getPeriodMultiplier() );
+}
+
+void HmwDimmer::setLevel( uint8_t level )
+{
+   // special function for Config::levelFactor == 0, no PWM
+   if ( config->getPwmRange() )
+   {
+      pwmOutput.set( level * config->getPwmRange() / NORMALIZE_LEVEL );
+   }
+   else
+   {
+      pwmOutput.set( level ? MAX_LEVEL_PERIOD : 0 );
+   }
+}
+
+uint8_t HmwDimmer::getLevel() const
+{
+   // special function for Config::levelFactor == 0, no PWM
+   if ( config->getPwmRange() )
+   {
+      return pwmOutput.isSet() * NORMALIZE_LEVEL / config->getPwmRange();
+   }
+   return pwmOutput.isSet() ? MAX_LEVEL : 0;
 }

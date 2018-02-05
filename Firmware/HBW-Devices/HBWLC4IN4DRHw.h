@@ -21,7 +21,7 @@ class HBWLC4IN4DRHw : public HBWGenericDeviceHw
 // variables
    public:
 
-      static const uint8_t DEFAULT_PERIOD_MULTIPLIER = 192;
+      static const uint8_t DEFAULT_PWM_RANGE = 64;
 
    protected:
 

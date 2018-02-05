@@ -166,13 +166,21 @@
         </link_roles>
 
 	    <paramset id="hmw_dim_ch_master" type="MASTER" address_step="2" address_start="0x28">
+			<parameter id="PWM_RANGE">
+				<logical type="integer" unit="%" default="100" min="0" max="100">
+			       <special_value id="DISABLE" value="0"/>
+			   </logical>	
+				<physical size="0.7" type="integer" interface="eeprom">
+					<address index="+0"/>
+				</physical>
+			</parameter>
 			<parameter id="LOGGING">
 				<logical type="option">
 					<option id="OFF"/>
 					<option id="ON" default="true"/>
 				</logical>
 				<physical size="0.1" type="integer" interface="eeprom">
-					<address index="+0"/>
+					<address index="+0.7"/>
 				</physical>
 			</parameter>
 		</paramset>

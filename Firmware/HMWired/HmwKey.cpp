@@ -157,7 +157,7 @@ void HmwKey::checkConfig()
 {
    if ( ( config->getLongPressTime() < 4 ) || ( config->getLongPressTime() > 50 ) )
    {
-      config->setLongPressTime( 10 );
+      config->setLongPressTime( Config::DEFAULT_LONG_PRESS_TIME );
    }
    if ( config->getInputType() >= Config::MAX_INPUTTYPE )
    {

@@ -56,6 +56,8 @@ class HmwDevice
 
       static const uint32_t DEFAULT_ADDRESS = MIN_ADDRESS;
 
+      static const SystemTime::time_t FIRST_ANNOUNCEMENT_TIME = 1500;
+
 
 // functions
    public:

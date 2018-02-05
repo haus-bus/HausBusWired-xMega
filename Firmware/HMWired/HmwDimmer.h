@@ -23,12 +23,13 @@ class HmwDimmer : public HmwChannel
       {
          enum OptionMask
          {
-            LOGGING_MASK = 0x01,
+            LOGGING_MASK = 0x80,
+            PWM_RANGE_MASK = 0x7F
          };
 
          uint8_tx options;
 
-         uint8_tx periodMultiplier;
+         uint8_tx reserve;
 
          public:
             inline bool isLogging() const
@@ -36,18 +37,20 @@ class HmwDimmer : public HmwChannel
                return options & LOGGING_MASK;
             }
 
-            inline uint8_t getPeriodMultiplier()
+            inline uint8_t getPwmRange()
             {
-               return periodMultiplier;
+               return ( options & PWM_RANGE_MASK );
             }
 
-            inline void setPeriodMultiplier( uint8_t value )
+            inline void setPwmRange( uint8_t value )
             {
-               periodMultiplier = value;
+               options.update( ( options & ~PWM_RANGE_MASK ) | ( value & PWM_RANGE_MASK ) );
             }
       };
 
       static const uint8_t MAX_LEVEL = 200;
+      static const uint8_t NORMALIZE_LEVEL = 8;
+      static const uint16_t MAX_LEVEL_PERIOD = MAX_LEVEL * 100 / NORMALIZE_LEVEL;
 
    protected:
    private:
@@ -64,11 +67,11 @@ class HmwDimmer : public HmwChannel
       Timestamp nextBlinkTime;
       uint8_t logicalState;
 
-      const uint8_t defaultPeriodMultiplier;
+      const uint8_t defaultPwmRange;
 
 // functions
    public:
-      HmwDimmer( PortPin _portPin, Config* _config, bool _inverted = false, uint8_t _defaultPeriodMultiplier = 100 );
+      HmwDimmer( PortPin _portPin, Config* _config, bool _inverted = false, uint8_t _defaultPwmRange = 100 );
 
       // definition of needed functions from HBWChannel class
       virtual uint8_t get( uint8_t* data );
@@ -77,6 +80,10 @@ class HmwDimmer : public HmwChannel
       virtual void checkConfig();
 
    protected:
+
+      void setLevel( uint8_t );
+
+      uint8_t getLevel() const;
 
    private:
       inline bool isToggleCmd( uint8_t cmd )

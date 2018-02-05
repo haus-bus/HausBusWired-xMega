@@ -18,21 +18,21 @@ PwmOutput::PwmOutput( uint8_t _portNumber, uint8_t _pinNumber, uint16_t _period 
    TimerCounter1* tc1 = getTC1();
    if ( tc0 )
    {
-      tc0->configClockSource( TC_CLKSEL_DIV8_gc );
+      tc0->configClockSource( TC_CLKSEL_DIV1_gc );
       tc0->configWGM( TC_WGMODE_SS_gc );
       tc0->setPeriod( _period );
       tc0->enableChannels( 1 << ( _pinNumber + 4 ) );
    }
    else if ( tc1 )
    {
-      tc1->configClockSource( TC_CLKSEL_DIV8_gc );
+      tc1->configClockSource( TC_CLKSEL_DIV1_gc );
       tc1->configWGM( TC_WGMODE_SS_gc );
       tc1->setPeriod( _period );
       tc1->enableChannels( 1 << _pinNumber );
    }
 }
 
-uint16_t PwmOutput::isSet()
+uint16_t PwmOutput::isSet() const
 {
    TimerCounter0* tc0 = getTC0();
    TimerCounter1* tc1 = getTC1();
@@ -69,7 +69,7 @@ uint16_t PwmOutput::isSet()
    return 0;
 }
 
-void PwmOutput::set( uint8_t value )
+void PwmOutput::set( uint16_t value )
 {
    TimerCounter0* tc0 = getTC0();
    TimerCounter1* tc1 = getTC1();
@@ -107,20 +107,20 @@ void PwmOutput::set( uint8_t value )
 }
 
 void PwmOutput::setPeriode( uint16_t period )
-      {
-         TimerCounter0* tc0 = getTC0();
-         TimerCounter1* tc1 = getTC1();
-         if( tc0 )
-         {
-            tc0->setPeriod(period);
-         }
-         else if( tc1 )
-         {
-            tc1->setPeriod(period);
-         }
-      }
+{
+   TimerCounter0* tc0 = getTC0();
+   TimerCounter1* tc1 = getTC1();
+   if ( tc0 )
+   {
+      tc0->setPeriod( period );
+   }
+   else if ( tc1 )
+   {
+      tc1->setPeriod( period );
+   }
+}
 
-TimerCounter0* PwmOutput::getTC0()
+TimerCounter0* PwmOutput::getTC0() const
 {
    if ( pinNumber < 4 )
    {
@@ -129,7 +129,7 @@ TimerCounter0* PwmOutput::getTC0()
    return NULL;
 }
 
-TimerCounter1* PwmOutput::getTC1()
+TimerCounter1* PwmOutput::getTC1() const
 {
    if ( ( pinNumber >= 4 ) && ( pinNumber < 6 ) )
    {
