@@ -297,7 +297,7 @@
     <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .BOOT -j .data -O ihex $(OutputFileName).elf  $(SolutionDir)Binaries\$(Configuration)_Booter.hex </PostBuildEvent>
     <OutputPath>bin\ReleaseRev0\</OutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'HBW-IO-12-1W-UP' ">
+  <PropertyGroup Condition=" '$(Configuration)' == 'HBW-IO12-1W-UP' ">
     <ToolchainSettings>
       <AvrGccCpp>
   <avrgcc.common.Device>-mmcu=atxmega32a4u -B "%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\gcc\dev\atxmega32a4u"</avrgcc.common.Device>
@@ -370,7 +370,7 @@
     <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .BOOT -j .data -O ihex $(OutputFileName).elf  $(SolutionDir)Binaries\$(Configuration)_Booter.hex </PostBuildEvent>
     <OutputPath>bin\ReleaseRev2\</OutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'HBW-4LC-4IN-DR' ">
+  <PropertyGroup Condition=" '$(Configuration)' == 'HBW-LC4-IN4-DR' ">
     <ToolchainSettings>
       <AvrGccCpp>
   <avrgcc.common.Device>-mmcu=atxmega32a4u -B "%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\gcc\dev\atxmega32a4u"</avrgcc.common.Device>
@@ -441,7 +441,7 @@
 </AvrGccCpp>
     </ToolchainSettings>
     <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .BOOT -j .data -O ihex $(OutputFileName).elf  $(SolutionDir)Binaries\$(Configuration)_Booter.hex </PostBuildEvent>
-    <OutputPath>bin\HBW-4LC-4IN-DR\</OutputPath>
+    <OutputPath>bin\HBW-LC4-IN4-DR\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Framwork\" />

@@ -426,7 +426,7 @@ bool HmwDevice::processMessage( HmwMessageBase& msg )
       return false;
    }
 
-   if ( isValid ) // && !msg.isBroadcast() )
+   if ( isValid && !msg.isBroadcast() )
    {
       msg.convertToResponse( ownAddress, ackOnly );
       return true;

@@ -32,7 +32,7 @@ class Release
 
       static const uint8_t MAJOR = 1;
 
-      static const uint8_t MINOR = 15;
+      static const uint8_t MINOR = 16;
 };
 
 #endif
