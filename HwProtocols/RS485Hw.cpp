@@ -8,7 +8,7 @@
 #include <RS485Hw.h>
 #include <EventPkg/EventPkg.h>
 
-const uint8_t RS485Hw::debugLevel( DEBUG_LEVEL_LOW );
+const uint8_t RS485Hw::debugLevel( DEBUG_LEVEL_OFF );
 
 void RS485Hw::handleDataReceived()
 {

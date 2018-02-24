@@ -132,7 +132,7 @@ uint8_t Enc28j60::init()
 
   uint8_t retries = 255;
   // test if chip is connected
-  while ( !isClockReady() )
+  while ( !isClockReady() || isBusy() )
   {
     if ( --retries == 0 )
     {

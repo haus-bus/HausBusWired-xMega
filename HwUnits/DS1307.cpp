@@ -10,7 +10,7 @@
 #include <SwFramework.h>
 #include <Time/Calender.h>
 
-const uint8_t DS1307::debugLevel( DEBUG_LEVEL_LOW );
+const uint8_t DS1307::debugLevel( DEBUG_LEVEL_OFF );
 
 DS1307::DS1307( Twi& _twi ) :
     twi( _twi )

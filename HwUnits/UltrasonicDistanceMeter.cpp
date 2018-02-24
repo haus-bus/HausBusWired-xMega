@@ -8,7 +8,7 @@
 #include <UltrasonicDistanceMeter.h>
 #include <ErrorMessage.h>
 
-const uint8_t UltrasonicDistanceMeter::debugLevel( DEBUG_LEVEL_LOW );
+const uint8_t UltrasonicDistanceMeter::debugLevel( DEBUG_LEVEL_OFF );
 
 UltrasonicDistanceMeter::UltrasonicDistanceMeter( DigitalOutput _triggerPin,
                                                   DigitalInput _measurePin ) :

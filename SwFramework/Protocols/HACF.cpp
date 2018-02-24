@@ -17,7 +17,7 @@
 //## package SwFramework::Protocols::HomeAutomationControlFrame
 
 //## class HAC
-const uint8_t HACF::debugLevel( DEBUG_LEVEL_LOW );
+const uint8_t HACF::debugLevel( DEBUG_LEVEL_OFF );
 
 uint16_t HACF::deviceId;
 

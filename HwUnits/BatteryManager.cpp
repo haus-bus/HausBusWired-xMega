@@ -9,7 +9,7 @@
 #include <SwFramework.h>
 #include <ErrorMessage.h>
 
-const uint8_t BatteryManager::debugLevel( DEBUG_LEVEL_LOW );
+const uint8_t BatteryManager::debugLevel( DEBUG_LEVEL_OFF );
 
 BatteryManager::BatteryManager( DigitalOutput _charger,
                                 DigitalInput _powerSupply,

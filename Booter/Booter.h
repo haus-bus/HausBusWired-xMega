@@ -77,7 +77,7 @@ private:
         if ( (parameter.address + dataLength)
             < (_VECTORS_SIZE + sizeof(ModuleId)) )
         {
-          // get more data into buffer to analyse ModuleId
+          // get more data into buffer to analyze ModuleId
           getResponse()->setMemoryStatus( Stream::SUCCESS );
           return;
         }
@@ -88,8 +88,7 @@ private:
           {
             if( modId->majorRelease == Release::MAJOR )
             {
-              if( ( !isFirmwareValid && ( modId->minorRelease > Release::MINOR ) )
-                || ( modId->minorRelease > installedMod.minorRelease ) )
+              if( modId->minorRelease >= Release::MINOR )
               {
                 if( Flash::write( 0, buffer, Flash::getPageSize() ) == Stream::SUCCESS )
                 {

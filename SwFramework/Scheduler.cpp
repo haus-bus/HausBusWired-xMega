@@ -124,18 +124,20 @@ void Scheduler::runJobs()
         {
           itsReactive[i]->setSleepTime( 0 );
           notifyBusy();
-          //WARN_2( "call: 0x", itsReactive[i]->getId() );
+          SystemTime::time_t jobStart = SystemTime::now();
           evWakeup( itsReactive[i] ).send();
+          if( SystemTime::since(jobStart) > 50 )
+          {
+            WARN_4( "job: 0x", itsReactive[i]->getId(), " needs too long: 0x", SystemTime::since(jobStart) );
+          }
         }
       }
     }
 
     Event ev;
-    bool notEmpty = Event::messageQueue.pop( ev );
-    while ( notEmpty )
+    while ( Event::messageQueue.pop( ev ) )
     {
       ev.send();
-      notEmpty = Event::messageQueue.pop( ev );
     }
   }
 }

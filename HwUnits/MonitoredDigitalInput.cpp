@@ -8,7 +8,7 @@
 #include <ErrorMessage.h>
 #include "MonitoredDigitalInput.h"
 
-const uint8_t MonitoredDigitalInput::debugLevel( DEBUG_LEVEL_LOW );
+const uint8_t MonitoredDigitalInput::debugLevel( DEBUG_LEVEL_OFF );
 
 MonitoredDigitalInput::Response::Parameter& MonitoredDigitalInput::Response::setConfiguration()
 {

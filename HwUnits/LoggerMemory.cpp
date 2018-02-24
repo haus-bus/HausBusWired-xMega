@@ -11,7 +11,7 @@
 #include <Time/Calender.h>
 #include <ErrorMessage.h>
 
-const uint8_t LoggerMemory::debugLevel( DEBUG_LEVEL_LOW | DEBUG_STATE_L3 );
+const uint8_t LoggerMemory::debugLevel( DEBUG_LEVEL_OFF );
 
 char LoggerMemory::logFileName[] = "0:2016/0101.has";
 

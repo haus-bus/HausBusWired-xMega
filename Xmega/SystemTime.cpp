@@ -22,13 +22,13 @@ void SystemTime::init( ClockSources cs, uint16_t frequency )
 
   RealTimeCounter::setPrescaler( RTC_PRESCALER_OFF_gc );
   Clock::disableRTCClockSource();
-
+  /*
   if( ( cs == RTCSRC_EXTCLK ) && ( frequency == 8192 ) )
   {
     rtcSource = CLK_RTCSRC_EXTCLK_gc;
     prescaler = RTC_PRESCALER_DIV8_gc;
   }
-  else
+  else*/
   {
     // Set internal 1kHz oscillator as clock source for RTC.
     rtcSource = CLK_RTCSRC_RCOSC_gc;
