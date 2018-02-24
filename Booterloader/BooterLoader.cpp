@@ -11,23 +11,25 @@
 
 const ModuleId moduleId =
 {
-  "$MOD$ "MOD_ID,
-  0,
-  Release::MAJOR,
-  Release::MINOR,
-  CONTROLLER_ID,
-  0
+   "$MOD$ "MOD_ID,
+   0,
+   Release::MAJOR,
+   Release::MINOR,
+   CONTROLLER_ID,
+   0
 };
 
 int main( int argc, char* argv[] )
 {
-  int status = 0;
-  {
-    BooterLoaderHw hardware;
-    hardware.copyBooter();
-    ResetSystem::reset();
-    while ( 1 );
-  }
-  return status;
+   int status = 0;
+   {
+      BooterLoaderHw hardware;
+      hardware.copyBooter();
+      ResetSystem::reset();
+      while ( 1 )
+      {
+      }
+   }
+   return status;
 }
 

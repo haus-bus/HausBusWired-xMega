@@ -12,106 +12,106 @@ const uint8_t Dht::debugLevel( DEBUG_LEVEL_OFF );
 
 Dht::Temperature::Temperature( uint8_t instanceNumber )
 {
-  setId( (ClassId::TEMPERATURE << 8) | instanceNumber );
-  configuration = HwConfiguration::getSensorUnitConfiguration( id );
+   setId( ( ClassId::TEMPERATURE << 8 ) | instanceNumber );
+   configuration = HwConfiguration::getSensorUnitConfiguration( id );
 }
 
 bool Dht::Temperature::notifyEvent( const Event& event )
 {
-  if ( event.isEvWakeup() )
-  {
-    setSleepTime( NO_WAKE_UP );
-  }
-  else if ( event.isEvMessage() )
-  {
-    return handleRequest( event.isEvMessage()->getMessage() );
-  }
-  return false;
+   if ( event.isEvWakeup() )
+   {
+      setSleepTime( NO_WAKE_UP );
+   }
+   else if ( event.isEvMessage() )
+   {
+      return handleRequest( event.isEvMessage()->getMessage() );
+   }
+   return false;
 }
 
 Dht::Dht( uint8_t instanceNumber, PortPin portPin ) :
-    hardware( portPin ), itsTemperature( instanceNumber )
+   hardware( portPin ), itsTemperature( instanceNumber )
 {
-  setId( (ClassId::HUMIDITY << 8) | instanceNumber );
-  configuration = HwConfiguration::getSensorUnitConfiguration( id );
+   setId( ( ClassId::HUMIDITY << 8 ) | instanceNumber );
+   configuration = HwConfiguration::getSensorUnitConfiguration( id );
 }
 
 void Dht::handleRunning()
 {
-  uint8_t rawData[sizeof(Data)];
-  uint8_t error = hardware.read( rawData );
-  if ( error )
-  {
-    if ( errorCounter++ > MAX_ERRORS )
-    {
-      Response event( getId() );
-      event.setErrorCode( error );
-      event.queue();
+   uint8_t rawData[sizeof( Data )];
+   uint8_t error = hardware.read( rawData );
+   if ( error )
+   {
+      if ( errorCounter++ > MAX_ERRORS )
+      {
+         Response event( getId() );
+         event.setErrorCode( error );
+         event.queue();
 
+         Status status;
+         status.value = 127;
+         status.centiValue = 99;
+         notifyNewValue( status );
+         itsTemperature.notifyNewValue( status );
+         SET_STATE_L1( IDLE );
+      }
+   }
+   else
+   {
+      uint16_t help = ( ( rawData[4] << 8 ) + rawData[3] );
       Status status;
-      status.value = 127;
-      status.centiValue = 99;
+      status.value = help / 10;
+      status.centiValue = 0;
       notifyNewValue( status );
+
+      help = ( ( ( rawData[2] & 0x7F ) << 8 ) + rawData[1] );
+      status.value = help / 10;
+      status.centiValue = ( help % 10 ) * 10;
       itsTemperature.notifyNewValue( status );
-      SET_STATE_L1( IDLE );
-    }
-  }
-  else
-  {
-    uint16_t help = ((rawData[4] << 8) + rawData[3]);
-    Status status;
-    status.value = help / 10;
-    status.centiValue = 0;
-    notifyNewValue( status );
 
-    help = (((rawData[2] & 0x7F) << 8) + rawData[1]);
-    status.value = help / 10;
-    status.centiValue = (help % 10) * 10;
-    itsTemperature.notifyNewValue( status );
-
-    errorCounter = 0;
-  }
-  setSleepTime( SystemTime::MIN );
+      errorCounter = 0;
+   }
+   setSleepTime( SystemTime::MIN );
 }
 
 bool Dht::notifyEvent( const Event& event )
 {
-  if ( event.isEvWakeup() )
-  {
-    run();
-  }
-  else if ( event.isEvMessage() )
-  {
-    return handleRequest(  event.isEvMessage()->getMessage() );
-  }
-  return false;
+   if ( event.isEvWakeup() )
+   {
+      run();
+   }
+   else if ( event.isEvMessage() )
+   {
+      return handleRequest( event.isEvMessage()->getMessage() );
+   }
+   return false;
 }
 
 void Dht::run()
 {
-  if ( inStartUp() )
-  {
-    SET_STATE_L1( RUNNING );
-    setSleepTime( SystemTime::S );
-  }
-  else if ( inIdle() )
-  {
-    setSleepTime( NO_WAKE_UP );
-  }
-  else if ( inRunning() )
-  {
-    handleRunning();
-  }
+   if ( inStartUp() )
+   {
+      SET_STATE_L1( RUNNING );
+      setSleepTime( SystemTime::S );
+   }
+   else if ( inIdle() )
+   {
+      setSleepTime( NO_WAKE_UP );
+   }
+   else if ( inRunning() )
+   {
+      handleRunning();
+   }
 
 }
 
 Dht22* Dht::getHardware() const
 {
-  return (Dht22*) &hardware;
+   return (Dht22*) &hardware;
 }
 
 Dht::Temperature* Dht::getItsTemperature() const
 {
-  return (Dht::Temperature*) &itsTemperature;
+   return (Dht::Temperature*) &itsTemperature;
 }
 

@@ -9,12 +9,12 @@
 
 const ModuleId moduleId =
 {
-    "$MOD$ "MOD_ID,
-    BOOTER_SIZE,
-    Release::MAJOR,
-    Release::MINOR,
-    CONTROLLER_ID,
-    0
+   "$MOD$ "MOD_ID,
+   BOOTER_SIZE,
+   Release::MAJOR,
+   Release::MINOR,
+   CONTROLLER_ID,
+   0
 };
 
 const uint8_t Booter::debugLevel( DEBUG_LEVEL_OFF );
@@ -33,41 +33,41 @@ ModuleId Booter::installedMod;
 
 NO_RETURN void Booter::start()
 {
-  hardware.configure();
-  HACF::deviceId = HwConfiguration::HomeAutomation::instance().getDeviceId();
+   hardware.configure();
+   HACF::deviceId = HwConfiguration::HomeAutomation::instance().getDeviceId();
 
-  checkFirmware();
-  while ( true )
-  {
-    message = hardware.getMessage();
-    if ( message )
-    {
-      if ( handleMessage() && message->getDataLength() )
+   checkFirmware();
+   while ( true )
+   {
+      message = hardware.getMessage();
+      if ( message )
       {
-        message->receiverId = message->senderId;
-        message->senderId.setDeviceId( HACF::deviceId );
-        message->senderId.setObjectId( HACF::BOOTLOADER_ID );
-        hardware.sendMessage();
+         if ( handleMessage() && message->getDataLength() )
+         {
+            message->receiverId = message->senderId;
+            message->senderId.setDeviceId( HACF::deviceId );
+            message->senderId.setObjectId( HACF::BOOTLOADER_ID );
+            hardware.sendMessage();
+         }
       }
-    }
-    if ( startFirmware )
-    {
-      startApplication();
-    }
-  }
+      if ( startFirmware )
+      {
+         startApplication();
+      }
+   }
 }
 
 int main( int argc, char* argv[] )
 {
-  int status = 0;
-  {
-    Booter::start();
-  }
-  return status;
+   int status = 0;
+   {
+      Booter::start();
+   }
+   return status;
 }
 
 
 SystemTime::time_t SystemTime::now()
 {
-	return 0;
+   return 0;
 }

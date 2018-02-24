@@ -1,32 +1,33 @@
 /********************************************************************
-	Rhapsody	: 8.0.3 
-	Login		: viktor.pankraz
-	Component	: AR8 
-	Configuration 	: release
-	Model Element	: Electronics
-//!	Generated Date	: Wed, 6, Aug 2014  
-	File Path	: AR8/release/Electronics/Electronics.cpp
-*********************************************************************/
+        Rhapsody	: 8.0.3
+        Login		: viktor.pankraz
+        Component	: AR8
+        Configuration   : release
+        Model Element	: Electronics
+   //!	Generated Date	: Wed, 6, Aug 2014
+        File Path	: AR8/release/Electronics/Electronics.cpp
+ *********************************************************************/
 
-//## auto_generated
+// ## auto_generated
 #include "Electronics.h"
-//## dependency Flash
+// ## dependency Flash
 #include <Peripherals/Flash.h>
-//## package Electronics
+// ## package Electronics
 
 
-//## operation getFckE()
-uint8_t getFckE() {
-    //#[ operation getFckE()
-    uint8_t fcke = Flash::readUserSignature( 1 );
-    if( fcke == 0xFF )
-    {         
+// ## operation getFckE()
+uint8_t getFckE()
+{
+   // #[ operation getFckE()
+   uint8_t fcke = Flash::readUserSignature( 1 );
+   if ( fcke == 0xFF )
+   {
       return FCKE_V2_0;
-    }
-    return fcke;
-    //#]
+   }
+   return fcke;
+   // #]
 }
 
 /*********************************************************************
-	File Path	: AR8/release/Electronics/Electronics.cpp
+        File Path	: AR8/release/Electronics/Electronics.cpp
 *********************************************************************/

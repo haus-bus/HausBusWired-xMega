@@ -12,63 +12,63 @@ const uint8_t UltrasonicDistanceMeter::debugLevel( DEBUG_LEVEL_OFF );
 
 UltrasonicDistanceMeter::UltrasonicDistanceMeter( DigitalOutput _triggerPin,
                                                   DigitalInput _measurePin ) :
-    triggerPin( _triggerPin ), echoPin( _measurePin )
+   triggerPin( _triggerPin ), echoPin( _measurePin )
 {
 
-  Object::setId(
-      (ClassId::USD_METER << 8) | ((triggerPin.getPortNumber() + 1) << 4)
-          | (triggerPin.getPinNumber() + 1) );
+   Object::setId(
+      ( ClassId::USD_METER << 8 ) | ( ( triggerPin.getPortNumber() + 1 ) << 4 )
+      | ( triggerPin.getPinNumber() + 1 ) );
 
-  configuration = HwConfiguration::getSensorUnitConfiguration( id );
-  if ( !configuration )
-  {
-    terminate();
-    ErrorMessage( getId(), ErrorMessage::CONFIGURATION_OUT_OF_MEMORY );
-  }
+   configuration = HwConfiguration::getSensorUnitConfiguration( id );
+   if ( !configuration )
+   {
+      terminate();
+      ErrorMessage( getId(), ErrorMessage::CONFIGURATION_OUT_OF_MEMORY );
+   }
 }
 
 bool UltrasonicDistanceMeter::notifyEvent( const Event& event )
 {
-  if ( event.isEvWakeup() )
-  {
-    run();
-  }
-  else if ( event.isEvMessage() )
-  {
-    return handleRequest( event.isEvMessage()->getMessage() );
-  }
+   if ( event.isEvWakeup() )
+   {
+      run();
+   }
+   else if ( event.isEvMessage() )
+   {
+      return handleRequest( event.isEvMessage()->getMessage() );
+   }
 
-  return false;
+   return false;
 }
 
 void UltrasonicDistanceMeter::run()
 {
-  if ( inStartUp() )
-  {
-    SET_STATE_L1( RUNNING );
-  }
+   if ( inStartUp() )
+   {
+      SET_STATE_L1( RUNNING );
+   }
 
-  // The PING is triggered by a HIGH pulse of 2 or more microseconds.
-  // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
-  triggerPin.clear();
-  delayUs( 2 );
-  triggerPin.set();
-  delayUs( 10 );
-  triggerPin.clear();
+   // The PING is triggered by a HIGH pulse of 2 or more microseconds.
+   // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
+   triggerPin.clear();
+   delayUs( 2 );
+   triggerPin.set();
+   delayUs( 10 );
+   triggerPin.clear();
 
-  // The same pin is used to read the signal from the PING: a HIGH
-  // pulse whose duration is the time (in microseconds) from the sending
-  // of the ping to the reception of its echo off of an object.
-  uint16_t duration = echoPin.getPulseWidth( PortPin::HIGH, 10000 );
+   // The same pin is used to read the signal from the PING: a HIGH
+   // pulse whose duration is the time (in microseconds) from the sending
+   // of the ping to the reception of its echo off of an object.
+   uint16_t duration = echoPin.getPulseWidth( PortPin::HIGH, 10000 );
 
-  // convert the time into a distance
-  uint8_t cm = microsecondsToCentimeters( duration );
+   // convert the time into a distance
+   uint8_t cm = microsecondsToCentimeters( duration );
 
-  DEBUG_H2( FSTR(".value: 0x"), cm );
+   DEBUG_H2( FSTR( ".value: 0x" ), cm );
 
-  Status status;
-  status.value = cm;
-  status.centiValue = 0;
-  notifyNewValue( status );
-  setSleepTime( SystemTime::S );
+   Status status;
+   status.value = cm;
+   status.centiValue = 0;
+   notifyNewValue( status );
+   setSleepTime( SystemTime::S );
 }

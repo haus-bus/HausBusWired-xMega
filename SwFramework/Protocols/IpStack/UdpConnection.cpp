@@ -16,39 +16,39 @@ UdpConnection* UdpConnection::connect( const IP& _remoteIp,
                                        uint16_t _localPort,
                                        EventDrivenUnit* _user )
 {
-  uint8_t c = MAX_UDP_CONNECTIONS;
-  while ( c-- )
-  {
-    if ( !connections[c].isConnectionUsed() )
-    {
-      connections[c].setItsUser( _user );
-      connections[c].setRemoteIp( _remoteIp );
-      connections[c].setRemotePort( _remotePort );
-      connections[c].setLocalPort( _localPort );
-      return &connections[c];
-    }
-  }
-  return NULL;
+   uint8_t c = MAX_UDP_CONNECTIONS;
+   while ( c-- )
+   {
+      if ( !connections[c].isConnectionUsed() )
+      {
+         connections[c].setItsUser( _user );
+         connections[c].setRemoteIp( _remoteIp );
+         connections[c].setRemotePort( _remotePort );
+         connections[c].setLocalPort( _localPort );
+         return &connections[c];
+      }
+   }
+   return NULL;
 }
 
 UdpConnection* UdpConnection::getConnection( UdpHeader* packet )
 {
-  uint8_t c = MAX_UDP_CONNECTIONS;
-  while ( c-- )
-  {
-    UdpConnection* con = &connections[c];
-    if ( con->getItsUser() != 0  )
-    {
-      if ( con->localPort == packet->getDestinationPort() )
+   uint8_t c = MAX_UDP_CONNECTIONS;
+   while ( c-- )
+   {
+      UdpConnection* con = &connections[c];
+      if ( con->getItsUser() != 0 )
       {
-          if ( con->remoteIp.isBroadcast() || con->remoteIp.isLocalBroadcast() || ( con->remoteIp == packet->sourceAddress ) )
-          {
-            return con;
-          }
+         if ( con->localPort == packet->getDestinationPort() )
+         {
+            if ( con->remoteIp.isBroadcast() || con->remoteIp.isLocalBroadcast() || ( con->remoteIp == packet->sourceAddress ) )
+            {
+               return con;
+            }
+         }
       }
-    }
-  }
-  return 0;
+   }
+   return 0;
 }
 
 void UdpConnection::fillNoConnectionHeader( UdpHeader* pHdr,
@@ -56,64 +56,66 @@ void UdpConnection::fillNoConnectionHeader( UdpHeader* pHdr,
                                             uint16_t _destPort,
                                             const IP& destIp )
 {
-  IpConnection::fillNoConnectionHeader(
-      pHdr, dataLength + sizeof(UdpHeader) - sizeof(IpHeader),
+   IpConnection::fillNoConnectionHeader(
+      pHdr, dataLength + sizeof( UdpHeader ) - sizeof( IpHeader ),
       IpHeader::UDP_PROTOCOL, destIp );
 
-  pHdr->setSourcePort( getLastPort() );
-  pHdr->setDestinationPort( _destPort );
-  pHdr->setLength( sizeof(UdpHeader) - sizeof(IpHeader) + dataLength );
-  pHdr->setChecksum();
+   pHdr->setSourcePort( getLastPort() );
+   pHdr->setDestinationPort( _destPort );
+   pHdr->setLength( sizeof( UdpHeader ) - sizeof( IpHeader ) + dataLength );
+   pHdr->setChecksum();
 }
 
 void UdpConnection::convertHeaderToResponse( UdpHeader* pHdr,
                                              uint16_t dataLength )
 {
-  IpConnection::fillNoConnectionHeader(
-      pHdr, dataLength + sizeof(UdpHeader) - sizeof(IpHeader),
+   IpConnection::fillNoConnectionHeader(
+      pHdr, dataLength + sizeof( UdpHeader ) - sizeof( IpHeader ),
       IpHeader::UDP_PROTOCOL, *pHdr->getSourceAddress() );
 
-  uint16_t tmpPort = pHdr->getSourcePort();
-  pHdr->setSourcePort( pHdr->getDestinationPort() );
-  pHdr->setDestinationPort( tmpPort );
-  pHdr->setLength( sizeof(UdpHeader) - sizeof(IpHeader) + dataLength );
-  pHdr->setChecksum();
+   uint16_t tmpPort = pHdr->getSourcePort();
+   pHdr->setSourcePort( pHdr->getDestinationPort() );
+   pHdr->setDestinationPort( tmpPort );
+   pHdr->setLength( sizeof( UdpHeader ) - sizeof( IpHeader ) + dataLength );
+   pHdr->setChecksum();
 }
 
 Stream::Status UdpConnection::genericCommand( IoStream::Command command,
-                                        void* buffer )
+                                              void* buffer )
 {
-  if ( command == IoStream::INIT )
-  {
-    IoStream::CommandINIT* cmd = (IoStream::CommandINIT*) buffer;
-    setItsUser( cmd->owner );
-    return SUCCESS;
-  }
-  return NOT_SUPPORTED;
+   if ( command == IoStream::INIT )
+   {
+      IoStream::CommandINIT* cmd = (IoStream::CommandINIT*) buffer;
+      setItsUser( cmd->owner );
+      return SUCCESS;
+   }
+   return NOT_SUPPORTED;
 }
 
-Stream::Status UdpConnection::read( void * pData, uint16_t length,
-                              EventDrivenUnit* user )
+Stream::Status UdpConnection::read( void* pData, uint16_t length,
+                                    EventDrivenUnit* user )
 {
-  return NOT_SUPPORTED;
+   return NOT_SUPPORTED;
 }
 
-Stream::Status UdpConnection::write( void * pData, uint16_t length,
-                               EventDrivenUnit* user )
+Stream::Status UdpConnection::write( void* pData, uint16_t length,
+                                     EventDrivenUnit* user )
 {
-  if( !stream )
-    return INVALID_STREAM;
+   if ( !stream )
+   {
+      return INVALID_STREAM;
+   }
 
-  uint8_t buffer[sizeof(UdpHeader)+length];
-  memcpy( &buffer[sizeof(UdpHeader)], pData, length );
-  fillNoConnectionHeader( (UdpHeader*)buffer, length, remotePort, remoteIp );
+   uint8_t buffer[sizeof( UdpHeader ) + length];
+   memcpy( &buffer[sizeof( UdpHeader )], pData, length );
+   fillNoConnectionHeader( (UdpHeader*)buffer, length, remotePort, remoteIp );
 
-  // ArpManager might change the packet into an arp-request, in this case the return value will be false
-  bool success = ArpManager::prepareOutPacket( (IpHeader*) buffer, length );
-  if ( ( stream->write( buffer, length ) != length ) || !success )
-  {
-    return ABORTED;
-  }
-  return SUCCESS;
+   // ArpManager might change the packet into an arp-request, in this case the return value will be false
+   bool success = ArpManager::prepareOutPacket( (IpHeader*) buffer, length );
+   if ( ( stream->write( buffer, length ) != length ) || !success )
+   {
+      return ABORTED;
+   }
+   return SUCCESS;
 }
 

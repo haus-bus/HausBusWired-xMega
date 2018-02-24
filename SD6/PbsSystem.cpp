@@ -16,26 +16,26 @@
 #include "PbsSystem.h"
 
 const ModuleId moduleId = { "$MOD$ SD6      ", 0, Release::MAJOR,
-Release::MINOR, Release::SD6_ID, 0 };
+                            Release::MINOR, Release::SD6_ID, 0 };
 
 PbsSystem::PbsSystem() :
-    digitalPortA( PortA ), digitalPortB( PortB ), digitalPortC( PortC ),
-    digitalPortD( PortD )
+   digitalPortA( PortA ), digitalPortB( PortB ), digitalPortC( PortC ),
+   digitalPortD( PortD )
 {
-  digitalPortB.setNotUseablePins( Pin4 | Pin5 | Pin6 | Pin7 );
-  if ( CONTROLLER_ID == Release::MS6_ID )
-  {
-    digitalPortC.setNotUseablePins( Pin6 | Pin7 );
-  }
+   digitalPortB.setNotUseablePins( Pin4 | Pin5 | Pin6 | Pin7 );
+   if ( CONTROLLER_ID == Release::MS6_ID )
+   {
+      digitalPortC.setNotUseablePins( Pin6 | Pin7 );
+   }
 }
 
 void PbsSystem::start()
 {
-  static const uint8_t MAX_JOBS = 40;
-  Scheduler::setup( MAX_JOBS );
+   static const uint8_t MAX_JOBS = 40;
+   Scheduler::setup( MAX_JOBS );
 
-  SystemTime::init( SystemTime::RTCSRC_RCOSC_1024, 1024 );
+   SystemTime::init( SystemTime::RTCSRC_RCOSC_1024, 1024 );
 
-  static PbsSystem ms6;
-  Scheduler::runJobs();
+   static PbsSystem ms6;
+   Scheduler::runJobs();
 }

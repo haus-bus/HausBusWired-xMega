@@ -13,61 +13,61 @@
 
 IResponse::IResponse( uint16_t id )
 {
-  setup( id );
+   setup( id );
 }
 
 IResponse::IResponse( uint16_t id, const HACF& request )
 {
-  setup( id );
-  setupForResult( request );
+   setup( id );
+   setupForResult( request );
 }
 
 void IResponse::queue( Reactive* reactive )
 {
-  if ( !reactive )
-  {
-    reactive = Scheduler::getJob( HACF::SYSTEM_ID );
-  }
+   if ( !reactive )
+   {
+      reactive = Scheduler::getJob( HACF::SYSTEM_ID );
+   }
 
-  HACF* newMsg = copy();
-  if ( newMsg )
-  {
-    if ( !evGatewayMessage( reactive, newMsg ).queue() )
-    {
-      ERROR_1( FSTR("EventQueue is full") );
-      delete newMsg;
-    }
-  }
+   HACF* newMsg = copy();
+   if ( newMsg )
+   {
+      if ( !evGatewayMessage( reactive, newMsg ).queue() )
+      {
+         ERROR_1( FSTR( "EventQueue is full" ) );
+         delete newMsg;
+      }
+   }
 }
 
 void IResponse::setErrorCode( uint8_t errorCode, uint8_t* errorData )
 {
-  controlFrame.setDataLength(
+   controlFrame.setDataLength(
       errorData ? ControlFrame::DEFAULT_DATA_LENGTH : 2 );
-  uint8_t* pData = controlFrame.data;
-  *pData++ = HACF::EVENT_ERROR;
-  *pData++ = errorCode;
-  if ( errorData )
-  {
-    for ( uint8_t i = 0; i < (ControlFrame::DEFAULT_DATA_LENGTH - 2); i++ )
-    {
-      pData[i] = errorData[i];
-    }
-  }
+   uint8_t* pData = controlFrame.data;
+   *pData++ = HACF::EVENT_ERROR;
+   *pData++ = errorCode;
+   if ( errorData )
+   {
+      for ( uint8_t i = 0; i < ( ControlFrame::DEFAULT_DATA_LENGTH - 2 ); i++ )
+      {
+         pData[i] = errorData[i];
+      }
+   }
 }
 
 void IResponse::setup( uint16_t id )
 {
-  header.setSenderId( id );
-  controlFrame.receiverId.setId( HACF::BROADCAST_ID );
-  controlFrame.senderId.setObjectId( id );
-  controlFrame.senderId.setDeviceId( HACF::deviceId );
-  controlFrame.setDataLength( 2 );
-  setResponse( 0 );
+   header.setSenderId( id );
+   controlFrame.receiverId.setId( HACF::BROADCAST_ID );
+   controlFrame.senderId.setObjectId( id );
+   controlFrame.senderId.setDeviceId( HACF::deviceId );
+   controlFrame.setDataLength( 2 );
+   setResponse( 0 );
 }
 
 void IResponse::setupForResult( const HACF& request )
 {
-  controlFrame.receiverId.setId( request.controlFrame.senderId.getId() );
-  controlFrame.packetCounter = request.controlFrame.packetCounter;
+   controlFrame.receiverId.setId( request.controlFrame.senderId.getId() );
+   controlFrame.packetCounter = request.controlFrame.packetCounter;
 }

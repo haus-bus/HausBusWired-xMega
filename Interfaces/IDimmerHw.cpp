@@ -9,5 +9,5 @@
 
 uint8_t IDimmerHw::suspend( uint8_t mode )
 {
-  return 0;
+   return 0;
 }
