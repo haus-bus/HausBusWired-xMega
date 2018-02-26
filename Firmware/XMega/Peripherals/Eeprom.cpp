@@ -236,6 +236,7 @@ uint16_t Eeprom::MemoryMapped::write( uint16_t offset, const void* pData, uint16
       source += pageLength;
       length -= pageLength;
       writtenLength += pageLength;
+      offset += pageLength;
    }
 
    return writtenLength;
