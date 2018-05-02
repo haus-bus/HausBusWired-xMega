@@ -105,6 +105,11 @@ class HmwKey : public HmwChannel
          }
       }
 
+      inline void setNeedsPulldownIfInverted( bool _needsPulldownIfInverted )
+      {
+         needsPulldownIfInverted = _needsPulldownIfInverted;
+      }
+
       inline bool isUnlocked()
       {
          return config->isUnlocked() && unlocked;
@@ -129,6 +134,8 @@ class HmwKey : public HmwChannel
 
    private:
       bool unlocked;
+
+      bool needsPulldownIfInverted;
 
       uint8_t keyPressNum;
 

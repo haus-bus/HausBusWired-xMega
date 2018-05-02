@@ -4,6 +4,7 @@
 // Class HmwKey
 HmwKey::HmwKey( PortPin _pin, Config* _config, HmwChannel* _feedbackChannel ) :
    unlocked( true ),
+   needsPulldownIfInverted( false ),
    keyPressNum( 0 ),
    config( _config ),
    feedbackChannel( _feedbackChannel ),
@@ -146,7 +147,7 @@ void HmwKey::resetChannel()
    else
    {
       digitalIn.setInverted( true );
-      digitalIn.enablePulldown();
+      needsPulldownIfInverted ? digitalIn.enablePulldown() : digitalIn.enablePullup();
    }
    keyPressedTimestamp.reset();
    lastSentLong.reset();

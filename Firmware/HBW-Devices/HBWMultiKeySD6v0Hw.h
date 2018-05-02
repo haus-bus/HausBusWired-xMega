@@ -33,6 +33,18 @@ class HBWMultiKeySD6v0Hw : public HBWMultiKeySD6BaseHw
          {
             ( (HmwKey*)HmwChannel::getChannel( i ) )->setFeedbackChannel( HmwChannel::getChannel( i + 12 ) );
          }
+         hbwKey1.setNeedsPulldownIfInverted( true );
+         hbwKey2.setNeedsPulldownIfInverted( true );
+         hbwKey3.setNeedsPulldownIfInverted( true );
+         hbwKey4.setNeedsPulldownIfInverted( true );
+         hbwKey5.setNeedsPulldownIfInverted( true );
+         hbwKey6.setNeedsPulldownIfInverted( true );
+         extHbwKey1.setNeedsPulldownIfInverted( true );
+         extHbwKey2.setNeedsPulldownIfInverted( true );
+         extHbwKey3.setNeedsPulldownIfInverted( true );
+         extHbwKey4.setNeedsPulldownIfInverted( true );
+         extHbwKey5.setNeedsPulldownIfInverted( true );
+         extHbwKey6.setNeedsPulldownIfInverted( true );
       }
 
 
