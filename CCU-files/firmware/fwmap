@@ -1,0 +1,12 @@
+#Type           Filename                Version
+
+#Module types reported by firmware
+
+#Hardware types reported by bootloader
+#HomeMatic Wired
+HB1V0            HBW-Devices.hex        @0x0214         #HBW_MultiKeySD6v0
+HB1V1            HBW-Devices.hex        @0x0214         #HBW_MultiKeySD6v1
+HB2V0            HBW-Devices.hex        @0x0214         #HBW_IO12_1W_UPv0
+HB2V1            HBW-Devices.hex        @0x0214         #HBW_IO12_1W_UPv1
+HB3V0            HBW-Devices.hex        @0x0214         #HBW_LC4_IN4_DRv0
+H17V0            hmw_lc_sw2_dr_hw0.hex  @0x77F0         #HMW-LC-Sw2-DR

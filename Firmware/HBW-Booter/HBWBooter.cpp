@@ -17,6 +17,7 @@
 #include <Time/SystemTime.h>
 #include <avr/eeprom.h>
 
+extern __attribute__( ( section( ".user_signatures" ) ) ) const ModuleId booterModId;
 
 const ModuleId moduleId =
 {
@@ -26,6 +27,14 @@ const ModuleId moduleId =
    Release::MINOR,
    DEVICE_ID,
    0
+};
+
+const ModuleId booterModId = moduleId;
+
+struct UserSignature
+{
+   ModuleId booterModId;
+   uint8_t hardwareRev;
 };
 
 static const uint8_t debugLevel( DEBUG_LEVEL_LOW );
@@ -92,6 +101,7 @@ int main( void )
    {
       eeprom_write_byte( 0, HARDWARE_ID );
    }
+   // NvmController::readUserSignature(0);
 
    SystemTime::init();
    Eeprom::MemoryMapped::enable();
@@ -107,9 +117,9 @@ int main( void )
       {
          startApplication();
       }
-      if ( HmwDevice::isReadConfigPending() )
+      if ( HmwDevice::isStartFirmwarePending() )
       {
-         HmwDevice::clearPendingReadConfig();
+         HmwDevice::clearPendingStartFirmware();
          ResetSystem::clearSources();
          checkFirmware();
       }

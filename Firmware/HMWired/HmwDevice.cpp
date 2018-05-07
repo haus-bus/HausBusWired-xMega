@@ -18,6 +18,8 @@
 #include "HmwMsgWriteEeprom.h"
 #include "HmwMsgSetLevel.h"
 #include "HmwMsgResetWifi.h"
+#include "HmwMsgGetPacketSize.h"
+#include "HmwMsgReadFlash.h"
 
 #include <Peripherals/WatchDog.h>
 #include <Peripherals/ResetSystem.h>
@@ -279,27 +281,48 @@ bool HmwDevice::processMessage( HmwMessageBase& msg )
    bool isValid = true;
    bool ackOnly = true;
 
-   if ( msg.isCommand( HmwMessageBase::READ_CONFIG ) )
+   if ( msg.isCommand( HmwMessageBase::START_BOOTER ) )
    {
-      DEBUG_M1( FSTR( "C: read config" ) );
-      pendingActions.readConfig = true;
+      DEBUG_M1( FSTR( "C: START_BOOTER" ) );
+      pendingActions.startBooter = true;
+   }
+   else if ( msg.isCommand( HmwMessageBase::READ_EEPROM ) )
+   {
+      DEBUG_M1( FSTR( "C: READ_EEPROM" ) );
+      if ( msg.getFrameDataLength() == 4 )        // Length of incoming data must be 4
+      {
+         ( (HmwMsgReadEeprom*)&msg )->setupResponse();
+         ackOnly = false;
+      }
+      else
+      {
+         DEBUG_M2( FSTR( "E: wrong data length :" ), msg.getFrameDataLength() );
+         isValid = false;
+      }
+   }
+
+#ifdef _BOOTER_
+   else if ( msg.isCommand( HmwMessageBase::START_FW ) )
+   {
+      DEBUG_M1( FSTR( "C: START_FW" ) );
+      pendingActions.startFirmware = true;
+   }
+   else if ( msg.isCommand( HmwMessageBase::GET_PACKET_SIZE ) )
+   {
+      DEBUG_M1( FSTR( "C: GET_PACKET_SIZE" ) );
+      ( (HmwMsgGetPacketSize*)&msg )->setupResponse();
+      ackOnly = false;
    }
    else if ( msg.isCommand( HmwMessageBase::WRITE_FLASH ) )
    {
-      DEBUG_M1( FSTR( "C: Write Flash" ) );
-      if ( msg.getFrameDataLength() > 6 )
+      DEBUG_M1( FSTR( "C:WRITE_FLASH" ) );
+      if ( msg.getFrameDataLength() >= 4 )
       {
          HmwMsgWriteFlash* msgWriteFlash = (HmwMsgWriteFlash*)&msg;
-         static uint8_t buffer[ APP_SECTION_PAGE_SIZE ];
          Flash::address_t address = msgWriteFlash->getAddress();
          uint8_t length = msgWriteFlash->getLength();
-         memcpy( &buffer[address & ( Flash::getPageSize() - 1 )], msgWriteFlash->getData(), length );
 
-         if ( ( address + length ) % Flash::getPageSize() )
-         {
-            // read more bytes
-         }
-         else if ( Flash::write( address & ~( Flash::getPageSize() - 1 ), buffer, Flash::getPageSize() ) != Flash::getPageSize() )
+         if ( Flash::write( address, msgWriteFlash->getData(), length ) != length )
          {
             DEBUG_M2( FSTR( "E: Flash::write failed:" ), msg.getFrameDataLength() );
             isValid = false;
@@ -311,19 +334,29 @@ bool HmwDevice::processMessage( HmwMessageBase& msg )
          isValid = false;
       }
    }
-   else if ( msg.isCommand( HmwMessageBase::START_BOOTER ) )
+   else if ( msg.isCommand( HmwMessageBase::READ_FLASH ) )
    {
-      DEBUG_M1( FSTR( "C: START_BOOTER" ) );
-#ifdef _BOOTER_
-      pendingActions.announce = true;
-#else
-      pendingActions.startBooter = true;
-#endif
+      DEBUG_M1( FSTR( "C: READ_FLASH" ) );
+      if ( msg.getFrameDataLength() == 4 )
+      {
+         ( (HmwMsgReadFlash*)&msg )->setupResponse();
+         ackOnly = false;
+      }
+      else
+      {
+         DEBUG_M2( FSTR( "E: wrong data length :" ), msg.getFrameDataLength() );
+         isValid = false;
+      }
    }
-#ifndef _BOOTER_
+#else
+   else if ( msg.isCommand( HmwMessageBase::READ_CONFIG ) )
+   {
+      DEBUG_M1( FSTR( "C: READ_CONFIG" ) );
+      pendingActions.readConfig = true;
+   }
    else if ( msg.isCommand( HmwMessageBase::GET_FW_VERSION ) )
    {
-      DEBUG_M1( FSTR( "C: get FW version" ) );
+      DEBUG_M1( FSTR( "C: GET_FW_VERSION" ) );
       ( (HmwMsgGetFwVersion*)&msg )->setupResponse( ( Release::MAJOR << 8 ) | Release::MINOR );
       ackOnly = false;
    }
@@ -332,20 +365,6 @@ bool HmwDevice::processMessage( HmwMessageBase& msg )
       DEBUG_M1( FSTR( "C: HWVer,Typ" ) );
       ( (HmwMsgGetHwVersion*)&msg )->setupResponse( HmwDevice::deviceType, basicConfig->hwVersion );
       ackOnly = false;
-   }
-   else if ( msg.isCommand( HmwMessageBase::READ_EEPROM ) )
-   {
-      DEBUG_M1( FSTR( "C: Read EEPROM" ) );
-      if ( msg.getFrameDataLength() == 4 )        // Length of incoming data must be 4
-      {
-         ( (HmwMsgReadEeprom*)&msg )->setupResponse();
-         ackOnly = false;
-      }
-      else
-      {
-         DEBUG_M2( FSTR( "E: wrong data length :" ), msg.getFrameDataLength() );
-         isValid = false;
-      }
    }
    else if ( msg.isCommand( HmwMessageBase::GET_EEPROM_MAP ) )
    {
@@ -419,6 +438,16 @@ bool HmwDevice::processMessage( HmwMessageBase& msg )
       msgGetLevel->setupResponse( length );
       ackOnly = false;
    }
+   else if ( msg.isCommand( HmwMessageBase::START_ZERO_COMMUNICATION ) )
+   {
+      DEBUG_M1( FSTR( "C: START_ZERO_COMMUNICATION" ) );
+      pendingActions.zeroCommunicationActive = true;
+   }
+   else if ( msg.isCommand( HmwMessageBase::END_ZERO_COMMUNICATION ) )
+   {
+      DEBUG_M1( FSTR( "C: END_ZERO_COMMUNICATION" ) );
+      pendingActions.zeroCommunicationActive = false;
+   }
 #endif
 
    else
@@ -426,7 +455,9 @@ bool HmwDevice::processMessage( HmwMessageBase& msg )
       return false;
    }
 
-   if ( isValid && !msg.isBroadcast() )
+   if ( isValid
+      && !msg.isBroadcast()
+      && ( !pendingActions.zeroCommunicationActive || msg.isCommand( HmwMessageBase::START_BOOTER ) ) ) // START_BOOTER is the only command that allows a response during z-Mode
    {
       msg.convertToResponse( ownAddress, ackOnly );
       return true;
@@ -458,40 +489,5 @@ void HmwDevice::set( uint8_t channel, uint8_t length, uint8_t const* const data 
    {
       HmwChannel::getChannel( channel )->set( length, data );
    }
-}
-
-#include <Peripherals/Oscillator.h>
-#include <Peripherals/Clock.h>
-#include <Peripherals/DigitalFrequencyLockedLoops.h>
-
-static void
-__attribute__( ( section( ".init3" ), naked, used ) )
-lowLevelInit( void )
-{
-    #ifdef EIND
-   __asm volatile ( "ldi r24,pm_hh8(__trampolines_start)\n\t"
-                    "out %i0,r24" ::"n" ( &EIND ) : "r24", "memory" );
-    #endif
-
-    #ifdef DEBUG
-   WatchDog::disable();
-    #else
-   WatchDog::enable( WatchDog::_4S );
-    #endif
-
-
-   Clock::configPrescalers( CLK_PSADIV_1_gc, CLK_PSBCDIV_1_1_gc );
-
-   // Enable internal 32 MHz and 32kHz ring oscillator and wait until they are stable.
-   Oscillator::enable( OSC_RC32MEN_bm | OSC_RC32KEN_bm );
-   Oscillator::waitUntilOscillatorIsReady( OSC_RC32MEN_bm | OSC_RC32KEN_bm );
-
-   // Set the 32 MHz ring oscillator as the main clock source.
-   Clock::selectMainClockSource( CLK_SCLKSEL_RC32M_gc );
-
-   // save some power and disable the 2MHz oscillator
-   Oscillator::disable( OSC_RC2MEN_bm );
-
-   DigitalFrequencyLockedLoops::instance( true ).enableAutoCalibration();
 }
 

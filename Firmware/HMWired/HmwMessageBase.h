@@ -26,6 +26,7 @@ class HmwMessageBase
          FRAME_STARTBYTE = 0xFD,
          FRAME_STARTBYTE_SHORT = 0xFE,
          ESCAPE_BYTE = 0xFC,
+         MAX_PACKET_SIZE = 64,
          MAX_FRAME_LENGTH = 72,
          ADDRESS_SIZE = 4,
          FRAME_HEADER_SIZE = 9,
@@ -57,14 +58,17 @@ class HmwMessageBase
          READ_EEPROM = 'R',
          GET_LEVEL = 'S',
          WRITE_EEPROM = 'W',
-         START_DISCOVERY = 'z',
-         END_DISCOVERY = 'Z',
+         START_ZERO_COMMUNICATION = 'z',
+         END_ZERO_COMMUNICATION = 'Z',
          DELETE_TARGET_ADDR = 'c',
+         START_FW = 'g',
          GET_HARDWARE_VERSION = 'h',
          INFO_LEVEL = 'i',
          SET_LOCK = 'l',
          GET_SERIAL = 'n',
+         GET_PACKET_SIZE = 'p',
          ADD_TARGET_ADDR = 'q',
+         READ_FLASH = 'r',
          SET_ACTOR = 's',
          START_BOOTER = 'u',
          GET_FW_VERSION = 'v',
@@ -137,7 +141,8 @@ class HmwMessageBase
       uint8_t valid : 1;
       uint8_t isBigEndian : 1;
       uint8_t sendingTries : 2;
-      uint8_t reserve : 4;
+      uint8_t shortMsg : 1;
+      uint8_t reserve : 3;
       Timestamp nextSendTime;
       uint32_t targetAddress;
       ControlByte controlByte;
@@ -227,6 +232,11 @@ class HmwMessageBase
          return valid;
       }
 
+      inline bool isShort() const
+      {
+         return shortMsg;
+      }
+
       inline void setValid( bool _valid )
       {
          valid = _valid;
@@ -272,6 +282,7 @@ class HmwMessageBase
 
       inline void convertToResponse( const uint32_t& ownAddress, bool isAck )
       {
+         bool hadSenderAddress = hasSenderAddress();
          targetAddress = senderAddress;
          senderAddress = ownAddress;
          uint8_t tmp = getSenderNum();
@@ -286,6 +297,11 @@ class HmwMessageBase
             controlByte = 0x98;
          }
          controlByte.info.receiverNum = tmp;
+         if ( !hadSenderAddress )
+         {
+            controlByte.info.hasSenderAddr = false;
+         }
+         shortMsg = !hadSenderAddress;
       }
 
       inline bool hasSenderAddress() const

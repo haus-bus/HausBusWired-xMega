@@ -24,17 +24,17 @@ class HmwMsgWriteFlash : public HmwMessageBase
    public:
       inline Flash::address_t getAddress()
       {
-         return ( frameData[3] << 8 ) | frameData[4];
+         return ( frameData[1] << 8 ) | frameData[2];
       }
 
       inline uint8_t getLength()
       {
-         return frameData[5];
+         return frameData[3];
       }
 
       inline uint8_t* getData()
       {
-         return &frameData[6];
+         return &frameData[4];
       }
    protected:
    private:

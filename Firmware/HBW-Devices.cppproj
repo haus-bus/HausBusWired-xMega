@@ -142,7 +142,7 @@
         <avrgcccpp.compiler.optimization.level>Optimize for size (-Os)</avrgcccpp.compiler.optimization.level>
       </AvrGccCpp>
     </ToolchainSettings>
-    <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .data -O binary  $(OutputFileName).elf  $(OutputFileName).bin &amp;&amp; "$(ToolchainDir)\avr-objcopy" -j .text -j .data -O ihex $(OutputFileName).elf  "$(SolutionDir)Binaries\HBW-Devices_0000.hex" &amp;&amp; "$(SolutionDir)tools\modid" $(OutputFileName).bin "$(SolutionDir)Binaries\HBW-Devices"</PostBuildEvent>
+    <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .data -O binary  $(OutputFileName).elf  $(OutputFileName).bin &amp;&amp;  "$(SolutionDir)tools\modid" $(OutputFileName).bin "$(SolutionDir)Binaries\HBW-Devices" &amp;&amp;  "$(SolutionDir)tools\bin2hex" $(SolutionDir)Binaries\HBW-Devices_0200.bin $(SolutionDir)Binaries\HBW-Devices.hex</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>
@@ -413,6 +413,9 @@
     <Compile Include="HMWired\HmwMsgGetLevel.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="HMWired\HmwMsgGetPacketSize.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="HMWired\HmwMsgGetSerial.h">
       <SubType>compile</SubType>
     </Compile>
@@ -423,6 +426,9 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="HMWired\HmwMsgReadEeprom.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HMWired\HmwMsgReadFlash.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="HMWired\HmwMsgResetWifi.h">

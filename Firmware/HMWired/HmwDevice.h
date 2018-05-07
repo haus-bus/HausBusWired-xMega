@@ -29,7 +29,9 @@ class HmwDevice
          uint8_t announce : 1;
          uint8_t resetSystem : 1;
          uint8_t startBooter : 1;
+         uint8_t startFirmware : 1;
          uint8_t resetWifiConnection : 1;
+         uint8_t zeroCommunicationActive : 1;
 
       };
 
@@ -107,6 +109,16 @@ class HmwDevice
       static inline void clearPendingReadConfig()
       {
          pendingActions.readConfig = false;
+      }
+
+      static inline bool isStartFirmwarePending()
+      {
+         return pendingActions.startFirmware;
+      }
+
+      static inline void clearPendingStartFirmware()
+      {
+         pendingActions.startFirmware = false;
       }
 
       static inline bool isAnnouncementPending()

@@ -15,7 +15,11 @@
 
 #include <Security/ModuleId.h>
 
+extern __attribute__( ( section( ".vectors" ) ) ) const uint16_t moduleIdCCU;
 extern __attribute__( ( section( ".vectors" ) ) ) const ModuleId moduleId;
+
+
+const uint16_t moduleIdCCU = ( Release::MAJOR << 8 ) | Release::MINOR;
 
 const ModuleId moduleId =
 {
@@ -34,7 +38,7 @@ int main( void )
 
    // The Booter module id specifies the device hardware, so get the id to create the correct device
    ModuleId booterModId;
-   if ( Flash::read( BOOT_SECTION_START + _VECTORS_SIZE, &booterModId, sizeof( ModuleId ) ) != sizeof( ModuleId ) )
+   if ( NvmController::readUserSignature( 0, &booterModId, sizeof( ModuleId ) ) != sizeof( ModuleId ) )
    {
       ERROR_1( FSTR( "Flash::read() failed" ) );
       booterModId.firmwareId = Release::HBW_GENERIC;

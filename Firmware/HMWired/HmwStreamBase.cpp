@@ -193,7 +193,7 @@ bool HmwStreamBase::getNextByteToSend( uint8_t& data )
       statusSending.transmitting = true;
       statusSending.crc16checksum = 0xFFFF;
       msg->convertToBigEndian();
-      data = HmwMessageBase::FRAME_STARTBYTE;
+      data = msg->isShort() ? HmwMessageBase::FRAME_STARTBYTE_SHORT : HmwMessageBase::FRAME_STARTBYTE;
       HmwMessageBase::crc16Shift( data, statusSending.crc16checksum );
       DEBUG_M1( FSTR( "T: " ) );
       DEBUG_L2( data, '|' );
@@ -201,7 +201,17 @@ bool HmwStreamBase::getNextByteToSend( uint8_t& data )
    }
    else if ( statusSending.transmitting )
    {
-      data = msg->getRawByte( statusSending.dataIdx );
+      if ( msg->isShort() && statusSending.dataIdx == 0 )
+      {
+         // send zero after start byte and skip both addresses
+         data = 0;
+         statusSending.dataIdx = HmwMessageBase::ADDRESS_SIZE - 1;
+      }
+      else
+      {
+         data = msg->getRawByte( statusSending.dataIdx );
+      }
+
 
       if ( statusSending.dataIdx == HmwMessageBase::ADDRESS_SIZE )
       {
