@@ -9,7 +9,11 @@
 		<parameter const_value="0xB1" size="1" index="0"/>
 		<parameter const_value="1" size="1" index="1"/>
 	</type>	
-	<type priority="2" id="HBW-IO-12-1W-UP" name="Haus-Bus.de 12-Fach IO Expander mit 1-Wire">
+	<type priority="2" id="HBW-IO-12-1W-UP" name="Haus-Bus.de 12-Fach IO Expander mit 1-Wire (AL)">
+		<parameter const_value="0xB2" size="1" index="0"/>
+		<parameter const_value="0" size="1" index="1"/>
+	</type>	
+	<type priority="2" id="HBW-IO-12-1W-UP-v1" name="Haus-Bus.de 12-Fach IO Expander mit 1-Wire (AH)">
 		<parameter const_value="0xB2" size="1" index="0"/>
 		<parameter const_value="0" size="1" index="1"/>
 	</type>		

@@ -32,14 +32,16 @@ static DigitalOutputTmpl<PortR, 0> txEnable;
 
 #elif ( DEVICE_ID == 0xB2 )  // Release::HBW_IO_12_1W_UP
 
-#define LED_PORT PORTR
-#define LED_MASK 0
-
-#if ( HARDWARE_ID == 0 )
+#define LED_PORT PORTA
+#define LED_MASK 0x40
 static DigitalOutputTmpl<PortR, 0> txEnable;
 static DigitalInputTmpl<PortE, 2> rx;
 static DigitalOutputTmpl<PortE, 3> tx;
+
+#if ( HARDWARE_ID == 0 )
 static uint8_t ledData[] = { 0x00 };
+#elif ( HARDWARE_ID == 1 )
+static uint8_t ledData[] = { 0x00, LED_MASK };
 #else
 #error "Hardware revision not supported!!!"
 #endif

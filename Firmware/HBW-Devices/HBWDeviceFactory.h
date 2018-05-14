@@ -45,7 +45,7 @@ class HBWDeviceFactory
 
          if ( firmwareId == Release::HBW_IO12_1W_UP )
          {
-            if ( config.hwVersion == Release::REV_0 )
+            if ( ( config.hwVersion == Release::REV_0 ) || ( config.hwVersion == Release::REV_1 ) )
             {
                return new HBWIo12OneWireUpHw();
             }
