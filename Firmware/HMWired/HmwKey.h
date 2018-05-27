@@ -19,6 +19,7 @@ class HmwKey : public HmwChannel
             INPUTTYPE_MASK = 0x07,
             UNLOCKED_MASK = 0x08,
             ACTIVE_LOW_MASK = 0x10,
+            REPEAT_ON_LONG_PRESS_MASK = 0x40,
             FEEDBACK_MASK = 0x80,
          };
 
@@ -75,6 +76,11 @@ class HmwKey : public HmwChannel
             inline bool isFeedbackEnabled() const
             {
                return options & FEEDBACK_MASK;
+            }
+
+            inline bool repeatOnLongPress() const
+            {
+               return options & REPEAT_ON_LONG_PRESS_MASK;
             }
 
             inline uint8_t getLongPressTime() const

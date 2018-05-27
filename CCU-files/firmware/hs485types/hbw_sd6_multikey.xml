@@ -105,6 +105,13 @@
 				</physical>
 				<conversion type="boolean_integer"/>
 			</parameter>
+			<parameter id="REPEAT_ON_LONG_PRESS">
+				<logical type="boolean" default="true"/>
+				<physical size="0.1" type="integer" interface="eeprom">
+					<address index="+0.6"/>
+				</physical>
+				<conversion type="boolean_integer"/>
+			</parameter>			
 			<parameter id="LED_FEEDBACK">
 				<logical type="option">
 					<option id="OFF"/>

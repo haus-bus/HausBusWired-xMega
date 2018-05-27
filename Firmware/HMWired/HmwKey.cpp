@@ -107,9 +107,11 @@ void HmwKey::handlePushButtonSignal( uint8_t channel )
       {
          // muessen wir ein "long" senden?
          if ( lastSentLong.isValid() )
-         {          // schon ein LONG gesendet
-            if ( lastSentLong.since() >= 300 )
-            {           // alle 300ms wiederholen
+         {
+            // schon ein LONG gesendet
+            if ( ( lastSentLong.since() >= 300 ) && config->repeatOnLongPress() )
+            {
+               // alle 300ms wiederholen
                // keyPressNum nicht erhoehen
                lastSentLong = Timestamp();
                HmwDevice::sendKeyEvent( channel, keyPressNum, true );                  // long press

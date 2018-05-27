@@ -87,6 +87,13 @@
 				</physical>
 				<conversion type="boolean_integer"/>
 			</parameter>
+			<parameter id="REPEAT_ON_LONG_PRESS">
+				<logical type="boolean" default="true"/>
+				<physical size="0.1" type="integer" interface="eeprom">
+					<address index="+0.6"/>
+				</physical>
+				<conversion type="boolean_integer"/>
+			</parameter>				
 			<parameter id="LONG_PRESS_TIME">
 				<logical type="float" unit="s" default="1.0" max="5.0" min="0.4"/>
 				<physical size="1.0" type="integer" interface="eeprom">
