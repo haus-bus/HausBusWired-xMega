@@ -30,9 +30,9 @@ public:
        STOPPED,
        RESET,
        INVALID_BUFFER,
-	   INVALID_STREAM,
+	    INVALID_STREAM,
        TIMEOUT,
-	   NOT_SUPPORTED,
+	    NOT_SUPPORTED,
        NO_ACK,
        NO_RECEIVER,
        NO_DATA

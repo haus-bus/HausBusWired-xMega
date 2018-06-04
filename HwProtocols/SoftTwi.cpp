@@ -13,19 +13,19 @@
 #include "SoftTwi.h"
 
 
-// #define TEST_AR8
+//#define TEST_AR8
 
 
-#define TRACE_INIT( port, pins )     port.DIRSET = pins; port.OUTCLR = pins;
-#define TRACE_PUT( port, pins )      port.OUT = pins;
-#define TRACE_SET( port, pins )      port.OUTSET = pins;
-#define TRACE_CLEAR( port, pins )    port.OUTCLR = pins;
-#define TRACE_TOGGLE( port, pins )   port.OUTTGL = pins;
+#define TRACE_INIT( port, pins )     port.DIRSET = pins; port.OUTCLR = pins
+#define TRACE_PUT( port, pins )      port.OUT = pins
+#define TRACE_SET( port, pins )      port.OUTSET = pins
+#define TRACE_CLEAR( port, pins )    port.OUTCLR = pins
+#define TRACE_TOGGLE( port, pins )   port.OUTTGL = pins
 
 #ifdef TEST_SD6
 #define TRACE_TWI_INIT               TRACE_INIT( PORTB, Pin0 | Pin1 | Pin2 | Pin3 ); \
    TRACE_INIT( PORTC, Pin6 | Pin7 ); \
-   TRACE_INIT( PORTD, Pin0 | Pin1 | Pin2 | Pin3 | Pin4 | Pin5 | Pin6 );
+   TRACE_INIT( PORTD, Pin0 | Pin1 | Pin2 | Pin3 | Pin4 | Pin5 | Pin6 )
 
 #define TRACE_TWI_STATE_IDLE         TRACE_CLEAR( PORTB, Pin0 | Pin1 )
 #define TRACE_TWI_STATE_WRITING      TRACE_SET( PORTB, Pin0 | Pin1 )
@@ -39,8 +39,9 @@
 #define TRACE_TWI_SCL_HOLD           TRACE_CLEAR( PORTD, Pin4 )
 #define TRACE_TWI_SCL_RELEASE        TRACE_SET( PORTD, Pin4 )
 
-#define TRACE_TWI_READ               TRACE_CLEAR( PORTD, Pin5 )
-#define TRACE_TWI_WRITE              TRACE_SET( PORTD, Pin5 )
+#define TRACE_TWI_INT1_START         TRACE_SET( PORTD, Pin5 )
+#define TRACE_TWI_INT1_END           TRACE_CLEAR( PORTD, Pin5 )
+
 
 #define TRACE_TWI_WRITE_ACK_START    TRACE_SET( PORTC, Pin6 )
 #define TRACE_TWI_WRITE_ACK_END      TRACE_CLEAR( PORTC, Pin6 )
@@ -49,10 +50,10 @@
 #else
 #ifdef TEST_AR8
 
-#define TRACE_TWI_INIT               TRACE_INIT( PORTF, AllPins );
+#define TRACE_TWI_INIT               TRACE_INIT( PORTF, AllPins )
 #define TRACE_TWI_STATE_IDLE         TRACE_CLEAR( PORTF, Pin0 | Pin1 )
 #define TRACE_TWI_STATE_WRITING      TRACE_SET( PORTF, Pin0 | Pin1 )
-#define TRACE_TWI_STATE_READING      TRACE_SET( PORTF, Pin0 ) TRACE_CLEAR( PORTB, Pin1 )
+#define TRACE_TWI_STATE_READING      TRACE_SET( PORTF, Pin0 ); TRACE_CLEAR( PORTB, Pin1 )
 
 #define TRACE_TWI_WRITE_BIT_START    TRACE_SET( PORTF, Pin2 )
 #define TRACE_TWI_WRITE_BIT_END      TRACE_CLEAR( PORTF, Pin2 )
@@ -67,8 +68,8 @@
 #define TRACE_TWI_SCL_HOLD           TRACE_CLEAR( PORTF, Pin6 )
 #define TRACE_TWI_SCL_RELEASE        TRACE_SET( PORTF, Pin6 )
 
-#define TRACE_TWI_READ               TRACE_CLEAR( PORTF, Pin7 )
-#define TRACE_TWI_WRITE              TRACE_SET( PORTF, Pin7 )
+#define TRACE_TWI_INT1_START         TRACE_SET( PORTF, Pin7 )
+#define TRACE_TWI_INT1_END           TRACE_CLEAR( PORTF, Pin7 )
 
 #else
 
@@ -90,8 +91,8 @@
 #define TRACE_TWI_SCL_HOLD
 #define TRACE_TWI_SCL_RELEASE
 
-#define TRACE_TWI_READ
-#define TRACE_TWI_WRITE
+#define TRACE_TWI_INT1_START
+#define TRACE_TWI_INT1_END
 
 #endif
 #endif
@@ -170,7 +171,7 @@ bool handleTwiPin()
       TWI_PORT.DIRCLR = pin;
       if ( pin == SCL_PIN )
       {
-         TRACE_TWI_SCL_RELEASE
+         TRACE_TWI_SCL_RELEASE;
       }
    }
    else if ( drive )
@@ -274,6 +275,7 @@ Stream::Status sendReceiveByte( uint8_t& data )
       {
          // wait for falling edge on SCL or STOP condition
          handleTwiPin<SCL_PIN, STATE_LOW, false, true>();
+         TRACE_TWI_SCL_RELEASE;
       }
 
       if ( streamState == Stream::IDLE )
@@ -286,20 +288,20 @@ Stream::Status sendReceiveByte( uint8_t& data )
          if ( data & mask )
          {
             // set high bit on the SDA line
-            TRACE_TWI_WRITE_BIT_START
-               isMaster = ( STATE_HIGH == handleTwiPin<SDA_PIN, STATE_HIGH, true, false>() );
-            TRACE_TWI_WRITE_BIT_END
+            TRACE_TWI_WRITE_BIT_START;
+            isMaster = ( STATE_HIGH == handleTwiPin<SDA_PIN, STATE_HIGH, true, false>() );
+            TRACE_TWI_WRITE_BIT_END;
 
-               lastBitSent = STATE_HIGH;
+            lastBitSent = STATE_HIGH;
          }
          else
          {
             // set low bit on the SDA line
-            TRACE_TWI_WRITE_BIT_START
-               isMaster = ( STATE_LOW == handleTwiPin<SDA_PIN, STATE_LOW, true, false>() );
-            TRACE_TWI_WRITE_BIT_END
+            TRACE_TWI_WRITE_BIT_START;
+            isMaster = ( STATE_LOW == handleTwiPin<SDA_PIN, STATE_LOW, true, false>() );
+            TRACE_TWI_WRITE_BIT_END;
 
-               lastBitSent = STATE_LOW;
+            lastBitSent = STATE_LOW;
          }
       }
       if ( isMaster )
@@ -311,9 +313,10 @@ Stream::Status sendReceiveByte( uint8_t& data )
       {
          // wait for rising edge on SCL
          handleTwiPin<SCL_PIN, STATE_HIGH, false, false>();
+         TRACE_TWI_SCL_RELEASE;
       }
-      ENABLE_SCL_INT
-         TRACE_TWI_READ_BIT_START;
+      ENABLE_SCL_INT;
+      TRACE_TWI_READ_BIT_START;
       bool sdaState = readTwiPin<SDA_PIN>();
       TRACE_TWI_READ_BIT_END;
 
@@ -347,15 +350,15 @@ Stream::Status sendReceiveByte( uint8_t& data )
    {
       handleTwiPin<SCL_PIN, STATE_LOW, false, false>();
 
-      TRACE_TWI_WRITE_ACK_START
-         handleTwiPin<SDA_PIN, STATE_LOW, true, false>();
-      TRACE_TWI_WRITE_ACK_END
+      TRACE_TWI_WRITE_ACK_START;
+      handleTwiPin<SDA_PIN, STATE_LOW, true, false>();
+      TRACE_TWI_WRITE_ACK_END;
 
-         handleTwiPin<SCL_PIN, STATE_HIGH, false, false>();
+      handleTwiPin<SCL_PIN, STATE_HIGH, false, false>();
    }
-   TRACE_TWI_READ_ACK_START
+   TRACE_TWI_READ_ACK_START;
    bool nack = readTwiPin<SDA_PIN>();
-   TRACE_TWI_READ_ACK_END
+   TRACE_TWI_READ_ACK_END;
 
    if ( isMaster )
    {
@@ -391,10 +394,10 @@ void init()
    TWI_PER.MASTER.CTRLA = 0;
    TWI_PER.SLAVE.CTRLA = 0;
 
-   TRACE_TWI_INIT
+   TRACE_TWI_INIT;
 
-      ( (IoPort*)&TWI_PORT )->configure( SCL_PIN, PORT_OPC_PULLUP_gc, false, PORT_ISC_FALLING_gc );
-   ( (IoPort*)&TWI_PORT )->configure( SDA_PIN, PORT_OPC_PULLUP_gc, false, PORT_ISC_BOTHEDGES_gc );
+   ( (IoPort*)&TWI_PORT )->configure( SCL_PIN, PORT_OPC_PULLUP_gc, false, PORT_ISC_FALLING_gc, true );
+   ( (IoPort*)&TWI_PORT )->configure( SDA_PIN, PORT_OPC_PULLUP_gc, false, PORT_ISC_BOTHEDGES_gc, true );
    ( (IoPort*)&TWI_PORT )->enableInterrupt0Source( SCL_PIN );
    ( (IoPort*)&TWI_PORT )->enableInterrupt1Source( SDA_PIN );
    ( (IoPort*)&TWI_PORT )->enableInterrupt1( PORT_INT1LVL_HI_gc );
@@ -477,12 +480,14 @@ Stream::Status SoftTwi::read( void* pData, uint16_t length, EventDrivenUnit* use
       }
    }
 
-   // disable Int0
-   DISABLE_SCL_INT
-   if ( !wasMaster )
+
+   if ( ( status != Stream::NO_DATA )  && ( status != Stream::STOPPED )  )
    {
       // release pins if slave
       TWI_PORT.DIRCLR = SDA_PIN | SCL_PIN;
+
+      // disable Int0
+      DISABLE_SCL_INT;
    }
 
    return status;
@@ -513,36 +518,58 @@ Stream::Status SoftTwi::write( void* pData, uint16_t length, EventDrivenUnit* us
 
 INTERRUPT void PORTE_INT0_vect()
 {
-   TWI_PORT.DIRSET = SCL_PIN;
-   DISABLE_SCL_INT
-      TRACE_TWI_SCL_HOLD
+   uint8_t portStatus = TWI_PORT.IN;
+
+   // try to isolate short peaks that causing an interrupt
+   char i = 4;
+   while ( --i )
+   {
+      portStatus |= TWI_PORT.IN;
+   }
+   if ( !( portStatus & SCL_PIN  ) )
+   {
+      DISABLE_SCL_INT;
+      TWI_PORT.DIRSET = SCL_PIN;
+      TWI_PORT.OUTCLR = SCL_PIN;
+      TRACE_TWI_SCL_HOLD;
+   }
 }
 
 INTERRUPT void PORTE_INT1_vect()
 {
+   TRACE_TWI_INT1_START;
    uint8_t portStatus = TWI_PORT.IN;
+
+   // try to isolate short peaks that causing an interrupt
+   char i = 8;
+   while ( --i )
+   {
+      portStatus &= TWI_PORT.IN;
+   }
+
    if ( portStatus & SCL_PIN )
    {
       if ( portStatus & SDA_PIN )
       {
-         TRACE_TWI_STATE_IDLE
-            streamState = Stream::IDLE;
+         TRACE_TWI_STATE_IDLE;
+         streamState = Stream::IDLE;
          // disable Int0
          TWI_PORT.INTCTRL &= ~PORT_INT0LVL_gm;
       }
       else
       {
-         ENABLE_SCL_INT
+         ENABLE_SCL_INT;
          if ( TWI_PORT.DIR & SDA_PIN )
          {
-            TRACE_TWI_STATE_WRITING
-               streamState = Stream::WRITING;
+            TRACE_TWI_STATE_WRITING;
+            streamState = Stream::WRITING;
          }
          else
          {
-            TRACE_TWI_STATE_READING
-               streamState = Stream::READING;
+            TRACE_TWI_STATE_READING;
+            streamState = Stream::READING;
          }
       }
    }
+   TRACE_TWI_INT1_END;
 }

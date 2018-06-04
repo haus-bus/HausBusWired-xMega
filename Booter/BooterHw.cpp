@@ -74,7 +74,7 @@ void BooterHw::configure()
    }
    else
 #endif
-   twi.init<true, 250000, TWI_MASTER_INTLVL_OFF_gc, TWI_SLAVE_INTLVL_OFF_gc>();
+   twi.init<true, 30000, TWI_MASTER_INTLVL_OFF_gc, TWI_SLAVE_INTLVL_OFF_gc>();
 
    // set statusLed to red
    PORTR.OUTSET = Pin0;
@@ -140,7 +140,7 @@ void BooterHw::writeMessageToTwi()
    header->checksum = 0;
    header->checksum = Checksum::get( &header->address, length );
 
-   twi.master.write( header->address, &header->checksum, length );
+   twi.master.write( header->address, &header->checksum, length-1 );
 }
 
 void BooterHw::sendMessage()

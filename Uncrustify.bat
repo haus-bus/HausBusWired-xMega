@@ -10,7 +10,6 @@ utils\bin\uncrustify.exe -f "%%G" -c uncrustify.cfg -o indentoutput.tmp
 move /Y indentoutput.tmp "%%G"
 )
 )
-goto ende
 
 :runH
 FOR /F "tokens=*" %%G IN ('DIR /B /S %searchdir%\*.h') DO (
@@ -20,5 +19,3 @@ utils\bin\uncrustify.exe -f "%%G" -c uncrustify.cfg -o indentoutput.tmp
 move /Y indentoutput.tmp "%%G"
 )
 )
-
-:ende

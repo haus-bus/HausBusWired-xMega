@@ -243,7 +243,7 @@ uint16_t HwConfiguration::HomeAutomation::getDeviceId()
       reinterpret_cast<uint16_t>( &deviceId ) );
    id |= ( Flash::readUserSignature( reinterpret_cast<uint16_t>( &deviceId ) + 1 )
            << 8 );
-   if ( !id )
+   if ( ( id == 0 ) || ( id > 0x7FFF ) )
    {
       id = 0x7FFF;
    }
