@@ -70,7 +70,7 @@ private:
         - 1; //sizeof( command )
     if ( !downloadAllowed )
     {
-      static uint8_t buffer[2 * APP_SECTION_PAGE_SIZE];
+      static uint8_t buffer[3 * APP_SECTION_PAGE_SIZE];
       if ( (parameter.address + dataLength) <= sizeof(buffer) )
       {
         memcpy( &buffer[parameter.address], parameter.data, dataLength );
@@ -93,6 +93,11 @@ private:
                 if( Flash::write( 0, buffer, Flash::getPageSize() ) == Stream::SUCCESS )
                 {
                   downloadAllowed = true;
+                  if ( parameter.address >= (2 * APP_SECTION_PAGE_SIZE ) )
+                  {
+                     downloadAllowed = ( Flash::write( APP_SECTION_PAGE_SIZE, &buffer[APP_SECTION_PAGE_SIZE], Flash::getPageSize() ) == Stream::SUCCESS );
+                  }
+
                 }
               }
             }

@@ -41,7 +41,8 @@ public:
     READ_FAILED,
     MSG_QUEUE_OVERRUN,
     BUSY_BUS,
-    RESET_BUS
+    RESET_BUS,
+    BUFFER_OVERRUN
   };
 
   enum Instances

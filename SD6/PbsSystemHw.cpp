@@ -60,8 +60,8 @@ void PbsSystemHw::configure()
 
    DEBUG_H1( FSTR( "configure" ) );
 
-   // configureOneWire();
    configureLogicalButtons();
+   configureTwi();
 
    // enable interrupts
    enableInterrupts();

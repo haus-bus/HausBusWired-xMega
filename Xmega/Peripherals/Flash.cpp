@@ -48,12 +48,6 @@ Stream::Status Flash::write( Flash::address_t address, void* pData, uint16_t len
    // fill the buffer with the current data and update the new part
    Flash::read( address, buffer, sizeof( buffer ) );
    memcpy( &buffer[offset], pData, length );
-
-   if ( address >= (Flash::address_t) 0x10000 )
-   {
-      address |= 0x10000000;
-   }
-
    loadFlashPageBuffer( buffer );
    eraseWriteApplicationPage( address );
    enableApplicationSection();
