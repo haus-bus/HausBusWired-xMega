@@ -316,7 +316,7 @@ void HomeAutomation::cmdWriteRules(
    response.setMemoryStatus(
       HomeAutomationHw::writeRules( parameter.offset, parameter.data,
                                     dataLength ) );
-   if ( dataLength < APP_SECTION_PAGE_SIZE )
+   if ( dataLength < HACF::MAX_DATA_SIZE )
    {
       checkPersistentRules();
    }
@@ -498,7 +498,7 @@ bool HomeAutomation::handleRequest( HACF* message )
             {
                uint16_t deviceId = SystemTime::now() & 0x7FFF;
                HwConfiguration::HomeAutomation::instance().setDeviceId( deviceId );
-               response.setDeviceId( deviceId );
+               response.setStarted( response.EVENT_NEW_DEVICE_ID );
             }
             else
             {
