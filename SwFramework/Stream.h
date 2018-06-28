@@ -35,7 +35,8 @@ public:
 	    NOT_SUPPORTED,
        NO_ACK,
        NO_RECEIVER,
-       NO_DATA
+       NO_DATA,
+       ARB_LOST
   };
 
   enum SeekPosition

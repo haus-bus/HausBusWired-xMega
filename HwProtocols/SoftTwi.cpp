@@ -428,11 +428,12 @@ Stream::Status SoftTwi::read( void* pData, uint16_t length, EventDrivenUnit* use
       uint8_t data = 0xFF;
       status = sendReceiveByte( length ? ( (uint8_t*)pData )[bytesTransferred] : data );
 
-      if ( ( wasMaster != isMaster ) && ( streamState != Stream::READING ) )
+      if ( ( wasMaster != isMaster ) && ( streamState == Stream::WRITING ) )
       {
          // increase buffer while switching to slave mode
          length = HACF::MAX_DATA_SIZE - bytesTransferred;
          streamState = Stream::READING;
+         status = Stream::ARB_LOST;
       }
 
       if ( status == Stream::TIMEOUT )
@@ -471,6 +472,7 @@ Stream::Status SoftTwi::read( void* pData, uint16_t length, EventDrivenUnit* use
          length--;
          if ( ( length == 0 ) && isMaster )
          {
+            status = Stream::SUCCESS;
             break;
          }
       }
@@ -483,7 +485,7 @@ Stream::Status SoftTwi::read( void* pData, uint16_t length, EventDrivenUnit* use
 
    if ( ( status != Stream::NO_DATA )  && ( status != Stream::STOPPED )  )
    {
-      // release pins if slave
+      // release pins on error
       TWI_PORT.DIRCLR = SDA_PIN | SCL_PIN;
 
       // disable Int0
@@ -507,7 +509,7 @@ Stream::Status SoftTwi::write( void* pData, uint16_t length, EventDrivenUnit* us
    }
 
    status = read( (uint8_t*)pData, length, user );
-   if ( status != STOPPED && started )
+   if ( status != STOPPED && status != ARB_LOST && started )
    {
       stopTx();
    }
@@ -529,8 +531,8 @@ INTERRUPT void PORTE_INT0_vect()
    if ( !( portStatus & SCL_PIN  ) )
    {
       DISABLE_SCL_INT;
-      TWI_PORT.DIRSET = SCL_PIN;
       TWI_PORT.OUTCLR = SCL_PIN;
+      TWI_PORT.DIRSET = SCL_PIN;
       TRACE_TWI_SCL_HOLD;
    }
 }
