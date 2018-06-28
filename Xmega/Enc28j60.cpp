@@ -131,15 +131,16 @@ uint8_t Enc28j60::init()
 
    reset();
 
-   uint8_t retries = 255;
+   uint8_t retries = 10;
    // test if chip is connected
-   while ( !isClockReady() || isBusy() )
+   while ( !isClockReady() )
    {
       if ( --retries == 0 )
       {
          DEBUG_M1( FSTR( "not connected" ) );
          return NOT_CONNECTED;
       }
+      _delay_ms( 1 );
    }
 
    // get enc revision id
@@ -220,9 +221,9 @@ uint8_t Enc28j60::isNewPacketReceived()
 
 uint16_t Enc28j60::read( void* pData, uint16_t length )
 {
-   if ( !isNewPacketReceived() )
+   if ( !isInterruptPending() || !isNewPacketReceived() )
    {
-      // packetcounter is 0, there is nothing to receive, go back
+      // no interrupt or packetcounter is 0, there is nothing to receive, go back
       return 0;
    }
 

@@ -494,7 +494,9 @@ inline bool Enc28j60::isBusy()
 
 inline bool Enc28j60::isClockReady()
 {
-  return readRegister( ENC_REG_ESTAT ) & (1 << ENC_BIT_CLKRDY);
+   uint8_t value = readRegister( ENC_REG_ESTAT );
+   // check value for 0xFF, this indicates the chip is not connected, because there must be at least one bit set to 0
+   return  ( value != 0xFF ) && ( value & (1 << ENC_BIT_CLKRDY) );
 }
 
 inline void Enc28j60::select()
