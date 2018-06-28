@@ -23,10 +23,6 @@ PbsSystem::PbsSystem() :
    digitalPortD( PortD )
 {
    digitalPortB.setNotUseablePins( Pin4 | Pin5 | Pin6 | Pin7 );
-   if ( CONTROLLER_ID == Release::MS6_ID )
-   {
-      digitalPortC.setNotUseablePins( Pin6 | Pin7 );
-   }
 }
 
 void PbsSystem::start()

@@ -7,4 +7,4 @@
 
 #include "DebugOptions.h"
 
-uint8_t DebugOptions::options( SEND_MSG_LOAD_EVENT );
+uint8_t DebugOptions::options( 0 );

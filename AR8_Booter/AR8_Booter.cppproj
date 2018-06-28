@@ -91,7 +91,7 @@
       <Value>MOD_ID=\"AR8Booter\"</Value>
       <Value>BOOTER_SIZE=8192</Value>
       <Value>CONTROLLER_ID=Release::AR8_ID</Value>
-      <Value>BOARD_FCKE=FCKE_V3_0</Value>
+      <Value>BOARD_FCKE=FCKE_V4_0</Value>
       <Value>NDEBUG</Value>
     </ListValues>
   </avrgcccpp.compiler.symbols.DefSymbols>
@@ -170,7 +170,7 @@
       <Value>MOD_ID=\"AR8Booter\"</Value>
       <Value>BOOTER_SIZE=8192</Value>
       <Value>CONTROLLER_ID=Release::AR8_ID</Value>
-      <Value>BOARD_FCKE=FCKE_V3_0</Value>
+      <Value>BOARD_FCKE=FCKE_V4_0</Value>
       <Value>_DEBUG_</Value>
     </ListValues>
   </avrgcccpp.compiler.symbols.DefSymbols>
