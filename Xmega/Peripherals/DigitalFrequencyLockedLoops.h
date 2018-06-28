@@ -1,59 +1,58 @@
-/*********************************************************************
-	Rhapsody	: 8.0.3 
-	Login		: viktor.pankraz
-	Component	: Xmega192A3 
-	Configuration 	: debug
-	Model Element	: DigitalFrequencyLockedLoops
-//!	Generated Date	: Tue, 24, Jun 2014  
-	File Path	: Xmega192A3/debug/Peripherals/DigitalFrequencyLockedLoops.h
-*********************************************************************/
+/*
+ * DigitalFrequencyLockedLoops.h
+ *
+ *  Created on: 18.07.2017
+ *      Author: Viktor Pankraz
+ */
 
 #ifndef Peripherals_DigitalFrequencyLockedLoops_H
 #define Peripherals_DigitalFrequencyLockedLoops_H
 
-//## auto_generated
 #include "Peripherals.h"
-//## package Peripherals
 
-//## class DigitalFrequencyLockedLoops
-class DigitalFrequencyLockedLoops {
-public :
+class DigitalFrequencyLockedLoops
+{
+   public:
 
-    ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-protected :
+   protected:
 
-    //## operation DigitalFrequencyLockedLoops()
-    inline DigitalFrequencyLockedLoops() {
-        //#[ operation DigitalFrequencyLockedLoops()
-        //#]
-    }
-    
-    ////    Operations    ////
+      inline DigitalFrequencyLockedLoops()
+      {
+      }
 
-public :
+      ////    Operations    ////
 
-    // /*! \brief This function disables the automatic calibration of the internal oscillator.
-    //  *
-    //  */
-    //## operation disableAutoCalibration()
-    inline void disableAutoCalibration() {
-        //#[ operation disableAutoCalibration()
-        reg.CTRL &= ~DFLL_ENABLE_bm;
-        //#]
-    }
-    
-    //## operation instance(bool)
-    static DigitalFrequencyLockedLoops& instance(bool for32MHz);
-    
-    ////    Attributes    ////
+   public:
 
-protected :
+      // This function enables the automatic calibration of the internal oscillator.
+      inline void enableAutoCalibration()
+      {
+         reg.CTRL |= DFLL_ENABLE_bm;
+      }
 
-    DFLL_t reg;		//## attribute reg
+      // This function disables the automatic calibration of the internal oscillator.
+      inline void disableAutoCalibration()
+      {
+         reg.CTRL &= ~DFLL_ENABLE_bm;
+      }
+
+      static inline DigitalFrequencyLockedLoops& instance( bool for32MHz )
+      {
+         if ( for32MHz )
+         {
+            return *reinterpret_cast<DigitalFrequencyLockedLoops*> ( &DFLLRC32M );
+         }
+
+         return *reinterpret_cast<DigitalFrequencyLockedLoops*> ( &DFLLRC2M );
+      }
+
+      ////    Attributes    ////
+
+   protected:
+
+      DFLL_t reg;       // ## attribute reg
 };
 
 #endif
-/*********************************************************************
-	File Path	: Xmega192A3/debug/Peripherals/DigitalFrequencyLockedLoops.h
-*********************************************************************/

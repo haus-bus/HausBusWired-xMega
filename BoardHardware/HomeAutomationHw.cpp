@@ -13,6 +13,7 @@
 #include <Peripherals/Oscillator.h>
 #include <Peripherals/Clock.h>
 #include <Peripherals/RealTimeCounter.h>
+#include <Peripherals/DigitalFrequencyLockedLoops.h>
 
 const uint8_t HomeAutomationHw::debugLevel( DEBUG_LEVEL_OFF );
 
@@ -75,6 +76,8 @@ lowLevelInit( void )
 
    Clock::enableRTCClockSource( CLK_RTCSRC_RCOSC_gc );
    RealTimeCounter::init( 0xFFFF, 0, 0, RTC_PRESCALER_DIV1_gc );
+
+   DigitalFrequencyLockedLoops::instance( true ).enableAutoCalibration();
 }
 
 INTERRUPT void NVM_EE_vect()
