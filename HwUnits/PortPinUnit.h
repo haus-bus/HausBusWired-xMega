@@ -122,6 +122,7 @@ public:
     {
       HwConfiguration::PortPin configuration;
       uint8_t status;
+      uint16_t duration;
     };
 
     ////    Constructors and destructors    ////
@@ -143,13 +144,20 @@ public:
       return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
     }
 
-    inline uint8_t isOn();
-
-    void setBrightness( uint8_t brightness );
+    inline uint8_t isOn()
+    {
+      if ( getResponse() == EVENT_ON )
+      {
+         return getParameter().status;
+      }
+      return 0;
+    }
 
     Parameter& setConfiguration();
 
     void setEvent( uint8_t event );
+
+    void setEventOn( uint16_t duration );
 
     void setStatus( uint8_t status );
 
@@ -174,7 +182,10 @@ public:
 
   virtual bool notifyEvent( const Event& event );
 
-  inline void * operator new( size_t size );
+  inline void * operator new( size_t size )
+  {
+    return allocOnce( size );
+  }
 
   void updateConfiguration();
 
@@ -300,19 +311,5 @@ protected:
   DigitalOutput hardware;
 
 };
-
-inline void * PortPinUnit::operator new( size_t size )
-{
-  return allocOnce( size );
-}
-
-inline uint8_t PortPinUnit::Response::isOn()
-{
-  if ( getResponse() == EVENT_ON )
-  {
-    return getParameter().status;
-  }
-  return 0;
-}
 
 #endif

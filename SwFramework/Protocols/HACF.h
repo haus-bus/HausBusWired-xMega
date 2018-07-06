@@ -263,6 +263,11 @@ public:
       control = p_control;
     }
 
+    inline void setCommand( uint8_t p_command )
+    {
+      data[0] = p_command;
+    }
+
     inline uint8_t getPacketCounter() const
     {
       return packetCounter;

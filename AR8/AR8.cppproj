@@ -54,6 +54,8 @@
     </com_atmel_avrdbg_tool_atmelice>
     <avrtoolinterface>PDI</avrtoolinterface>
     <avrtoolinterfaceclock>4000000</avrtoolinterfaceclock>
+    <ResetRule>0</ResetRule>
+    <EraseKey />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
@@ -396,6 +398,14 @@
     <Compile Include="..\HwUnits\Dht.h">
       <SubType>compile</SubType>
       <Link>HwUnits\Dht.h</Link>
+    </Compile>
+    <Compile Include="..\HwUnits\DigitalOutputUnit.cpp">
+      <SubType>compile</SubType>
+      <Link>HwUnits\DigitalOutputUnit.cpp</Link>
+    </Compile>
+    <Compile Include="..\HwUnits\DigitalOutputUnit.h">
+      <SubType>compile</SubType>
+      <Link>HwUnits\DigitalOutputUnit.h</Link>
     </Compile>
     <Compile Include="..\HwUnits\DigitalPort.cpp">
       <SubType>compile</SubType>

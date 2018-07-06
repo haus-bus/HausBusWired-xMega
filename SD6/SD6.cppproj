@@ -54,6 +54,8 @@
       <ToolName>Atmel-ICE</ToolName>
     </com_atmel_avrdbg_tool_atmelice>
     <avrtoolinterfaceclock>4000000</avrtoolinterfaceclock>
+    <ResetRule>0</ResetRule>
+    <EraseKey />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
@@ -371,6 +373,14 @@
     <Compile Include="..\HwUnits\DigitalPort.h">
       <SubType>compile</SubType>
       <Link>HwUnits\DigitalPort.h</Link>
+    </Compile>
+    <Compile Include="..\HwUnits\DigitalOutputUnit.cpp">
+      <SubType>compile</SubType>
+      <Link>HwUnits\DigitalOutputUnit.cpp</Link>
+    </Compile>
+    <Compile Include="..\HwUnits\DigitalOutputUnit.h">
+      <SubType>compile</SubType>
+      <Link>HwUnits\DigitalOutputUnit.h</Link>
     </Compile>
     <Compile Include="..\HwUnits\Dimmer.cpp">
       <SubType>compile</SubType>

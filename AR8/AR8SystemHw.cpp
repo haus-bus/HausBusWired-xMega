@@ -13,7 +13,7 @@
 #include <LogicalButton.h>
 #include <Security/ModuleId.h>
 #include <PersistentRules.h>
-#include <PortPinUnit.h>
+#include <DigitalOutputUnit.h>
 #include <RollerShutter.h>
 #include <Peripherals/TimerCounter0.h>
 #include <Protocols/IpStack/UdpConnection.h>
@@ -151,7 +151,7 @@ void AR8SystemHw::configureSlots()
       }
       else if ( slotHw[slot].isPowerSocketHw() )
       {
-         object = new PortPinUnit( *slotHw[slot].getDigitalOutput1() );
+         object = new DigitalOutputUnit( *slotHw[slot].getDigitalOutput1() );
          object->setInstanceId( slot + 1 );
       }
       else if ( slotHw[slot].isRollerShutterHw() )
@@ -161,9 +161,9 @@ void AR8SystemHw::configureSlots()
       }
       else if ( slotHw[slot].isDoubleSwitchHw() )
       {
-         object = new PortPinUnit( *slotHw[slot].getDigitalOutput0() );
+         object = new DigitalOutputUnit( *slotHw[slot].getDigitalOutput0() );
          object->setInstanceId( slot + 1 );
-         object = new PortPinUnit( *slotHw[slot].getDigitalOutput1() );
+         object = new DigitalOutputUnit( *slotHw[slot].getDigitalOutput1() );
          object->setInstanceId( slot + 9 );
       }
       DEBUG_M4( "slot", slot, " = ", slotHw[slot].getType() );

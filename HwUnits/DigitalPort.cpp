@@ -6,6 +6,7 @@
  */
 
 #include "DigitalPort.h"
+#include "DigitalOutputUnit.h"
 
 #ifdef USE_DHT
 #include "Dht.h"
@@ -157,7 +158,7 @@ void DigitalPort::configureHw()
             }
             else if ( pinFunction == ClassId::DIGITAL_OUTPUT )
             {
-               new PortPinUnit( PortPin( portNumber, i ) );
+               new DigitalOutputUnit( PortPin( portNumber, i ) );
                outputMask |= bit;
             }
 #ifdef USE_ANALOGIN

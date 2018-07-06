@@ -10,20 +10,6 @@
 
 const uint8_t PortPinUnit::debugLevel( DEBUG_LEVEL_OFF );
 
-void PortPinUnit::Response::setBrightness( uint8_t brightness )
-{
-   if ( brightness )
-   {
-      setResponse( EVENT_ON );
-      getParameter().status = brightness;
-   }
-   else
-   {
-      controlFrame.setDataLength( sizeof( getResponse() ) );
-      setResponse( EVENT_OFF );
-   }
-}
-
 PortPinUnit::Response::Parameter& PortPinUnit::Response::setConfiguration()
 {
    controlFrame.setDataLength(
@@ -36,6 +22,13 @@ void PortPinUnit::Response::setEvent( uint8_t event )
 {
    controlFrame.setDataLength( sizeof( getResponse() ) );
    setResponse( event );
+}
+
+void PortPinUnit::Response::setEventOn( uint16_t duration )
+{
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().duration ) );
+   setResponse( EVENT_ON );
+   getParameter().duration = duration;
 }
 
 void PortPinUnit::Response::setStatus( uint8_t status )
@@ -122,7 +115,7 @@ bool PortPinUnit::handleRequest( HACF* message )
             setQuantity( 1 );
             setDuration( data->parameter.on.duration );
             setSleepTime( duration ? configuration->getTimeBase() : NO_WAKE_UP );
-            response.setEvent( Response::EVENT_ON );
+            response.setEventOn( duration );
          }
          else if ( cf.isCommand( Command::TOGGLE ) )
          {
