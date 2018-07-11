@@ -176,20 +176,20 @@ bool RollerShutter::handleRequest( HACF* message )
       }
       if ( data->parameter.direction == TO_CLOSE )
       {
-         if ( getPosition() == HwConfiguration::RollerShutter::MAX_LEVEL )
+         if ( getPosition() > HwConfiguration::RollerShutter::CLOSED_THRESHOLD )
          {
-            // allow always 3% moving at the boundaries
-            setPosition( HwConfiguration::RollerShutter::MAX_LEVEL - 3 );
+            // allow always moving at the boundaries
+            setPosition( HwConfiguration::RollerShutter::CLOSED_THRESHOLD );
          }
          toggleDirection = TO_OPEN;
          cmdMoveToPosition( HwConfiguration::RollerShutter::MAX_LEVEL );
       }
       else
       {
-         if ( getPosition() == 0 )
+         if ( getPosition() < HwConfiguration::RollerShutter::OPEN_THRESHOLD )
          {
-            // allow always 3% moving at the boundaries
-            setPosition( 3 );
+            // allow always moving at the boundaries
+            setPosition( HwConfiguration::RollerShutter::OPEN_THRESHOLD );
          }
          toggleDirection = TO_CLOSE;
          cmdMoveToPosition( 0 );

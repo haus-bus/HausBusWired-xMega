@@ -138,6 +138,8 @@ public:
     static const uint8_t DEFAULT_CLOSE_TIME = 20;
     static const uint8_t DEFAULT_OPEN_TIME = 21;
     static const uint8_t MAX_LEVEL = 100;
+    static const uint8_t CLOSED_THRESHOLD = 95;
+    static const uint8_t OPEN_THRESHOLD = 5;
     static const uint16_t DEFAULT_MOTOR_START_DELAY = 256;
 
     static const uint8_t OFFSET_POSITION = 4;
