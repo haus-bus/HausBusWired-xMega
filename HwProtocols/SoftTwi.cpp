@@ -482,10 +482,10 @@ Stream::Status SoftTwi::read( void* pData, uint16_t length, EventDrivenUnit* use
       }
    }
 
-
-   if ( ( status != Stream::NO_DATA )  && ( status != Stream::STOPPED )  )
+   CriticalSection doNotInterrupt;
+   if ( ( status == Stream::NO_DATA ) && ( streamState != Stream::READING )  )
    {
-      // release pins on error
+      // release pins on error or in IDLE
       TWI_PORT.DIRCLR = SDA_PIN | SCL_PIN;
 
       // disable Int0
