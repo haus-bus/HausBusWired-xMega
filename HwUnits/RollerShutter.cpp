@@ -176,11 +176,21 @@ bool RollerShutter::handleRequest( HACF* message )
       }
       if ( data->parameter.direction == TO_CLOSE )
       {
+         if ( getPosition() == HwConfiguration::RollerShutter::MAX_LEVEL )
+         {
+            // allow always 3% moving at the boundaries
+            setPosition( HwConfiguration::RollerShutter::MAX_LEVEL - 3 );
+         }
          toggleDirection = TO_OPEN;
          cmdMoveToPosition( HwConfiguration::RollerShutter::MAX_LEVEL );
       }
       else
       {
+         if ( getPosition() == 0 )
+         {
+            // allow always 3% moving at the boundaries
+            setPosition( 3 );
+         }
          toggleDirection = TO_CLOSE;
          cmdMoveToPosition( 0 );
       }
@@ -249,7 +259,6 @@ void RollerShutter::handleRunningState()
          startingChannels--;
          DEBUG_M2( FSTR( "startingUnits-: " ), startingChannels );
       }
-
       setSleepTime( HwConfiguration::RollerShutter::DEFAULT_MOTOR_START_DELAY );
       SET_STATE_L2( NOTIFY_RUNNING );
    }
@@ -259,12 +268,9 @@ void RollerShutter::handleRunningState()
       DEBUG_M2( FSTR( "position:" ), position );
       if ( position != targetPosition )
       {
+         positionTick();
          if ( hardware->isDirectionToOpen() )
          {
-            if ( position > 0 )
-            {
-               position--;
-            }
             setToggleDirection( TO_CLOSE );
             if ( targetPosition >= position )
             {
@@ -273,10 +279,6 @@ void RollerShutter::handleRunningState()
          }
          else
          {
-            if ( position < HwConfiguration::RollerShutter::MAX_LEVEL )
-            {
-               position++;
-            }
             setToggleDirection( TO_OPEN );
             if ( targetPosition <= position )
             {
@@ -304,6 +306,25 @@ void RollerShutter::setPosition( uint8_t p_position )
 {
    position = minimum<uint8_t>( p_position,
                                 HwConfiguration::RollerShutter::MAX_LEVEL );
+}
+
+void RollerShutter::positionTick()
+{
+   if ( hardware->isDirectionToOpen() )
+   {
+      if ( position > 0 )
+      {
+         position--;
+      }
+   }
+   else
+   {
+      if ( position < HwConfiguration::RollerShutter::MAX_LEVEL )
+      {
+         position++;
+      }
+   }
+
 }
 
 HwConfiguration::RollerShutter* RollerShutter::getConfiguration() const

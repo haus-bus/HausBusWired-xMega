@@ -180,6 +180,8 @@ private:
 
   void setPosition( uint8_t p_position );
 
+  void positionTick();
+
   ////    Additional operations    ////
 
 public:
