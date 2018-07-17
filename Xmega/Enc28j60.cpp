@@ -5,6 +5,9 @@
  *      Author: Viktor Pankraz
  */
 
+// temporarly enable DEBUG output always
+//#define _DEBUG_
+
 #include "Enc28j60.h"
 #include <DigitalOutput.h>
 #include <FlashString.h>
@@ -12,7 +15,7 @@
 
 #define getId() FSTR( "Enc28j60::" )
 
-const uint8_t Enc28j60::debugLevel( DEBUG_LEVEL_OFF );
+const uint8_t Enc28j60::debugLevel( DEBUG_LEVEL_LOW );
 
 extern const uint8_t configurationData[] PROGMEM;
 const uint8_t configurationData[] =
@@ -332,20 +335,20 @@ uint16_t Enc28j60::write( void* pData, uint16_t length )
 
    // errata B7 #13: late collision retries
    TransmitStatusVector tsv;
-   uint8_t retries = 16;
+   uint8_t retries = 5;
    while ( --retries )
    {
       setRegisterBits( ENC_REG_ECON1, ( 1 << ENC_BIT_TXRST ) );
       clearRegisterBits( ENC_REG_ECON1, ( 1 << ENC_BIT_TXRST ) );
 
       // clear TXIF/TXERIF flags
-      clearRegisterBits( ENC_REG_EIR,
-                         ( 1 << ENC_BIT_TXIF ) | ( 1 << ENC_BIT_TXERIF ) );
+      clearRegisterBits( ENC_REG_EIR, ( 1 << ENC_BIT_TXERIF ) );
+      clearRegisterBits( ENC_REG_EIR, ( 1 << ENC_BIT_TXIF ) );
 
       // start transmission by setting the TXRTS bit
       setRegisterBits( ENC_REG_ECON1, ( 1 << ENC_BIT_TXRTS ) );
 
-      DEBUG_H1( FSTR( "sending" ) );
+      DEBUG_H3( FSTR( "sending 0x" ), length, FSTR( " Bytes" ) );
 
       // wait up to 10 ms for the tx to finish
       uint8_t delay = 100;
@@ -372,20 +375,28 @@ uint16_t Enc28j60::write( void* pData, uint16_t length )
 
       readBuffer( (uint8_t*) &tsv, sizeof( TransmitStatusVector ) );
 
-      if ( !( ( status & ( ( 1 << ENC_BIT_TXABRT ) | ( 1 << ENC_BIT_LATECOL ) ) )
-            || tsv.lateCollision || tsv.excessiveCollision || tsv.excessiveDeferred ) )
+      if ( status & ( 1 << ENC_BIT_TXABRT )  )
       {
-         break;
+         dumpTransmitStatusVector( tsv );
+         ERROR_1( FSTR( "ENC TXABRT" ) );
+         // TRX was aborted, check if retries are needed for late collision reason
+         if ( ( status & ( 1 << ENC_BIT_LATECOL ) ) || tsv.lateCollision )
+         {
+            ERROR_1( FSTR( "late collision" ) );
+            if ( retries )
+            {
+               continue;
+            }        
+         }
       }
+      break;
    }
-
-   if ( !retries )
+   if( ( length < 60 ) && tsv.bytesTransferred == 64 )
    {
-      ERROR_1( FSTR( "ENC transmission failed!" ) );
-      dumpTransmitStatusVector( tsv );
-      return 0;
+      // all packets are automatically padded to 60 Bytes + 4Bytes CRC
+      return length;
    }
-   return length;
+   return tsv.bytesTransferred - 4; // 4 Byte CRC were added automatically, remove them from return value
 }
 
 void Enc28j60::powerDown()

@@ -26,7 +26,7 @@ public:
 
   static const uint8_t MAJOR = 1;
 
-  static const uint8_t MINOR = 4;
+  static const uint8_t MINOR = 6;
 };
 
 #endif
