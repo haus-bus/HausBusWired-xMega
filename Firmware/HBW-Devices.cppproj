@@ -77,6 +77,8 @@
       </framework-data>
     </AsfFrameworkConfig>
     <Name>HBW-Devices</Name>
+    <ResetRule>0</ResetRule>
+    <EraseKey />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>

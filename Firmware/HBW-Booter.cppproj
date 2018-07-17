@@ -78,6 +78,8 @@
       </framework-data>
     </AsfFrameworkConfig>
     <Name>HBW-Booter</Name>
+    <ResetRule>0</ResetRule>
+    <EraseKey />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'HBW-SD6-v0' ">
     <ToolchainSettings>
