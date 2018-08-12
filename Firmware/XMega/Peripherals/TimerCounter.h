@@ -95,13 +95,13 @@ class TimerCounter
 
       static inline Channel getChannelFromPinNumber( uint8_t pinNumber )
       {
-         if( pinNumber >= 4 )
+         if ( pinNumber >= 4 )
          {
             pinNumber -= 4;
          }
          return (Channel)pinNumber;
       }
-      
+
       inline void clearCCAFlag()
       {
          reg.INTFLAGS = TC0_CCAIF_bm;
@@ -130,15 +130,15 @@ class TimerCounter
       inline void configEventAction( TC_EVSEL_t eventSource, TC_EVACT_t eventAction )
       {
          reg.CTRLD = ( reg.CTRLD & ~( TC0_EVSEL_gm | TC0_EVACT_gm ) )
-                         | eventSource
-                         | eventAction;
+                     | eventSource
+                     | eventAction;
       }
 
       inline void configInputCapture( TC_EVSEL_t eventSource )
       {
          reg.CTRLD = ( reg.CTRLD & ~( TC0_EVSEL_gm | TC0_EVACT_gm ) )
-                         | eventSource
-                         | TC_EVACT_CAPT_gc;
+                     | eventSource
+                     | TC_EVACT_CAPT_gc;
       }
 
       inline void configWGM( TC_WGMODE_t wgm )
@@ -262,7 +262,7 @@ class TimerCounter
 
       inline uint8_t getCCFlag( Channel channel )
       {
-         return reg.INTFLAGS & (TC0_CCAIF_bm << channel);
+         return reg.INTFLAGS & ( TC0_CCAIF_bm << channel );
       }
 
       inline uint16_t getCapture( Channel channel )
@@ -273,12 +273,12 @@ class TimerCounter
 
       inline void disableChannel( Channel channel )
       {
-         reg.CTRLB &= ~(TC0_CCAEN_bm << channel);
+         reg.CTRLB &= ~( TC0_CCAEN_bm << channel );
       }
 
-      inline void enableChannel( Channel channel  )
+      inline void enableChannel( Channel channel )
       {
-         reg.CTRLB |= (TC0_CCAEN_bm << channel);
+         reg.CTRLB |= ( TC0_CCAEN_bm << channel );
       }
 
       inline void setCompare( Channel channel, uint16_t value )
@@ -289,7 +289,7 @@ class TimerCounter
 
       inline void setCCIntLevel( Channel channel, TC_CCCINTLVL_t intLevel )
       {
-         reg.INTCTRLB = ( reg.INTCTRLB & ~(TC0_CCAINTLVL_gm << channel) ) | intLevel;
+         reg.INTCTRLB = ( reg.INTCTRLB & ~( TC0_CCAINTLVL_gm << channel ) ) | intLevel;
       }
 
       inline void clearCCCFlag()

@@ -14,7 +14,7 @@ PwmOutput::PwmOutput( uint8_t _portNumber, uint8_t _pinNumber, uint16_t _period 
 {
    configOutput();
    TimerCounter* tc = getTC();
-   if( tc)
+   if ( tc )
    {
       tc->configClockSource( TC_CLKSEL_DIV1_gc );
       tc->configWGM( TC_WGMODE_SS_gc );
@@ -26,7 +26,7 @@ PwmOutput::PwmOutput( uint8_t _portNumber, uint8_t _pinNumber, uint16_t _period 
 uint16_t PwmOutput::isSet() const
 {
    TimerCounter* tc = getTC();
-   if( tc)
+   if ( tc )
    {
       return tc->getCapture( tc->getChannelFromPinNumber( pinNumber ) );
    }
@@ -36,8 +36,8 @@ uint16_t PwmOutput::isSet() const
 void PwmOutput::set( uint16_t value )
 {
    TimerCounter* tc = getTC();
-   if( tc)
-   {   
+   if ( tc )
+   {
       tc->setCompare( tc->getChannelFromPinNumber( pinNumber ), value );
    }
 }
@@ -58,7 +58,7 @@ TimerCounter* PwmOutput::getTC() const
    {
       return &TimerCounter::instance( portNumber, 0 );
    }
-   else if( pinNumber < 6 )
+   else if ( pinNumber < 6 )
    {
       return &TimerCounter::instance( portNumber, 1 );
    }

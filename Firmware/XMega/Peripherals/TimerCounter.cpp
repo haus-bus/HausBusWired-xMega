@@ -15,22 +15,22 @@ TimerCounter& TimerCounter::instance( uint8_t portNumber, uint8_t type )
       {
          #ifdef TCC0
          case PortC:
-         return *reinterpret_cast<TimerCounter*> ( &TCC0 );
+            return *reinterpret_cast<TimerCounter*> ( &TCC0 );
          #endif
 
          #ifdef TCD0
          case PortD:
-         return *reinterpret_cast<TimerCounter*> ( &TCD0 );
+            return *reinterpret_cast<TimerCounter*> ( &TCD0 );
          #endif
 
          #ifdef TCE0
          case PortE:
-         return *reinterpret_cast<TimerCounter*> ( &TCE0 );
+            return *reinterpret_cast<TimerCounter*> ( &TCE0 );
          #endif
 
          #ifdef TCF0
          case PortF:
-         return *reinterpret_cast<TimerCounter*> ( &TCF0 );
+            return *reinterpret_cast<TimerCounter*> ( &TCF0 );
          #endif
       }
    }
@@ -40,17 +40,17 @@ TimerCounter& TimerCounter::instance( uint8_t portNumber, uint8_t type )
       {
          #ifdef TCC1
          case PortC:
-         return *reinterpret_cast<TimerCounter*> ( &TCC1 );
+            return *reinterpret_cast<TimerCounter*> ( &TCC1 );
          #endif
 
          #ifdef TCD1
          case PortD:
-         return *reinterpret_cast<TimerCounter*> ( &TCD1 );
+            return *reinterpret_cast<TimerCounter*> ( &TCD1 );
          #endif
 
          #ifdef TCE1
          case PortE:
-         return *reinterpret_cast<TimerCounter*> ( &TCE1 );
+            return *reinterpret_cast<TimerCounter*> ( &TCE1 );
          #endif
       }
    }
