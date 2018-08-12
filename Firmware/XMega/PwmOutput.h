@@ -10,9 +10,8 @@
 
 #include "PortPin.h"
 
-class TimerCounter0;
+class TimerCounter;
 
-class TimerCounter1;
 
 class PwmOutput : public PortPin
 {
@@ -37,8 +36,7 @@ class PwmOutput : public PortPin
 
    protected:
 
-      TimerCounter0* getTC0() const;
-      TimerCounter1* getTC1() const;
+      TimerCounter* getTC() const;
 
 };
 
