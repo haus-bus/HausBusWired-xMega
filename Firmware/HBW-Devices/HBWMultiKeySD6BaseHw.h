@@ -16,7 +16,7 @@
 #include <HMWired/HmwDS1820.h>
 #include <HMWired/HmwLinkKey.h>
 #include <HMWired/HmwLinkDimmer.h>
-#include <HMWired/HmwAnalogIn.h>
+#include <HMWired/HmwBrightness.h>
 #include <PortPin.h>
 
 
@@ -34,6 +34,8 @@ class HBWMultiKeySD6BaseHw : public HBWGenericDeviceHw
 
       OneWire ow;
       HmwDS1820 hbwTmp1, hbwTmp2, hbwTmp3, hbwTmp4, hbwTmp5, hbwTmp6;
+
+      HmwBrightness hbwOnboardBrightness, hbwExtBrightness;
 
       HmwLinkKey linkSender;
 

@@ -161,6 +161,11 @@ class TimerCounter
          reg.CTRLFSET = TC_CMD_UPDATE_gc;
       }
 
+      inline uint16_t getCount()
+      {
+         return reg.CNT;
+      }
+
       inline uint8_t getCCAFlag()
       {
          return reg.INTFLAGS & TC0_CCAIF_bm;

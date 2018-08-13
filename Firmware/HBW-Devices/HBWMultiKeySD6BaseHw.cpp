@@ -6,19 +6,21 @@
  */
 
 
+#include <Peripherals/EventSystem.h>
+
 #include "HBWMultiKeySD6BaseHw.h"
 
 // this is the EEPROM layout used by one device
 struct hbw_config
 {
-   HmwDeviceHw::BasicConfig basicConfig; // 0x0000 - 0x0009
-   uint8_tx reserved[6];                 // 0x000A - 0x000F
-   HmwKey::Config keycfg[12];            // 0x0010 - 0x0027
-   HmwDimmer::Config ledcfg[12];         // 0x0028 - 0x003F
-   HmwDS1820::Config ds1820cfg[6];       // 0x0040 - 0x0063
-   HmwAnalogIn::Config analogInCfg[2];   // 0x0064 - 0x006F
-   HmwLinkKey::Config keyLinks[40];      // 0x0070 - 0x015F
-   HmwLinkDimmer::Config ledLinks[40];   // 0x0160 - 0x03DF
+   HmwDeviceHw::BasicConfig basicConfig;  // 0x0000 - 0x0009
+   uint8_tx reserved[6];                  // 0x000A - 0x000F
+   HmwKey::Config keycfg[12];             // 0x0010 - 0x0027
+   HmwDimmer::Config ledcfg[12];          // 0x0028 - 0x003F
+   HmwDS1820::Config ds1820cfg[6];        // 0x0040 - 0x0063
+   HmwBrightness::Config brightnessCfg[2];// 0x0064 - 0x006F
+   HmwLinkKey::Config keyLinks[40];       // 0x0070 - 0x015F
+   HmwLinkDimmer::Config ledLinks[40];    // 0x0160 - 0x03DF
 };
 
 static hbw_config& config = *reinterpret_cast<hbw_config*>( MAPPED_EEPROM_START );
@@ -61,11 +63,24 @@ HBWMultiKeySD6BaseHw::HBWMultiKeySD6BaseHw( PortPin txEnablePin, PortPin owPin, 
    hbwTmp5( ow, &config.ds1820cfg[4] ),
    hbwTmp6( ow, &config.ds1820cfg[5] ),
 
+   hbwOnboardBrightness( PortPin( PortA, 6 ), TimerCounterChannel( &TimerCounter::instance( PortE, 0 ), TimerCounter::A ), &config.brightnessCfg[0] ),
+   hbwExtBrightness( PortPin( PortA, 7 ), TimerCounterChannel( &TimerCounter::instance( PortE, 0 ), TimerCounter::B ), &config.brightnessCfg[1] ),
+
    linkSender( sizeof( config.keyLinks ) / sizeof( config.keyLinks[0] ), config.keyLinks ),
    linkReceiver( sizeof( config.ledLinks ) / sizeof( config.ledLinks[0] ), config.ledLinks ),
 
    txEnable( txEnablePin )
 {
+   // config event system and connect the event channel with the right timer channel
+   EventSystem::setEventSource( 0, EVSYS_CHMUX_PORTA_PIN6_gc );
+   EventSystem::setEventChannelFilter( 0, EVSYS_DIGFILT_8SAMPLES_gc );
+   EventSystem::setEventSource( 1, EVSYS_CHMUX_PORTA_PIN7_gc );
+   EventSystem::setEventChannelFilter( 1, EVSYS_DIGFILT_8SAMPLES_gc );
+   TimerCounter& t = TimerCounter::instance( PortE, 0 );
+   t.configWGM( TC_WGMODE_NORMAL_gc );
+   t.setPeriod( 0xFFFF );
+   t.configClockSource( TC_CLKSEL_DIV1024_gc );
+   t.configInputCapture( TC_EVSEL_CH0_gc );
 
 } // HmwMultiKeySD6BaseHw
 

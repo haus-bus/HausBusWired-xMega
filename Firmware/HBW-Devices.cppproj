@@ -22,7 +22,7 @@
     <preserveEEPROM>true</preserveEEPROM>
     <OverrideVtorValue>exception_table</OverrideVtorValue>
     <BootSegment>2</BootSegment>
-    <eraseonlaunchrule>1</eraseonlaunchrule>
+    <eraseonlaunchrule>2</eraseonlaunchrule>
     <ExternalProgrammingToolCommand />
     <avrtool>com.atmel.avrdbg.tool.atmelice</avrtool>
     <avrtoolserialnumber>J41800037616</avrtoolserialnumber>
@@ -144,7 +144,7 @@
         <avrgcccpp.compiler.optimization.level>Optimize for size (-Os)</avrgcccpp.compiler.optimization.level>
       </AvrGccCpp>
     </ToolchainSettings>
-    <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .data -O binary  $(OutputFileName).elf  $(OutputFileName).bin &amp;&amp;  "$(SolutionDir)tools\modid" $(OutputFileName).bin "$(SolutionDir)Binaries\HBW-Devices" &amp;&amp;  "$(SolutionDir)tools\bin2hex" $(SolutionDir)Binaries\HBW-Devices_0201.bin $(SolutionDir)Binaries\HBW-Devices.hex</PostBuildEvent>
+    <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .data -O binary  $(OutputFileName).elf  $(OutputFileName).bin &amp;&amp;  "$(SolutionDir)tools\modid" $(OutputFileName).bin "$(SolutionDir)Binaries\HBW-Devices" &amp;&amp;  "$(SolutionDir)tools\bin2hex" $(SolutionDir)Binaries\HBW-Devices_0202.bin $(SolutionDir)Binaries\HBW-Devices.hex</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>
@@ -335,6 +335,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="HMWired\HmwAnalogIn.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HMWired\HmwBrightness.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HMWired\HmwBrightness.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="HMWired\HmwDeviceHw.h">
@@ -610,19 +616,13 @@
     <Compile Include="XMega\Peripherals\Spi.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="XMega\Peripherals\TimerCounter0.cpp">
+    <Compile Include="XMega\Peripherals\TimerCounter.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="XMega\Peripherals\TimerCounter0.h">
+    <Compile Include="XMega\Peripherals\TimerCounter.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="XMega\Peripherals\TimerCounter1.cpp">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="XMega\Peripherals\TimerCounter1.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="XMega\Peripherals\TimerCounterBase.h">
+    <Compile Include="XMega\Peripherals\TimerCounterChannel.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="XMega\Peripherals\Usart.cpp">
