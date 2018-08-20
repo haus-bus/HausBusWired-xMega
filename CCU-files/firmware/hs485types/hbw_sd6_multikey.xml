@@ -67,8 +67,8 @@
 	<frame id="TEMP_EVENT" direction="from_device" event="true" type="#i" channel_field="10">
 		<parameter type="integer" signed="true" index="11.0" size="2.0" param="TEMPERATURE"/>
 	</frame>
-	<frame id="ANALOG_EVENT" direction="from_device" event="true" type="#i" channel_field="10">
-		<parameter type="integer" index="11.0" size="2.0" param="ANALOGVALUE"/>
+	<frame id="BRIGHTNESS_EVENT" direction="from_device" event="true" type="#i" channel_field="10">
+		<parameter type="integer" index="11.0" size="2.0" param="BRIGHTNESSVALUE"/>
 	</frame>
 </frames>
 
@@ -375,9 +375,9 @@
 		</paramset>		
 	</channel>
 
-	<channel index="31" count="2" physical_index_offset="-1" type="ANALOGSENSOR">
-	    <paramset type="MASTER" id="hmw_analog_ch_master" address_step="6" address_start="0x64">
-			<parameter id="SEND_DELTA_ANALOG">
+	<channel index="31" count="2" physical_index_offset="-1" type="BRIGHTNESS">
+	    <paramset type="MASTER" id="hmw_brightness_ch_master" address_step="6" address_start="0x64">
+			<parameter id="SEND_DELTA_BRIGHTNESS">
 			   <logical type="integer" default="50" min="1" max="250">
 			       <special_value id="NOT_USED" value="0"/>
 			   </logical>	   
@@ -411,12 +411,12 @@
                </conversion>				   
 			</parameter>
 		</paramset>
-		<paramset type="VALUES" id="hmw_analog_input_values">
+		<paramset type="VALUES" id="hmw_brightness_input_values">
 			<parameter id="VALUE" operations="read,event">
-				<logical type="integer" min="0" max="1023"/>
-				<physical type="integer" interface="command" value_id="ANALOGVALUE">
-					<get request="LEVEL_GET" response="ANALOG_EVENT"/>
-					<event frame="ANALOG_EVENT"/>
+				<logical type="integer" min="0" max="4096"/>
+				<physical type="integer" interface="command" value_id="BRIGHTNESSVALUE">
+					<get request="LEVEL_GET" response="BRIGHTNESS_EVENT"/>
+					<event frame="BRIGHTNESS_EVENT"/>
 				</physical>
 			</parameter>
 		</paramset>		

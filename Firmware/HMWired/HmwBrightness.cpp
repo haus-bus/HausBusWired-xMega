@@ -15,7 +15,7 @@
 #define getId() FSTR( "HmwBrightness." ) << channel << ' '
 
 
-const uint8_t HmwBrightness::debugLevel( DEBUG_LEVEL_OFF );
+const uint8_t HmwBrightness::debugLevel( DEBUG_LEVEL_LOW );
 
 HmwBrightness::HmwBrightness( PortPin _portPin, TimerCounterChannel _tcChannel, Config* _config ) :
    measurePin( _portPin ),
@@ -42,7 +42,7 @@ uint8_t HmwBrightness::get( uint8_t* data )
 
 void HmwBrightness::loop( uint8_t channel )
 {
-   if ( lastActionTime.since() < nextActionDelay )
+   if ( isDisabled() || ( lastActionTime.since() < nextActionDelay ) )
    {
       return;
    }
@@ -63,7 +63,7 @@ void HmwBrightness::loop( uint8_t channel )
       nextActionDelay += 10;
       if ( tcChannel.getCCFlag() )
       {
-         uint16_t delta = ( tcChannel.getCapture() - startCount ) >> 4;
+         uint16_t delta = ( tcChannel.getCapture() - startCount ) >> 3;
          if ( delta > MAX_VALUE )
          {
             currentValue = 0;
@@ -91,7 +91,8 @@ void HmwBrightness::loop( uint8_t channel )
    if ( state == SEND_FEEDBACK )
    {
       // do not send before min interval
-      bool doSend = !( config->minInterval && ( lastSentTime.since() < ( (uint32_t)config->minInterval * 1000 ) ) );
+      bool doSend = true;
+      doSend &= !( config->minInterval && ( lastSentTime.since() < ( (uint32_t)config->minInterval * 1000 ) ) );
       doSend &= ( ( config->maxInterval && ( lastSentTime.since() >= ( (uint32_t)config->maxInterval * 1000 ) ) )
                 || ( config->minDelta && ( (uint16_t)abs( currentValue - lastSentValue ) >= ( (uint16_t)config->minDelta ) ) ) );
 

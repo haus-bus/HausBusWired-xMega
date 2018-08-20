@@ -22,7 +22,7 @@ class HmwBrightness : public HmwChannel
    public:
       struct Config
       {
-         uint8_tx unused;
+         uint8_tx options;
          uint8_tx minDelta;
          uint16_tx minInterval;
          uint16_tx maxInterval;
@@ -43,8 +43,8 @@ class HmwBrightness : public HmwChannel
          SEND_INVALID_VALUE
       };
 
-      static const uint16_t MAX_MEASURE_TIME = 1000;
-      static const uint16_t MAX_VALUE = 1024;
+      static const uint16_t MAX_MEASURE_TIME = 2000;
+      static const uint16_t MAX_VALUE = 4096;
       static const uint16_t MIN_MEASURE_DELAY = 1000;
 
       ////    Constructor and destructor    ////
@@ -54,6 +54,11 @@ class HmwBrightness : public HmwChannel
       virtual uint8_t get( uint8_t* data );
       virtual void loop( uint8_t channel );
       virtual void checkConfig();
+
+      inline bool isDisabled()
+      {
+         return !config->minDelta && !config->minInterval && !config->maxInterval;
+      }
 
    protected:
 
