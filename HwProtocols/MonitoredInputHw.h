@@ -14,21 +14,21 @@
 class MonitoredInputHw
 {
 
-public:
+   public:
 
-  inline MonitoredInputHw( PortPin pin ) :
-      portPin( pin )
-  {
+      inline MonitoredInputHw( PortPin pin ) :
+         portPin( pin )
+      {
 
-  }
+      }
 
-  uint16_t getResponseTime( uint16_t timeout = 500 );
+      uint16_t getResponseTime( uint16_t timeout = 500 );
 
-  ////    Attributes    ////
+      ////    Attributes    ////
 
-private:
+   private:
 
-  PortPin portPin;
+      PortPin portPin;
 
 };
 

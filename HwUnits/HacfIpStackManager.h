@@ -9,8 +9,9 @@
 #define SwUnits_HacfIpStackManager_H
 
 #include "SwUnits.h"
-#include "HwConfiguration.h"
+#include <ConfigurationManager.h>
 #include <Protocols/IpStack/IpStackManager.h>
+#include <Protocols/Ethernet/MAC.h>
 class ArpHeader;
 
 class ArpManager;
@@ -43,119 +44,174 @@ class UdpHeader;
 
 class evMessage;
 
-class HacfIpStackManager: public IpStackManager
+class HacfIpStackManager : public IpStackManager
 {
-public:
+   public:
 
-  class Command;
+      class Configuration
+      {
+         public:
 
-  class Response;
+            static const uint8_t DEFAULT_OPTIONS = 1;
 
-  class Command
-  {
-  public:
+            struct Options
+            {
+               bool udpPort9Only : 1;
 
-    enum Commands
-    {
-      GET_CONFIGURATION = HACF::COMMANDS_START,
-      SET_CONFIGURATION,
-      WAKE_UP_DEVICE,
-      GET_CURRENT_IP
-    };
+               bool modBusTcp : 1;
 
-    union Parameter
-    {
-      uint8_t mac[6];
-      HwConfiguration::Ethernet setConfiguration;
-    };
+               bool dhcp : 1;
+            };
 
-    ////    Operations    ////
+            union Option
+            {
+               uint8_t mask;
+               Options bit;
+            };
 
-    uint8_t getCommand() const;
+            ////    Attributes    ////
 
-    inline Parameter& getParameter()
-    {
-      return parameter;
-    }
+            uint32_t ip;
 
-    void setCommand( uint8_t p_command );
+            Option option;
 
-    void setParameter( const Parameter& p_parameter );
+            ////    Operations    ////
 
-    ////    Attributes    ////
+            static inline Configuration getDefault()
+            {
+               Configuration defaultConfiguration =
+               {
+                  .ip = IP::defaultIp.address,
+                  .option = { DEFAULT_OPTIONS }
+               };
+               return defaultConfiguration;
+            }
 
-    uint8_t command;
+            inline void checkAndCorrect()
+            {
+            }
+      };
 
-    Parameter parameter;
-  };
+      class EepromConfiguration : public ConfigurationManager::EepromConfigurationTmpl<Configuration>
+      {
+         public:
 
-  class Response: public IResponse
-  {
-  public:
+            uint32_tx ip;
 
-    enum Responses
-    {
-      CONFIGURATION = HACF::RESULTS_START,
-      CURRENT_IP
-    };
+            XEeprom<Configuration::Option> option;
 
-    union Parameter
-    {
-      HwConfiguration::Ethernet configuration;
-      uint32_t ip;
-    };
+            inline Configuration::Options getOptions() const
+            {
+               return option.operator*().bit;
+            }
+      };
 
-    ////    Constructors and destructors    ////
+      class Command
+      {
+         public:
 
-    inline Response( uint16_t id ) :
-        IResponse( id )
-    {
-    }
+            enum Commands
+            {
+               GET_CONFIGURATION = HACF::COMMANDS_START,
+               SET_CONFIGURATION,
+               WAKE_UP_DEVICE,
+               GET_CURRENT_IP
+            };
 
-    inline Response( uint16_t id, const HACF& message ) :
-        IResponse( id, message )
-    {
-    }
+            union Parameter
+            {
+               MAC mac;
+               Configuration setConfiguration;
+            };
 
-    ////    Operations    ////
+            ////    Operations    ////
 
-    inline Parameter& getParameter()
-    {
-      return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
-    }
+            uint8_t getCommand() const;
 
-    Parameter& setConfiguration();
+            inline Parameter& getParameter()
+            {
+               return parameter;
+            }
 
-    void setCurrentIp();
+            void setCommand( uint8_t p_command );
 
-    ////    Attributes    ////
+            void setParameter( const Parameter& p_parameter );
 
-  private:
+            ////    Attributes    ////
 
-    Parameter params;
-  };
+            uint8_t command;
 
-  ////    Constructors and destructors    ////
+            Parameter parameter;
+      };
 
-  HacfIpStackManager( Enc28j60& _stream );
+      class Response : public IResponse
+      {
+         public:
 
-  ////    Operations    ////
+            enum Responses
+            {
+               CONFIGURATION = HACF::RESULTS_START,
+               CURRENT_IP
+            };
 
-  HwConfiguration::Ethernet* getConfiguration() const;
+            union Parameter
+            {
+               Configuration configuration;
+               uint32_t ip;
+            };
 
-  virtual bool notifyEvent( const Event& event );
+            ////    Constructors and destructors    ////
 
-  void setConfiguration( HwConfiguration::Ethernet* p_Ethernet );
+            inline Response( uint16_t id ) :
+               IResponse( id )
+            {
+            }
 
-  void wakeUpDevice( const MAC& mac );
+            inline Response( uint16_t id, const HACF& message ) :
+               IResponse( id, message )
+            {
+            }
 
-protected:
+            ////    Operations    ////
 
-  bool handleRequest( HACF* message );
+            inline Parameter& getParameter()
+            {
+               return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
+            }
 
-  ////    Relations and components    ////
+            Parameter& setConfiguration();
 
-  HwConfiguration::Ethernet* configuration;
+            void setCurrentIp();
+
+            ////    Attributes    ////
+
+         private:
+
+            Parameter params;
+      };
+
+      ////    Constructors and destructors    ////
+
+      HacfIpStackManager( Enc28j60& _stream );
+
+      ////    Operations    ////
+
+      virtual bool notifyEvent( const Event& event );
+
+      inline void setConfiguration( EepromConfiguration* _config )
+      {
+         configuration = _config;
+      }
+
+      void wakeUpDevice( const MAC& mac );
+
+   protected:
+
+      bool handleRequest( HACF* message );
+
+      ////    Relations and components    ////
+
+      EepromConfiguration* configuration;
 };
 
 #endif

@@ -1,27 +1,18 @@
-/********************************************************************
-        Rhapsody	: 8.0.3
-        Login		: viktor.pankraz
-        Component	: Xmega192A3
-        Configuration   : debug
-        Model Element	: Dali
-   //!	Generated Date	: Tue, 24, Jun 2014
-        File Path	: Xmega192A3/debug/HwProtocols/Dali.cpp
- *********************************************************************/
+/*
+ * Dali.cpp
+ *
+ * Created: 18.06.2014 14:12:55
+ * Author: viktor.pankraz
+ */
 
-// ## auto_generated
 #include "Dali.h"
-// ## package HwProtocols
 
-// ## class Dali
 Dali::Dali( DigitalInput _digitalIn, DigitalOutput _digitalOut ) : digitalIn( _digitalIn ), digitalOut( _digitalOut )
 {
-   // #[ operation Dali(DigitalInput,DigitalOutput)
-   // #]
 }
 
 bool Dali::isConnected()
 {
-   // #[ operation isConnected()
    digitalOut.set();
    _delay_us( 10 );
    if ( digitalIn.isSet() )
@@ -35,12 +26,10 @@ bool Dali::isConnected()
    }
 
    return false;
-   // #]
 }
 
 Stream::Status Dali::read( uint8_t* pData )
 {
-   // #[ operation read(uint8_t)
    *pData = 0;
 
    uint8_t* port = (uint8_t*)&digitalIn.getIoPort() + 8;
@@ -100,12 +89,10 @@ Stream::Status Dali::read( uint8_t* pData )
       waitfor = ( waitfor ? 0 : 1 );
    }
    return Stream::SUCCESS;
-   // #]
 }
 
 Stream::Status Dali::write( uint8_t* pData )
 {
-   // #[ operation write(uint8_t)
    // we expect an inverter in the output stage:
    // atmega output normally low, dali bus normally high
 
@@ -159,9 +146,4 @@ Stream::Status Dali::write( uint8_t* pData )
    DALI_HALF_BIT_WAIT;
 
    return Stream::SUCCESS;
-   // #]
 }
-
-/*********************************************************************
-        File Path	: Xmega192A3/debug/HwProtocols/Dali.cpp
-*********************************************************************/

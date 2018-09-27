@@ -37,5 +37,5 @@ void notifyIdle()
 
 void putc( char c )
 {
-   Usart::instance( PortD, 1 ).write( c );
+   Usart::instance<PortD, 1>().write( c );
 }

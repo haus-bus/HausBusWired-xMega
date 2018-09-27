@@ -1,4 +1,11 @@
-#include "Peripherals/Spi.h"
+/*
+ * Spi.cpp
+ *
+ *  Created on: 17.07.2017
+ *      Author: Viktor Pankraz
+ */
+
+#include "Spi.h"
 
 Spi& Spi::instance( uint8_t portNumber )
 {
@@ -28,32 +35,34 @@ Spi& Spi::instance( uint8_t portNumber )
    return *(Spi*) 0;
 }
 
-Stream::Status Spi::read( void* pData, uint16_t length )
+uint16_t Spi::read( void* pData, uint16_t length )
 {
    uint8_t* data = static_cast<uint8_t*>( pData );
 
+   uint16_t len = length;
    while ( length-- )
    {
       if ( read( *data++ ) )
       {
-         return Stream::ABORTED;
+         return length - len;
       }
    }
-   return Stream::SUCCESS;
+   return length;
 }
 
-Stream::Status Spi::write( const void* pData, uint16_t length )
+uint16_t Spi::write( const void* pData, uint16_t length )
 {
    const uint8_t* data = static_cast<const uint8_t*>( pData );
 
-   while ( length-- )
+   uint16_t len = length;
+   while ( len-- )
    {
       uint8_t byte = *data++;
       if ( write( byte ) )
       {
-         return Stream::ABORTED;
+         return length - len;
       }
    }
 
-   return Stream::SUCCESS;
+   return length;
 }

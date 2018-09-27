@@ -1,278 +1,245 @@
-/*********************************************************************
- Rhapsody	: 8.0.3
- Login		: viktor.pankraz
- Component	: Xmega192A3
- Configuration 	: debug
- Model Element	: IoPort
- //!	Generated Date	: Tue, 24, Jun 2014
- File Path	: Xmega192A3/debug/Peripherals/IoPort.h
- *********************************************************************/
+/*
+ * IoPort.h
+ *
+ *  Created on: 17.07.2017
+ *      Author: Viktor Pankraz
+ */
 
 #ifndef Peripherals_IoPort_H
 #define Peripherals_IoPort_H
 
-//## auto_generated
-#include "Peripherals/Peripherals.h"
-//## package Peripherals
+#include "Peripherals.h"
 
-//## class IoPort
 class IoPort
 {
-public:
+   public:
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-protected:
+   protected:
 
-  //## operation IoPort()
-  inline IoPort()
-  {
-    //#[ operation IoPort()
-    //#]
-  }
-
-  ////    Operations    ////
-
-public:
-
-  //## operation clearInterruptFlags(uint8_t)
-  inline void clearInterruptFlags( uint8_t bitMask )
-  {
-    //#[ operation clearInterruptFlags(uint8_t)
-    reg.INTFLAGS = bitMask;
-    //#]
-  }
-
-  //## operation clearPins(uint8_t)
-  inline void clearPins( uint8_t pins )
-  {
-    //#[ operation clearPins(uint8_t)
-    reg.OUTCLR = pins;
-    //#]
-  }
-
-  //## operation configure(uint8_t,PORT_OPC_t,bool,PORT_ISC_t,bool)
-  inline void configure( uint8_t pins, PORT_OPC_t opc,
-                         bool invertEnable = false, PORT_ISC_t isc =
-                             PORT_ISC_BOTHEDGES_gc,
-                         bool slewRateEnable = false )
-  {
-    //#[ operation configure(uint8_t,PORT_OPC_t,bool,PORT_ISC_t,bool)
-    // Build pin control register value.
-    uint8_t temp = (uint8_t) opc | isc | (slewRateEnable ? PORT_SRLEN_bm : 0)
-        | (invertEnable ? PORT_INVEN_bm : 0);
-
-    // Configure the pins in one atomic operation.
-    {
-      CriticalSection doNotInterrupt;
-
-      PORTCFG.MPCMASK = pins;
-      reg.PIN0CTRL = temp;
-    }
-    //#]
-  }
-
-  //## operation disableInterrupt0()
-  inline void disableInterrupt0()
-  {
-    //#[ operation disableInterrupt0()
-    reg.INTCTRL &= ~PORT_INT0LVL_gm;
-    //#]
-  }
-
-  //## operation disableInterrupt0Source(uint8_t)
-  inline void disableInterrupt0Source( uint8_t pins )
-  {
-    //#[ operation disableInterrupt0Source(uint8_t)
-    reg.INT0MASK &= ~pins;
-    //#]
-  }
-
-  //## operation disableInterrupt1()
-  inline void disableInterrupt1()
-  {
-    //#[ operation disableInterrupt1()
-    reg.INTCTRL &= ~PORT_INT1LVL_gm;
-    //#]
-  }
-
-  //## operation disableInterrupt1Source(uint8_t)
-  inline void disableInterrupt1Source( uint8_t pins )
-  {
-    //#[ operation disableInterrupt1Source(uint8_t)
-    reg.INT1MASK &= ~pins;
-    //#]
-  }
-
-  //## operation enableInterrupt0(PORT_INT0LVL_t)
-  inline void enableInterrupt0( PORT_INT0LVL_t level = PORT_INT0LVL_LO_gc )
-  {
-    //#[ operation enableInterrupt0(PORT_INT0LVL_t)
-    reg.INTCTRL = (reg.INTCTRL & ~PORT_INT0LVL_gm) | level;
-    //#]
-  }
-
-  //## operation enableInterrupt0Source(uint8_t)
-  inline void enableInterrupt0Source( uint8_t pins )
-  {
-    //#[ operation enableInterrupt0Source(uint8_t)
-    reg.INT0MASK |= pins;
-    //#]
-  }
-
-  //## operation enableInterrupt1(PORT_INT1LVL_t)
-  inline void enableInterrupt1( PORT_INT1LVL_t level = PORT_INT1LVL_LO_gc )
-  {
-    //#[ operation enableInterrupt1(PORT_INT1LVL_t)
-    reg.INTCTRL = (reg.INTCTRL & ~PORT_INT1LVL_gm) | level;
-    //#]
-  }
-
-  //## operation enableInterrupt1Source(uint8_t)
-  inline void enableInterrupt1Source( uint8_t pins )
-  {
-    //#[ operation enableInterrupt1Source(uint8_t)
-    reg.INT1MASK |= pins;
-    //#]
-  }
-
-  //## operation get()
-  inline uint8_t get() const
-  {
-    //#[ operation get()
-    return reg.IN;
-    //#]
-  }
-
-  //## operation getInputPins()
-  inline uint8_t getInputPins()
-  {
-    //#[ operation getInputPins()
-    return ~getOutputPins();
-    //#]
-  }
-
-  //## operation getInterruptFlags(uint8_t)
-  inline uint8_t getInterruptFlags( uint8_t bitMask )
-  {
-    //#[ operation getInterruptFlags(uint8_t)
-    return reg.INTFLAGS & bitMask;
-    //#]
-  }
-
-  //## operation getOutputPins()
-  inline uint8_t getOutputPins()
-  {
-    //#[ operation getOutputPins()
-    return reg.DIR;
-    //#]
-  }
-
-  //## operation instance(uint8_t)
-  static IoPort& instance( uint8_t portNumber );
-
-  //## operation isPinInverted(uint8_t)
-  inline uint8_t isPinInverted( uint8_t pinNumber )
-  {
-    //#[ operation isPinInverted(uint8_t)
-    if ( pinNumber < 8 )
-    {
-      return *(&reg.PIN0CTRL + pinNumber) & PORT_INVEN_bm;
-    }
-    return 0;
-    //#]
-  }
-
-  //## operation isPinSet(uint8_t)
-  inline uint8_t isPinSet( uint8_t pin )
-  {
-    //#[ operation isPinSet(uint8_t)
-    return get() & pin;
-    //#]
-  }
-
-  //## operation set(uint8_t)
-  inline void set( uint8_t value )
-  {
-    //#[ operation set(uint8_t)
-    reg.OUT = value;
-    //#]
-  }
-
-  //## operation setDirection(uint8_t)
-  inline void setDirection( uint8_t pins )
-  {
-    //#[ operation setDirection(uint8_t)
-    reg.DIR = pins;
-    //#]
-  }
-
-  //## operation setPinInverted(uint8_t,bool)
-  inline void setPinInverted( uint8_t pinNumber, bool inverted )
-  {
-    //#[ operation setPinInverted(uint8_t,bool)
-    if ( pinNumber < 8 )
-    {
-      if ( inverted )
+      inline IoPort()
       {
-        *(&reg.PIN0CTRL + pinNumber) |= PORT_INVEN_bm;
+         // only for PortDummy
+         reg.IN = 0xFF;
       }
-      else
+
+      ////    Operations    ////
+
+   public:
+
+      inline void clearInterruptFlags( uint8_t bitMask )
       {
-        *(&reg.PIN0CTRL + pinNumber) &= ~PORT_INVEN_bm;
+         reg.INTFLAGS = bitMask;
       }
-    }
-    //#]
-  }
 
-  //## operation setPins(uint8_t)
-  inline void setPins( uint8_t pins )
-  {
-    //#[ operation setPins(uint8_t)
-    reg.OUTSET = pins;
-    //#]
-  }
+      inline void clearPins( uint8_t pins )
+      {
+         reg.OUTCLR = pins;
+      }
 
-  //## operation setPinsAsInput(uint8_t)
-  inline void setPinsAsInput( uint8_t pins )
-  {
-    //#[ operation setPinsAsInput(uint8_t)
-    reg.DIRCLR = pins;
-    //#]
-  }
+      inline void configure( uint8_t pins, PORT_OPC_t opc, bool invertEnable = false,
+                             PORT_ISC_t isc = PORT_ISC_BOTHEDGES_gc, bool slewRateEnable = false )
+      {
+         // Build pin control register value.
+         uint8_t temp = (uint8_t) opc | isc | ( slewRateEnable ? PORT_SRLEN_bm : 0 )
+                        | ( invertEnable ? PORT_INVEN_bm : 0 );
 
-  //## operation setPinsAsOutput(uint8_t)
-  inline void setPinsAsOutput( uint8_t pins )
-  {
-    //#[ operation setPinsAsOutput(uint8_t)
-    reg.DIRSET = pins;
-    //#]
-  }
+         // Configure the pins in one atomic operation.
+         {
+            CriticalSection doNotInterrupt;
 
-  //## operation toggleDirection(uint8_t)
-  inline void toggleDirection( uint8_t pins )
-  {
-    //#[ operation toggleDirection(uint8_t)
-    reg.DIRTGL = pins;
-    //#]
-  }
+            PORTCFG.MPCMASK = pins;
+            reg.PIN0CTRL = temp;
+         }
+      }
 
-  //## operation togglePins(uint8_t)
-  inline void togglePins( uint8_t pins )
-  {
-    //#[ operation togglePins(uint8_t)
-    reg.OUTTGL = pins;
-    //#]
-  }
+      inline void disableInterrupt0()
+      {
+         reg.INTCTRL &= ~PORT_INT0LVL_gm;
+      }
 
-  ////    Attributes    ////
+      inline void disableInterrupt0Source( uint8_t pins )
+      {
+         reg.INT0MASK &= ~pins;
+      }
 
-protected:
+      inline void disableInterrupt1()
+      {
+         reg.INTCTRL &= ~PORT_INT1LVL_gm;
+      }
 
-  PORT_t reg;		//## attribute reg
+      inline void disableInterrupt1Source( uint8_t pins )
+      {
+         reg.INT1MASK &= ~pins;
+      }
+
+      inline void enableInterrupt0( PORT_INT0LVL_t level = PORT_INT0LVL_LO_gc )
+      {
+         reg.INTCTRL = ( reg.INTCTRL & ~PORT_INT0LVL_gm ) | level;
+      }
+
+      inline void enableInterrupt0Source( uint8_t pins )
+      {
+         reg.INT0MASK |= pins;
+      }
+
+      inline void enableInterrupt1( PORT_INT1LVL_t level = PORT_INT1LVL_LO_gc )
+      {
+         reg.INTCTRL = ( reg.INTCTRL & ~PORT_INT1LVL_gm ) | level;
+      }
+
+      inline void enableInterrupt1Source( uint8_t pins )
+      {
+         reg.INT1MASK |= pins;
+      }
+
+      inline uint8_t get() const
+      {
+         return reg.IN;
+      }
+
+      inline uint8_t getInputPins()
+      {
+         return ~getOutputPins();
+      }
+
+      inline uint8_t getInterruptFlags( uint8_t bitMask )
+      {
+         return reg.INTFLAGS & bitMask;
+      }
+
+      inline uint8_t getOutputPins()
+      {
+         return reg.DIR;
+      }
+
+      static IoPort& instance( uint8_t portNumber );
+
+      template<uint8_t portNumber>
+      static inline IoPort& instance()
+      {
+
+         switch ( portNumber )
+         {
+        #ifdef PORTA
+            case PortA:
+               return *reinterpret_cast<IoPort*>( &PORTA );
+        #endif
+
+        #ifdef PORTB
+            case PortB:
+               return *reinterpret_cast<IoPort*>( &PORTB );
+        #endif
+
+        #ifdef PORTC
+            case PortC:
+               return *reinterpret_cast<IoPort*>( &PORTC );
+        #endif
+
+        #ifdef PORTD
+            case PortD:
+               return *reinterpret_cast<IoPort*>( &PORTD );
+        #endif
+
+        #ifdef PORTE
+            case PortE:
+               return *reinterpret_cast<IoPort*>( &PORTE );
+        #endif
+
+        #ifdef PORTF
+            case PortF:
+               return *reinterpret_cast<IoPort*>( &PORTF );
+        #endif
+
+        #ifdef PORTR
+            case PortR:
+               return *reinterpret_cast<IoPort*>( &PORTR );
+        #endif
+         }
+         return dummyPort;
+      }
+
+      inline uint8_t isPinInverted( uint8_t pinNumber )
+      {
+         if ( pinNumber < 8 )
+         {
+            return *( &reg.PIN0CTRL + pinNumber ) & PORT_INVEN_bm;
+         }
+         return 0;
+      }
+
+      inline uint8_t isPinSet( uint8_t pin )
+      {
+         return get() & pin;
+      }
+
+      inline void set( uint8_t value )
+      {
+         reg.OUT = value;
+      }
+
+      inline void setDirection( uint8_t pins )
+      {
+         reg.DIR = pins;
+      }
+
+      inline void setPinInverted( uint8_t pinNumber, bool inverted )
+      {
+         if ( pinNumber < 8 )
+         {
+            if ( inverted )
+            {
+               *( &reg.PIN0CTRL + pinNumber ) |= PORT_INVEN_bm;
+            }
+            else
+            {
+               *( &reg.PIN0CTRL + pinNumber ) &= ~PORT_INVEN_bm;
+            }
+         }
+      }
+
+      inline void setPinMode( uint8_t pinNumber, PORT_OPC_t opc )
+      {
+         if ( pinNumber < 8 )
+         {
+            *( &reg.PIN0CTRL + pinNumber ) &= ~PORT_OPC_WIREDANDPULL_gc;
+            *( &reg.PIN0CTRL + pinNumber ) |= opc;
+         }
+      }
+
+      inline void setPins( uint8_t pins )
+      {
+         reg.OUTSET = pins;
+      }
+
+      inline void setPinsAsInput( uint8_t pins )
+      {
+         reg.DIRCLR = pins;
+      }
+
+      inline void setPinsAsOutput( uint8_t pins )
+      {
+         reg.DIRSET = pins;
+      }
+
+      inline void toggleDirection( uint8_t pins )
+      {
+         reg.DIRTGL = pins;
+      }
+
+      inline void togglePins( uint8_t pins )
+      {
+         reg.OUTTGL = pins;
+      }
+
+      ////    Attributes    ////
+
+   protected:
+
+      static IoPort dummyPort;
+
+      PORT_t reg;
 };
 
 #endif
-/*********************************************************************
- File Path	: Xmega192A3/debug/Peripherals/IoPort.h
- *********************************************************************/

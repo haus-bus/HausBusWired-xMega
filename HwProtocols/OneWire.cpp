@@ -1,35 +1,24 @@
-/********************************************************************
-        Rhapsody	: 8.0.3
-        Login		: viktor.pankraz
-        Component	: Xmega192A3
-        Configuration   : debug
-        Model Element	: OneWire
-   //!	Generated Date	: Tue, 24, Jun 2014
-        File Path	: Xmega192A3/debug/HwProtocols/OneWire.cpp
- *********************************************************************/
+/*
+ * OneWire.cpp
+ *
+ * Created: 18.06.2014 14:12:55
+ * Author: viktor.pankraz
+ */
 
-// ## auto_generated
 #include "OneWire.h"
-// ## dependency DS1820
-// ## operation OneWire(PortPin)
 #include "PortPin.h"
-// ## package HwProtocols
 
-// ## class OneWire
 const uint8_t OneWire::debugLevel( DEBUG_LEVEL_OFF );
 
-OneWire::OneWire( PortPin portPin ) : pin( portPin.getPin() ), ioPort( portPin.getIoPort() )
+OneWire::OneWire( PortPin portPin ) : pin( portPin.getPin() ), ioPort( &portPin.getIoPort() )
 {
-   // #[ operation OneWire(PortPin)
-   ioPort.configure( pin, PORT_OPC_PULLUP_gc );
-   // #]
+   ioPort->configure( pin, PORT_OPC_PULLUP_gc );
 }
 
 uint8_t OneWire::reset()
 {
-   // #[ operation reset()
-   ioPort.clearPins( pin );        // disable internal pull-up (maybe on from parasite)
-   ioPort.setPinsAsOutput( pin );  // pull OW-Pin low for 480us
+   ioPort->clearPins( pin );        // disable internal pull-up (maybe on from parasite)
+   ioPort->setPinsAsOutput( pin );  // pull OW-Pin low for 480us
 
    _delay_us( 600 );
 
@@ -37,29 +26,27 @@ uint8_t OneWire::reset()
    CriticalSection doNotInterrupt;
    {
       // set Pin as input - wait for clients to pull low
-      ioPort.setPinsAsInput( pin );
+      ioPort->setPinsAsInput( pin );
 
       _delay_us( 66 );
 
-      err = ioPort.isPinSet( pin );             // no presence detect
+      err = ioPort->isPinSet( pin );             // no presence detect
       // nobody pulled to low, still high
    }
 
    // after a delay the clients should release the line
    // and input-pin gets back to high due to pull-up-resistor
    _delay_us( 480 - 66 );
-   if ( !ioPort.isPinSet( pin ) )               // short circuit
+   if ( !ioPort->isPinSet( pin ) )               // short circuit
    {
       err = 1;
    }
 
    return err;
-   // #]
 }
 
 uint8_t OneWire::searchROM( uint8_t diff, uint8_t* id )
 {
-   // #[ operation searchROM(uint8_t,uint8_t)
    uint8_t i, j, next_diff;
    uint8_t b;
 
@@ -115,12 +102,10 @@ uint8_t OneWire::searchROM( uint8_t diff, uint8_t* id )
    while ( i );
 
    return next_diff;                            // to continue search
-   // #]
 }
 
 void OneWire::sendCommand( uint8_t command, uint8_t* id )
 {
-   // #[ operation sendCommand(uint8_t,uint8_t)
    uint8_t i;
 
    reset();
@@ -142,42 +127,38 @@ void OneWire::sendCommand( uint8_t command, uint8_t* id )
    }
 
    write( command );
-   // #]
 }
 
 uint8_t OneWire::sendReceiveBit( uint8_t bit )
 {
-   // #[ operation sendReceiveBit(uint8_t)
    CriticalSection doNotInterrupt;
    {
-      ioPort.setPinsAsOutput( pin ); // drive bus low
+      ioPort->setPinsAsOutput( pin ); // drive bus low
 
       _delay_us( RECOVERY_DELAY );    // Recovery-Time
       if ( bit )     // if bit is 1 set bus high (by ext. pull-up)
       {
-         ioPort.setPinsAsInput( pin );
+         ioPort->setPinsAsInput( pin );
       }
       _delay_us( READ_TIME_SLOT - RECOVERY_DELAY - IO_ACCESS_DELAY );
 
       // sample at end of read-timeslot
-      if ( !ioPort.isPinSet( pin ) )
+      if ( !ioPort->isPinSet( pin ) )
       {
          bit = 0;
       }
 
       _delay_us( BIT_TIME_SLOT - READ_TIME_SLOT );
-      ioPort.setPinsAsInput( pin );
+      ioPort->setPinsAsInput( pin );
    }
    // bei langen Kabeln kann dieser Wert wohl auch um einiges größer sein! (recovery time)
    _delay_us( 10 );
 
    return bit;
-   // #]
 }
 
 uint8_t OneWire::write( uint8_t data )
 {
-   // #[ operation write(uint8_t)
    uint8_t i = 8, j;
 
    do
@@ -192,9 +173,4 @@ uint8_t OneWire::write( uint8_t data )
    while ( --i );
 
    return data;
-   // #]
 }
-
-/*********************************************************************
-        File Path	: Xmega192A3/debug/HwProtocols/OneWire.cpp
-*********************************************************************/

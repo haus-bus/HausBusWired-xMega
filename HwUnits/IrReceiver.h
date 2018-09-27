@@ -23,196 +23,196 @@ class Scheduler;
 
 class evMessage;
 
-class IrReceiver: public Reactive
+class IrReceiver : public Reactive
 {
-public:
+   public:
 
-  class Command;
+      class Command;
 
-  class Response;
+      class Response;
 
-  static const uint8_t TIMEOUT = 25;
+      static const uint8_t TIMEOUT = 25;
 
-  class Command
-  {
-  public:
+      class Command
+      {
+         public:
 
-    enum Commands
-    {
-      OFF = HACF::COMMANDS_START,
-      ON
-    };
+            enum Commands
+            {
+               OFF = HACF::COMMANDS_START,
+               ON
+            };
 
-    union Parameter
-    {
-      uint8_t dummy;
-    };
+            union Parameter
+            {
+               uint8_t dummy;
+            };
 
-    ////    Operations    ////
+            ////    Operations    ////
 
-    inline Parameter& getParameter()
-    {
-      return parameter;
-    }
+            inline Parameter& getParameter()
+            {
+               return parameter;
+            }
 
-    ////    Additional operations    ////
+            ////    Additional operations    ////
 
-    inline uint8_t getCommand() const
-    {
-      return command;
-    }
+            inline uint8_t getCommand() const
+            {
+               return command;
+            }
 
-    inline void setCommand( uint8_t p_command )
-    {
-      command = p_command;
-    }
+            inline void setCommand( uint8_t p_command )
+            {
+               command = p_command;
+            }
 
-    inline void setParameter( Parameter p_parameter )
-    {
-      parameter = p_parameter;
-    }
+            inline void setParameter( Parameter p_parameter )
+            {
+               parameter = p_parameter;
+            }
 
-    ////    Attributes    ////
+            ////    Attributes    ////
 
-    uint8_t command;
+            uint8_t command;
 
-    Parameter parameter;
-  };
+            Parameter parameter;
+      };
 
-  class Response: public IResponse
-  {
-  public:
+      class Response : public IResponse
+      {
+         public:
 
-    enum Responses
-    {
-      EVENT_OFF = HACF::EVENTS_START,
-      EVENT_ON,
-      EVENT_CLICKED,
-      EVENT_HOLD_START,
-      EVENT_HOLD_END
-    };
+            enum Responses
+            {
+               EVENT_OFF = HACF::EVENTS_START,
+               EVENT_ON,
+               EVENT_CLICKED,
+               EVENT_HOLD_START,
+               EVENT_HOLD_END
+            };
 
-    struct IrData
-    {
-        uint16_t address;
-        uint16_t command;
-    };
+            struct IrData
+            {
+               uint16_t address;
+               uint16_t command;
+            };
 
-    union Parameter
-    {
-      IrData data;
-    };
+            union Parameter
+            {
+               IrData data;
+            };
 
-    ////    Constructors and destructors    ////
+            ////    Constructors and destructors    ////
 
-    inline Response( uint16_t id ) :
-        IResponse( id )
-    {
-    }
+            inline Response( uint16_t id ) :
+               IResponse( id )
+            {
+            }
 
-    inline Response( uint16_t id, const HACF& message ) :
-        IResponse( id, message )
-    {
-    }
+            inline Response( uint16_t id, const HACF& message ) :
+               IResponse( id, message )
+            {
+            }
 
-    ////    Operations    ////
+            ////    Operations    ////
 
-    inline Parameter& getParameter()
-    {
-      return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
-    }
+            inline Parameter& getParameter()
+            {
+               return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
+            }
 
-    inline void setData( const IrDecoder::Data& data );
+            inline void setData( const IrDecoder::Data& data );
 
-    ////    Attributes    ////
+            ////    Attributes    ////
 
-  private:
+         private:
 
-    Parameter params;
-  };
+            Parameter params;
+      };
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  IrReceiver( uint8_t _id, PortPin portPin );
+      IrReceiver( uint8_t _id, PortPin portPin );
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  virtual bool notifyEvent( const Event& event );
+      virtual bool notifyEvent( const Event& event );
 
-  inline void * operator new( size_t size );
+      inline void* operator new( size_t size );
 
-  void run();
+      void run();
 
-private:
+   private:
 
-  void checkForNewEvent();
+      void checkForNewEvent();
 
-  bool handleRequest( HACF* message );
+      bool handleRequest( HACF* message );
 
-  ////    Additional operations    ////
+      ////    Additional operations    ////
 
-public:
+   public:
 
-  DigitalInput* getInputPin() const;
+      DigitalInput* getInputPin() const;
 
-  IrDecoder* getIrDecoder() const;
+      IrDecoder* getIrDecoder() const;
 
-private:
+   private:
 
-  inline static const uint8_t getDebugLevel()
-  {
-    return debugLevel;
-  }
+      inline static const uint8_t getDebugLevel()
+      {
+         return debugLevel;
+      }
 
-  inline uint8_t getReceiving() const
-  {
-    return receiving;
-  }
+      inline uint8_t getReceiving() const
+      {
+         return receiving;
+      }
 
-  inline void setReceiving( uint8_t p_receiving )
-  {
-    receiving = p_receiving;
-  }
+      inline void setReceiving( uint8_t p_receiving )
+      {
+         receiving = p_receiving;
+      }
 
-  inline uint8_t getRepetitionFrameNumber() const
-  {
-    return repetitionFrameNumber;
-  }
+      inline uint8_t getRepetitionFrameNumber() const
+      {
+         return repetitionFrameNumber;
+      }
 
-  inline void setRepetitionFrameNumber( uint8_t p_repetitionFrameNumber )
-  {
-    repetitionFrameNumber = p_repetitionFrameNumber;
-  }
+      inline void setRepetitionFrameNumber( uint8_t p_repetitionFrameNumber )
+      {
+         repetitionFrameNumber = p_repetitionFrameNumber;
+      }
 
-  ////    Attributes    ////
+      ////    Attributes    ////
 
-  static const uint8_t debugLevel;
+      static const uint8_t debugLevel;
 
-  uint8_t receiving;
+      uint8_t receiving;
 
-  uint8_t repetitionFrameNumber;
+      uint8_t repetitionFrameNumber;
 
-  ////    Relations and components    ////
+      ////    Relations and components    ////
 
-protected:
+   protected:
 
-  DigitalInput inputPin;
+      DigitalInput inputPin;
 
-  IrDecoder irDecoder;
+      IrDecoder irDecoder;
 
 };
 
-inline void * IrReceiver::operator new( size_t size )
+inline void* IrReceiver::operator new( size_t size )
 {
-  return allocOnce( size );
+   return allocOnce( size );
 }
 
 inline void IrReceiver::Response::setData( const IrDecoder::Data& data )
 {
-  controlFrame.setDataLength(
-      sizeof(getResponse()) + sizeof(getParameter().data) );
-  getParameter().data.address = data.address;
-  getParameter().data.command = data.command;
+   controlFrame.setDataLength(
+      sizeof( getResponse() ) + sizeof( getParameter().data ) );
+   getParameter().data.address = data.address;
+   getParameter().data.command = data.command;
 }
 
 #endif

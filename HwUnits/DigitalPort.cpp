@@ -67,14 +67,14 @@ void DigitalPort::run()
 
       uint8_t changedPins = debounce();
       notifyButtonChanges( changedPins );
-      setSleepTime( HwConfiguration::DigitalPort::RefreshTime );
+      setSleepTime( Configuration::RefreshTime );
    }
 
 }
 
 void DigitalPort::updateLeds()
 {
-   uint8_t i = HwConfiguration::DigitalPort::MAX_PINS;
+   uint8_t i = Configuration::MAX_PINS;
    uint8_t pos = 0x80;
    while ( i-- )
    {
@@ -114,7 +114,7 @@ bool DigitalPort::handleRequest( HACF* message )
 
 void DigitalPort::clearPinFunction()
 {
-   uint8_t i = HwConfiguration::DigitalPort::MAX_PINS;
+   uint8_t i = Configuration::MAX_PINS;
    while ( i-- )
    {
       pin[i].button = 0;
@@ -123,7 +123,7 @@ void DigitalPort::clearPinFunction()
 
 void DigitalPort::configureHw()
 {
-   configuration = HwConfiguration::getDigitalPortConfiguration( id );
+   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
 
    uint8_t outputMask = 0;
    uint8_t inputMask = 0;
@@ -131,7 +131,7 @@ void DigitalPort::configureHw()
    uint8_t subId = getId() & 0xF0;
    uint8_t portNumber = ( subId >> 4 ) - 1;
 
-   uint8_t i = HwConfiguration::DigitalPort::MAX_PINS;
+   uint8_t i = Configuration::MAX_PINS;
    uint8_t bit = 0x80;
    while ( i-- )
    {
@@ -166,13 +166,6 @@ void DigitalPort::configureHw()
             {
                // analog inputs has to be high impedance
                new AnalogInputUnit( PortPin( portNumber, i ) );
-            }
-#endif
-#ifdef USE_MDIGIN
-            else if ( pinFunction == ClassId::MONITORED_DIGITAL_INPUT )
-            {
-               // monitored inputs have to be high impedance
-               new MonitoredDigitalInput( PortPin( portNumber, i ) );
             }
 #endif
 #ifdef USE_DHT
@@ -265,8 +258,8 @@ void DigitalPort::configureHw()
 
 uint8_t DigitalPort::debounce()
 {
-   IoPort& port = hardware.getPort();
-   uint8_t i = state ^ ~port.isPinSet( port.getInputPins() );   // key changed ?
+   IoPort* port = hardware.getPort();
+   uint8_t i = state ^ ~port->isPinSet( port->getInputPins() );   // key changed ?
    counter0 = ~( counter0 & i );                           // reset or count ct0
    counter1 = counter0 ^ ( counter1 & i );                 // reset or count ct1
    i &= counter0 & counter1;                          // count until roll over ?
@@ -277,7 +270,7 @@ uint8_t DigitalPort::debounce()
 
 void DigitalPort::notifyButtonChanges( uint8_t changedPins )
 {
-   uint8_t i = HwConfiguration::DigitalPort::MAX_PINS;
+   uint8_t i = Configuration::MAX_PINS;
    uint8_t pos = 0x80;
    while ( i-- )
    {
@@ -294,15 +287,4 @@ void DigitalPort::notifyButtonChanges( uint8_t changedPins )
       }
       pos >>= 1;
    }
-}
-
-HwConfiguration::DigitalPort* DigitalPort::getConfiguration() const
-{
-   return configuration;
-}
-
-void DigitalPort::setConfiguration(
-   HwConfiguration::DigitalPort* p_DigitalPort )
-{
-   configuration = p_DigitalPort;
 }

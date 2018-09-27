@@ -13,40 +13,40 @@
 
 class Event;
 
-class DigitalOutputUnit: public PortPinUnit
+class DigitalOutputUnit : public PortPinUnit
 {
-public:
+   public:
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  inline DigitalOutputUnit( PortPin _hardware ) : PortPinUnit( _hardware )
-  {
-	  
-  };
+      inline DigitalOutputUnit( PortPin _hardware ) : PortPinUnit( _hardware )
+      {
 
-  ////    Operations    ////
+      }
 
-  virtual bool notifyEvent( const Event& event );
+      ////    Operations    ////
 
-private:
+      virtual bool notifyEvent( const Event& event );
 
-
-  ////    Additional operations    ////
-
-public:
+   private:
 
 
-protected:
+      ////    Additional operations    ////
+
+   public:
 
 
-private:
+   protected:
 
 
-  ////    Attributes    ////
+   private:
 
-protected:
 
-private:
+      ////    Attributes    ////
+
+   protected:
+
+   private:
 
 };
 

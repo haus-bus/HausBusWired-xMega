@@ -17,7 +17,6 @@
 #include <Protocols/IpStack/UdpConnection.h>
 #include <Protocols/Ethernet/UdpHeader.h>
 #include "ModBusSlave.h"
-#include "SnmpAgent.h"
 
 uint8_t HacfIpStackManager::Command::getCommand() const
 {
@@ -55,12 +54,7 @@ HacfIpStackManager::HacfIpStackManager( Enc28j60& _stream )
 {
    IpConnection::stream = &_stream;
    setId( ( ClassId::ETHERNET << 8 ) | 1 );
-   configuration = HwConfiguration::getEthernetConfiguration( id );
-}
-
-HwConfiguration::Ethernet* HacfIpStackManager::getConfiguration() const
-{
-   return configuration;
+   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
 }
 
 bool HacfIpStackManager::notifyEvent( const Event& event )
@@ -71,8 +65,8 @@ bool HacfIpStackManager::notifyEvent( const Event& event )
    }
    else if ( event.isEvWakeup() && inStartUp() )
    {
-      IP::local.setAddress( configuration->getIp() );
-      HwConfiguration::Ethernet::Options options = configuration->getOptions();
+      IP::local.setAddress( configuration->ip );
+      Configuration::Options options = configuration->getOptions();
 
       if ( options.udpPort9Only )
       {
@@ -88,21 +82,11 @@ bool HacfIpStackManager::notifyEvent( const Event& event )
          {
             new ModBusSlave();
          }
-         if ( options.snmpAgent )
-         {
-            new SnmpAgent();
-         }
       }
 
    }
 
    return IpStackManager::notifyEvent( event );
-}
-
-void HacfIpStackManager::setConfiguration(
-   HwConfiguration::Ethernet* p_Ethernet )
-{
-   configuration = p_Ethernet;
 }
 
 void HacfIpStackManager::wakeUpDevice( const MAC& mac )
@@ -129,7 +113,7 @@ bool HacfIpStackManager::handleRequest( HACF* message )
    else if ( cf.isCommand( Command::WAKE_UP_DEVICE ) )
    {
       DEBUG_H1( FSTR( ".wakeUpDevice()" ) );
-      wakeUpDevice( *( (MAC*) data->parameter.mac ) );
+      wakeUpDevice( data->parameter.mac );
    }
    else if ( cf.isCommand( Command::GET_CURRENT_IP ) )
    {

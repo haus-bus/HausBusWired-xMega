@@ -1,12 +1,9 @@
-/*********************************************************************
-	Rhapsody	: 8.0.3 
-	Login		: viktor.pankraz
-	Component	: AR8 
-	Configuration 	: release
-	Model Element	: AR8System
-//!	Generated Date	: Wed, 6, Aug 2014  
-	File Path	: AR8/release/Systems/HomeAutomationSystems/AR8System.h
-*********************************************************************/
+/*
+ * AR8System.h
+ *
+ *  Created on: 06.08.2014
+ *      Author: Viktor Pankraz
+ */
 
 #ifndef Systems_HomeAutomationSystems_AR8System_H
 #define Systems_HomeAutomationSystems_AR8System_H
@@ -16,65 +13,36 @@
 #include <DigitalPort.h>
 #include <HomeAutomation.h>
 
-class DebugOptions;
 
-//## dependency Gateway
-class Gateway;
+class AR8System : public HomeAutomation
+{
+   ////    Constructors and destructors    ////
 
-//## dependency MyEvent
-class MyEvent;
+   public:
 
-//## dependency PersistentRules
-class PersistentRules;
+      AR8System();
 
-//## dependency RuleEngine
-class RuleEngine;
+      ////    Operations    ////
 
-//## dependency Scheduler
-class Scheduler;
+      static void start();
 
-//## dependency WeekTime
-class WeekTime;
+      ////    Additional operations    ////
 
-//## package Systems::HomeAutomationSystems
+      DigitalPort* getDigitalPortE() const;
 
-//## class AR8System
-class AR8System : public HomeAutomation {
-    ////    Constructors and destructors    ////
-    
-public :
+      DigitalPort* getDigitalPortF() const;
 
-    //## operation AR8System()
-    AR8System();
-    
-    ////    Operations    ////
-    
-    //## operation start()
-    static void start();
-    
-    ////    Additional operations    ////
-    
-    //## auto_generated
-    DigitalPort* getDigitalPortE() const;
-    
-    //## auto_generated
-    DigitalPort* getDigitalPortF() const;
-    
-    //## auto_generated
-    AR8SystemHw* getHardware() const;
-    
-    ////    Relations and components    ////
+      AR8SystemHw* getHardware() const;
 
-protected :
+      ////    Relations and components    ////
 
-    DigitalPort digitalPortE;		//## classInstance digitalPortE
-    
-    DigitalPort digitalPortF;		//## classInstance digitalPortF
-    
-    AR8SystemHw hardware;		//## classInstance hardware
+   protected:
+
+      DigitalPort digitalPortE;
+
+      DigitalPort digitalPortF;
+
+      AR8SystemHw hardware;
 };
 
 #endif
-/*********************************************************************
-	File Path	: AR8/release/Systems/HomeAutomationSystems/AR8System.h
-*********************************************************************/

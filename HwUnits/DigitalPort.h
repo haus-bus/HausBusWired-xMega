@@ -11,9 +11,8 @@
 #include "HwUnits.h"
 #include "Button.h"
 #include "Counter.h"
-#include "HwConfiguration.h"
 #include "Led.h"
-
+#include <ConfigurationManager.h>
 #include <DigitalPortHw.h>
 
 class CriticalSection;
@@ -38,240 +37,269 @@ class evMessage;
 
 class string;
 
-class DigitalPort: public Reactive
+class DigitalPort : public Reactive
 {
-public:
+   public:
+
+
+      union PinFunction
+      {
+         Object* object;
+         Counter* counter;
+         Button* button;
+         Led* led;
+      };
+
+      enum ErrorCodes
+      {
+         PINFUNCTION_NOT_SUPPORTED = 0x10
+      };
+
+      class Configuration
+      {
+         public:
+
+            static const uint8_t MAX_PINS = 8;
+
+            static const uint8_t RefreshTime = 10;
+
+            ////    Attributes    ////
+
+            uint8_t pinFunction[MAX_PINS];
+
+            ////    Operations    ////
+
+            static inline Configuration getDefault()
+            {
+               Configuration defaultConfiguration;
+               memset( &defaultConfiguration, 0xFF, sizeof( defaultConfiguration ) );
+               return defaultConfiguration;
+            }
+
+            inline void checkAndCorrect()
+            {
+            }
+      };
+
+      class EepromConfiguration : public ConfigurationManager::EepromConfigurationTmpl<Configuration>
+      {
+         public:
+
+            uint8_tx pinFunction[Configuration::MAX_PINS];
 
-  class Command;
+            inline uint8_t getPinFunction( uint8_t idx )
+            {
+               if ( idx < Configuration::MAX_PINS )
+               {
+                  return pinFunction[idx];
+               }
+               return 0xFF;
+            }
 
-  class Response;
+            inline void setPinFunction( uint8_t idx, uint8_t _pinFunction )
+            {
+               if ( idx < Configuration::MAX_PINS )
+               {
+                  pinFunction[idx] = _pinFunction;
+               }
+            }
+      };
 
-  union PinFunction
-  {
-    Object* object;
-    Counter* counter;
-    Button* button;
-    Led* led;
-  };
+      class Command
+      {
+         public:
 
-  enum ErrorCodes
-  {
-    PINFUNCTION_NOT_SUPPORTED = 0x10
-  };
+            enum Commands
+            {
+               GET_CONFIGURATION = HACF::COMMANDS_START,
+               SET_CONFIGURATION,
+            };
 
-  class Command
-  {
-  public:
+            union Parameter
+            {
+               Configuration setConfiguration;
+            };
 
-    enum Commands
-    {
-      GET_CONFIGURATION = HACF::COMMANDS_START,
-      SET_CONFIGURATION,
-    };
+            ////    Operations    ////
 
-    union Parameter
-    {
-      HwConfiguration::DigitalPort setConfiguration;
-    };
+            inline Parameter& getParameter()
+            {
+               return parameter;
+            }
 
-    ////    Operations    ////
+            ////    Additional operations    ////
 
-    inline Parameter& getParameter()
-    {
-      return parameter;
-    }
+            inline uint8_t getCommand() const
+            {
+               return command;
+            }
 
-    ////    Additional operations    ////
+            inline void setCommand( uint8_t p_command )
+            {
+               command = p_command;
+            }
 
-    inline uint8_t getCommand() const
-    {
-      return command;
-    }
+            inline void setParameter( Parameter p_parameter )
+            {
+               parameter = p_parameter;
+            }
 
-    inline void setCommand( uint8_t p_command )
-    {
-      command = p_command;
-    }
+            ////    Attributes    ////
 
-    inline void setParameter( Parameter p_parameter )
-    {
-      parameter = p_parameter;
-    }
+            uint8_t command;
 
-    ////    Attributes    ////
+            Parameter parameter;
+      };
 
-    uint8_t command;
+      class Response : public IResponse
+      {
+         public:
 
-    Parameter parameter;
-  };
+            enum Responses
+            {
+               CONFIGURATION = HACF::RESULTS_START,
+            };
 
-  class Response: public IResponse
-  {
-  public:
+            union Parameter
+            {
+               Configuration configuration;
+            };
 
-    enum Responses
-    {
-      CONFIGURATION = HACF::RESULTS_START,
-    };
+            ////    Constructors and destructors    ////
 
-    union Parameter
-    {
-      HwConfiguration::DigitalPort configuration;
-    };
+            inline Response( uint16_t id ) :
+               IResponse( id )
+            {
+            }
 
-    ////    Constructors and destructors    ////
+            inline Response( uint16_t id, const HACF& message ) :
+               IResponse( id, message )
+            {
+            }
 
-    inline Response( uint16_t id ) :
-        IResponse( id )
-    {
-    }
+            ////    Operations    ////
 
-    inline Response( uint16_t id, const HACF& message ) :
-        IResponse( id, message )
-    {
-    }
+            inline Parameter& getParameter()
+            {
+               return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
+            }
 
-    ////    Operations    ////
+            Parameter& setConfiguration();
 
-    inline Parameter& getParameter()
-    {
-      return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
-    }
+            ////    Attributes    ////
 
-    Parameter& setConfiguration();
+         private:
 
-    ////    Attributes    ////
+            Parameter params;
+      };
 
-  private:
+      ////    Constructors and destructors    ////
 
-    Parameter params;
-  };
+      inline DigitalPort( uint8_t portNumber ) :
+         notUseablePins( 0 ), state( 0 ), counter0( 0xFF ), counter1( 0xFF ),
+         hardware( portNumber )
+      {
+         configuration = NULL;
+         clearPinFunction();
+         setId( ( ClassId::DIGITAL_PORT << 8 ) | ( ( portNumber + 1 ) << 4 ) );
+      }
 
-  ////    Constructors and destructors    ////
+      ////    Operations    ////
 
-  inline DigitalPort( uint8_t portNumber ) :
-      notUseablePins( 0 ), state( 0 ), counter0( 0xFF ), counter1( 0xFF ),
-      hardware( portNumber )
-  {
-    configuration = NULL;
-    clearPinFunction();
-    setId( (ClassId::DIGITAL_PORT << 8) | ((portNumber + 1) << 4) );
-  }
+      inline uint8_t isPinUsable( uint8_t pinMask );
 
-  ////    Operations    ////
+      virtual bool notifyEvent( const Event& event );
 
-  inline uint8_t isPinUsable( uint8_t pinMask );
+      void run();
 
-  virtual bool notifyEvent( const Event& event );
+      void updateLeds();
 
-  void run();
+   protected:
 
-  void updateLeds();
+      bool handleRequest( HACF* message );
 
-protected:
+   private:
 
-  bool handleRequest( HACF* message );
+      void clearPinFunction();
 
-private:
+      void configureHw();
 
-  void clearPinFunction();
+      uint8_t debounce();
 
-  void configureHw();
+      void notifyButtonChanges( uint8_t changedPins );
 
-  uint8_t debounce();
+      ////    Additional operations    ////
 
-  void notifyButtonChanges( uint8_t changedPins );
+   public:
 
-  ////    Additional operations    ////
+      inline uint8_t getNotUseablePins() const
+      {
+         return notUseablePins;
+      }
 
-public:
+      inline void setNotUseablePins( uint8_t p_notUseablePins )
+      {
+         notUseablePins = p_notUseablePins;
+      }
 
-  inline uint8_t getNotUseablePins() const
-  {
-    return notUseablePins;
-  }
+      inline uint8_t getState() const
+      {
+         return state;
+      }
 
-  inline void setNotUseablePins( uint8_t p_notUseablePins )
-  {
-    notUseablePins = p_notUseablePins;
-  }
+      inline void setState( uint8_t p_state )
+      {
+         state = p_state;
+      }
 
-  inline uint8_t getState() const
-  {
-    return state;
-  }
+      inline void setConfiguration( EepromConfiguration*  _config )
+      {
+         configuration = _config;
+      }
 
-  inline void setState( uint8_t p_state )
-  {
-    state = p_state;
-  }
 
-  HwConfiguration::DigitalPort* getConfiguration() const;
+   protected:
 
-  void setConfiguration( HwConfiguration::DigitalPort* p_DigitalPort );
+      inline static const uint8_t getDebugLevel()
+      {
+         return debugLevel;
+      }
 
-protected:
+   private:
 
-  inline static const uint8_t getDebugLevel()
-  {
-    return debugLevel;
-  }
+      ////    Attributes    ////
 
-private:
+   public:
 
-  inline uint8_t getCounter0() const
-  {
-    return counter0;
-  }
+      uint8_t notUseablePins;
 
-  inline void setCounter0( uint8_t p_counter0 )
-  {
-    counter0 = p_counter0;
-  }
+      uint8_t state;
 
-  inline uint8_t getCounter1() const
-  {
-    return counter1;
-  }
+   protected:
 
-  inline void setCounter1( uint8_t p_counter1 )
-  {
-    counter1 = p_counter1;
-  }
+      static const uint8_t debugLevel;
 
-  ////    Attributes    ////
+   private:
 
-public:
+      uint8_t counter0;
 
-  uint8_t notUseablePins;
+      uint8_t counter1;
 
-  uint8_t state;
+      PinFunction pin[Configuration::MAX_PINS];
 
-protected:
+      ////    Relations and components    ////
 
-  static const uint8_t debugLevel;
+   protected:
 
-private:
+      EepromConfiguration* configuration;
 
-  uint8_t counter0;
-
-  uint8_t counter1;
-
-  PinFunction pin[HwConfiguration::DigitalPort::MAX_PINS];
-
-  ////    Relations and components    ////
-
-protected:
-
-  HwConfiguration::DigitalPort* configuration;
-
-  DigitalPortHw hardware;
+      DigitalPortHw hardware;
 
 };
 
 inline uint8_t DigitalPort::isPinUsable( uint8_t pinMask )
 {
-  return !(pinMask & notUseablePins);
+   return !( pinMask & notUseablePins );
 }
 
 #endif

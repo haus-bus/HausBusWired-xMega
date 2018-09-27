@@ -26,7 +26,7 @@ Button::Button( uint8_t _id ) :
    setMainState( RUNNING );
    setSubState( RELEASED );
    Object::setId( ( ClassId::BUTTON << 8 ) | _id );
-   configuration = HwConfiguration::getButtonConfiguration( id );
+   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
    enabledEvents = configuration->getEvents();
 
 }
@@ -105,7 +105,7 @@ void Button::tick()
       return;
    }
 
-   HwConfiguration::Button::Event event;
+   Configuration::Event event;
    event.mask = 0;
 
    if ( inSubState( PRESSED ) )
@@ -133,7 +133,7 @@ void Button::updateState( uint8_t pressed )
 {
    if ( enabledEvents.mask )
    {
-      HwConfiguration::Button::Event event;
+      Configuration::Event event;
       event.mask = 0;
 
       if ( pressed )
@@ -151,13 +151,13 @@ void Button::updateState( uint8_t pressed )
             setSubState( PRESSED );
             if ( enabledEvents.bit.notifyOnHoldStart )
             {
-               setSleepTime( configuration->getHoldTimeout() * 10 );
+               setSleepTime( configuration->holdTimeout * 10 );
             }
          }
          else if ( inSubState( CLICKED ) )
          {
             setSubState( CLICKED_PRESSED );
-            setSleepTime( configuration->getHoldTimeout() * 10 );
+            setSleepTime( configuration->holdTimeout * 10 );
          }
 
       }
@@ -176,7 +176,7 @@ void Button::updateState( uint8_t pressed )
             if ( enabledEvents.bit.notifyOnDoubleClicked )
             {
                setSubState( CLICKED );
-               setSleepTime( configuration->getDoubleClickTimeout() * 10 );
+               setSleepTime( configuration->doubleClickTimeout * 10 );
             }
             else
             {
@@ -202,7 +202,7 @@ void Button::updateState( uint8_t pressed )
    }
 }
 
-void Button::notifyNewState( HwConfiguration::Button::Event event ) const
+void Button::notifyNewState( Configuration::Event event ) const
 {
    event.mask &= enabledEvents.mask;
 
@@ -253,15 +253,6 @@ void Button::notifyNewState( HwConfiguration::Button::Event event ) const
    }
 }
 
-HwConfiguration::Button* Button::getConfiguration() const
-{
-   return configuration;
-}
-
-void Button::setConfiguration( HwConfiguration::Button* p_Button )
-{
-   configuration = p_Button;
-}
 
 Led* Button::getFeedbackLed() const
 {

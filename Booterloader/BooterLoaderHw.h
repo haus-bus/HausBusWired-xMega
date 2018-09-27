@@ -13,24 +13,24 @@
 class Checksum;
 class ModuleId;
 
-class BooterLoaderHw: public HomeAutomationHw
+class BooterLoaderHw : public HomeAutomationHw
 {
-  ////    Constructors and destructors    ////
+   ////    Constructors and destructors    ////
 
-public:
+   public:
 
-  inline BooterLoaderHw()
-  {
-    // configure ports
-    PORTR.DIRSET = Pin0 | Pin1;
+      inline BooterLoaderHw()
+      {
+         // configure ports
+         PORTR.DIRSET = Pin0 | Pin1;
 
-    // set statusLed to green
-    PORTR.OUTSET = Pin1;
-  }
+         // set statusLed to green
+         PORTR.OUTSET = Pin1;
+      }
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  void copyBooter();
+      void copyBooter();
 };
 
 #endif

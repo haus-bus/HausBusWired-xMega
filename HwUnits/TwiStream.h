@@ -24,313 +24,313 @@ class Scheduler;
 class evMessage;
 class string;
 
-class TwiStream: public Gateway
+class TwiStream : public Gateway
 {
-public:
+   public:
 
-  class Command;
-  class Response;
+      class Command;
+      class Response;
 
-  struct Header
-  {
-    uint8_t address;
-    uint8_t checksum;
-    uint16_t lastDeviceId;
-  };
+      struct Header
+      {
+         uint8_t address;
+         uint8_t checksum;
+         uint16_t lastDeviceId;
+      };
 
-  static const uint16_t TIMEOUT = 20 * SystemTime::MS;
-  static const uint16_t CHECK_PERFORMANCE_TIMEOUT = 2 * SystemTime::S;
-  static const uint8_t MAX_RETRIES = 3;
-  static const uint8_t MAX_BUS_TIMES = 8;
+      static const uint16_t TIMEOUT = 20 * SystemTime::MS;
+      static const uint16_t CHECK_PERFORMANCE_TIMEOUT = 2 * SystemTime::S;
+      static const uint8_t MAX_RETRIES = 3;
+      static const uint8_t MAX_BUS_TIMES = 8;
 
-  enum State
-  {
-    IDLE,
-    SLAVE_BUSY,
-    MASTER_BUSY
-  };
+      enum State
+      {
+         IDLE,
+         SLAVE_BUSY,
+         MASTER_BUSY
+      };
 
-  class Command
-  {
-  public:
+      class Command
+      {
+         public:
 
-    enum Commands
-    {
-      GET_CONFIGURATION = HACF::COMMANDS_START,
-      SET_CONFIGURATION,
-      CHECK_BUS_TIMING,
-      GET_BUS_TIMING,
-      RESET_BUS_TIMING,
-      GET_CONNECTED_DEVICES,
-      CHECK_BUS_PERFORMANCE,
+            enum Commands
+            {
+               GET_CONFIGURATION = HACF::COMMANDS_START,
+               SET_CONFIGURATION,
+               CHECK_BUS_TIMING,
+               GET_BUS_TIMING,
+               RESET_BUS_TIMING,
+               GET_CONNECTED_DEVICES,
+               CHECK_BUS_PERFORMANCE,
 
-      CORRUPT_NEXT_MSG = 16,
-    };
+               CORRUPT_NEXT_MSG = 16,
+            };
 
-    union Parameter
-    {
-      uint8_t setConfiguration;
-      uint8_t bitNumber;
-    };
+            union Parameter
+            {
+               uint8_t setConfiguration;
+               uint8_t bitNumber;
+            };
 
-    ////    Operations    ////
+            ////    Operations    ////
 
-    inline Parameter& getParameter()
-    {
-      return parameter;
-    }
+            inline Parameter& getParameter()
+            {
+               return parameter;
+            }
 
-    ////    Additional operations    ////
+            ////    Additional operations    ////
 
-    inline uint8_t getCommand() const
-    {
-      return command;
-    }
+            inline uint8_t getCommand() const
+            {
+               return command;
+            }
 
-    inline void setCommand( uint8_t p_command )
-    {
-      command = p_command;
-    }
+            inline void setCommand( uint8_t p_command )
+            {
+               command = p_command;
+            }
 
-    inline void setParameter( Parameter p_parameter )
-    {
-      parameter = p_parameter;
-    }
+            inline void setParameter( Parameter p_parameter )
+            {
+               parameter = p_parameter;
+            }
 
-    ////    Attributes    ////
+            ////    Attributes    ////
 
-    uint8_t command;
-    Parameter parameter;
-  };
+            uint8_t command;
+            Parameter parameter;
+      };
 
-  class Response: public IResponse
-  {
-  public:
+      class Response : public IResponse
+      {
+         public:
 
-    enum Responses
-    {
-      CONFIGURATION = HACF::RESULTS_START,
-      BUS_TIMING,
-      CONNECTED_DEVICES,
-      BUS_PERFORMANCE,
-    };
+            enum Responses
+            {
+               CONFIGURATION = HACF::RESULTS_START,
+               BUS_TIMING,
+               CONNECTED_DEVICES,
+               BUS_PERFORMANCE,
+            };
 
-    struct BusTiming
-    {
-      uint16_t sclTimes[MAX_BUS_TIMES];
-      uint16_t sdaTimes[MAX_BUS_TIMES];
-    };
+            struct BusTiming
+            {
+               uint16_t sclTimes[MAX_BUS_TIMES];
+               uint16_t sdaTimes[MAX_BUS_TIMES];
+            };
 
-    struct ConnectedDevices
-    {
-      uint16_t deviceIds[MAX_CONNECTED_DEVICES];
-    };
+            struct ConnectedDevices
+            {
+               uint16_t deviceIds[MAX_CONNECTED_DEVICES];
+            };
 
-    struct BusPerformance
-    {
-      uint16_t duration;
-      uint16_t failedDeviceIds[MAX_CONNECTED_DEVICES];
-    };
+            struct BusPerformance
+            {
+               uint16_t duration;
+               uint16_t failedDeviceIds[MAX_CONNECTED_DEVICES];
+            };
 
-    union Parameter
-    {
-      uint8_t configuration;
-      BusTiming busTiming;
-      ConnectedDevices connectedDevices;
-      BusPerformance busPerformance;
-    };
+            union Parameter
+            {
+               uint8_t configuration;
+               BusTiming busTiming;
+               ConnectedDevices connectedDevices;
+               BusPerformance busPerformance;
+            };
 
-    ////    Constructors and destructors    ////
+            ////    Constructors and destructors    ////
 
-    inline Response( uint16_t id ) :
-        IResponse( id )
-    {
+            inline Response( uint16_t id ) :
+               IResponse( id )
+            {
 
-    }
+            }
 
-    inline Response( uint16_t id, const HACF& message ) :
-        IResponse( id, message )
-    {
+            inline Response( uint16_t id, const HACF& message ) :
+               IResponse( id, message )
+            {
 
-    }
+            }
 
-    ////    Operations    ////
+            ////    Operations    ////
 
-    inline Parameter& getParameter()
-    {
-      return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
-    }
+            inline Parameter& getParameter()
+            {
+               return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
+            }
 
-    void setConfiguration( uint8_t value );
+            void setConfiguration( uint8_t value );
 
-    void setBusTiming( BusTiming& timing );
+            void setBusTiming( BusTiming& timing );
 
-    void setConnectedDevices( DeviceArray* deviceArray );
+            void setConnectedDevices( DeviceArray* deviceArray );
 
-    void setBusPerformance( uint16_t duration, DeviceArray* deviceArray );
+            void setBusPerformance( uint16_t duration, DeviceArray* deviceArray );
 
-    ////    Attributes    ////
+            ////    Attributes    ////
 
-  private:
+         private:
 
-    Parameter params;
-  };
+            Parameter params;
+      };
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  inline TwiStream( uint8_t twiPort, uint8_t _id ) :
-    retries( MAX_RETRIES ), busyBusRetries( MAX_RETRIES ),
-      twi( Twi::instance( twiPort ) ), state( IDLE ), sclPin( twiPort, 1 ),
-      sdaPin( twiPort, 0 )
-  {
-    setId( (ClassId::GATEWAY << 8) | _id );
-  }
+      inline TwiStream( uint8_t twiPort, uint8_t _id ) :
+         retries( MAX_RETRIES ), busyBusRetries( MAX_RETRIES ),
+         twi( Twi::instance( twiPort ) ), state( IDLE ), sclPin( twiPort, 1 ),
+         sdaPin( twiPort, 0 )
+      {
+         setId( ( ClassId::GATEWAY << 8 ) | _id );
+      }
 
-  ////    Operations    ////
+      ////    Operations    ////
 
 #ifdef _DEBUG_
-  uint8_t getTraceInfo();
+      uint8_t getTraceInfo();
 #endif
 
-  void handleMasterStatus();
+      void handleMasterStatus();
 
-  void handleSlaveStatus();
+      void handleSlaveStatus();
 
-  inline void init();
+      inline void init();
 
-  bool isBusIdle();
+      bool isBusIdle();
 
-  bool isMyTimeSlot();
+      bool isMyTimeSlot();
 
-  bool notifyEvent( const Event& event );
+      bool notifyEvent( const Event& event );
 
-  void run();
+      void run();
 
-private:
+   private:
 
-  void notifyEndOfMasterTransfer();
+      void notifyEndOfMasterTransfer();
 
-  void notifyEndOfSlaveTransfer();
+      void notifyEndOfSlaveTransfer();
 
-  bool handleRequest( HACF* message );
+      bool handleRequest( HACF* message );
 
-  void checkBusTiming( bool active = false );
+      void checkBusTiming( bool active = false );
 
-  void triggerBusLine( DigitalOutput& busLine, uint16_t* times );
+      void triggerBusLine( DigitalOutput& busLine, uint16_t* times );
 
-  void measureBusLine( DigitalOutput& busLine, uint16_t* times );
+      void measureBusLine( DigitalOutput& busLine, uint16_t* times );
 
-  void sendPerformanceResults();
+      void sendPerformanceResults();
 
-public:
+   public:
 
-  Stream::TransferDescriptor* getMasterDescriptor() const;
+      Stream::TransferDescriptor* getMasterDescriptor() const;
 
-  DigitalOutput* getSclPin() const;
+      DigitalOutput* getSclPin() const;
 
-  DigitalOutput* getSdaPin() const;
+      DigitalOutput* getSdaPin() const;
 
-  Stream::TransferDescriptor* getSlaveDescriptor() const;
+      Stream::TransferDescriptor* getSlaveDescriptor() const;
 
-protected:
+   protected:
 
-  inline static const uint8_t getDebugLevel()
-  {
-    return debugLevel;
-  }
+      inline static const uint8_t getDebugLevel()
+      {
+         return debugLevel;
+      }
 
-private:
+   private:
 
-  void resetBusTiming();
+      void resetBusTiming();
 
-  inline uint8_t getRetries() const
-  {
-    return retries;
-  }
+      inline uint8_t getRetries() const
+      {
+         return retries;
+      }
 
-  inline void setRetries( uint8_t p_retries )
-  {
-    retries = p_retries;
-  }
+      inline void setRetries( uint8_t p_retries )
+      {
+         retries = p_retries;
+      }
 
-  inline Twi& getTwi() const
-  {
-    return twi;
-  }
+      inline Twi& getTwi() const
+      {
+         return twi;
+      }
 
-  inline void setTwi( Twi& p_twi )
-  {
-    twi = p_twi;
-  }
+      inline void setTwi( Twi& p_twi )
+      {
+         twi = p_twi;
+      }
 
-  inline Timestamp* getLastIdleTimestamp() const
-  {
-    return (Timestamp*) &lastIdleTimestamp;
-  }
+      inline Timestamp* getLastIdleTimestamp() const
+      {
+         return (Timestamp*) &lastIdleTimestamp;
+      }
 
-  inline uint8_t getState() const
-  {
-    return state;
-  }
+      inline uint8_t getState() const
+      {
+         return state;
+      }
 
-  inline void setState( uint8_t p_state )
-  {
-    state = p_state;
-  }
+      inline void setState( uint8_t p_state )
+      {
+         state = p_state;
+      }
 
-  inline Timestamp* getTimeout() const
-  {
-    return (Timestamp*) &timeout;
-  }
+      inline Timestamp* getTimeout() const
+      {
+         return (Timestamp*) &timeout;
+      }
 
-  ////    Attributes    ////
+      ////    Attributes    ////
 
-protected:
+   protected:
 
-  static const uint8_t debugLevel;
+      static const uint8_t debugLevel;
 
-private:
+   private:
 
-  uint8_t retries;
+      uint8_t retries;
 
-  uint8_t busyBusRetries;
+      uint8_t busyBusRetries;
 
-  Twi& twi;
+      Twi& twi;
 
-  Timestamp lastIdleTimestamp;
+      Timestamp lastIdleTimestamp;
 
-  Timestamp checkPerformanceTimestamp;
+      Timestamp checkPerformanceTimestamp;
 
-  uint8_t state;
+      uint8_t state;
 
-  Timestamp timeout;
+      Timestamp timeout;
 
-//  Timestamp checkBusTimingCmd;
+// Timestamp checkBusTimingCmd;
 
-  Response::BusTiming busTiming;
+      Response::BusTiming busTiming;
 
-  ////    Relations and components    ////
+      ////    Relations and components    ////
 
-protected:
+   protected:
 
-  Stream::TransferDescriptor masterDescriptor;
+      Stream::TransferDescriptor masterDescriptor;
 
-  DigitalOutput sclPin;
+      DigitalOutput sclPin;
 
-  DigitalOutput sdaPin;
+      DigitalOutput sdaPin;
 
-  Stream::TransferDescriptor slaveDescriptor;
+      Stream::TransferDescriptor slaveDescriptor;
 };
 
 inline void TwiStream::init()
 {
-  twi.init<true, 100000, TWI_MASTER_INTLVL_OFF_gc, TWI_SLAVE_INTLVL_OFF_gc>();
-  lastIdleTimestamp = Timestamp();
-  if ( (numOfGateways > 1) && (deviceArray == 0) )
-  {
-    deviceArray = new DeviceArray();
-    sentPingIds = new DeviceArray();
-  }
+   twi.init<true, 100000, TWI_MASTER_INTLVL_OFF_gc, TWI_SLAVE_INTLVL_OFF_gc>();
+   lastIdleTimestamp = Timestamp();
+   if ( ( numOfGateways > 1 ) && ( deviceArray == 0 ) )
+   {
+      deviceArray = new DeviceArray();
+      sentPingIds = new DeviceArray();
+   }
 }
 
 #endif

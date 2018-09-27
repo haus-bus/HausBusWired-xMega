@@ -1,24 +1,20 @@
-/********************************************************************
-        Rhapsody	: 8.0.3
-        Login		: viktor.pankraz
-        Component	: AR8
-        Configuration   : release
-        Model Element	: IP
-   //!	Generated Date	: Wed, 6, Aug 2014
-        File Path	: AR8/release/SwFramework/Protocols/Ethernet/IP.cpp
- *********************************************************************/
+/*
+ * IP.cpp
+ *
+ *  Created on: 06.08.2014
+ *      Author: Viktor Pankraz
+ */
 
-// ## auto_generated
 #include "IP.h"
-// ## package SwFramework::Protocols::Ethernet
 
-// ## class IP
-IP IP::local( DEFAULT_IP );
+IP IP::local = { .address = IP_TO_UINT32( 192, 168, 178, 254 ) };
 
-IP IP::netmask( DEFAULT_NETMASK );
+IP IP::netmask = { .address = IP_TO_UINT32( 255, 255, 255, 0 ) };
 
-IP IP::router( DEFAULT_ROUTER_IP );
+IP IP::router = { .address = IP_TO_UINT32( 192, 168, 178, 1 ) };
 
-/*********************************************************************
-        File Path	: AR8/release/SwFramework/Protocols/Ethernet/IP.cpp
-*********************************************************************/
+IP IP::defaultIp = { .address = IP_TO_UINT32( 192, 168, 178, 254 ) };
+
+IP IP::defaultNetmask = { .address = IP_TO_UINT32( 255, 255, 255, 0 ) };
+
+IP IP::defaultRouterIp = { .address = IP_TO_UINT32( 192, 168, 178, 1 ) };

@@ -105,39 +105,48 @@ LINKER_SCRIPT_DEP+=
 
 
 # AVR32/GNU C Compiler
-
-
-
-
-
-
-
-
-
-
-
-
-
-BoardHardware/%.o: ../../BoardHardware/%.cpp
+BoardHardware/Electronics.o: ../../BoardHardware/Electronics.cpp
 	@echo Building file: $<
 	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
-	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DCONTROLLER_ID=Release::SD6_ID -DF_CPU=32000000 -DMOD_ID=\"SD6Loader\" -D_DEBUG_  -I"../../BoardHardware" -I"../../SwFramework" -I"../../HwUnits" -I"../../SwUnits" -I"../../Xmega" -I"../../Interfaces" -I".." -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\include"  -O1 -fno-exceptions -fno-threadsafe-statics -fno-jump-tables -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g2 -Wall -mmcu=atxmega32a4u -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\gcc\dev\atxmega32a4u" -c -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	$(QUOTE)C:\Tools\AtmelStudio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DF_CPU=32000000 -DMOD_ID=\"SD6Loader\" -DCONTROLLER_ID=Release::SD6_ID -D_DEBUG_  -I"../../BoardHardware" -I"../../SwFramework" -I"../../HwUnits" -I"../../SwUnits" -I"../../Xmega" -I"../../Interfaces" -I".." -I"C:\Tools\AtmelStudio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\include"  -O1 -fno-exceptions -fno-threadsafe-statics -fno-jump-tables -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g2 -Wall -mmcu=atxmega32a4u -B "C:\Tools\AtmelStudio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\gcc\dev\atxmega32a4u" -c -std=c++11 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
-./%.o: ../../Booterloader/%.cpp
+BoardHardware/HomeAutomationHw.o: ../../BoardHardware/HomeAutomationHw.cpp
 	@echo Building file: $<
 	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
-	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DCONTROLLER_ID=Release::SD6_ID -DF_CPU=32000000 -DMOD_ID=\"SD6Loader\" -D_DEBUG_  -I"../../BoardHardware" -I"../../SwFramework" -I"../../HwUnits" -I"../../SwUnits" -I"../../Xmega" -I"../../Interfaces" -I".." -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\include"  -O1 -fno-exceptions -fno-threadsafe-statics -fno-jump-tables -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g2 -Wall -mmcu=atxmega32a4u -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\gcc\dev\atxmega32a4u" -c -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	$(QUOTE)C:\Tools\AtmelStudio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DF_CPU=32000000 -DMOD_ID=\"SD6Loader\" -DCONTROLLER_ID=Release::SD6_ID -D_DEBUG_  -I"../../BoardHardware" -I"../../SwFramework" -I"../../HwUnits" -I"../../SwUnits" -I"../../Xmega" -I"../../Interfaces" -I".." -I"C:\Tools\AtmelStudio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\include"  -O1 -fno-exceptions -fno-threadsafe-statics -fno-jump-tables -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g2 -Wall -mmcu=atxmega32a4u -B "C:\Tools\AtmelStudio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\gcc\dev\atxmega32a4u" -c -std=c++11 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
-Xmega/Peripherals/%.o: ../../Xmega/Peripherals/%.cpp
+./BooterLoader.o: ../../Booterloader/BooterLoader.cpp
 	@echo Building file: $<
 	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
-	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DCONTROLLER_ID=Release::SD6_ID -DF_CPU=32000000 -DMOD_ID=\"SD6Loader\" -D_DEBUG_  -I"../../BoardHardware" -I"../../SwFramework" -I"../../HwUnits" -I"../../SwUnits" -I"../../Xmega" -I"../../Interfaces" -I".." -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\include"  -O1 -fno-exceptions -fno-threadsafe-statics -fno-jump-tables -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g2 -Wall -mmcu=atxmega32a4u -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\gcc\dev\atxmega32a4u" -c -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	$(QUOTE)C:\Tools\AtmelStudio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DF_CPU=32000000 -DMOD_ID=\"SD6Loader\" -DCONTROLLER_ID=Release::SD6_ID -D_DEBUG_  -I"../../BoardHardware" -I"../../SwFramework" -I"../../HwUnits" -I"../../SwUnits" -I"../../Xmega" -I"../../Interfaces" -I".." -I"C:\Tools\AtmelStudio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\include"  -O1 -fno-exceptions -fno-threadsafe-statics -fno-jump-tables -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g2 -Wall -mmcu=atxmega32a4u -B "C:\Tools\AtmelStudio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\gcc\dev\atxmega32a4u" -c -std=c++11 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
+
+./BooterLoaderHw.o: ../../Booterloader/BooterLoaderHw.cpp
+	@echo Building file: $<
+	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
+	$(QUOTE)C:\Tools\AtmelStudio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DF_CPU=32000000 -DMOD_ID=\"SD6Loader\" -DCONTROLLER_ID=Release::SD6_ID -D_DEBUG_  -I"../../BoardHardware" -I"../../SwFramework" -I"../../HwUnits" -I"../../SwUnits" -I"../../Xmega" -I"../../Interfaces" -I".." -I"C:\Tools\AtmelStudio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\include"  -O1 -fno-exceptions -fno-threadsafe-statics -fno-jump-tables -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g2 -Wall -mmcu=atxmega32a4u -B "C:\Tools\AtmelStudio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\gcc\dev\atxmega32a4u" -c -std=c++11 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
+Xmega/Peripherals/Flash.o: ../../Xmega/Peripherals/Flash.cpp
+	@echo Building file: $<
+	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
+	$(QUOTE)C:\Tools\AtmelStudio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DF_CPU=32000000 -DMOD_ID=\"SD6Loader\" -DCONTROLLER_ID=Release::SD6_ID -D_DEBUG_  -I"../../BoardHardware" -I"../../SwFramework" -I"../../HwUnits" -I"../../SwUnits" -I"../../Xmega" -I"../../Interfaces" -I".." -I"C:\Tools\AtmelStudio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\include"  -O1 -fno-exceptions -fno-threadsafe-statics -fno-jump-tables -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g2 -Wall -mmcu=atxmega32a4u -B "C:\Tools\AtmelStudio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\gcc\dev\atxmega32a4u" -c -std=c++11 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
+Xmega/Peripherals/NvmController.o: ../../Xmega/Peripherals/NvmController.cpp
+	@echo Building file: $<
+	@echo Invoking: AVR8/GNU C Compiler : 5.4.0
+	$(QUOTE)C:\Tools\AtmelStudio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DF_CPU=32000000 -DMOD_ID=\"SD6Loader\" -DCONTROLLER_ID=Release::SD6_ID -D_DEBUG_  -I"../../BoardHardware" -I"../../SwFramework" -I"../../HwUnits" -I"../../SwUnits" -I"../../Xmega" -I"../../Interfaces" -I".." -I"C:\Tools\AtmelStudio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\include"  -O1 -fno-exceptions -fno-threadsafe-statics -fno-jump-tables -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g2 -Wall -mmcu=atxmega32a4u -B "C:\Tools\AtmelStudio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\gcc\dev\atxmega32a4u" -c -std=c++11 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
 
 
 
@@ -149,17 +158,10 @@ Xmega/Peripherals/%.o: ../../Xmega/Peripherals/%.cpp
 Xmega/Peripherals/NvmLowLevel.o: ../../Xmega/Peripherals/NvmLowLevel.S
 	@echo Building file: $<
 	@echo Invoking: AVR8/GNU Assembler : 5.4.0
-	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -Wa,-gdwarf2 -x assembler-with-cpp -c -mmcu=atxmega32a4u -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\gcc\dev\atxmega32a4u" -I "../../SwFramework" -I "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\include"  -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)" -mrelax -Wa,-g   -o "$@" "$<" 
+	$(QUOTE)C:\Tools\AtmelStudio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -Wa,-gdwarf2 -x assembler-with-cpp -c -mmcu=atxmega32a4u -B "C:\Tools\AtmelStudio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\gcc\dev\atxmega32a4u" -I "../../SwFramework" -I "C:\Tools\AtmelStudio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\include"  -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)" -mrelax -Wa,-g   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
-
-Xmega/Peripherals/%.o: ../../Xmega/Peripherals/%.S
-	@echo Building file: $<
-	@echo Invoking: AVR8/GNU Assembler : 5.4.0
-	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -Wa,-gdwarf2 -x assembler-with-cpp -c -mmcu=atxmega32a4u -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\gcc\dev\atxmega32a4u" -I "../../SwFramework" -I "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\include"  -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)" -mrelax -Wa,-g   -o "$@" "$<" 
-	@echo Finished building: $<
-	
 
 
 
@@ -178,10 +180,10 @@ all: $(OUTPUT_FILE_PATH) $(ADDITIONAL_DEPENDENCIES)
 $(OUTPUT_FILE_PATH): $(OBJS) $(USER_OBJS) $(OUTPUT_FILE_DEP) $(LIB_DEP) $(LINKER_SCRIPT_DEP)
 	@echo Building target: $@
 	@echo Invoking: AVR8/GNU Linker : 5.4.0
-	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -o$(OUTPUT_FILE_PATH_AS_ARGS) $(OBJS_AS_ARGS) $(USER_OBJS) $(LIBS) -Wl,-Map="SD6_Booterloader.map" -Wl,--start-group -Wl,-lm  -Wl,--end-group -Wl,--gc-sections -mrelax -mmcu=atxmega32a4u -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\gcc\dev\atxmega32a4u"  
+	$(QUOTE)C:\Tools\AtmelStudio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-g++.exe$(QUOTE) -o$(OUTPUT_FILE_PATH_AS_ARGS) $(OBJS_AS_ARGS) $(USER_OBJS) $(LIBS) -Wl,-Map="SD6_Booterloader.map" -Wl,--start-group -Wl,-lm  -Wl,--end-group -Wl,--gc-sections -mrelax -mmcu=atxmega32a4u -B "C:\Tools\AtmelStudio\7.0\Packs\atmel\XMEGAA_DFP\1.1.68\gcc\dev\atxmega32a4u"  
 	@echo Finished building target: $@
-	"C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-objdump.exe" -h -S "SD6_Booterloader.elf" > "SD6_Booterloader.lss"
-	"C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-size.exe" "SD6_Booterloader.elf"
+	"C:\Tools\AtmelStudio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-objdump.exe" -h -S "SD6_Booterloader.elf" > "SD6_Booterloader.lss"
+	"C:\Tools\AtmelStudio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-size.exe" "SD6_Booterloader.elf"
 	
 	
 

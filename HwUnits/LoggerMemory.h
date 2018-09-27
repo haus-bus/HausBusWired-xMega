@@ -12,145 +12,145 @@
 #include <FileSystems/FatSystem.h>
 #include <Reactive.h>
 
-class LoggerMemory: public Reactive
+class LoggerMemory : public Reactive
 {
-  class ErrorCode
-  {
-  public:
-    enum ErrorCodes
-    {
-      NO_ERROR,
-      MEMORY_NOT_AVAILABLE
-    };
-  };
+   class ErrorCode
+   {
+      public:
+         enum ErrorCodes
+         {
+            NO_ERROR,
+            MEMORY_NOT_AVAILABLE
+         };
+   };
 
-  class Command
-  {
-  public:
+   class Command
+   {
+      public:
 
-    enum Commands
-    {
-      ERASE = HACF::COMMANDS_START,
-      GET_LOGS,
-    };
+         enum Commands
+         {
+            ERASE = HACF::COMMANDS_START,
+            GET_LOGS,
+         };
 
-    union Parameter
-    {
-      uint32_t sector;
-    };
+         union Parameter
+         {
+            uint32_t sector;
+         };
 
-    ////    Operations    ////
+         ////    Operations    ////
 
-    inline Parameter& getParameter()
-    {
-      return parameter;
-    }
+         inline Parameter& getParameter()
+         {
+            return parameter;
+         }
 
-    ////    Additional operations    ////
+         ////    Additional operations    ////
 
-    inline uint8_t getCommand() const
-    {
-      return command;
-    }
+         inline uint8_t getCommand() const
+         {
+            return command;
+         }
 
-    inline void setCommand( uint8_t p_command )
-    {
-      command = p_command;
-    }
+         inline void setCommand( uint8_t p_command )
+         {
+            command = p_command;
+         }
 
-    inline void setParameter( Parameter p_parameter )
-    {
-      parameter = p_parameter;
-    }
+         inline void setParameter( Parameter p_parameter )
+         {
+            parameter = p_parameter;
+         }
 
-    ////    Attributes    ////
+         ////    Attributes    ////
 
-    uint8_t command;
+         uint8_t command;
 
-    Parameter parameter;
-  };
+         Parameter parameter;
+   };
 
-  class Response: public IResponse
-  {
-  public:
+   class Response : public IResponse
+   {
+      public:
 
-    enum Responses
-    {
-      LOG_DATA = HACF::RESULTS_START,
-    };
+         enum Responses
+         {
+            LOG_DATA = HACF::RESULTS_START,
+         };
 
-    union Parameter
-    {
-      uint8_t logData[512];
-    };
+         union Parameter
+         {
+            uint8_t logData[512];
+         };
 
-    ////    Constructors and destructors    ////
+         ////    Constructors and destructors    ////
 
-    inline Response( uint16_t id ) :
-        IResponse( id )
-    {
-    }
+         inline Response( uint16_t id ) :
+            IResponse( id )
+         {
+         }
 
-    inline Response( uint16_t id, const HACF& message ) :
-        IResponse( id, message )
-    {
-    }
+         inline Response( uint16_t id, const HACF& message ) :
+            IResponse( id, message )
+         {
+         }
 
-    ////    Operations    ////
+         ////    Operations    ////
 
-    inline Parameter& getParameter()
-    {
-      return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
-    }
+         inline Parameter& getParameter()
+         {
+            return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
+         }
 
-    Parameter& setLogData();
+         Parameter& setLogData();
 
-    ////    Attributes    ////
+         ////    Attributes    ////
 
-  private:
+      private:
 
-    Parameter params;
-  };
+         Parameter params;
+   };
 
-public:
+   public:
 
-  enum SubStates
-  {
-    OPEN_FILE,
-    LOGGING,
-    DRIVE_NOT_READY,
+      enum SubStates
+      {
+         OPEN_FILE,
+         LOGGING,
+         DRIVE_NOT_READY,
 
-  };
+      };
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  LoggerMemory( IDiskIo* _disk );
+      LoggerMemory( IDiskIo* _disk );
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  virtual bool notifyEvent( const Event& event );
+      virtual bool notifyEvent( const Event& event );
 
-  void run();
+      void run();
 
-private:
+   private:
 
-  void sendError( ErrorCode::ErrorCodes code );
+      void sendError( ErrorCode::ErrorCodes code );
 
-  bool updateLogfileName();
+      bool updateLogfileName();
 
-  FatSystem::Result prepareLogFile();
+      FatSystem::Result prepareLogFile();
 
-  ////    Attributes    ////
+      ////    Attributes    ////
 
-private:
+   private:
 
-  static const uint8_t debugLevel;
+      static const uint8_t debugLevel;
 
-  static char logFileName[];
+      static char logFileName[];
 
-  FatSystem::File myLogFile;
+      FatSystem::File myLogFile;
 
-  FatSystem::FileSystem* myFileSystem;
+      FatSystem::FileSystem* myFileSystem;
 
 }
 ;

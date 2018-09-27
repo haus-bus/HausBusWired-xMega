@@ -1,22 +1,15 @@
-/********************************************************************
-   Rhapsody	: 8.0.3
-   Login		: viktor.pankraz
-   Component	: AR8
-   Configuration        : release
-   Model Element	: HACF
-   //!	Generated Date	: Wed, 6, Aug 2014
-   File Path	: AR8/release/SwFramework/Protocols/HomeAutomationControlFrame/HACF.cpp
- *********************************************************************/
+/*
+ * HACF.cpp
+ *
+ *  Created on: 28.08.2014
+ *      Author: Viktor Pankraz
+ */
 
-// ## auto_generated
 #include "HACF.h"
-// ## dependency CriticalSection
 #include <CriticalSection.h>
 #include <Security/Checksum.h>
 
-// ## package SwFramework::Protocols::HomeAutomationControlFrame
 
-// ## class HAC
 const uint8_t HACF::debugLevel( DEBUG_LEVEL_OFF );
 
 uint16_t HACF::deviceId;
@@ -25,16 +18,11 @@ uint16_t HACF::receiverIdForErrors( 0 );
 
 uint16_t HACF::messagesInUse( 0 );
 
-// ## class HACF::Object
 
-// ## class HACF::Header
 
-// ## class HACF::ControlFrame
 uint16_t HACF::ControlFrame::getLength() const
 {
-   // #[ operation getLength() const
    return ( sizeof( *this ) - sizeof( data ) + dataLength );
-   // #]
 }
 
 void HACF::operator delete( void* obj, size_t size )
@@ -85,8 +73,3 @@ bool HACF::ControlFrame::isValid()
 {
    return !Checksum::hasError( this, getLength() );
 }
-
-
-/*********************************************************************
-   File Path	: AR8/release/SwFramework/Protocols/HomeAutomationControlFrame/HACF.cpp
-*********************************************************************/

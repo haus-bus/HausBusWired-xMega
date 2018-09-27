@@ -13,65 +13,65 @@
 #include "DigitalOutput.h"
 #include <IoStream.h>
 
-class TwiHw: public IoStream
+class TwiHw : public IoStream
 {
-public:
+   public:
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  inline TwiHw( Twi& _twi, DigitalOutput _scl,
-                  DigitalOutput _sda ) :
-      owner( NULL ), transmitBuffer( NULL ), receiveBuffer( NULL ),
-      receiveBufferSize( 0 ), maxReceiveBufferSize( 0 ), twi( _twi ),
-      scl( _scl ), sda( _sda )
-  {
+      inline TwiHw( Twi& _twi, DigitalOutput _scl,
+                    DigitalOutput _sda ) :
+         owner( NULL ), transmitBuffer( NULL ), receiveBuffer( NULL ),
+         receiveBufferSize( 0 ), maxReceiveBufferSize( 0 ), twi( &_twi ),
+         scl( _scl ), sda( _sda )
+      {
 
-  }
-  ////    Operations    ////
+      }
+      ////    Operations    ////
 
-public:
+   public:
 
-  virtual Stream::Status genericCommand( Command command, void* buffer );
+      virtual Stream::Status genericCommand( Command command, void* buffer );
 
-  virtual Stream::Status read( void * pData, uint16_t length,
-                               EventDrivenUnit* user = 0 );
+      virtual Stream::Status read( void* pData, uint16_t length,
+                                   EventDrivenUnit* user = 0 );
 
-  virtual Stream::Status write( void * pData, uint16_t length,
-                                EventDrivenUnit* user = 0 );
+      virtual Stream::Status write( void* pData, uint16_t length,
+                                    EventDrivenUnit* user = 0 );
 
-  void handleSlaveStatus();
+      void handleSlaveStatus();
 
-  void handleMasterStatus();
+      void handleMasterStatus();
 
-protected:
+   protected:
 
-  void notifyEndOfSlaveTransfer();
+      void notifyEndOfSlaveTransfer();
 
-  void notifyEndOfmasterTransfer();
+      void notifyEndOfmasterTransfer();
 
-private:
+   private:
 
-  ////    Attributes    ////
+      ////    Attributes    ////
 
-protected:
+   protected:
 
-  EventDrivenUnit* owner;
+      EventDrivenUnit* owner;
 
-  uint8_t* transmitBuffer;
+      uint8_t* transmitBuffer;
 
-  uint8_t* receiveBuffer;
+      uint8_t* receiveBuffer;
 
-  uint16_t receiveBufferSize;
+      uint16_t receiveBufferSize;
 
-  uint16_t maxReceiveBufferSize;
+      uint16_t maxReceiveBufferSize;
 
-  Twi& twi;
+      Twi* twi;
 
-  DigitalOutput scl;
+      DigitalOutput scl;
 
-  DigitalOutput sda;
+      DigitalOutput sda;
 
-  static const uint8_t debugLevel;
+      static const uint8_t debugLevel;
 
 };
 

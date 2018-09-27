@@ -1,3 +1,10 @@
+/*
+ * InternalTemperature.cpp
+ *
+ * Created: 18.06.2014 14:12:55
+ * Author: viktor.pankraz
+ */
+
 #include "InternalTemperature.h"
 #include "Peripherals/Adc.h"
 

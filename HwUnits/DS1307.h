@@ -11,161 +11,161 @@
 #ifndef DS1307_H_
 #define DS1307_H_
 
-class DS1307: public Reactive
+class DS1307 : public Reactive
 {
-  static const uint8_t ADDRESS = 0x68;
+   static const uint8_t ADDRESS = 0x68;
 
-public:
+   public:
 
-  class ErrorCode
-  {
-  public:
-    enum ErrorCodes
-    {
-      NO_ERROR,
-      TWI_BUSY,
-      TWI_READ_FAILED,
-      TWI_WRITE_FAILED,
-      CLOCK_HALTED
-    };
-  };
+      class ErrorCode
+      {
+         public:
+            enum ErrorCodes
+            {
+               NO_ERROR,
+               TWI_BUSY,
+               TWI_READ_FAILED,
+               TWI_WRITE_FAILED,
+               CLOCK_HALTED
+            };
+      };
 
-  class TimeElements
-  {
-  public:
-    uint8_t dayOfWeek;
-    uint8_t date;
-    uint8_t month;
-    uint16_t year;
-    uint8_t hours;
-    uint8_t minutes;
-    uint8_t seconds;
+      class TimeElements
+      {
+         public:
+            uint8_t dayOfWeek;
+            uint8_t date;
+            uint8_t month;
+            uint16_t year;
+            uint8_t hours;
+            uint8_t minutes;
+            uint8_t seconds;
 
-    inline void reset()
-    {
-      dayOfWeek = 1;
-      date = 1;
-      month = 1;
-      year = 2000;
-      hours = 0;
-      minutes = 0;
-      seconds = 0;
-    }
-  };
+            inline void reset()
+            {
+               dayOfWeek = 1;
+               date = 1;
+               month = 1;
+               year = 2000;
+               hours = 0;
+               minutes = 0;
+               seconds = 0;
+            }
+      };
 
-  class Command
-  {
-  public:
+      class Command
+      {
+         public:
 
-    enum Commands
-    {
-      GET_TIME = HACF::COMMANDS_START,
-      SET_TIME,
-    };
+            enum Commands
+            {
+               GET_TIME = HACF::COMMANDS_START,
+               SET_TIME,
+            };
 
-    union Parameter
-    {
-      TimeElements te;
-    };
+            union Parameter
+            {
+               TimeElements te;
+            };
 
-    ////    Operations    ////
+            ////    Operations    ////
 
-    inline Parameter& getParameter()
-    {
-      return parameter;
-    }
+            inline Parameter& getParameter()
+            {
+               return parameter;
+            }
 
-    ////    Additional operations    ////
+            ////    Additional operations    ////
 
-    inline uint8_t getCommand() const
-    {
-      return command;
-    }
+            inline uint8_t getCommand() const
+            {
+               return command;
+            }
 
-    inline void setCommand( uint8_t p_command )
-    {
-      command = p_command;
-    }
+            inline void setCommand( uint8_t p_command )
+            {
+               command = p_command;
+            }
 
-    inline void setParameter( Parameter p_parameter )
-    {
-      parameter = p_parameter;
-    }
+            inline void setParameter( Parameter p_parameter )
+            {
+               parameter = p_parameter;
+            }
 
-    ////    Attributes    ////
+            ////    Attributes    ////
 
-    uint8_t command;
+            uint8_t command;
 
-    Parameter parameter;
-  };
+            Parameter parameter;
+      };
 
-  class Response: public IResponse
-  {
-  public:
+      class Response : public IResponse
+      {
+         public:
 
-    enum Responses
-    {
-      TIME = HACF::RESULTS_START,
-    };
+            enum Responses
+            {
+               TIME = HACF::RESULTS_START,
+            };
 
-    union Parameter
-    {
-      TimeElements te;
-    };
+            union Parameter
+            {
+               TimeElements te;
+            };
 
-    ////    Constructors and destructors    ////
+            ////    Constructors and destructors    ////
 
-    inline Response( uint16_t id ) :
-        IResponse( id )
-    {
-    }
+            inline Response( uint16_t id ) :
+               IResponse( id )
+            {
+            }
 
-    inline Response( uint16_t id, const HACF& message ) :
-        IResponse( id, message )
-    {
-    }
+            inline Response( uint16_t id, const HACF& message ) :
+               IResponse( id, message )
+            {
+            }
 
-    ////    Operations    ////
+            ////    Operations    ////
 
-    inline Parameter& getParameter()
-    {
-      return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
-    }
+            inline Parameter& getParameter()
+            {
+               return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
+            }
 
-    Parameter& setTime();
+            Parameter& setTime();
 
-    ////    Attributes    ////
+            ////    Attributes    ////
 
-  private:
+         private:
 
-    Parameter params;
-  };
+            Parameter params;
+      };
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  DS1307( Twi& _twi );
+      DS1307( Twi& _twi );
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  virtual bool notifyEvent( const Event& event );
+      virtual bool notifyEvent( const Event& event );
 
-  uint8_t setTime( TimeElements& timeElements );
+      uint8_t setTime( TimeElements& timeElements );
 
-  uint8_t getTime( TimeElements& timeElements );
+      uint8_t getTime( TimeElements& timeElements );
 
-  uint8_t setControlRegister( uint8_t data );
+      uint8_t setControlRegister( uint8_t data );
 
-  bool isRunning();
+      bool isRunning();
 
-  void run();
+      void run();
 
-  ////    Attributes    ////
+      ////    Attributes    ////
 
-private:
+   private:
 
-  static const uint8_t debugLevel;
+      static const uint8_t debugLevel;
 
-  Twi& twi;
+      Twi* twi;
 };
 
 #endif /* DS1307_H_ */

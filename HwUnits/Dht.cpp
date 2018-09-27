@@ -13,7 +13,7 @@ const uint8_t Dht::debugLevel( DEBUG_LEVEL_OFF );
 Dht::Temperature::Temperature( uint8_t instanceNumber )
 {
    setId( ( ClassId::TEMPERATURE << 8 ) | instanceNumber );
-   configuration = HwConfiguration::getSensorUnitConfiguration( id );
+   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
 }
 
 bool Dht::Temperature::notifyEvent( const Event& event )
@@ -33,7 +33,7 @@ Dht::Dht( uint8_t instanceNumber, PortPin portPin ) :
    hardware( portPin ), itsTemperature( instanceNumber )
 {
    setId( ( ClassId::HUMIDITY << 8 ) | instanceNumber );
-   configuration = HwConfiguration::getSensorUnitConfiguration( id );
+   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
 }
 
 void Dht::handleRunning()

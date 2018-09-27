@@ -71,22 +71,22 @@ void RollerShutter::cmdMoveToPosition( uint8_t target )
       {
          hardware->setDirectionToClose();
          setPollTime(
-            ( SystemTime::S / HwConfiguration::RollerShutter::MAX_LEVEL )
-            * configuration->getCloseTime() );
+            ( SystemTime::S / Configuration::MAX_LEVEL )
+            * configuration->closeTime );
       }
       else
       {
          hardware->setDirectionToOpen();
          setPollTime(
-            ( SystemTime::S / HwConfiguration::RollerShutter::MAX_LEVEL )
-            * configuration->getOpenTime() );
+            ( SystemTime::S / Configuration::MAX_LEVEL )
+            * configuration->openTime );
       }
       SET_STATE_L2( START_MOTOR );
       startingChannels++;
       DEBUG_M2( FSTR( "startingUnits+: " ), startingChannels );
       setSleepTime(
          startingChannels
-         * HwConfiguration::RollerShutter::DEFAULT_MOTOR_START_DELAY );
+         * Configuration::DEFAULT_MOTOR_START_DELAY );
    }
    else
    {
@@ -125,15 +125,15 @@ void RollerShutter::run()
 {
    if ( inStartUp() )
    {
-      setConfiguration( HwConfiguration::getRollerShutterConfiguration( id ) );
-      setPosition( configuration->getPosition() );
+      setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
+      setPosition( configuration->position );
       setTargetPosition( getPosition() );
       setToggleDirection( getPosition() ? TO_OPEN : TO_CLOSE );
       SET_STATE_L1( IDLE );
    }
    else if ( inIdle() )
    {
-      hardware->setInverted( configuration->isInverted() );
+      hardware->setInverted( configuration->getOptions().inverted );
       hardware->off();
       setSleepTime( NO_WAKE_UP );
    }
@@ -176,20 +176,20 @@ bool RollerShutter::handleRequest( HACF* message )
       }
       if ( data->parameter.direction == TO_CLOSE )
       {
-         if ( getPosition() > HwConfiguration::RollerShutter::CLOSED_THRESHOLD )
+         if ( getPosition() > Configuration::CLOSED_THRESHOLD )
          {
             // allow always moving at the boundaries
-            setPosition( HwConfiguration::RollerShutter::CLOSED_THRESHOLD );
+            setPosition( Configuration::CLOSED_THRESHOLD );
          }
          toggleDirection = TO_OPEN;
-         cmdMoveToPosition( HwConfiguration::RollerShutter::MAX_LEVEL );
+         cmdMoveToPosition( Configuration::MAX_LEVEL );
       }
       else
       {
-         if ( getPosition() < HwConfiguration::RollerShutter::OPEN_THRESHOLD )
+         if ( getPosition() < Configuration::OPEN_THRESHOLD )
          {
             // allow always moving at the boundaries
-            setPosition( HwConfiguration::RollerShutter::OPEN_THRESHOLD );
+            setPosition( Configuration::OPEN_THRESHOLD );
          }
          toggleDirection = TO_CLOSE;
          cmdMoveToPosition( 0 );
@@ -246,7 +246,7 @@ void RollerShutter::handleRunningState()
             cmdMoveToPosition( targetPosition );
             return;
          }
-         configuration->setPosition( position );
+         configuration->position = position;
       }
    }
 
@@ -259,7 +259,7 @@ void RollerShutter::handleRunningState()
          startingChannels--;
          DEBUG_M2( FSTR( "startingUnits-: " ), startingChannels );
       }
-      setSleepTime( HwConfiguration::RollerShutter::DEFAULT_MOTOR_START_DELAY );
+      setSleepTime( Configuration::DEFAULT_MOTOR_START_DELAY );
       SET_STATE_L2( NOTIFY_RUNNING );
    }
    else if ( subState == MOTOR_IS_RUNNING )
@@ -297,15 +297,14 @@ void RollerShutter::handleRunningState()
    {
       hardware->off();
       SET_STATE_L2( NOTIFY_STOPPED );
-      setSleepTime( HwConfiguration::RollerShutter::DEFAULT_MOTOR_START_DELAY );
+      setSleepTime( Configuration::DEFAULT_MOTOR_START_DELAY );
    }
 
 }
 
 void RollerShutter::setPosition( uint8_t p_position )
 {
-   position = minimum<uint8_t>( p_position,
-                                HwConfiguration::RollerShutter::MAX_LEVEL );
+   position = minimum<uint8_t>( p_position, Configuration::MAX_LEVEL );
 }
 
 void RollerShutter::positionTick()
@@ -319,21 +318,10 @@ void RollerShutter::positionTick()
    }
    else
    {
-      if ( position < HwConfiguration::RollerShutter::MAX_LEVEL )
+      if ( position < Configuration::MAX_LEVEL )
       {
          position++;
       }
    }
 
-}
-
-HwConfiguration::RollerShutter* RollerShutter::getConfiguration() const
-{
-   return configuration;
-}
-
-void RollerShutter::setConfiguration(
-   HwConfiguration::RollerShutter* p_RollerShutter )
-{
-   configuration = p_RollerShutter;
 }

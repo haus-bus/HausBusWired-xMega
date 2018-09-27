@@ -33,99 +33,99 @@ class UdpConnection;
 
 class UdpHeader;
 
-class IpStackManager: public Reactive
+class IpStackManager : public Reactive
 {
-  ////    Constructors and destructors    ////
+   ////    Constructors and destructors    ////
 
-public:
+   public:
 
-  IpStackManager();
+      IpStackManager();
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  static IpStackManager* instance()
-  {
-    return theInstance;
-  }
+      static IpStackManager* instance()
+      {
+         return theInstance;
+      }
 
-  virtual bool notifyEvent( const Event& event );
+      virtual bool notifyEvent( const Event& event );
 
-  void * operator new( size_t size );
+      void* operator new( size_t size );
 
-  void pollTcpConnections();
+      void pollTcpConnections();
 
-  void pollUdpConnections();
+      void pollUdpConnections();
 
-  bool sendToUdp( uint16_t port, void* pData, uint16_t len,
-                  const IP& _remoteIp = IP( 255, 255, 255, 255 ) );
+      bool sendToUdp( uint16_t port, void* pData, uint16_t len,
+                      const IP& _remoteIp = IP::broadcast() );
 
-private:
+   private:
 
-  void checkTcpConnections();
+      void checkTcpConnections();
 
-  // ICMP echo (i.e., ping) processing. This is simple, we only change the ICMP type from
-  // ECHO to ECHO_REPLY and adjust the ICMP checksum before we return the packet.
-  uint16_t handleIcmpPacket( IcmpHeader* icmp );
+      // ICMP echo (i.e., ping) processing. This is simple, we only change the ICMP type from
+      // ECHO to ECHO_REPLY and adjust the ICMP checksum before we return the packet.
+      uint16_t handleIcmpPacket( IcmpHeader* icmp );
 
-  uint16_t handleTcpPacket( TcpHeader* packet );
+      uint16_t handleTcpPacket( TcpHeader* packet );
 
-  uint16_t handleUdpPacket( UdpHeader* header );
+      uint16_t handleUdpPacket( UdpHeader* header );
 
-  void run();
+      void run();
 
-  ////    Additional operations    ////
+      ////    Additional operations    ////
 
-public:
+   public:
 
-  Stream::TransferDescriptor* getTransferDescriptor() const;
+      Stream::TransferDescriptor* getTransferDescriptor() const;
 
-protected:
+   protected:
 
-private:
+   private:
 
-  inline uint8_t getBuffer( int i1 ) const
-  {
-    return buffer[i1];
-  }
+      inline uint8_t getBuffer( int i1 ) const
+      {
+         return buffer[i1];
+      }
 
-  inline void setBuffer( int i1, uint8_t p_buffer )
-  {
-    buffer[i1] = p_buffer;
-  }
+      inline void setBuffer( int i1, uint8_t p_buffer )
+      {
+         buffer[i1] = p_buffer;
+      }
 
-  inline Timestamp* getLastArpUpdate() const
-  {
-    return (Timestamp*) &lastArpUpdate;
-  }
+      inline Timestamp* getLastArpUpdate() const
+      {
+         return (Timestamp*) &lastArpUpdate;
+      }
 
-  inline Timestamp* getLastConnectionCheck() const
-  {
-    return (Timestamp*) &lastConnectionCheck;
-  }
+      inline Timestamp* getLastConnectionCheck() const
+      {
+         return (Timestamp*) &lastConnectionCheck;
+      }
 
-  ////    Attributes    ////
+      ////    Attributes    ////
 
-protected:
+   protected:
 
-  static const uint8_t debugLevel;
+      static const uint8_t debugLevel;
 
-  static IpStackManager* theInstance;
+      static IpStackManager* theInstance;
 
-private:
+   private:
 
-  uint8_t buffer[IP_STACK_BUFFER_SIZE];
+      uint8_t buffer[IP_STACK_BUFFER_SIZE];
 
-  Timestamp lastArpUpdate;
+      Timestamp lastArpUpdate;
 
-  Timestamp lastConnectionCheck;
+      Timestamp lastConnectionCheck;
 
-  bool linkStatus;
+      bool linkStatus;
 
-  ////    Relations and components    ////
+      ////    Relations and components    ////
 
-protected:
+   protected:
 
-  Stream::TransferDescriptor transferDescriptor;
+      Stream::TransferDescriptor transferDescriptor;
 };
 
 #endif

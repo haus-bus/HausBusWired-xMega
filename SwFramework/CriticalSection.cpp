@@ -1,3 +1,10 @@
+/*
+ * CriticalSection.cpp
+ *
+ *  Created on: 28.08.2014
+ *      Author: Viktor Pankraz
+ */
+
 #include "CriticalSection.h"
 
 #ifndef __AVR

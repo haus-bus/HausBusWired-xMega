@@ -1,3 +1,10 @@
+/*
+ * AR8SystemHw.h
+ *
+ *  Created on: 06.08.2014
+ *      Author: Viktor Pankraz
+ */
+
 #ifndef Electronics_SystemBoards_AR8_AR8_Boards_AR8SystemHw_H
 #define Electronics_SystemBoards_AR8_AR8_Boards_AR8SystemHw_H
 
@@ -5,85 +12,46 @@
 #include <HomeAutomationHw.h>
 #include <InternalEeprom.h>
 
-class Checksum;
-
-class DS1820;
-
-class DaliDimmerHw;
-
-class DaliLine;
-
-class Dimmer;
-
-class Eeprom;
-
-class EventSystem;
-
-class HacfIpStackManager;
-
-class IrReceiver;
-
-class Logger;
-
-class LogicalButton;
-
-class ModuleId;
-
-class PersistentRules;
-
-class PortPinUnit;
-
-class RollerShutter;
-
-class TimerCounter0;
-
-class AR8SystemHw: public HomeAutomationHw
+class AR8SystemHw : public HomeAutomationHw
 {
-public:
+   public:
 
-  static const uint16_t TCC1_PRESCALER = 1024;
+      static const uint16_t TCC1_PRESCALER = 1024;
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  AR8SystemHw();
+      AR8SystemHw();
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-private:
+   private:
 
-  void configure();
+      void configure();
 
-  void configureDaliLine();
+      void configureDaliLine();
 
-  void configureEthernet();
+      void configureEthernet();
 
-  void configureTwi();
+      void configureTwi();
 
-  void configureLogicalButtons();
+      void configureLogicalButtons();
 
-  void configureSlots();
+      void configureSlots();
 
-  void configureZeroCrossDetection();
+      void configureZeroCrossDetection();
 
-  ////    Additional operations    ////
+      ////    Additional operations    ////
 
-public:
+   public:
 
-  InternalEeprom* getInternalEeprom() const;
+      InternalEeprom* getInternalEeprom() const;
 
-  ////    Attributes    ////
+      ////    Attributes    ////
 
-  ////    Relations and components    ////
+      ////    Relations and components    ////
 
-protected:
-
-  DaliLine* daliLine;
-
-  InternalEeprom internalEeprom;
+   protected:
 
 };
 
 #endif
-/*********************************************************************
- File Path	: AR8/release/Electronics/SystemBoards/AR8/AR8_Boards/AR8SystemHw.h
- *********************************************************************/

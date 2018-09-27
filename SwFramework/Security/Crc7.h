@@ -13,16 +13,16 @@
 
 class Crc7
 {
-  ////    Operations    ////
+   ////    Operations    ////
 
-public:
+   public:
 
-  inline static uint8_t hasError( void * pData, uint16_t length )
-  {
-    return get( pData, length );
-  }
+      inline static uint8_t hasError( void* pData, uint16_t length )
+      {
+         return get( pData, length );
+      }
 
-  static uint8_t get( void * pData, uint16_t length, uint8_t crc = 0 );
+      static uint8_t get( void* pData, uint16_t length, uint8_t crc = 0 );
 };
 
 

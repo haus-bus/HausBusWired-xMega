@@ -33,9 +33,9 @@ void BaseSensorUnit::notifyNewValue( BaseSensorUnit::Status newStatus )
       return;
    }
    uint8_t nextEvent = currentEvent;
-   int8_t lower = configuration->getLowerThreshold();
-   int8_t upper = configuration->getUpperThreshold();
-   uint8_t hysteresis = configuration->getHysteresis();
+   int8_t lower = configuration->lowerThreshold;
+   int8_t upper = configuration->upperThreshold;
+   uint8_t hysteresis = configuration->hysteresis;
 
    // | old | new | Event
    // ---------------------
@@ -124,7 +124,7 @@ void BaseSensorUnit::notifyNewValue( BaseSensorUnit::Status newStatus )
    {
       if ( --timeToReport == 0 )
       {
-         timeToReport = configuration->getReportTime();
+         timeToReport = configuration->reportTime;
          Response event( getId() );
          event.setStatus( newStatus );
          event.queue();
@@ -155,7 +155,7 @@ bool BaseSensorUnit::handleRequest( HACF* message )
       {
          DEBUG_H1( FSTR( ".getConfiguration()" ) );
          configuration->get( response.setConfiguration().configuration );
-         timeToReport = configuration->getReportTime();
+         timeToReport = configuration->reportTime;
       }
       else if ( cf.isCommand( Command::GET_STATUS ) )
       {

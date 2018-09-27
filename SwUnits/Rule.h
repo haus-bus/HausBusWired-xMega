@@ -19,62 +19,60 @@ class IResponse;
 
 class Rule
 {
-  ////    Constructors and destructors    ////
+   ////    Constructors and destructors    ////
 
-public:
+   public:
 
-  inline Rule()
-      : state( 0 ), firstElement( NULL )
-  {
-  }
+      inline Rule()
+         : state( 0 ), firstElement( NULL )
+      {
+      }
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-public:
+   public:
 
-  bool notifyEvent( const HACF::ControlFrame& message, uint8_t ruleIndex );
+      bool notifyEvent( const HACF::ControlFrame& message, uint8_t ruleIndex );
 
-  //## operation triggerElement(uint8_t)
-  void triggerElement( uint8_t index );
+      void triggerElement( uint8_t index );
 
-  //## operation triggerElement(RuleElement)
-  bool triggerElement( const RuleElement& element );
+      bool triggerElement( const RuleElement& element );
 
-  inline RuleElement* getFirstElement() const
-  {
-    return firstElement;
-  }
+      inline RuleElement* getFirstElement() const
+      {
+         return firstElement;
+      }
 
-  inline uint8_t getState() const
-  {
-    return state;
-  }
+      inline uint8_t getState() const
+      {
+         return state;
+      }
 
-  inline void setFirstElement( RuleElement* p_RuleElement )
-  {
-    firstElement = p_RuleElement;
-  }
+      inline void setFirstElement( RuleElement* p_RuleElement )
+      {
+         firstElement = p_RuleElement;
+      }
 
-  inline void setState( uint8_t p_state )
-  {
-    state = p_state;
-  }
+      inline void setState( uint8_t p_state )
+      {
+         state = p_state;
+      }
 
-  ////    Attributes    ////
+      ////    Attributes    ////
 
-public:
+   public:
 
-  uint8_t state;		//## attribute state
+      uint8_t state;
 
-private:
+   private:
 
-  static const uint8_t debugLevel;		//## attribute debugLevel
+      static const uint8_t debugLevel;
 
-  ////    Relations and components    ////
+      ////    Relations and components    ////
 
-protected:
+   protected:
 
-  RuleElement* firstElement;		//## link firstElement
+      RuleElement* firstElement;
 };
 
 #endif

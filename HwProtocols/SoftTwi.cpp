@@ -13,7 +13,7 @@
 #include "SoftTwi.h"
 
 
-//#define TEST_AR8
+// #define TEST_AR8
 
 
 #define TRACE_INIT( port, pins )     port.DIRSET = pins; port.OUTCLR = pins
@@ -483,7 +483,7 @@ Stream::Status SoftTwi::read( void* pData, uint16_t length, EventDrivenUnit* use
    }
 
    CriticalSection doNotInterrupt;
-   if ( ( status == Stream::NO_DATA ) && ( streamState != Stream::READING )  )
+   if ( ( status == Stream::NO_DATA ) && ( streamState != Stream::READING ) )
    {
       // release pins on error or in IDLE
       TWI_PORT.DIRCLR = SDA_PIN | SCL_PIN;
@@ -528,7 +528,7 @@ INTERRUPT void PORTE_INT0_vect()
    {
       portStatus |= TWI_PORT.IN;
    }
-   if ( !( portStatus & SCL_PIN  ) )
+   if ( !( portStatus & SCL_PIN ) )
    {
       DISABLE_SCL_INT;
       TWI_PORT.OUTCLR = SCL_PIN;

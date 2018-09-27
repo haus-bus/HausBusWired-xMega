@@ -52,7 +52,7 @@ class DigitalFrequencyLockedLoops
 
    protected:
 
-      DFLL_t reg;       // ## attribute reg
+      DFLL_t reg;
 };
 
 #endif

@@ -79,7 +79,7 @@ void Led::cmdOn( const Led::Command::On& parameter )
    setDuration( parameter.duration );
    setBrightness( parameter.brightness );
    setQuantity( duration ? 1 : 0 );
-   setSleepTime( duration ? configuration->getTimeBase() : NO_WAKE_UP );
+   setSleepTime( duration ? configuration->timeBase : NO_WAKE_UP );
 
    if ( brightness )
    {
@@ -124,7 +124,7 @@ bool Led::handleRequest( HACF* message )
    {
       DEBUG_H1( FSTR( ".setConfiguration()" ) );
       configuration->set( data->parameter.setConfiguration );
-      setDimmOffset( configuration->getDutyOffset() );
+      setDimmOffset( configuration->dutyOffset );
       updateConfiguration();
    }
    else if ( cf.isCommand( Command::SET_MIN_BRIGHTNESS ) )
@@ -196,8 +196,8 @@ bool Led::notifyEvent( const Event& event )
       }
       if ( updateConf && configuration )
       {
-         setMinBrightness( configuration->getMinDuty() );
-         setDimmOffset( configuration->getDutyOffset() );
+         setMinBrightness( configuration->minDuty );
+         setDimmOffset( configuration->dutyOffset );
       }
    }
    else if ( event.isEvMessage() )

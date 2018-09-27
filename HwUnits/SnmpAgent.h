@@ -10,172 +10,220 @@
 
 #include <Protocols/Snmp.h>
 #include <Gateway.h>
-#include "HwConfiguration.h"
+#include <ConfigurationManager.h>
 #include "HwUnits.h"
 
-class SnmpAgent: public Gateway, public Snmp
+class SnmpAgent : public Gateway,
+                  public Snmp
 {
-public:
+   public:
 
-  enum NodeIndex
-  {
-    ISO,
-    ORG,
-    DOD,
-    INTERNET,
-    PRIVATE,
-    ENTERPRISES,
-    PANKRAZ,
-    PRODUCTS,
-    DEVICE_TYPE,
-    DEVICE_ID,
-    CLASS_ID,
-    INSTANCE_ID,
-    FUNCTION_ID,
-    MAX_NODES
-  };
+      enum NodeIndex
+      {
+         ISO,
+         ORG,
+         DOD,
+         INTERNET,
+         PRIVATE,
+         ENTERPRISES,
+         PANKRAZ,
+         PRODUCTS,
+         DEVICE_TYPE,
+         DEVICE_ID,
+         CLASS_ID,
+         INSTANCE_ID,
+         FUNCTION_ID,
+         MAX_NODES
+      };
 
-  class Command
-  {
-  public:
+      class Configuration
+      {
+         public:
 
-    enum Commands
-    {
-      GET_CONFIGURATION = HACF::COMMANDS_START,
-      SET_CONFIGURATION
+            static const uint16_t DEFAULT_LOWER_THRESHOLD = 100;
+            static const uint16_t DEFAULT_UPPER_THRESHOLD = 200;
 
-    };
+            ////    Attributes    ////
 
-    union Parameter
-    {
-      HwConfiguration::SnmpAgent setConfiguration;
-    };
+            uint32_t trapDestinationIp;
+            char communityString[17];
 
-    ////    Operations    ////
+            ////    Operations    ////
 
-    inline Parameter& getParameter()
-    {
-      return parameter;
-    }
+            static inline Configuration getDefault()
+            {
+               Configuration defaultConfiguration =
+               {
+                  0xFFFFFFFF,
+                  "public"
+               };
+               return defaultConfiguration;
+            }
 
-    ////    Additional operations    ////
+            inline void checkAndCorrect()
+            {
+            }
+      };
 
-    inline uint8_t getCommand() const
-    {
-      return command;
-    }
+      class EepromConfiguration : public ConfigurationManager::EepromConfigurationTmpl<Configuration>
+      {
+         public:
 
-    inline void setCommand( uint8_t p_command )
-    {
-      command = p_command;
-    }
+            uint32_tx trapDestinationIp;
+            uint8_tx communityString[17];
 
-    inline void setParameter( Parameter p_parameter )
-    {
-      parameter = p_parameter;
-    }
+            void getCommunityString( char* string ) const
+            {
+               memcpy( string, communityString, sizeof( communityString ) );
+            }
+      };
 
-    ////    Attributes    ////
+      class Command
+      {
+         public:
 
-    uint8_t command;
+            enum Commands
+            {
+               GET_CONFIGURATION = HACF::COMMANDS_START,
+               SET_CONFIGURATION
 
-    Parameter parameter;
-  };
+            };
 
-  class Response: public IResponse
-  {
-  public:
+            union Parameter
+            {
+               Configuration setConfiguration;
+            };
 
-    enum Responses
-    {
-      CONFIGURATION = HACF::RESULTS_START
-    };
+            ////    Operations    ////
 
-    union Parameter
-    {
-      HwConfiguration::SnmpAgent configuration;
-    };
+            inline Parameter& getParameter()
+            {
+               return parameter;
+            }
 
-    ////    Constructors and destructors    ////
+            ////    Additional operations    ////
 
-    inline Response( uint16_t id ) :
-        IResponse( id )
-    {
-    }
+            inline uint8_t getCommand() const
+            {
+               return command;
+            }
 
-    inline Response( uint16_t id, const HACF& message ) :
-        IResponse( id, message )
-    {
-    }
+            inline void setCommand( uint8_t p_command )
+            {
+               command = p_command;
+            }
 
-    ////    Operations    ////
+            inline void setParameter( Parameter p_parameter )
+            {
+               parameter = p_parameter;
+            }
 
-    inline Parameter& getParameter()
-    {
-      return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
-    }
+            ////    Attributes    ////
 
-    Parameter& setConfiguration();
+            uint8_t command;
 
-    ////    Attributes    ////
+            Parameter parameter;
+      };
 
-  private:
+      class Response : public IResponse
+      {
+         public:
 
-    Parameter params;
-  };
+            enum Responses
+            {
+               CONFIGURATION = HACF::RESULTS_START
+            };
 
-  ////    Constructors and destructors    ////
+            union Parameter
+            {
+               Configuration configuration;
+            };
 
-  SnmpAgent();
+            ////    Constructors and destructors    ////
 
-  ////    Operations    ////
+            inline Response( uint16_t id ) :
+               IResponse( id )
+            {
+            }
 
-  virtual bool notifyEvent( const Event& event );
+            inline Response( uint16_t id, const HACF& message ) :
+               IResponse( id, message )
+            {
+            }
 
-  bool handleRequest( HACF* message );
+            ////    Operations    ////
 
-  bool sendMessage( HACF* message );
+            inline Parameter& getParameter()
+            {
+               return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
+            }
 
-  virtual uint8_t bindProc( uint8_t req_type, Snmp::ObjectIdentifier* oid,
-                            Snmp::Sequence* out );
+            Parameter& setConfiguration();
 
-  inline void * operator new( size_t size );
+            ////    Attributes    ////
 
-  void run();
+         private:
 
-protected:
+            Parameter params;
+      };
 
-  Reactive* getNextNode( HACF::Object& object );
+      ////    Constructors and destructors    ////
 
-  void updateConfiguration();
+      SnmpAgent();
 
-  bool isClassIdSupported( uint8_t classId )
-  {
-    return (classId == ::Object::ClassId::BUTTON )
-        || (classId == ::Object::ClassId::DIGITAL_OUTPUT )
-        || (classId == ::Object::ClassId::SYSTEM );
-  }
+      ////    Operations    ////
 
-  uint8_t getFirstSupportedClassId()
-  {
-    return ::Object::ClassId::BUTTON;
-  }
+      virtual bool notifyEvent( const Event& event );
 
-  ////    Attributes    ////
+      bool handleRequest( HACF* message );
 
-protected:
+      bool sendMessage( HACF* message );
 
-  static const uint8_t debugLevel;
+      virtual uint8_t bindProc( uint8_t req_type, Snmp::ObjectIdentifier* oid,
+                                Snmp::Sequence* out );
 
-  HwConfiguration::SnmpAgent* configuration;
+      inline void* operator new( size_t size );
 
-  ////    Relations and components    ////
+      void run();
+
+   protected:
+
+      Reactive* getNextNode( HACF::Object& object );
+
+      void updateConfiguration();
+
+      bool isClassIdSupported( uint8_t classId )
+      {
+         return ( classId == ::Object::ClassId::BUTTON )
+                || ( classId == ::Object::ClassId::DIGITAL_OUTPUT )
+                || ( classId == ::Object::ClassId::SYSTEM );
+      }
+
+      uint8_t getFirstSupportedClassId()
+      {
+         return ::Object::ClassId::BUTTON;
+      }
+
+      inline void setConfiguration( EepromConfiguration* _config )
+      {
+         configuration = _config;
+      }
+
+      ////    Attributes    ////
+
+   protected:
+
+      static const uint8_t debugLevel;
+
+      EepromConfiguration* configuration;
+
+      ////    Relations and components    ////
 
 };
 
-inline void * SnmpAgent::operator new( size_t size )
+inline void* SnmpAgent::operator new( size_t size )
 {
-  return allocOnce( size );
+   return allocOnce( size );
 }
 
 #endif /* SNMPAGENT_H_ */

@@ -1,7 +1,7 @@
 /*
- * PortPin.cpp
+ * PortPin.h
  *
- *  Created on: 28.08.2014
+ *  Created on: 17.07.2017
  *      Author: Viktor Pankraz
  */
 
@@ -14,72 +14,168 @@
 class PortPin
 {
 
-public:
+   public:
 
-  enum States
-  {
-    LOW,
-    HIGH
-  };
+      enum States
+      {
+         LOW,
+         HIGH
+      };
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  PortPin( uint8_t _portNumber, uint8_t _pinNumber );
+      PortPin( uint8_t _portNumber, uint8_t _pinNumber );
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  void configInput();
+      void configInput();
 
-  void configOutput();
+      void configOutput();
 
-  inline IoPort& getIoPort() const
-  {
-    return IoPort::instance( portNumber );
-  }
+      inline IoPort& getIoPort() const
+      {
+         return IoPort::instance( portNumber );
+      }
 
-  uint8_t getPin() const;
+      inline bool isValid() const
+      {
+         return portNumber < PortMax;
+      }
 
-  inline uint8_t isInverted();
+      uint8_t getPin() const;
 
-  inline void setInverted( bool inverted );
+      inline uint8_t isInverted();
 
-  ////    Additional operations    ////
+      inline void enablePullup()
+      {
+         getIoPort().setPinMode( pinNumber, PORT_OPC_PULLUP_gc );
+      }
 
-  inline uint8_t getPinNumber() const
-  {
-    return pinNumber;
-  }
+      inline void enablePulldown()
+      {
+         getIoPort().setPinMode( pinNumber, PORT_OPC_PULLDOWN_gc );
+      }
 
-  inline void setPinNumber( uint8_t p_pinNumber )
-  {
-    pinNumber = p_pinNumber;
-  }
+      inline void setInverted( bool inverted );
 
-  inline uint8_t getPortNumber() const
-  {
-    return portNumber;
-  }
+      uint8_t isSet() const;
 
-  inline void setPortNumber( uint8_t p_portNumber )
-  {
-    portNumber = p_portNumber;
-  }
+      ////    Additional operations    ////
 
-  ////    Attributes    ////
+      inline uint8_t getPinNumber() const
+      {
+         return pinNumber;
+      }
 
-  uint8_t pinNumber :4;	
+      inline void setPinNumber( uint8_t p_pinNumber )
+      {
+         pinNumber = p_pinNumber;
+      }
 
-  uint8_t portNumber :4;		
+      inline uint8_t getPortNumber() const
+      {
+         return portNumber;
+      }
+
+      inline void setPortNumber( uint8_t p_portNumber )
+      {
+         portNumber = p_portNumber;
+      }
+
+      ////    Attributes    ////
+
+      uint8_t pinNumber : 4;
+
+      uint8_t portNumber : 4;
 };
 
 inline uint8_t PortPin::isInverted()
 {
-  return getIoPort().isPinInverted( pinNumber );
+   return getIoPort().isPinInverted( pinNumber );
 }
 
 inline void PortPin::setInverted( bool inverted )
 {
-  getIoPort().setPinInverted( pinNumber, inverted );
+   getIoPort().setPinInverted( pinNumber, inverted );
 }
+
+
+template<uint8_t portNumber, uint8_t pinNumber>
+class PortPinTmpl
+{
+
+   public:
+
+      enum States
+      {
+         LOW,
+         HIGH
+      };
+
+      ////    Constructors and destructors    ////
+
+      inline PortPinTmpl()
+      {
+      }
+
+      ////    Operations    ////
+
+      inline void configInput()
+      {
+         getIoPort().setPinsAsInput( getPin() );
+      }
+
+      inline void configOutput()
+      {
+         getIoPort().setPinsAsOutput( getPin() );
+      }
+
+      inline IoPort& getIoPort() const
+      {
+         return IoPort::instance<portNumber>();
+      }
+
+      inline uint8_t getPin() const
+      {
+         return ( 1 << pinNumber );
+      }
+
+      inline bool isValid() const
+      {
+         return portNumber < PortMax;
+      }
+
+      inline uint8_t isInverted()
+      {
+         return getIoPort().isPinInverted( pinNumber );
+      }
+
+      inline void setInverted( bool inverted )
+      {
+         getIoPort().setPinInverted( pinNumber, inverted );
+      }
+
+      inline void enablePullup()
+      {
+         getIoPort().setPinMode( pinNumber, PORT_OPC_PULLUP_gc );
+      }
+
+      inline void enablePulldown()
+      {
+         getIoPort().setPinMode( pinNumber, PORT_OPC_PULLDOWN_gc );
+      }
+
+      ////    Additional operations    ////
+
+      inline uint8_t getPinNumber() const
+      {
+         return pinNumber;
+      }
+
+      inline uint8_t getPortNumber() const
+      {
+         return portNumber;
+      }
+};
 
 #endif

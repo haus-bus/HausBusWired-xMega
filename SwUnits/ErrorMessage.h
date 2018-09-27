@@ -10,18 +10,18 @@
 
 #include "IResponse.h"
 
-class ErrorMessage: public IResponse
+class ErrorMessage : public IResponse
 {
 
-public:
+   public:
 
-  enum GlobalErrorCode
-  {
-    CONFIGURATION_OUT_OF_MEMORY = 0x80,
-    HEAP_OUT_OF_MEMORY,
-  };
+      enum GlobalErrorCode
+      {
+         CONFIGURATION_OUT_OF_MEMORY = 0x80,
+         HEAP_OUT_OF_MEMORY,
+      };
 
-  ErrorMessage( uint16_t id, uint8_t code, uint8_t* data = 0 );
+      ErrorMessage( uint16_t id, uint8_t code, uint8_t* data = 0 );
 };
 
 #endif /* ERRORMESSAGE_H_ */

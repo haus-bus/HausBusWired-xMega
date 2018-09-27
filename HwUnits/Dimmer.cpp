@@ -52,9 +52,8 @@ void Dimmer::Response::setStatus( uint16_t brightness )
 }
 
 Dimmer::Dimmer( uint8_t _id, IDimmerHw* _hardware ) :
-   brightness( 0 ), dimmingRangeStart( 0 ), dimmingRangeEnd( 100 ),
-   direction( TO_LIGHT ), duration( 0 ), subState( NO_COMMAND ),
-   targetBrightness( 0 )
+   brightness( 0 ), direction( TO_LIGHT ), duration( 0 ),
+   subState( NO_COMMAND ), targetBrightness( 0 )
 {
    hardware = NULL;
    configuration = NULL;
@@ -130,9 +129,9 @@ void Dimmer::cmdSetBrightness( Dimmer::Command::SetBrightness& parameter,
    {
       parameter.brightness = IDimmerHw::MAX_BRIGHTNESS;
    }
-   if ( parameter.brightness > dimmingRangeEnd )
+   if ( parameter.brightness > configuration->dimmingRangeEnd )
    {
-      parameter.brightness = dimmingRangeEnd;
+      parameter.brightness = configuration->dimmingRangeEnd;
    }
    if ( parameter.brightness != ( brightness / 10 ) )
    {
@@ -162,32 +161,16 @@ void Dimmer::cmdStart( const Dimmer::Command::Start& parameter )
       setDirection( TO_DARK ); // set inverted direction because it will be toggeled
    }
    setBrightness.brightness = ( ( direction < 0 ) ? IDimmerHw::MAX_BRIGHTNESS : 0 );
-   cmdSetBrightness( setBrightness, configuration->getDimmingTime() );
+   cmdSetBrightness( setBrightness, configuration->dimmingTime );
 }
 
 void Dimmer::configureHw()
 {
-   configuration = HwConfiguration::getDimmerConfiguration( id );
-   // update new settings for older FW
-   HwConfiguration::Dimmer conf;
-   configuration->get( conf );
-   configuration->set( conf );
+   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
 
-   setDimmingRangeStart( configuration->getDimmingRangeStart() );
-   setDimmingRangeEnd( configuration->getDimmingRangeEnd() );
-   notifyError( hardware->setMode( configuration->getMode() ) );
+   notifyError( hardware->setMode( configuration->mode ) );
    hardware->off();
 
-}
-
-int16_t Dimmer::getDimmingRangeEnd() const
-{
-   return dimmingRangeEnd * 10;
-}
-
-int16_t Dimmer::getDimmingRangeStart() const
-{
-   return dimmingRangeStart * 10;
 }
 
 bool Dimmer::handleRequest( HACF* message )
@@ -221,9 +204,7 @@ bool Dimmer::handleRequest( HACF* message )
    {
       DEBUG_H1( FSTR( ".setConfiguration()" ) );
       configuration->set( data->parameter.setConfiguration );
-      hardware->setMode( configuration->getMode() );
-      setDimmingRangeStart( configuration->getDimmingRangeStart() );
-      setDimmingRangeEnd( configuration->getDimmingRangeEnd() );
+      hardware->setMode( configuration->mode );
    }
    else
    {
@@ -338,16 +319,6 @@ void Dimmer::notifyError( uint8_t errorCode )
       event.setErrorCode( errorCode );
       event.queue();
    }
-}
-
-HwConfiguration::Dimmer* Dimmer::getConfiguration() const
-{
-   return configuration;
-}
-
-void Dimmer::setConfiguration( HwConfiguration::Dimmer* p_Dimmer )
-{
-   configuration = p_Dimmer;
 }
 
 IDimmerHw* Dimmer::getHardware() const

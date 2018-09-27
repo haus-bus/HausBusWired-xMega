@@ -1,33 +1,22 @@
-/********************************************************************
-        Rhapsody	: 8.0.3
-        Login		: viktor.pankraz
-        Component	: Xmega192A3
-        Configuration   : debug
-        Model Element	: IrDecoder
-   //!	Generated Date	: Tue, 24, Jun 2014
-        File Path	: Xmega192A3/debug/HwProtocols/IrDecoder.cpp
- *********************************************************************/
+/*
+ * IrDecoder.cpp
+ *
+ * Created: 18.06.2014 14:12:55
+ * Author: viktor.pankraz
+ */
 
-// ## auto_generated
 #include "IrDecoder.h"
-// ## package HwProtocols
 
-// ## class IrDecoder
 const uint8_t IrDecoder::debugLevel( DEBUG_LEVEL_OFF );
 
-// ## class IrDecoder::RC5
 
-// ## class IrDecoder::NEC
 
 IrDecoder::IrDecoder() : irDetected( 0 ), startBitDetected( 0 ), waitForStartSpace( 0 ), repetitionFrame( 0 ), lastTime( 0xFFFF )
 {
-   // #[ operation IrDecoder()
-   // #]
 }
 
 bool IrDecoder::getData( IrDecoder::Data& data )
 {
-   // #[ operation getData(Data)
    bool newData = irDetected;
    data = lastData;
 
@@ -39,12 +28,10 @@ bool IrDecoder::getData( IrDecoder::Data& data )
 
    return newData;
 
-   // #]
 }
 
 void IrDecoder::notifyEdge( uint8_t bit, uint16_t time )
 {
-   // #[ operation notifyEdge(uint8_t,uint16_t)
    if ( !irDetected )
    {
       if ( !startBitDetected )                        // start bit detected?
@@ -132,9 +119,4 @@ void IrDecoder::notifyEdge( uint8_t bit, uint16_t time )
       }
    }
    lastTime = time;
-   // #]
 }
-
-/*********************************************************************
-        File Path	: Xmega192A3/debug/HwProtocols/IrDecoder.cpp
-*********************************************************************/

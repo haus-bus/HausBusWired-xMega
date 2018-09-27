@@ -1,3 +1,10 @@
+/*
+ * InternalTemperature.h
+ *
+ *  Created on: 17.07.2017
+ *      Author: Viktor Pankraz
+ */
+
 #ifndef Basics_InternalTemperature_H
 #define Basics_InternalTemperature_H
 
@@ -5,29 +12,29 @@
 
 class InternalTemperature
 {
-public:
+   public:
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  inline InternalTemperature()
-  {
-  }
+      inline InternalTemperature()
+      {
+      }
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-protected:
+   protected:
 
-  ////    Additional operations    ////
+      ////    Additional operations    ////
 
-public:
+   public:
 
-  static int16_t getValue();
+      static int16_t getValue();
 
-  ////    Attributes    ////
+      ////    Attributes    ////
 
-protected:
+   protected:
 
-  static const uint8_t debugLevel;
+      static const uint8_t debugLevel;
 
 };
 

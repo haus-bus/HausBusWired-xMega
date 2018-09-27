@@ -26,11 +26,11 @@ void DaliLine::Response::setStatus( uint8_t status )
 }
 
 DaliLine::DaliLine( Dali& _daliHw, uint8_t _id ) :
-   daliHw( _daliHw )
+   daliHw( &_daliHw )
 {
    configuration = NULL;
    setId( ( ClassId::DALI_LINE << 8 ) | _id );
-   setConfiguration( HwConfiguration::getDaliLineConfiguration( id ) );
+   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
 }
 
 bool DaliLine::notifyEvent( const Event& event )
@@ -65,13 +65,13 @@ bool DaliLine::handleRequest( HACF* message )
    {
       DEBUG_H1( FSTR( ".allOn()" ) );
       uint8_t cmd[2] = { 0xFE, 0xFE };
-      daliHw.write( cmd );
+      daliHw->write( cmd );
    }
    else if ( cf.isCommand( Command::ALL_OFF ) )
    {
       DEBUG_H1( FSTR( "(.allOff()" ) );
       uint8_t cmd[2] = { 0xFE, 0 };
-      daliHw.write( cmd );
+      daliHw->write( cmd );
    }
    else if ( cf.isCommand( Command::SET_CONFIGURATION ) )
    {
@@ -85,16 +85,16 @@ bool DaliLine::handleRequest( HACF* message )
       if ( cf.isCommand( Command::SEND_CMD ) )
       {
          DEBUG_H1( FSTR( ".sendCmd()" ) );
-         daliHw.write( cf.getData() );
+         daliHw->write( cf.getData() );
          if ( ( data->parameter.sendCmd.command >= Dali::RESET )
             && ( data->parameter.sendCmd.command <= Dali::STORE_DTR_AS_SCHORT_ADDR ) )
          {
             // repeat command
             SystemTime::waitMs( 20 );
-            daliHw.write( cf.getData() );
+            daliHw->write( cf.getData() );
          }
          uint8_t reply;
-         uint8_t status = daliHw.read( &reply );
+         uint8_t status = daliHw->read( &reply );
 
          if ( status == Stream::SUCCESS )
          {
@@ -119,14 +119,4 @@ bool DaliLine::handleRequest( HACF* message )
       response.queue();
    }
    return true;
-}
-
-HwConfiguration::DaliLine* DaliLine::getConfiguration() const
-{
-   return configuration;
-}
-
-void DaliLine::setConfiguration( HwConfiguration::DaliLine* p_DaliLine )
-{
-   configuration = p_DaliLine;
 }

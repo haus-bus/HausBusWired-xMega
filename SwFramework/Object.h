@@ -13,113 +13,112 @@
 
 class Object
 {
-public:
+   public:
 
-  class ClassId
-  {
-  public:
+      class ClassId
+      {
+         public:
 
-    //## type Ids
-    enum Ids
-    {
-      SYSTEM = 0,
-      PC_SERVER,
-      WEATHER,
-      RTC_TIME,
-      LOGGER_MEMORY,
-      BATTERY_MANAGER,
-      MODBUS_SERVER = 0x0E,
-      DIGITAL_PORT,
-      BUTTON,
-      DIMMER,
-      ROLLER_SHUTTER,
-      DIGITAL_OUTPUT,
-      LOGICAL_BUTTON,
-      LED,
-      TEMPERATURE = 0x20,
-      IR_RECEIVER,
-      HUMIDITY,
-      COUNTER,
-      ANALOG_INPUT,
-      MONITORED_DIGITAL_INPUT,
-      USD_METER,
-      DALI_LINE = 0xA0,
-      KNX_LINE,
-      ETHERNET,
-      SMTP_AGENT,
-      GATEWAY = 0xB0,
-      DHCP = 0xE0,
-      IP_STACK_MANAGER
-    };
-  };
+            enum Ids
+            {
+               SYSTEM = 0,
+               PC_SERVER,
+               WEATHER,
+               RTC_TIME,
+               LOGGER_MEMORY,
+               BATTERY_MANAGER,
+               MODBUS_SERVER = 0x0E,
+               DIGITAL_PORT,
+               BUTTON,
+               DIMMER,
+               ROLLER_SHUTTER,
+               DIGITAL_OUTPUT,
+               LOGICAL_BUTTON,
+               LED,
+               TEMPERATURE = 0x20,
+               IR_RECEIVER,
+               HUMIDITY,
+               COUNTER,
+               ANALOG_INPUT,
+               MONITORED_DIGITAL_INPUT,
+               USD_METER,
+               DALI_LINE = 0xA0,
+               KNX_LINE,
+               ETHERNET,
+               SMTP_AGENT,
+               GATEWAY = 0xB0,
+               DHCP = 0xE0,
+               IP_STACK_MANAGER
+            };
+      };
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  inline Object( uint16_t _id = 0 ) :
-      id( _id )
-  {
+      inline Object( uint16_t _id = 0 ) :
+         id( _id )
+      {
 
-  }
+      }
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  inline uint8_t getClassId();
+      inline uint8_t getClassId();
 
-  inline uint8_t getInstanceId() const;
+      inline uint8_t getInstanceId() const;
 
-  inline bool isClassId( uint8_t classId );
+      inline bool isClassId( uint8_t classId );
 
-  inline bool isMe( uint16_t _id ) const;
+      inline bool isMe( uint16_t _id ) const;
 
-  inline bool operator ==( const Object& object ) const;
+      inline bool operator ==( const Object& object ) const;
 
-  inline void setInstanceId( uint8_t number );
+      inline void setInstanceId( uint8_t number );
 
-  ////    Additional operations    ////
+      ////    Additional operations    ////
 
-  inline uint16_t getId() const
-  {
-    return id;
-  }
+      inline uint16_t getId() const
+      {
+         return id;
+      }
 
-  inline void setId( uint16_t p_id )
-  {
-    id = p_id;
-  }
+      inline void setId( uint16_t p_id )
+      {
+         id = p_id;
+      }
 
-  ////    Attributes    ////
+      ////    Attributes    ////
 
-  uint16_t id;
+      uint16_t id;
 };
 
 inline uint8_t Object::getClassId()
 {
-  return (id >> 8);
+   return ( id >> 8 );
 }
 
 inline uint8_t Object::getInstanceId() const
 {
-  return static_cast<uint8_t>( id & 0xFF );
+   return static_cast<uint8_t>( id & 0xFF );
 }
 
 inline bool Object::isClassId( uint8_t classId )
 {
-  return (id >> 8) == classId;
+   return ( id >> 8 ) == classId;
 }
 
 inline bool Object::isMe( uint16_t _id ) const
 {
-  return id == _id;
+   return id == _id;
 }
 
 inline bool Object::operator ==( const Object& object ) const
 {
-  return object.id == id;
+   return object.id == id;
 }
 
 inline void Object::setInstanceId( uint8_t number )
 {
-  *((uint8_t*) &id) = number;
+   *( (uint8_t*) &id ) = number;
 }
 
 #endif

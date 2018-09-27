@@ -1,3 +1,10 @@
+/*
+ * StaticQueue.h
+ *
+ *  Created on: 18.06.2014
+ *      Author: Viktor Pankraz
+ */
+
 #ifndef SwFramework_Containers_StaticQueue_H
 #define SwFramework_Containers_StaticQueue_H
 
@@ -5,117 +12,127 @@
 #include "BasicQueue.h"
 #include "Traces/Logger.h"
 
-template<typename DataType, typename SizeType, SizeType capacity> class StaticQueue: public BasicQueue<
-    DataType, SizeType, DataType[capacity]>
+template<typename DataType, typename SizeType, SizeType capacity>
+class StaticQueue : public BasicQueue<
+                       DataType, SizeType, DataType[capacity]>
 {
-  ////    Constructors and destructors    ////
+   ////    Constructors and destructors    ////
 
-public:
+   public:
 
-  StaticQueue();
+      StaticQueue();
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  inline SizeType getCapacity();
+      inline SizeType getCapacity();
 
-  inline SizeType getSize();
+      inline SizeType getSize();
 
-  bool isEmpty();
+      bool isEmpty();
 
-  bool isFull();
+      bool isFull();
 
-  bool pop( DataType& value );
+      bool pop( DataType& value );
 
-  bool pop();
+      bool pop();
 
-  bool popBack( DataType& value );
+      bool popBack( DataType& value );
 
-  bool push( const DataType& value );
+      bool push( const DataType& value );
 };
 
-template<typename DataType, typename SizeType, SizeType capacity> StaticQueue<
-    DataType, SizeType, capacity>::StaticQueue()
+template<typename DataType, typename SizeType, SizeType capacity>
+StaticQueue<
+   DataType, SizeType, capacity>::StaticQueue()
 {
-  BasicQueue<DataType, SizeType, DataType[capacity]>();
+   BasicQueue<DataType, SizeType, DataType[capacity]>();
 }
 
-template<typename DataType, typename SizeType, SizeType capacity> inline SizeType StaticQueue<
-    DataType, SizeType, capacity>::getCapacity()
+template<typename DataType, typename SizeType, SizeType capacity>
+inline SizeType StaticQueue<
+   DataType, SizeType, capacity>::getCapacity()
 {
-  return capacity;
+   return capacity;
 }
 
-template<typename DataType, typename SizeType, SizeType capacity> inline SizeType StaticQueue<
-    DataType, SizeType, capacity>::getSize()
+template<typename DataType, typename SizeType, SizeType capacity>
+inline SizeType StaticQueue<
+   DataType, SizeType, capacity>::getSize()
 {
-  return this->full;
+   return this->full;
 }
 
-template<typename DataType, typename SizeType, SizeType capacity> bool StaticQueue<
-    DataType, SizeType, capacity>::isEmpty()
+template<typename DataType, typename SizeType, SizeType capacity>
+bool StaticQueue<
+   DataType, SizeType, capacity>::isEmpty()
 {
-  return !this->full;
+   return !this->full;
 }
 
-template<typename DataType, typename SizeType, SizeType capacity> bool StaticQueue<
-    DataType, SizeType, capacity>::isFull()
+template<typename DataType, typename SizeType, SizeType capacity>
+bool StaticQueue<
+   DataType, SizeType, capacity>::isFull()
 {
-  return (this->full == capacity);
+   return ( this->full == capacity );
 }
 
-template<typename DataType, typename SizeType, SizeType capacity> bool StaticQueue<
-    DataType, SizeType, capacity>::pop( DataType& value )
+template<typename DataType, typename SizeType, SizeType capacity>
+bool StaticQueue<
+   DataType, SizeType, capacity>::pop( DataType& value )
 {
-  if ( isEmpty() )
-  {
-    return false;
-  }
-  // Logger::instance() << endl << "pop  r " << this->pRead << " f " << (uint8_t) (this->full - 1);
+   if ( isEmpty() )
+   {
+      return false;
+   }
+   // Logger::instance() << endl << "pop  r " << this->pRead << " f " << (uint8_t) (this->full - 1);
 
-  value = this->data[this->pRead++];
-  this->pRead %= capacity;
-  this->full--;
+   value = this->data[this->pRead++];
+   this->pRead %= capacity;
+   this->full--;
 
-  return true;
+   return true;
 
 }
 
-template<typename DataType, typename SizeType, SizeType capacity> bool StaticQueue<
-    DataType, SizeType, capacity>::pop()
+template<typename DataType, typename SizeType, SizeType capacity>
+bool StaticQueue<
+   DataType, SizeType, capacity>::pop()
 {
-  DataType value;
-  return pop( value );
+   DataType value;
+   return pop( value );
 }
 
-template<typename DataType, typename SizeType, SizeType capacity> bool StaticQueue<
-    DataType, SizeType, capacity>::popBack( DataType& value )
+template<typename DataType, typename SizeType, SizeType capacity>
+bool StaticQueue<
+   DataType, SizeType, capacity>::popBack( DataType& value )
 {
-  if ( isEmpty() )
-  {
-    return false;
-  }
-  //Logger::instance() << endl << "popB w" << this->pWrite << " f " << (uint8_t) (this->full - 1);
+   if ( isEmpty() )
+   {
+      return false;
+   }
+   // Logger::instance() << endl << "popB w" << this->pWrite << " f " << (uint8_t) (this->full - 1);
 
-  value = this->data[this->pWrite--];
-  this->pWrite %= capacity;
-  this->full--;
-  return true;
+   value = this->data[this->pWrite--];
+   this->pWrite %= capacity;
+   this->full--;
+   return true;
 }
 
-template<typename DataType, typename SizeType, SizeType capacity> bool StaticQueue<
-    DataType, SizeType, capacity>::push( const DataType& value )
+template<typename DataType, typename SizeType, SizeType capacity>
+bool StaticQueue<
+   DataType, SizeType, capacity>::push( const DataType& value )
 {
-  if ( isFull() )
-  {
-    return false;
-  }
-  this->pWrite++;
-  this->pWrite %= capacity;
-  this->full++;
-  this->data[this->pWrite] = value;
+   if ( isFull() )
+   {
+      return false;
+   }
+   this->pWrite++;
+   this->pWrite %= capacity;
+   this->full++;
+   this->data[this->pWrite] = value;
 
-  // Logger::instance() << endl << "push w " << this->pWrite << " f " << this->full;
-  return true;
+   // Logger::instance() << endl << "push w " << this->pWrite << " f " << this->full;
+   return true;
 }
 
 #endif

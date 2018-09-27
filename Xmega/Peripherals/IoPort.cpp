@@ -1,12 +1,13 @@
 /*
  * IoPort.cpp
  *
- *  Created on: 28.08.2014
+ *  Created on: 17.07.2017
  *      Author: Viktor Pankraz
  */
 
-#include "Peripherals/IoPort.h"
+#include "IoPort.h"
 
+IoPort IoPort::dummyPort;
 
 IoPort& IoPort::instance( uint8_t portNumber )
 {
@@ -48,6 +49,5 @@ IoPort& IoPort::instance( uint8_t portNumber )
          return *reinterpret_cast<IoPort*>( &PORTR );
 #endif
    }
-   fatalErrorLoop();
-   return *(IoPort*) 0;
+   return dummyPort;
 }

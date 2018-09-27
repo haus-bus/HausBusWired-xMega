@@ -17,8 +17,8 @@ bool DigitalOutputUnit::notifyEvent( const Event& event )
    {
       HACF::ControlFrame& cf = checkedEvent.isEvMessage()->getMessage()->controlFrame;
       Command* data = reinterpret_cast<Command*>( cf.getData() );
-      uint8_t maxOnTime = configuration->getDutyOffset();
-      uint8_t offDelayTime = configuration->getMinDuty();
+      uint8_t maxOnTime = configuration->dutyOffset;
+      uint8_t offDelayTime = configuration->minDuty;
 
       if ( cf.isCommand( Command::OFF ) && ( state.sub == ON ) && offDelayTime )
       {
@@ -27,7 +27,7 @@ bool DigitalOutputUnit::notifyEvent( const Event& event )
       }
       else if ( cf.isCommand( Command::ON ) )
       {
-         if( maxOnTime )
+         if ( maxOnTime )
          {
             if ( ( data->parameter.on.duration == 0 ) || ( data->parameter.on.duration > maxOnTime ) )
             {
@@ -37,14 +37,14 @@ bool DigitalOutputUnit::notifyEvent( const Event& event )
       }
       else if ( cf.isCommand( Command::TOGGLE ) )
       {
-         if( maxOnTime )
+         if ( maxOnTime )
          {
             if ( ( data->parameter.toggle.onTime == 0 ) || ( data->parameter.toggle.onTime > maxOnTime ) )
             {
                data->parameter.toggle.onTime = maxOnTime;
             }
          }
-         if( offDelayTime )
+         if ( offDelayTime )
          {
             if ( data->parameter.toggle.onTime < offDelayTime )
             {

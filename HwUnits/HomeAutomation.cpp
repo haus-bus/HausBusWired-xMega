@@ -176,8 +176,7 @@ void HomeAutomation::run()
    }
 
    HomeAutomationInterface::Response event( getId() );
-   HwConfiguration::HomeAutomation& conf
-      = HwConfiguration::HomeAutomation::instance();
+   HomeAutomationConfiguration& conf = HomeAutomationConfiguration::instance();
 
    if ( inStartUp() )
    {
@@ -285,7 +284,6 @@ void HomeAutomation::cmdReadMemory(
    DEBUG_H2( getId(), FSTR( ".readMemory()" ) );
    uint8_t* dest = response.setReadMemory( parameter.address, parameter.length );
 
-   Stream::Status status = Stream::SUCCESS;
    if ( parameter.address & HomeAutomationInterface::DATA_SECTION_MASK )
    {
       uint8_t* source = reinterpret_cast<uint8_t*>( parameter.address & 0xFFFF );
@@ -297,14 +295,11 @@ void HomeAutomation::cmdReadMemory(
    }
    else
    {
-      status = Flash::read( parameter.address, dest, parameter.length );
+      if ( Flash::read( parameter.address, dest, parameter.length ) != parameter.length )
+      {
+         response.setMemoryStatus( Stream::ABORTED );
+      }
    }
-
-   if ( status != Stream::SUCCESS )
-   {
-      response.setMemoryStatus( status );
-   }
-
 }
 
 void HomeAutomation::cmdWriteRules(
@@ -401,8 +396,7 @@ bool HomeAutomation::handleRequest( HACF* message )
          }
          else if ( timeDifference )
          {
-            HwConfiguration::HomeAutomation& conf
-               = HwConfiguration::HomeAutomation::instance();
+            HomeAutomationConfiguration& conf = HomeAutomationConfiguration::instance();
             int16_t timeCorrection = conf.getTimeCorrectionValue();
             timeCorrection += timeDifference;
             if ( timeCorrection > 0xFF )
@@ -462,23 +456,23 @@ bool HomeAutomation::handleRequest( HACF* message )
                       HomeAutomationInterface::Command::SET_CONFIGURATION ) )
          {
             if ( cf.getDataLength()
-                 == ( HwConfiguration::HomeAutomation::SIZEOF + 1 ) )
+                 == ( HomeAutomationConfiguration::SIZEOF + 1 ) )
             {
                DEBUG_H1( FSTR( ".setConfiguration()" ) );
-               HwConfiguration::HomeAutomation conf;
-               HwConfiguration::HomeAutomation::instance().get( conf );
+               HomeAutomationConfiguration conf;
+               HomeAutomationConfiguration::instance().get( conf );
                memcpy( &conf, &data->parameter.setConfiguration,
-                       HwConfiguration::HomeAutomation::SIZEOF );
-               HwConfiguration::HomeAutomation::instance().set( conf );
+                       HomeAutomationConfiguration::SIZEOF );
+               HomeAutomationConfiguration::instance().set( conf );
                lastMemoryReportTime = Timestamp();
                setSleepTime( WAKE_UP );
                if ( HACF::deviceId
-                    != HwConfiguration::HomeAutomation::instance().getDeviceId() )
+                    != HomeAutomationConfiguration::instance().getDeviceId() )
                {
                   // change deviceId only after reset
                   // HACF::deviceId = HomeAutomationHw::Configuration::instance().getDeviceId();
                   response.setDeviceId(
-                     HwConfiguration::HomeAutomation::instance().getDeviceId() );
+                     HomeAutomationConfiguration::instance().getDeviceId() );
                }
                else
                {
@@ -497,7 +491,7 @@ bool HomeAutomation::handleRequest( HACF* message )
             if ( cf.getDataLength() == 1 )
             {
                uint16_t deviceId = SystemTime::now() & 0x7FFF;
-               HwConfiguration::HomeAutomation::instance().setDeviceId( deviceId );
+               HomeAutomationConfiguration::instance().setDeviceId( deviceId );
                response.setStarted( response.EVENT_NEW_DEVICE_ID );
             }
             else
@@ -521,7 +515,7 @@ bool HomeAutomation::handleRequest( HACF* message )
                       HomeAutomationInterface::Command::GET_CONFIGURATION ) )
          {
             DEBUG_H1( FSTR( ".getConfiguration()" ) );
-            HwConfiguration::HomeAutomation::instance().get(
+            HomeAutomationConfiguration::instance().get(
                response.setConfiguration( getFckE() ) );
          }
          else if ( cf.isCommand( HomeAutomationInterface::Command::READ_MEMORY ) )
@@ -582,5 +576,5 @@ HomeAutomationInterface::Response* HomeAutomation::getErrorEvent() const
 uint16_t HomeAutomation::getMinuteTicks() const
 {
    return MINUTE_TICKS
-          + HwConfiguration::HomeAutomation::instance().getTimeCorrectionValue();
+          + HomeAutomationConfiguration::instance().getTimeCorrectionValue();
 }

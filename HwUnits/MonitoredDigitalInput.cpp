@@ -25,7 +25,7 @@ MonitoredDigitalInput::MonitoredDigitalInput( PortPin _hardware ) :
       ( ClassId::MONITORED_DIGITAL_INPUT << 8 )
       | ( ( _hardware.getPortNumber() + 1 ) << 4 )
       | ( _hardware.getPinNumber() + 1 ) );
-   configuration = HwConfiguration::getMonitoredDigitalInputConfiguration( id );
+   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
    if ( configuration )
    {
 
@@ -91,11 +91,11 @@ MonitoredDigitalInput::State MonitoredDigitalInput::getCurrentState()
    {
       return MANIPULATED_OPEN;
    }
-   else if ( remaining >= configuration->getUpperThreshold() )
+   else if ( remaining >= configuration->upperThreshold )
    {
       return MANIPULATED_SHORTEN;
    }
-   else if ( remaining >= configuration->getLowerThreshold() )
+   else if ( remaining >= configuration->lowerThreshold )
    {
       return LOW;
    }

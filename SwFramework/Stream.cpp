@@ -1,3 +1,10 @@
+/*
+ * Stream.cpp
+ *
+ *  Created on: 28.08.2014
+ *      Author: Viktor Pankraz
+ */
+
 #include "Stream.h"
 
 void Stream::TransferDescriptor::reset()

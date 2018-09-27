@@ -1,9 +1,19 @@
-#include "Peripherals/Adc.h"
-#include "Peripherals/Clock.h"
+/*
+ * Adc.cpp
+ *
+ *  Created on: 18.07.2017
+ *      Author: Viktor Pankraz
+ */
 
+#include "Adc.h"
+#include "Clock.h"
+
+#ifdef ADCA
 static uint8_t enableCountA( 0 );
-
+#endif
+#ifdef ADCB
 static uint8_t enableCountB( 0 );
+#endif
 
 Adc& Adc::instance( uint8_t portNumber )
 {

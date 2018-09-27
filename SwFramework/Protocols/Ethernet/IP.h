@@ -1,171 +1,148 @@
-/*********************************************************************
- Rhapsody	: 8.0.3
- Login		: viktor.pankraz
- Component	: AR8
- Configuration 	: release
- Model Element	: IP
- //!	Generated Date	: Wed, 6, Aug 2014
- File Path	: AR8/release/SwFramework/Protocols/Ethernet/IP.h
- *********************************************************************/
+/*
+ * IP.h
+ *
+ *  Created on: 06.08.2014
+ *      Author: Viktor Pankraz
+ */
 
 #ifndef SwFramework_Protocols_Ethernet_IP_H
 #define SwFramework_Protocols_Ethernet_IP_H
 
-//## auto_generated
 #include "Ethernet.h"
-//## package SwFramework::Protocols::Ethernet
 
-//## class IP
+#define IP_TO_UINT32( a, b, c, d ) ( ( (uint32_t) ( d ) << 24 ) + ( (uint32_t) ( c ) << 16 ) + ( (uint32_t) ( b ) << 8 ) + a )
+
 class IP
 {
-  ////    Constructors and destructors    ////
+   ////    Constructors and destructors    ////
 
-public:
+   public:
 
-  inline IP( uint8_t a = 0, uint8_t b = 0, uint8_t c = 0, uint8_t d = 0 )
-  {
-    setAddress(
-        ((uint32_t) (d) << 24) + ((uint32_t) (c) << 16) + ((uint32_t) (b) << 8)
+      inline void set( uint8_t a = 0, uint8_t b = 0, uint8_t c = 0, uint8_t d = 0 )
+      {
+         setAddress(
+            ( (uint32_t) ( d ) << 24 ) + ( (uint32_t) ( c ) << 16 ) + ( (uint32_t) ( b ) << 8 )
             + a );
-  }
+      }
 
-  inline IP( const uint32_t& _address )
-  {
-    setAddress( _address );
-  }
+      ////    Operations    ////
 
-  ////    Operations    ////
+      inline void clear()
+      {
+         address = 0;
+      }
 
-  inline void clear()
-  {
-    address = 0;
-  }
+      inline static IP& broadcast()
+      {
+         static IP ip = { .address = 0xFFFFFFFF };
+         return ip;
+      }
 
-  inline IP getMaskedIp() const;
+      inline IP getMaskedIp() const;
 
-  inline bool isBroadcast();
+      inline bool isBroadcast();
 
-  inline bool isLocalBroadcast();
+      inline bool isLocalBroadcast();
 
-  inline bool isForMe() const;
+      inline bool isForMe() const;
 
-  inline bool isInLocalNetwork() const;
+      inline bool isInLocalNetwork() const;
 
-  inline bool isValid() const
-  {
-    return address != 0;
-  }
+      inline bool isValid() const
+      {
+         return address != 0;
+      }
 
-  inline bool operator==( const IP& _ip )
-  {
-    return this->address == _ip.address;
-  }
+      inline bool operator==( const IP& _ip )
+      {
+         return this->address == _ip.address;
+      }
 
-  inline bool operator==( const uint32_t& _ip )
-  {
-    return this->address == _ip;
-  }
+      inline bool operator==( const uint32_t& _ip )
+      {
+         return this->address == _ip;
+      }
 
-  inline void setBroadcast()
-  {
-    address = 0xFFFFFFFF;
-  }
+      inline void setBroadcast()
+      {
+         address = 0xFFFFFFFF;
+      }
 
-  inline void setLocalBroadcast()
-  {
-    address = local.address | 0xFF000000;
-  }
+      inline void setLocalBroadcast()
+      {
+         address = local.address | 0xFF000000;
+      }
 
-  ////    Additional operations    ////
+      ////    Additional operations    ////
 
-  //## auto_generated
-  inline uint32_t getAddress() const
-  {
-    //#[ auto_generated
-    return address;
-    //#]
-  }
+      inline uint32_t getAddress() const
+      {
+         return address;
+      }
 
-  //## auto_generated
-  inline void setAddress( uint32_t p_address )
-  {
-    //#[ auto_generated
-    address = p_address;
-    //#]
-  }
+      inline void setAddress( uint32_t p_address )
+      {
+         address = p_address;
+      }
 
-  //## auto_generated
-  inline static IP* getLocal()
-  {
-    //#[ auto_generated
-    return (IP*) &local;
-    //#]
-  }
+      inline static IP* getLocal()
+      {
+         return (IP*) &local;
+      }
 
-  //## auto_generated
-  inline static IP* getNetmask()
-  {
-    //#[ auto_generated
-    return (IP*) &netmask;
-    //#]
-  }
+      inline static IP* getNetmask()
+      {
+         return (IP*) &netmask;
+      }
 
-  //## auto_generated
-  inline static IP* getRouter()
-  {
-    //#[ auto_generated
-    return (IP*) &router;
-    //#]
-  }
+      inline static IP* getRouter()
+      {
+         return (IP*) &router;
+      }
 
-  ////    Attributes    ////
+      ////    Attributes    ////
 
-  uint32_t address;		//## attribute address
+      uint32_t address;
 
-  static IP local;		//## attribute local
+      static IP local;
 
-  static IP netmask;		//## attribute netmask
+      static IP netmask;
 
-  static IP router;		//## attribute router
+      static IP router;
+
+      static IP defaultIp;
+
+      static IP defaultNetmask;
+
+      static IP defaultRouterIp;
 };
 
 
 inline IP IP::getMaskedIp() const
 {
-  //#[ operation getMaskedIp() const
-  return (address & netmask.address);
-  //#]
+   IP maskedIP;
+   maskedIP.setAddress( address & netmask.address );
+   return maskedIP;
 }
 
 inline bool IP::isBroadcast()
 {
-  //#[ operation isBroadcast()
-  return address == 0xFFFFFFFF;
-  //#]
+   return address == 0xFFFFFFFF;
 }
 
 inline bool IP::isLocalBroadcast()
 {
-  //#[ operation isBroadcast()
-  return (address & 0xFF000000) == 0xFF000000;
-  //#]
+   return ( address & 0xFF000000 ) == 0xFF000000;
 }
 
 inline bool IP::isForMe() const
 {
-  //#[ operation isForMe() const
-  return (local == address);
-  //#]
+   return ( local == address );
 }
 
 inline bool IP::isInLocalNetwork() const
 {
-  //#[ operation isInLocalNetwork() const
-  return getMaskedIp() == local.getMaskedIp();
-  //#]
+   return getMaskedIp() == local.getMaskedIp();
 }
 
 #endif
-/*********************************************************************
- File Path	: AR8/release/SwFramework/Protocols/Ethernet/IP.h
- *********************************************************************/

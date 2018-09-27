@@ -1,7 +1,7 @@
 /*
- * PortPin.h
+ * PortPin.cpp
  *
- *  Created on: 28.08.2014
+ *  Created on: 17.07.2017
  *      Author: Viktor Pankraz
  */
 
@@ -27,3 +27,7 @@ uint8_t PortPin::getPin() const
    return ( 1 << pinNumber );
 }
 
+uint8_t PortPin::isSet() const
+{
+   return getIoPort().get() & getPin();
+}

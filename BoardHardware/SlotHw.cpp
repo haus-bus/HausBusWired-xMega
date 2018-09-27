@@ -1,31 +1,21 @@
-/********************************************************************
-        Rhapsody	: 8.0.3
-        Login		: viktor.pankraz
-        Component	: AR8
-        Configuration   : release
-        Model Element	: SlotHw
-   //!	Generated Date	: Wed, 6, Aug 2014
-        File Path	: AR8/release/Electronics/HwUnitBoards/SlotHw.cpp
- *********************************************************************/
+/*
+ * SlotHw.cpp
+ *
+ * Created: 18.06.2014 14:12:55
+ * Author: viktor.pankraz
+ */
 
-// ## auto_generated
 #include "SlotHw.h"
-// ## dependency Logger
 #include <Traces/Logger.h>
-// ## package Electronics::HwUnitBoards
 
-// ## class SlotHw
 const uint8_t SlotHw::debugLevel( DEBUG_LEVEL_OFF );
 
 SlotHw::SlotHw() : pwmEnabled( 0 ), digitalOutput0( 0, 0 ), digitalOutput1( 0, 0 )
 {
-   // #[ operation SlotHw()
-   // #]
 }
 
 void SlotHw::configure( uint8_t targetType )
 {
-   // #[ operation configure(uint8_t)
    if ( targetType && ( targetType < MAX_SLOT_TYPES ) )
    {
       type = targetType;
@@ -36,12 +26,10 @@ void SlotHw::configure( uint8_t targetType )
    {
       type = UNUSED_SLOT;
    }
-   // #]
 }
 
 void SlotHw::configureOutput( DigitalOutput& output, uint8_t isOutput )
 {
-   // #[ operation configureOutput(DigitalOutput,uint8_t)
    if ( isOutput )
    {
       output.clear();
@@ -52,12 +40,10 @@ void SlotHw::configureOutput( DigitalOutput& output, uint8_t isOutput )
       output.getIoPort().configure( output.getPin(), PORT_OPC_PULLUP_gc );
       output.getIoPort().setPinsAsInput( output.getPin() );
    }
-   // #]
 }
 
 uint16_t SlotHw::getPwmDuty()
 {
-   // #[ operation getPwmDuty()
    uint8_t pin = digitalOutput0.getPin();
 
    uint16_t compareValue = 0;
@@ -83,12 +69,10 @@ uint16_t SlotHw::getPwmDuty()
       return compareValue / ( timerCounter0->getPeriod() / 1000 );
    }
    return 1000;
-   // #]
 }
 
 uint8_t SlotHw::hasError()
 {
-   // #[ operation hasError()
    if ( uint8_t version = isDimmerHw() )
    {
       if ( ( version == V30 ) && digitalOutput1.isSet() )
@@ -109,12 +93,10 @@ uint8_t SlotHw::hasError()
       }
    }
    return ErrorCode::NO_FAILTURE;
-   // #]
 }
 
 uint16_t SlotHw::isOn()
 {
-   // #[ operation isOn()
    if ( isDimmerHw() )
    {
       if ( pwmEnabled && timerCounter0->isRunning() )
@@ -132,19 +114,15 @@ uint16_t SlotHw::isOn()
       return digitalOutput1.isSet();
    }
    return 0;
-   // #]
 }
 
 void SlotHw::on( uint16_t value )
 {
-   // #[ operation on(uint16_t)
    setPwmDuty( value );
-   // #]
 }
 
 uint8_t SlotHw::setMode( uint8_t mode )
 {
-   // #[ operation setMode(uint8_t)
    if ( mode == DIMM_L )
    {
       digitalOutput0.setInverted( true );
@@ -155,12 +133,10 @@ uint8_t SlotHw::setMode( uint8_t mode )
    }
    pwmEnabled = ( mode < SWITCH );
    return ( mode > SWITCH ) ? ErrorCode::INVALID_MODE : ErrorCode::NO_FAILTURE;
-   // #]
 }
 
 void SlotHw::setPwmDuty( uint16_t duty )
 {
-   // #[ operation setPwmDuty(uint16_t)
    uint8_t pin = digitalOutput0.getPin();
    if ( pwmEnabled )
    {
@@ -224,20 +200,16 @@ void SlotHw::setPwmDuty( uint16_t duty )
          digitalOutput0.clear();
       }
    }
-   // #]
 }
 
 void SlotHw::stop()
 {
-   // #[ operation stop()
    digitalOutput0.clear();
    digitalOutput1.clear();
-   // #]
 }
 
 uint8_t SlotHw::suspend( uint8_t mode )
 {
-   // #[ operation suspend(uint8_t)
    if ( isDimmerHw() == V31 )
    {
       if ( mode == ENABLE )
@@ -258,7 +230,6 @@ uint8_t SlotHw::suspend( uint8_t mode )
    }
    return true;
 
-   // #]
 }
 
 DigitalOutput* SlotHw::getDigitalOutput0() const
@@ -270,7 +241,3 @@ DigitalOutput* SlotHw::getDigitalOutput1() const
 {
    return (DigitalOutput*) &digitalOutput1;
 }
-
-/*********************************************************************
-        File Path	: AR8/release/Electronics/HwUnitBoards/SlotHw.cpp
-*********************************************************************/

@@ -23,8 +23,7 @@ const uint8_t SnmpAgent::debugLevel( DEBUG_LEVEL_OFF );
 
 SnmpAgent::Response::Parameter& SnmpAgent::Response::setConfiguration()
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().configuration ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().configuration ) );
    setResponse( CONFIGURATION );
    return getParameter();
 }
@@ -32,7 +31,7 @@ SnmpAgent::Response::Parameter& SnmpAgent::Response::setConfiguration()
 SnmpAgent::SnmpAgent()
 {
    setId( ( ::Object::ClassId::SMTP_AGENT << 8 ) | 1 );
-   configuration = HwConfiguration::getSnmpAgentConfiguration( id );
+   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
 }
 
 bool SnmpAgent::handleRequest( HACF* message )
@@ -421,7 +420,7 @@ void SnmpAgent::updateConfiguration()
    {
       char communityString[32];
       configuration->getCommunityString( communityString );
-      setRemoteIp( IP( configuration->getTrapDestinationIp() ) );
+      setRemoteIp( configuration->trapDestinationIp );
       setCommunityString( communityString );
    }
 }

@@ -17,135 +17,135 @@ class Event;
 
 class Scheduler;
 
-class DS1820: public BaseSensorUnit
+class DS1820 : public BaseSensorUnit
 {
-public:
+   public:
 
-  static const uint8_t CONVERT_T = 0x44;
-  static const uint8_t READ_POWER_SUPPLY = 0xB4;
-  static const uint8_t READ = 0xBE;
-  static const uint8_t WRITE = 0x4E;
-  static const uint8_t WRITE_EE = 0x48;
-  static const uint8_t RECALL_EE = 0xB8;
+      static const uint8_t CONVERT_T = 0x44;
+      static const uint8_t READ_POWER_SUPPLY = 0xB4;
+      static const uint8_t READ = 0xBE;
+      static const uint8_t WRITE = 0x4E;
+      static const uint8_t WRITE_EE = 0x48;
+      static const uint8_t RECALL_EE = 0xB8;
 
-  enum HwStatus
-  {
-    OK,
-    START_FAIL,
-    FAILTURE,
-    CRC_FAILTURE,
-    OUT_OF_MEMORY
-  };
+      enum HwStatus
+      {
+         OK,
+         START_FAIL,
+         FAILTURE,
+         CRC_FAILTURE,
+         OUT_OF_MEMORY
+      };
 
-  static const uint8_t SCRATCHPAD_SIZE = 9;
+      static const uint8_t SCRATCHPAD_SIZE = 9;
 
-  static const uint8_t DS18B20_CONF_REG = 4;
-  static const uint8_t DS18B20_9_BIT = 0;
-  static const uint8_t DS18B20_10_BIT = (1 << 5);
-  static const uint8_t DS18B20_11_BIT = (1 << 6);
-  static const uint8_t DS18B20_12_BIT = ((1 << 6) | (1 << 5));
+      static const uint8_t DS18B20_CONF_REG = 4;
+      static const uint8_t DS18B20_9_BIT = 0;
+      static const uint8_t DS18B20_10_BIT = ( 1 << 5 );
+      static const uint8_t DS18B20_11_BIT = ( 1 << 6 );
+      static const uint8_t DS18B20_12_BIT = ( ( 1 << 6 ) | ( 1 << 5 ) );
 
-  // indefined bits in LSB if 18B20 != 12bit
-  static const uint8_t DS18B20_9_BIT_UNDF = ((1 << 0) | (1 << 1) | (1 << 2));
-  static const uint8_t DS18B20_10_BIT_UNDF = ((1 << 0) | (1 << 1));
-  static const uint8_t DS18B20_11_BIT_UNDF = ((1 << 0));
-  static const uint8_t DS18B20_12_BIT_UNDF = 0;
+      // indefined bits in LSB if 18B20 != 12bit
+      static const uint8_t DS18B20_9_BIT_UNDF = ( ( 1 << 0 ) | ( 1 << 1 ) | ( 1 << 2 ) );
+      static const uint8_t DS18B20_10_BIT_UNDF = ( ( 1 << 0 ) | ( 1 << 1 ) );
+      static const uint8_t DS18B20_11_BIT_UNDF = ( ( 1 << 0 ) );
+      static const uint8_t DS18B20_12_BIT_UNDF = 0;
 
-  // family ids
-  static const uint8_t DS18S20_ID = 0x10;
-  static const uint8_t DS18B20_ID = 0x28;
+      // family ids
+      static const uint8_t DS18S20_ID = 0x10;
+      static const uint8_t DS18B20_ID = 0x28;
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  DS1820( const OneWire& _hardware, const OneWire::RomCode& _romCode );
+      DS1820( const OneWire& _hardware, const OneWire::RomCode& _romCode );
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  bool isSelfPowered();
+      bool isSelfPowered();
 
-  static bool isSensor( uint8_t familiyCode );
+      static bool isSensor( uint8_t familiyCode );
 
-  virtual bool notifyEvent( const Event& event );
+      virtual bool notifyEvent( const Event& event );
 
-  inline void * operator new( size_t size );
+      inline void* operator new( size_t size );
 
-  HwStatus readMeasurement();
+      HwStatus readMeasurement();
 
-  void run();
+      void run();
 
-  HwStatus startMeasurement( bool allSensors = true );
+      HwStatus startMeasurement( bool allSensors = true );
 
-private:
+   private:
 
-  BaseSensorUnit::Status convertToCelsius( uint8_t* scratchPad );
+      BaseSensorUnit::Status convertToCelsius( uint8_t* scratchPad );
 
-  ////    Additional operations    ////
+      ////    Additional operations    ////
 
-public:
+   public:
 
-  inline OneWire* getHardware() const
-  {
-    return (OneWire*) &hardware;
-  }
+      inline OneWire* getHardware() const
+      {
+         return (OneWire*) &hardware;
+      }
 
-  inline static uint8_t getNumOfInstances()
-  {
-    return numOfInstances;
-  }
+      inline static uint8_t getNumOfInstances()
+      {
+         return numOfInstances;
+      }
 
-  inline static void setNumOfInstances( uint8_t p_numOfInstances )
-  {
-    numOfInstances = p_numOfInstances;
-  }
+      inline static void setNumOfInstances( uint8_t p_numOfInstances )
+      {
+         numOfInstances = p_numOfInstances;
+      }
 
-  inline static bool getSelfPowered()
-  {
-    return selfPowered;
-  }
+      inline static bool getSelfPowered()
+      {
+         return selfPowered;
+      }
 
-  inline static void setSelfPowered( bool p_selfPowered )
-  {
-    selfPowered = p_selfPowered;
-  }
+      inline static void setSelfPowered( bool p_selfPowered )
+      {
+         selfPowered = p_selfPowered;
+      }
 
-private:
+   private:
 
-  inline static const uint8_t getDebugLevel()
-  {
-    return debugLevel;
-  }
+      inline static const uint8_t getDebugLevel()
+      {
+         return debugLevel;
+      }
 
-  inline OneWire::RomCode getRomCode() const
-  {
-    return romCode;
-  }
+      inline OneWire::RomCode getRomCode() const
+      {
+         return romCode;
+      }
 
-  inline void setRomCode( OneWire::RomCode p_romCode )
-  {
-    romCode = p_romCode;
-  }
+      inline void setRomCode( OneWire::RomCode p_romCode )
+      {
+         romCode = p_romCode;
+      }
 
-  ////    Attributes    ////
+      ////    Attributes    ////
 
-public:
+   public:
 
-  OneWire hardware;
+      OneWire hardware;
 
-  static uint8_t numOfInstances;
+      static uint8_t numOfInstances;
 
-  static bool selfPowered;
+      static bool selfPowered;
 
-private:
+   private:
 
-  static const uint8_t debugLevel;
+      static const uint8_t debugLevel;
 
-  OneWire::RomCode romCode;
+      OneWire::RomCode romCode;
 
 };
 
-inline void * DS1820::operator new( size_t size )
+inline void* DS1820::operator new( size_t size )
 {
-  return allocOnce( size );
+   return allocOnce( size );
 }
 
 #endif

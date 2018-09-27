@@ -1,8 +1,13 @@
+/*
+ * AR8SystemHw.cpp
+ *
+ * Created: 18.06.2014 14:12:55
+ * Author: viktor.pankraz
+ */
+
 #include "AR8SystemHw.h"
 
 #include <Security/Checksum.h>
-#include <DaliDimmerHw.h>
-#include <DaliLine.h>
 #include <Dimmer.h>
 #include <DS1820.h>
 #include <Peripherals/Eeprom.h>
@@ -20,6 +25,7 @@
 #include <Protocols/Ethernet/MAC.h>
 #include <Gateway.h>
 #include <HacfIpStackManager.h>
+#include <HomeAutomationConfiguration.h>
 
 AR8SystemHw::AR8SystemHw()
 {
@@ -30,14 +36,7 @@ void AR8SystemHw::configure()
 {
    // configure Logger
    Logger::instance().setStream( putc );
-   Usart::instance( PortD, 1 ).init<BAUDRATE,             // baudrate
-                                    true, // doubleClock
-                                    USART_CMODE_ASYNCHRONOUS_gc, // asynchronous communication
-                                    USART_PMODE_DISABLED_gc, // NoParity
-                                    USART_CHSIZE_8BIT_gc, // 8-Bits
-                                    false // 1 stopBit
-                                    >();
-   HwConfiguration::storage = &internalEeprom;
+   Usart::instance<PortD, 1>().init<BAUDRATE>();
 
    // configure ports
    IoPort::instance( PortC ).setPinsAsOutput( Pin4 | Pin5 | Pin7 );
@@ -59,7 +58,6 @@ void AR8SystemHw::configure()
    DEBUG_H1( FSTR( "configure" ) );
    configureSlots();
    configureZeroCrossDetection();
-   configureDaliLine();
    configureLogicalButtons();
    configureEthernet();
    configureTwi();
@@ -67,24 +65,15 @@ void AR8SystemHw::configure()
    enableInterrupts();
 }
 
-void AR8SystemHw::configureDaliLine()
-{
-   if ( daliHw.isConnected() )
-   {
-      DEBUG_M1( FSTR( "DaliHw detected" ) );
-      daliLine = new DaliLine( daliHw );
-   }
-}
-
 void AR8SystemHw::configureEthernet()
 {
-   uint16_t deviceId = HwConfiguration::HomeAutomation::instance().getDeviceId();
-   MAC::local = MAC( 0xAE, 0xDE, 0x48, 0, HBYTE( deviceId ), LBYTE( deviceId ) );
+   uint16_t deviceId = HomeAutomationConfiguration::instance().getDeviceId();
+   MAC::local.set( 0xAE, 0xDE, 0x48, 0, HBYTE( deviceId ), LBYTE( deviceId ) );
 
    if ( enc28j60.init() == Enc28j60::OK )
    {
       new HacfIpStackManager( enc28j60 );
-      new Gateway( UdpConnection::connect( IP( 255, 255, 255, 255 ), 9, 9, NULL ),
+      new Gateway( UdpConnection::connect( IP::broadcast(), 9, 9, NULL ),
                    Gateway::UDP );
    }
 }
@@ -103,7 +92,7 @@ void AR8SystemHw::configureLogicalButtons()
 
    uint8_t i = 0;
    uint8_t mask
-      = HwConfiguration::HomeAutomation::instance().getLogicalButtonMask();
+      = HomeAutomationConfiguration::instance().getLogicalButtonMask();
    while ( mask )
    {
       if ( mask & 1 )
@@ -143,7 +132,7 @@ void AR8SystemHw::configureSlots()
       slotHw[slot].getDigitalOutput0()->setPinNumber( pinNumber );
       slotHw[slot].getDigitalOutput1()->setPinNumber( pinNumber );
       slotHw[slot].configure(
-         HwConfiguration::HomeAutomation::instance().getSlotType( slot ) );
+         HomeAutomationConfiguration::instance().getSlotType( slot ) );
 
       if ( slotHw[slot].isDimmerHw() )
       {
@@ -229,9 +218,3 @@ void AR8SystemHw::configureZeroCrossDetection()
 
    portA.enableInterrupt0( PORT_INT0LVL_MED_gc );
 }
-
-InternalEeprom* AR8SystemHw::getInternalEeprom() const
-{
-   return (InternalEeprom*) &internalEeprom;
-}
-

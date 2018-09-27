@@ -9,7 +9,7 @@
 #define HwUnits_DaliLine_H
 
 #include "HwUnits.h"
-#include "HwConfiguration.h"
+#include <ConfigurationManager.h>
 #include <Dali.h>
 
 
@@ -23,180 +23,208 @@ class Scheduler;
 
 class evMessage;
 
-class DaliLine: public Reactive
+class DaliLine : public Reactive
 {
-public:
+   public:
 
-  class Command;
+      static const uint16_t SLEEP_TIME = SystemTime::S;
 
-  class Response;
+      class Configuration
+      {
+         public:
 
-  static const uint16_t SLEEP_TIME = SystemTime::S;
+            ////    Attributes    ////
 
-  class Command
-  {
-  public:
+            uint32_t dummy1;
+            uint32_t dummy2;
 
-    enum Commands
-    {
-      GET_CONFIGURATION = HACF::COMMANDS_START,
-      SET_CONFIGURATION,
-      ALL_OFF,
-      ALL_ON,
-      SEND_CMD
-    };
+            ////    Operations    ////
 
-    struct SendCmd
-    {
-      uint8_t command;
-      uint8_t address;
-    };
+            static inline Configuration getDefault()
+            {
+               Configuration defaultConfiguration;
+               memset( &defaultConfiguration, 0xFF, sizeof( defaultConfiguration ) );
+               return defaultConfiguration;
+            }
 
-    union Parameter
-    {
-      SendCmd sendCmd;
-      HwConfiguration::DaliLine setConfiguration;
-    };
+            inline void checkAndCorrect()
+            {
+            }
+      };
 
-    ////    Operations    ////
+      class EepromConfiguration : public ConfigurationManager::EepromConfigurationTmpl<Configuration>
+      {
+         public:
 
-    inline Parameter& getParameter()
-    {
-      return parameter;
-    }
+            uint32_tx dummy1;
+            uint32_tx dummy2;
+      };
 
-    ////    Additional operations    ////
+      class Command
+      {
+         public:
 
-    inline uint8_t getCommand() const
-    {
-      return command;
-    }
+            enum Commands
+            {
+               GET_CONFIGURATION = HACF::COMMANDS_START,
+               SET_CONFIGURATION,
+               ALL_OFF,
+               ALL_ON,
+               SEND_CMD
+            };
 
-    inline void setCommand( uint8_t p_command )
-    {
-      command = p_command;
-    }
+            struct SendCmd
+            {
+               uint8_t command;
+               uint8_t address;
+            };
 
-    inline void setParameter( Parameter p_parameter )
-    {
-      parameter = p_parameter;
-    }
+            union Parameter
+            {
+               SendCmd sendCmd;
+               Configuration setConfiguration;
+            };
 
-    ////    Attributes    ////
+            ////    Operations    ////
 
-    uint8_t command;
+            inline Parameter& getParameter()
+            {
+               return parameter;
+            }
 
-    Parameter parameter;
+            ////    Additional operations    ////
 
-  };
+            inline uint8_t getCommand() const
+            {
+               return command;
+            }
 
-  class Response: public IResponse
-  {
-  public:
+            inline void setCommand( uint8_t p_command )
+            {
+               command = p_command;
+            }
 
-    enum Responses
-    {
-      CONFIGURATION = HACF::RESULTS_START,
-      STATUS,
+            inline void setParameter( Parameter p_parameter )
+            {
+               parameter = p_parameter;
+            }
 
-      EVENT_ERROR = HACF::EVENTS_END
-    };
+            ////    Attributes    ////
 
-    union Parameter
-    {
-      uint8_t status;
-      HwConfiguration::DaliLine configuration;
-    };
+            uint8_t command;
 
-    ////    Constructors and destructors    ////
+            Parameter parameter;
 
-    inline Response( uint16_t id ) :
-        IResponse( id )
-    {
-    }
+      };
 
-    inline Response( uint16_t id, const HACF& message ) :
-        IResponse( id, message )
-    {
-    }
+      class Response : public IResponse
+      {
+         public:
 
-    ////    Operations    ////
+            enum Responses
+            {
+               CONFIGURATION = HACF::RESULTS_START,
+               STATUS,
 
-    inline Parameter& getParameter()
-    {
-      return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
-    }
+               EVENT_ERROR = HACF::EVENTS_END
+            };
 
-    Parameter& setConfiguration();
+            union Parameter
+            {
+               uint8_t status;
+               Configuration configuration;
+            };
 
-    void setStatus( uint8_t status );
+            ////    Constructors and destructors    ////
 
-    ////    Attributes    ////
+            inline Response( uint16_t id ) :
+               IResponse( id )
+            {
+            }
 
-  private:
+            inline Response( uint16_t id, const HACF& message ) :
+               IResponse( id, message )
+            {
+            }
 
-    Parameter params;
+            ////    Operations    ////
 
-  };
+            inline Parameter& getParameter()
+            {
+               return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
+            }
 
-  ////    Constructors and destructors    ////
+            Parameter& setConfiguration();
 
-  DaliLine( Dali& _daliHw, uint8_t _id = 1 );
+            void setStatus( uint8_t status );
 
-  ////    Operations    ////
+            ////    Attributes    ////
 
-  virtual bool notifyEvent( const Event& event );
+         private:
 
-  inline void * operator new( size_t size );
+            Parameter params;
 
-  void run();
+      };
 
-private:
+      ////    Constructors and destructors    ////
 
-  bool handleRequest( HACF* message );
+      DaliLine( Dali& _daliHw, uint8_t _id = 1 );
 
-  ////    Additional operations    ////
+      ////    Operations    ////
 
-public:
+      virtual bool notifyEvent( const Event& event );
 
-  HwConfiguration::DaliLine* getConfiguration() const;
+      inline void* operator new( size_t size );
 
-  void setConfiguration( HwConfiguration::DaliLine* p_DaliLine );
+      void run();
 
-private:
+   private:
 
-  inline Dali& getDaliHw() const
-  {
-    return daliHw;
-  }
+      bool handleRequest( HACF* message );
 
-  inline void setDaliHw( Dali& p_daliHw )
-  {
-    daliHw = p_daliHw;
-  }
+      ////    Additional operations    ////
 
-  inline static const uint8_t getDebugLevel()
-  {
-    return debugLevel;
-  }
+   public:
 
-  ////    Attributes    ////
+      inline void setConfiguration( EepromConfiguration* _config )
+      {
+         configuration = _config;
+      }
 
-  Dali& daliHw;
+   private:
 
-  static const uint8_t debugLevel;
+      inline Dali& getDaliHw() const
+      {
+         return *daliHw;
+      }
 
-  ////    Relations and components    ////
+      inline void setDaliHw( Dali* p_daliHw )
+      {
+         daliHw = p_daliHw;
+      }
 
-protected:
+      inline static const uint8_t getDebugLevel()
+      {
+         return debugLevel;
+      }
 
-  HwConfiguration::DaliLine* configuration;
+      ////    Attributes    ////
+
+      Dali* daliHw;
+
+      static const uint8_t debugLevel;
+
+      ////    Relations and components    ////
+
+   protected:
+
+      EepromConfiguration* configuration;
 
 };
 
-inline void * DaliLine::operator new( size_t size )
+inline void* DaliLine::operator new( size_t size )
 {
-  return allocOnce( size );
+   return allocOnce( size );
 }
 
 #endif

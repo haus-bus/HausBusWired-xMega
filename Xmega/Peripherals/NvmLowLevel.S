@@ -1,20 +1,12 @@
-/********************************************************************
-	Rhapsody	: 8.0.3 
-	Login		: viktor.pankraz
-	Component	: Xmega192A3 
-	Configuration 	: debug
-	Model Element	: NvmLowLevel
-//!	Generated Date	: Tue, 24, Jun 2014  
-	File Path	: Xmega192A3/debug/Peripherals/Assembler/NvmLowLevel/NvmLowLevel.S
-*********************************************************************/
+/*
+ * NvmLowLevel.S
+ *
+ *  Created on: 17.07.2017
+ *      Author: Viktor Pankraz
+ */
 
-//## auto_generated
-#include "NvmLowLevel.h"
-//## package Peripherals::Assembler::NvmLowLevel
+#include "NvmLowLevel.inc"
 
-
-
-//#[ ignore
 #ifndef __GNUC__
 # error Unknown assembler
 #endif                               
@@ -92,10 +84,3 @@ wait_nvm:
 END_FUNC(NVM_loadWordToFlashBuffer)
 
 END_FILE()
-//#]
-
-
-
-/*********************************************************************
-	File Path	: Xmega192A3/debug/Peripherals/Assembler/NvmLowLevel/NvmLowLevel.S
-*********************************************************************/

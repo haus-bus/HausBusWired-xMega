@@ -12,6 +12,7 @@
 #include <Security/ModuleId.h>
 #include <Peripherals/Oscillator.h>
 #include <Peripherals/Clock.h>
+#include <Peripherals/Eeprom.h>
 #include <Peripherals/RealTimeCounter.h>
 #include <Peripherals/DigitalFrequencyLockedLoops.h>
 
@@ -39,7 +40,7 @@ bool HomeAutomationHw::getModuleId( uint8_t index, ModuleId* moduleId )
    }
 
    if ( Flash::read( modulIdPosition, moduleId, sizeof( ModuleId ) )
-        == Stream::SUCCESS )
+        == sizeof( ModuleId ) )
    {
       return ( getFirmwareId() == moduleId->getFirmwareId() );
    }
@@ -78,10 +79,6 @@ lowLevelInit( void )
    RealTimeCounter::init( 0xFFFF, 0, 0, RTC_PRESCALER_DIV1_gc );
 
    DigitalFrequencyLockedLoops::instance( true ).enableAutoCalibration();
-}
 
-INTERRUPT void NVM_EE_vect()
-{
-   // Disable the EEPROM interrupt
-   NVM.INTCTRL = ( NVM.INTCTRL & ~NVM_EELVL_gm );
+   Eeprom::MemoryMapped::enable();
 }

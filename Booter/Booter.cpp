@@ -9,7 +9,7 @@
 
 const ModuleId moduleId =
 {
-   "$MOD$ "MOD_ID,
+   "$MOD$ " MOD_ID,
    BOOTER_SIZE,
    Release::MAJOR,
    Release::MINOR,
@@ -34,7 +34,7 @@ ModuleId Booter::installedMod;
 NO_RETURN void Booter::start()
 {
    hardware.configure();
-   HACF::deviceId = HwConfiguration::HomeAutomation::instance().getDeviceId();
+   HACF::deviceId = HomeAutomationConfiguration::instance().getDeviceId();
 
    checkFirmware();
    while ( true )

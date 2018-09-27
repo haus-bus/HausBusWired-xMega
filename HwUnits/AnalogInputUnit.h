@@ -9,70 +9,69 @@
 #define HwUnits_AnalogInputUnit_H
 
 #include "HwUnits.h"
-#include "HwConfiguration.h"
 #include "BaseSensorUnit.h"
 #include <AnalogInput.h>
 
-class AnalogInputUnit: public BaseSensorUnit
+class AnalogInputUnit : public BaseSensorUnit
 {
-public:
+   public:
 
-  enum ErrorCodes
-  {
-    NO_ERROR,
-  };
+      enum ErrorCodes
+      {
+         NO_ERROR,
+      };
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  AnalogInputUnit( PortPin portPin );
+      AnalogInputUnit( PortPin portPin );
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  virtual bool notifyEvent( const Event& event );
+      virtual bool notifyEvent( const Event& event );
 
-  inline void * operator new( size_t size );
+      inline void* operator new( size_t size );
 
-private:
+   private:
 
-  void run();
+      void run();
 
-  ////    Additional operations    ////
+      ////    Additional operations    ////
 
-public:
-
-
-protected:
-
-  inline static const uint8_t getDebugLevel()
-  {
-    return debugLevel;
-  }
-
-private:
-
-  ////    Attributes    ////
-
-  AnalogInput analogInput;
-
-public:
-
-protected:
-
-  static const uint8_t debugLevel;
-
-private:
+   public:
 
 
+   protected:
 
-  ////    Relations and components    ////
+      inline static const uint8_t getDebugLevel()
+      {
+         return debugLevel;
+      }
 
-protected:
+   private:
+
+      ////    Attributes    ////
+
+      AnalogInput analogInput;
+
+   public:
+
+   protected:
+
+      static const uint8_t debugLevel;
+
+   private:
+
+
+
+      ////    Relations and components    ////
+
+   protected:
 
 };
 
-inline void * AnalogInputUnit::operator new( size_t size )
+inline void* AnalogInputUnit::operator new( size_t size )
 {
-  return allocOnce( size );
+   return allocOnce( size );
 }
 
 #endif

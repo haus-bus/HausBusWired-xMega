@@ -1,56 +1,45 @@
-/*********************************************************************
-	Rhapsody	: 8.0.3 
-	Login		: viktor.pankraz
-	Component	: Xmega192A3 
-	Configuration 	: debug
-	Model Element	: InterruptController
-//!	Generated Date	: Tue, 24, Jun 2014  
-	File Path	: Xmega192A3/debug/Peripherals/InterruptController.h
-*********************************************************************/
+/*
+ * InterruptController.h
+ *
+ *  Created on: 18.07.2017
+ *      Author: Viktor Pankraz
+ */
 
 #ifndef Peripherals_InterruptController_H
 #define Peripherals_InterruptController_H
 
-//## auto_generated
-#include "Peripherals/Peripherals.h"
-//## package Peripherals
+#include "Peripherals.h"
 
-//## class InterruptController
-class InterruptController {
-    ////    Operations    ////
-    
-public :
+class InterruptController
+{
+   ////    Operations    ////
 
-    //## operation disableRoundRobinScheduling()
-    inline static void disableRoundRobinScheduling() {
-        //#[ operation disableRoundRobinScheduling()
-        PMIC.CTRL &= ~PMIC_RREN_bm;
-        //#]
-    }
-    
-    //## operation enableRoundRobinScheduling()
-    inline static void enableRoundRobinScheduling() {
-        //#[ operation enableRoundRobinScheduling()
-        PMIC.CTRL |= PMIC_RREN_bm;
-        //#]
-    }
-    
-    //## operation selectAppInterruptSection()
-    inline static void selectAppInterruptSection() {
-        //#[ operation selectAppInterruptSection()
-        CCPWrite( &PMIC.CTRL, PMIC.CTRL & ~PMIC_IVSEL_bm );
-        //#]
-    }
-    
-    //## operation selectBootInterruptSection()
-    inline static void selectBootInterruptSection() {
-        //#[ operation selectBootInterruptSection()
-        CCPWrite( &PMIC.CTRL, PMIC.CTRL | PMIC_IVSEL_bm );
-        //#]
-    }
+   public:
+
+      inline static void enableAllInterruptLevel()
+      {
+         PMIC.CTRL |= PMIC_LOLVLEN_bm | PMIC_MEDLVLEN_bm | PMIC_HILVLEN_bm;
+      }
+
+      inline static void disableRoundRobinScheduling()
+      {
+         PMIC.CTRL &= ~PMIC_RREN_bm;
+      }
+
+      inline static void enableRoundRobinScheduling()
+      {
+         PMIC.CTRL |= PMIC_RREN_bm;
+      }
+
+      inline static void selectAppInterruptSection()
+      {
+         CCPWrite( &PMIC.CTRL, PMIC.CTRL & ~PMIC_IVSEL_bm );
+      }
+
+      inline static void selectBootInterruptSection()
+      {
+         CCPWrite( &PMIC.CTRL, PMIC.CTRL | PMIC_IVSEL_bm );
+      }
 };
 
 #endif
-/*********************************************************************
-	File Path	: Xmega192A3/debug/Peripherals/InterruptController.h
-*********************************************************************/

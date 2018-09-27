@@ -1,14 +1,10 @@
-/********************************************************************
-   Rhapsody	: 8.0.3
-   Login		: viktor.pankraz
-   Component	: SwFrameworkAvr
-   Configuration        : debug
-   Model Element	: Scheduler
-   //!	Generated Date	: Wed, 18, Jun 2014
-   File Path	: SwFrameworkAvr/debug/Scheduler.cpp
- *********************************************************************/
+/*
+ * Scheduler.cpp
+ *
+ *  Created on: 28.08.2014
+ *      Author: Viktor Pankraz
+ */
 
-// ## auto_generated
 #include "Scheduler.h"
 #include "EventPkg/EventPkg.h"
 #include <MemoryManager.h>
@@ -22,7 +18,6 @@ uint16_t Scheduler::globalSleepDelay( 0 );
 
 bool Scheduler::addJob( Reactive* newJob )
 {
-   // #[ operation addJob(Reactive)
    if ( itsReactive )
    {
       for ( uint8_t i = 0; i < maxJobs; i++ )
@@ -38,12 +33,10 @@ bool Scheduler::addJob( Reactive* newJob )
       }
    }
    return false;
-   // #]
 }
 
 Reactive* Scheduler::getJob( uint16_t _id )
 {
-   // #[ operation getJob(uint16_t)
    for ( uint8_t i = 0; i < maxJobs; i++ )
    {
       if ( itsReactive[i] && ( itsReactive[i]->getId() == _id ) )
@@ -52,12 +45,10 @@ Reactive* Scheduler::getJob( uint16_t _id )
       }
    }
    return 0;
-   // #]
 }
 
 Reactive* Scheduler::getNextOfClass( uint8_t classId, uint8_t& startIndex )
 {
-   // #[ operation getNextOfClass(uint8_t,uint8_t)
    for (; startIndex < maxJobs; startIndex++ )
    {
       if ( itsReactive[startIndex] )
@@ -69,12 +60,10 @@ Reactive* Scheduler::getNextOfClass( uint8_t classId, uint8_t& startIndex )
       }
    }
    return 0;
-   // #]
 }
 
 void Scheduler::removeJob( const Reactive& job )
 {
-   // #[ operation removeJob(Reactive)
    if ( itsReactive )
    {
       for ( uint8_t i = 0; i < maxJobs; i++ )
@@ -91,12 +80,10 @@ void Scheduler::removeJob( const Reactive& job )
          }
       }
    }
-   // #]
 }
 
 void Scheduler::runJobs()
 {
-   // #[ operation runJobs()
    SystemTime::time_t elapsedTime, time = SystemTime::now();
 
    while ( isRunning() )

@@ -20,7 +20,7 @@ BatteryManager::BatteryManager( DigitalOutput _charger,
    setId( ( Object::ClassId::BATTERY_MANAGER << 8 ) | 1 );
    charger.configOutput();
    disableCharger();
-   configuration = HwConfiguration::getSensorUnitConfiguration( id );
+   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
    if ( configuration )
    {
 // TODO

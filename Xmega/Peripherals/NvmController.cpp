@@ -1,44 +1,36 @@
-/********************************************************************
-        Rhapsody	: 8.0.3
-        Login		: viktor.pankraz
-        Component	: Xmega192A3
-        Configuration   : debug
-        Model Element	: NvmController
-   //!	Generated Date	: Tue, 24, Jun 2014
-        File Path	: Xmega192A3/debug/Peripherals/NvmController.cpp
- *********************************************************************/
+/*
+ * NvmController.cpp
+ *
+ *  Created on: 17.07.2017
+ *      Author: Viktor Pankraz
+ */
 
-// ## auto_generated
-#include "Peripherals/NvmController.h"
-// ## package Peripherals
+#include "NvmController.h"
 
-// ## class NvmController
+#include <string.h>
+
 void NvmController::executeCommand( NVM_CMD_t command )
 {
-   // #[ operation executeCommand(NVM_CMD_t)
    uint8_t oldCmd = NVM.CMD;
    NVM.CMD = command;
    CCPWrite( &NVM.CTRLA, NVM_CMDEX_bm );
    NVM.CMD = oldCmd;
-   // #]
 }
 
-Stream::Status NvmController::readUserSignature( uint16_t index, void* pData, uint16_t length )
+uint16_t NvmController::readUserSignature( uint16_t index, void* pData, uint16_t length )
 {
-   // #[ operation readUserSignature(uint16_t,void *,uint16_t)
    if ( ( index + length ) > getPageSize() )
    {
-      return Stream::ABORTED;
+      return 0;
    }
 
    uint8_t* destination = static_cast<uint8_t*>( pData );
-
-   while ( length-- )
+   uint16_t len = length;
+   while ( len-- )
    {
       *destination++ = readUserSignature( index++ );
    }
-   return Stream::SUCCESS;
-   // #]
+   return length;
 }
 
 void NvmController::writeUserSignature( uint16_t index, void* pData, uint16_t length )

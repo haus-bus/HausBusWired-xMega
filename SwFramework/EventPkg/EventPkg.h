@@ -37,327 +37,351 @@ class evTime;
 
 enum EventIds
 {
-  idNullEvent,
-  idEvStartup,
-  idEvOn,
-  idEvOff,
-  idEvCovered,
-  idEvFree,
-  idEvStart,
-  idEvStop,
-  idEvCommand,
-  idEvEvent,
-  idEvTime,
-  idEvEndOfTransfer,
-  idEvRequest,
-  idEvData,
-  idEvMessage,
-  idEvGatewayMessage,
-  idEvWakeup,
-  idEvTimeout,
-  idEvUdpData,
-  idEvDataRequest,
-  idEvConnect
+   idNullEvent,
+   idEvStartup,
+   idEvOn,
+   idEvOff,
+   idEvCovered,
+   idEvFree,
+   idEvStart,
+   idEvStop,
+   idEvCommand,
+   idEvEvent,
+   idEvTime,
+   idEvEndOfTransfer,
+   idEvRequest,
+   idEvData,
+   idEvMessage,
+   idEvGatewayMessage,
+   idEvWakeup,
+   idEvTimeout,
+   idEvUdpData,
+   idEvDataRequest,
+   idEvConnect
 };
 
 class Event
 {
 
-  static const uint8_t MAX_DATA_SIZE = 3;
-  static const uint8_t MESSAGE_QUEUE_SIZE = 64;
+   static const uint8_t MAX_DATA_SIZE = 3;
+   static const uint8_t MESSAGE_QUEUE_SIZE = 64;
 
-  typedef StaticQueue<Event, uint8_t, MESSAGE_QUEUE_SIZE> MessageQueue;
+   typedef StaticQueue<Event, uint8_t, MESSAGE_QUEUE_SIZE> MessageQueue;
 
-public:
+   public:
 
-  union Parameters
-  {
-    Stream::TransferDescriptor* td;
-    HACF* message;
-    struct EndOfTransfer
-    {
-      Stream::TransferDescriptor* td;
-      Stream::Status status;
-    }endOfTransfer;
-    bool status;
-  };
+      union Parameters
+      {
+         Stream::TransferDescriptor* td;
+         HACF* message;
+         struct EndOfTransfer
+         {
+            Stream::TransferDescriptor* td;
+            Stream::Status status;
+         } endOfTransfer;
+         bool status;
+      };
 
-  static MessageQueue messageQueue;
+      static MessageQueue messageQueue;
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  inline Event( EventDrivenUnit* p_destination = 0 ) :
-      destination( p_destination )
-  {
-    setId( idNullEvent );
-  }
+      inline Event( EventDrivenUnit* p_destination = 0 ) :
+         destination( p_destination )
+      {
+         setId( idNullEvent );
+      }
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  inline EventDrivenUnit* getDestination() const
-  {
-    return destination;
-  }
+      inline EventDrivenUnit* getDestination() const
+      {
+         return destination;
+      }
 
-  inline uint8_t getId() const
-  {
-    return id;
-  }
+      inline uint8_t getId() const
+      {
+         return id;
+      }
 
-  inline void setId( uint8_t p_id )
-  {
-    id = p_id;
-  }
+      inline void setId( uint8_t p_id )
+      {
+         id = p_id;
+      }
 
-  inline evConnect* isEvConnect() const
-  {
-    if ( id != idEvConnect ) return NULL;
-    return (evConnect*) this;
-  }
+      inline evConnect* isEvConnect() const
+      {
+         if ( id != idEvConnect )
+         {
+            return NULL;
+         }
+         return (evConnect*) this;
+      }
 
-  inline evCovered* isEvCovered() const
-  {
-    if ( id != idEvCovered ) return NULL;
-    return (evCovered*) this;
-  }
+      inline evCovered* isEvCovered() const
+      {
+         if ( id != idEvCovered )
+         {
+            return NULL;
+         }
+         return (evCovered*) this;
+      }
 
-  inline evData* isEvData() const
-  {
-    if ( id != idEvData ) return NULL;
-    return (evData*) this;
-  }
+      inline evData* isEvData() const
+      {
+         if ( id != idEvData )
+         {
+            return NULL;
+         }
+         return (evData*) this;
+      }
 
-  inline evTime* isEvTime() const
-  {
-    if ( id != idEvTime ) return NULL;
-    return (evTime*) this;
-  }
+      inline evTime* isEvTime() const
+      {
+         if ( id != idEvTime )
+         {
+            return NULL;
+         }
+         return (evTime*) this;
+      }
 
-  inline evEndOfTransfer* isEvEndOfTransfer() const
-  {
-    if ( id != idEvEndOfTransfer ) return NULL;
-    return (evEndOfTransfer*) this;
-  }
+      inline evEndOfTransfer* isEvEndOfTransfer() const
+      {
+         if ( id != idEvEndOfTransfer )
+         {
+            return NULL;
+         }
+         return (evEndOfTransfer*) this;
+      }
 
-  inline evMessage* isEvMessage() const
-  {
-    if ( id != idEvMessage ) return NULL;
-    return (evMessage*) this;
-  }
+      inline evMessage* isEvMessage() const
+      {
+         if ( id != idEvMessage )
+         {
+            return NULL;
+         }
+         return (evMessage*) this;
+      }
 
-  inline evGatewayMessage* isEvGatewayMessage() const
-  {
-    if ( id != idEvGatewayMessage ) return NULL;
-    return (evGatewayMessage*) this;
-  }
+      inline evGatewayMessage* isEvGatewayMessage() const
+      {
+         if ( id != idEvGatewayMessage )
+         {
+            return NULL;
+         }
+         return (evGatewayMessage*) this;
+      }
 
-  inline evWakeup* isEvWakeup() const
-  {
-    if ( id != idEvWakeup ) return NULL;
-    return (evWakeup*) this;
-  }
+      inline evWakeup* isEvWakeup() const
+      {
+         if ( id != idEvWakeup )
+         {
+            return NULL;
+         }
+         return (evWakeup*) this;
+      }
 
-  bool queue() const;
+      bool queue() const;
 
-  bool send() const;
+      bool send() const;
 
-  ////    Framework    ////
-protected:
+      ////    Framework    ////
+   protected:
 
-  EventDrivenUnit* destination;
-  uint8_t id;
-  Parameters parameters;
-
-};
-
-class evCovered: public Event
-{
-  ////    Constructors and destructors    ////
-
-public:
-
-  inline evCovered( EventDrivenUnit* p_destination = 0 ) :
-      Event( p_destination )
-  {
-    setId( idEvCovered );
-  }
-};
-
-class evData: public Event
-{
-
-  ////    Constructors and destructors    ////
-
-public:
-
-  inline evData( EventDrivenUnit* p_destination = 0,
-                 Stream::TransferDescriptor* p_transferDescriptor = 0 ) :
-      Event( p_destination )
-  {
-    setId( idEvData );
-    setTransferDescriptor( p_transferDescriptor );
-  }
-
-  inline void setTransferDescriptor(
-      Stream::TransferDescriptor* p_transferDescriptor )
-  {
-    parameters.td = p_transferDescriptor;
-  }
-
-  inline Stream::TransferDescriptor* getTransferDescriptor()
-  {
-    return parameters.td;
-  }
+      EventDrivenUnit* destination;
+      uint8_t id;
+      Parameters parameters;
 
 };
 
-class evEndOfTransfer: public Event
+class evCovered : public Event
 {
+   ////    Constructors and destructors    ////
 
-  ////    Constructors and Destructors    ////
+   public:
 
-public:
-
-  inline evEndOfTransfer( EventDrivenUnit* p_destination = 0,
-                          Stream::TransferDescriptor* p_transferDescriptor = 0,
-                          Stream::Status p_status = Stream::ABORTED )
-  {
-    setId( idEvEndOfTransfer );
-    setTransferDescriptor( p_transferDescriptor );
-    setStatus( p_status );
-  }
-
-  inline void setTransferDescriptor(
-      Stream::TransferDescriptor* p_transferDescriptor )
-  {
-    parameters.endOfTransfer.td = p_transferDescriptor;
-  }
-
-  inline Stream::TransferDescriptor* getTransferDescriptor()
-  {
-    return parameters.endOfTransfer.td;
-  }
-
-  inline void setStatus( Stream::Status status )
-  {
-    parameters.endOfTransfer.status = status;
-  }
-
-  inline Stream::Status getStatus()
-  {
-    return parameters.endOfTransfer.status;
-  }
+      inline evCovered( EventDrivenUnit* p_destination = 0 ) :
+         Event( p_destination )
+      {
+         setId( idEvCovered );
+      }
 };
 
-class evConnect: public Event
+class evData : public Event
 {
 
-  struct Parameter
-  {
-    bool status;
-  };
+   ////    Constructors and destructors    ////
 
-  ////    Constructors and destructors    ////
+   public:
 
-public:
+      inline evData( EventDrivenUnit* p_destination = 0,
+                     Stream::TransferDescriptor* p_transferDescriptor = 0 ) :
+         Event( p_destination )
+      {
+         setId( idEvData );
+         setTransferDescriptor( p_transferDescriptor );
+      }
 
-  inline evConnect( EventDrivenUnit* p_destination = 0, bool p_status = true ) :
-      Event( p_destination )
-  {
-    setId( idEvConnect );
-    setStatus( p_status );
-  }
+      inline void setTransferDescriptor(
+         Stream::TransferDescriptor* p_transferDescriptor )
+      {
+         parameters.td = p_transferDescriptor;
+      }
 
-  inline void setStatus( bool status )
-  {
-    parameters.status = status;
-  }
-
-  inline bool getStatus() const
-  {
-    return parameters.status;
-  }
+      inline Stream::TransferDescriptor* getTransferDescriptor()
+      {
+         return parameters.td;
+      }
 
 };
 
-class evWakeup: public Event
+class evEndOfTransfer : public Event
 {
-  ////    Constructors and destructors    ////
 
-public:
+   ////    Constructors and Destructors    ////
 
-  inline evWakeup( EventDrivenUnit* p_destination = 0 ) :
-      Event( p_destination )
-  {
-    setId( idEvWakeup );
-  }
+   public:
+
+      inline evEndOfTransfer( EventDrivenUnit* p_destination = 0,
+                              Stream::TransferDescriptor* p_transferDescriptor = 0,
+                              Stream::Status p_status = Stream::ABORTED )
+      {
+         setId( idEvEndOfTransfer );
+         setTransferDescriptor( p_transferDescriptor );
+         setStatus( p_status );
+      }
+
+      inline void setTransferDescriptor(
+         Stream::TransferDescriptor* p_transferDescriptor )
+      {
+         parameters.endOfTransfer.td = p_transferDescriptor;
+      }
+
+      inline Stream::TransferDescriptor* getTransferDescriptor()
+      {
+         return parameters.endOfTransfer.td;
+      }
+
+      inline void setStatus( Stream::Status status )
+      {
+         parameters.endOfTransfer.status = status;
+      }
+
+      inline Stream::Status getStatus()
+      {
+         return parameters.endOfTransfer.status;
+      }
 };
 
-class evFree: public Event
-{
-  ////    Constructors and destructors    ////
-
-public:
-
-  inline evFree( EventDrivenUnit* p_destination = 0 ) :
-      Event( p_destination )
-  {
-    setId( idEvFree );
-  }
-};
-
-class evMessage: public Event
+class evConnect : public Event
 {
 
-  ////    Constructors and destructors    ////
+   struct Parameter
+   {
+      bool status;
+   };
 
-public:
+   ////    Constructors and destructors    ////
 
-  inline evMessage( EventDrivenUnit* p_destination = 0, HACF* p_message = 0 ) :
-      Event( p_destination )
-  {
-    setId( idEvMessage );
-    setMessage( p_message );
-  }
+   public:
 
-  inline void setMessage( HACF* message )
-  {
-    parameters.message = message;
-  }
+      inline evConnect( EventDrivenUnit* p_destination = 0, bool p_status = true ) :
+         Event( p_destination )
+      {
+         setId( idEvConnect );
+         setStatus( p_status );
+      }
 
-  inline HACF* getMessage()
-  {
-    return parameters.message;
-  }
+      inline void setStatus( bool status )
+      {
+         parameters.status = status;
+      }
+
+      inline bool getStatus() const
+      {
+         return parameters.status;
+      }
 
 };
 
-class evGatewayMessage: public evMessage
+class evWakeup : public Event
 {
-  ////    Constructors and destructors    ////
+   ////    Constructors and destructors    ////
 
-public:
+   public:
 
-  inline evGatewayMessage( EventDrivenUnit* p_destination = 0, HACF* p_message =
-                               0 ) :
-      evMessage( p_destination, p_message )
-  {
-    setId( idEvGatewayMessage );
-  }
+      inline evWakeup( EventDrivenUnit* p_destination = 0 ) :
+         Event( p_destination )
+      {
+         setId( idEvWakeup );
+      }
+};
+
+class evFree : public Event
+{
+   ////    Constructors and destructors    ////
+
+   public:
+
+      inline evFree( EventDrivenUnit* p_destination = 0 ) :
+         Event( p_destination )
+      {
+         setId( idEvFree );
+      }
+};
+
+class evMessage : public Event
+{
+
+   ////    Constructors and destructors    ////
+
+   public:
+
+      inline evMessage( EventDrivenUnit* p_destination = 0, HACF* p_message = 0 ) :
+         Event( p_destination )
+      {
+         setId( idEvMessage );
+         setMessage( p_message );
+      }
+
+      inline void setMessage( HACF* message )
+      {
+         parameters.message = message;
+      }
+
+      inline HACF* getMessage()
+      {
+         return parameters.message;
+      }
 
 };
 
-class evTime: public Event
+class evGatewayMessage : public evMessage
 {
-  ////    Constructors and destructors    ////
+   ////    Constructors and destructors    ////
 
-public:
+   public:
 
-  inline evTime( EventDrivenUnit* p_destination = 0 ) :
-      Event( p_destination )
-  {
-    setId( idEvTime );
-  }
+      inline evGatewayMessage( EventDrivenUnit* p_destination = 0, HACF* p_message
+                                  = 0 ) :
+         evMessage( p_destination, p_message )
+      {
+         setId( idEvGatewayMessage );
+      }
+
+};
+
+class evTime : public Event
+{
+   ////    Constructors and destructors    ////
+
+   public:
+
+      inline evTime( EventDrivenUnit* p_destination = 0 ) :
+         Event( p_destination )
+      {
+         setId( idEvTime );
+      }
 };
 
 #endif

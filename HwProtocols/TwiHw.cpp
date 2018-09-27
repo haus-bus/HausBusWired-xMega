@@ -30,7 +30,7 @@ Stream::Status TwiHw::genericCommand( IoStream::Command command, void* buffer )
       }
       owner = cmd->owner;
       maxReceiveBufferSize = cmd->buffersize;
-      twi.init<true, 100000, TWI_MASTER_INTLVL_OFF_gc, TWI_SLAVE_INTLVL_LO_gc>();
+      twi->init<true, 100000, TWI_MASTER_INTLVL_OFF_gc, TWI_SLAVE_INTLVL_LO_gc>();
       return SUCCESS;
    }
    return NOT_SUPPORTED;
@@ -45,7 +45,7 @@ Stream::Status TwiHw::read( void* pData, uint16_t length,
 Stream::Status TwiHw::write( void* pData, uint16_t length,
                              EventDrivenUnit* user )
 {
-   if ( twi.master.write( Twi::DEFAULT_ADDRESS, pData, length, true ) != length )
+   if ( twi->master.write( Twi::DEFAULT_ADDRESS, pData, length, true ) != length )
    {
       return ABORTED;
    }
@@ -72,7 +72,7 @@ void TwiHw::notifyEndOfSlaveTransfer()
 void TwiHw::handleSlaveStatus()
 {
    uint8_t data;
-   uint8_t status = twi.slave.handleStatus(
+   uint8_t status = twi->slave.handleStatus(
       data, receiveBufferSize >= maxReceiveBufferSize );
 
    if ( status < Twi::STATUS_STOP )

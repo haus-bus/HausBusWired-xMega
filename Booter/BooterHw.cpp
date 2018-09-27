@@ -20,7 +20,7 @@ Twi& BooterHw::twi( *reinterpret_cast<Twi*>( &TWIE ) );
 #ifdef _DEBUG_
 void putc( char c )
 {
-   Usart::instance( PortE, 0 ).write( c );
+   Usart::instance<PortE, 0>().write( c );
 }
 #endif
 
@@ -28,19 +28,13 @@ void BooterHw::configure()
 {
 #ifdef _DEBUG_
    // configure Logger
-   Usart::instance( PortE, 0 ).init<BAUDRATE,   // baudrate
-                                    true,       // doubleClock
-                                    USART_CMODE_ASYNCHRONOUS_gc, // asynchronous communication
-                                    USART_PMODE_DISABLED_gc, // NoParity
-                                    USART_CHSIZE_8BIT_gc, // 8-Bits
-                                    false       // 1 stopBit
-                                    >();
+   Usart::instance<PortE, 0>().init<BAUDRATE>();
    Logger::instance().setStream( putc );
 #endif
 
    if ( getFirmwareId() != CONTROLLER_ID )
    {
-      HwConfiguration::HomeAutomation::restoreFactoryConfiguration( CONTROLLER_ID, BOARD_FCKE );
+      HomeAutomationConfiguration::restoreFactoryConfiguration( CONTROLLER_ID, BOARD_FCKE );
    }
 #ifndef _DEBUG_
    InterruptController::selectBootInterruptSection();
@@ -65,8 +59,8 @@ void BooterHw::configure()
    PORTD.OUTSET = Pin4;                 // deselect enc28j60
    PORTD.PIN5CTRL = PORT_OPC_PULLUP_gc; // pullup for interrupt
 
-   uint16_t deviceId = HwConfiguration::HomeAutomation::instance().getDeviceId();
-   MAC::local = MAC( 0xAE, 0xDE, 0x48, 0, HBYTE( deviceId ), LBYTE( deviceId ) );
+   uint16_t deviceId = HomeAutomationConfiguration::instance().getDeviceId();
+   MAC::local.set( 0xAE, 0xDE, 0x48, 0, HBYTE( deviceId ), LBYTE( deviceId ) );
    udpAvailable = !enc28j60.init();
    if ( udpAvailable )
    {
@@ -132,7 +126,7 @@ void BooterHw::writeMessageToTwi()
 {
    TwiHeader* header = reinterpret_cast<TwiHeader*>( transferBuffer.header );
    header->address = 0;
-   header->lastDeviceId = HwConfiguration::HomeAutomation::instance().getDeviceId();
+   header->lastDeviceId = HomeAutomationConfiguration::instance().getDeviceId();
 
    uint16_t length = sizeof( TwiHeader ) - sizeof( header->unused )
                      + transferBuffer.controlFrame.getLength();
@@ -140,7 +134,7 @@ void BooterHw::writeMessageToTwi()
    header->checksum = 0;
    header->checksum = Checksum::get( &header->address, length );
 
-   twi.master.write( header->address, &header->checksum, length-1 );
+   twi.master.write( header->address, &header->checksum, length - 1 );
 }
 
 void BooterHw::sendMessage()
@@ -187,10 +181,9 @@ void BooterHw::readMessageFromUdp()
                message = &transferBuffer.controlFrame;
             }
             IP* sourceIp = header->udpHeader.getSourceAddress();
-            if ( ( IP::local == DEFAULT_IP ) && !sourceIp->isBroadcast() )
+            if ( ( IP::local == IP::defaultIp ) && !sourceIp->isBroadcast() )
             {
-               IP::local.setAddress(
-                  ( sourceIp->getAddress() & 0x00FFFFFF ) | 0xFE000000 );
+               IP::local.setAddress( ( sourceIp->getAddress() & 0x00FFFFFF ) | 0xFE000000 );
             }
          }
       }

@@ -11,33 +11,31 @@
 #include <HomeAutomationHw.h>
 #include <InternalEeprom.h>
 
-class PbsSystemHw: public HomeAutomationHw
+class PbsSystemHw : public HomeAutomationHw
 {
-  ////    Constructors and destructors    ////
+   ////    Constructors and destructors    ////
 
-public:
+   public:
 
-  PbsSystemHw();
+      PbsSystemHw();
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  void configure();
+      void configure();
 
-  void configureLogicalButtons();
+      void configureLogicalButtons();
 
-  void configureTwi();
+      void configureTwi();
 
-  ////    Additional operations    ////
-
-
-  ////    Attributes    ////
+      ////    Additional operations    ////
 
 
-  ////    Relations and components    ////
+      ////    Attributes    ////
 
-protected:
 
-  InternalEeprom internalEeprom;
+      ////    Relations and components    ////
+
+   protected:
 
 };
 

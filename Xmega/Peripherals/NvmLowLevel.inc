@@ -1,29 +1,20 @@
-/*********************************************************************
-	Rhapsody	: 8.0.3 
-	Login		: viktor.pankraz
-	Component	: Xmega192A3 
-	Configuration 	: debug
-	Model Element	: NvmLowLevel
-//!	Generated Date	: Tue, 24, Jun 2014  
-	File Path	: Xmega192A3/debug/Peripherals/Assembler/NvmLowLevel/NvmLowLevel.h
-*********************************************************************/
+/*
+ * NvmLowLevel.inc
+ *
+ *  Created on: 17.07.2017
+ *      Author: Viktor Pankraz
+ */
 
-#ifndef Peripherals_Assembler_NvmLowLevel_NvmLowLevel_H
-#define Peripherals_Assembler_NvmLowLevel_NvmLowLevel_H
+#ifndef Peripherals_NvmLowLevel_H
+#define Peripherals_NvmLowLevel_H
 
-//## auto_generated
-#include <Assembler.h>
-//## package Peripherals::Assembler::NvmLowLevel
+#include "Assembler.inc"
 
-
-
-//#[ ignore
 #ifndef __ASSEMBLER__         
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-//#]
 
 
 // /**
@@ -39,7 +30,6 @@ extern "C" {
 //  * \param address Address to perform the SPM on.
 //  * \param command NVM command to use in the NVM_CMD register
 //  */
-//## operation NVM_commonSPM(uint32_t,uint8_t)
 void NVM_commonSPM(uint32_t address, uint8_t command);
 
 // /**
@@ -52,8 +42,6 @@ void NVM_commonSPM(uint32_t address, uint8_t command);
 //  * \param wordAddress Address to store data. The upper bits beyond the page size
 //  *                                is ignored. \ref FLASH_PAGE_SIZE
 //  * \param data Data word to load into the page buffer
-//  */
-//## operation NVM_loadWordToFlashBuffer(uint32_t,uint16_t)
 void NVM_loadWordToFlashBuffer(uint32_t wordAddress, uint16_t data);
 
 // /**
@@ -70,19 +58,13 @@ void NVM_loadWordToFlashBuffer(uint32_t wordAddress, uint16_t data);
 //  * \param command NVM command to load before running LPM
 //  * \param address Byte offset into the signature row
 //  */
-//## operation NVM_readByte(uint8_t,uint16_t)
 uint8_t NVM_readByte(uint8_t command, uint16_t address);
 
-
-//#[ ignore
 #ifdef __cplusplus
 }
 #endif
 
 #endif  // __ASSEMBLER__
-//#]
 
 #endif
-/*********************************************************************
-	File Path	: Xmega192A3/debug/Peripherals/Assembler/NvmLowLevel/NvmLowLevel.h
-*********************************************************************/
+

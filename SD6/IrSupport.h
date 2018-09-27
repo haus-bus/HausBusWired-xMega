@@ -13,8 +13,8 @@
 
 class PortPin;
 
-static const uint8_t debugLevel(DEBUG_LEVEL_OFF);
+static const uint8_t debugLevel( DEBUG_LEVEL_OFF );
 
-void configureInfraRedHw(PortPin portPin, IrDecoder* decoder);
+void configureInfraRedHw( PortPin portPin, IrDecoder* decoder );
 
 #endif

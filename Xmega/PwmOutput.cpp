@@ -1,25 +1,16 @@
-/********************************************************************
-        Rhapsody	: 8.0.3
-        Login		: viktor.pankraz
-        Component	: Xmega192A3
-        Configuration   : debug
-        Model Element	: PwmOutput
-   //!	Generated Date	: Tue, 24, Jun 2014
-        File Path	: Xmega192A3/debug/Basics/PwmOutput.cpp
- *********************************************************************/
+/*
+ * PwmOutput.cpp
+ *
+ * Created: 18.06.2014 14:12:55
+ * Author: viktor.pankraz
+ */
 
-// ## auto_generated
 #include "PwmOutput.h"
-// ## dependency TimerCounter0
 #include "Peripherals/TimerCounter0.h"
-// ## dependency TimerCounter1
 #include "Peripherals/TimerCounter1.h"
-// ## package Basics
 
-// ## class PwmOutput
 uint16_t PwmOutput::isSet()
 {
-   // #[ operation isSet()
    TimerCounter0* tc0 = &TimerCounter0::instance( portNumber );
    if ( tc0 && ( pinNumber < Pin4 ) )
    {
@@ -54,12 +45,10 @@ uint16_t PwmOutput::isSet()
       }
    }
    return 0;
-   // #]
 }
 
 void PwmOutput::set( uint8_t value )
 {
-   // #[ operation set(uint8_t)
    TimerCounter0* tc0 = &TimerCounter0::instance( portNumber );
    if ( tc0 && ( pinNumber < Pin4 ) )
    {
@@ -95,9 +84,4 @@ void PwmOutput::set( uint8_t value )
       }
    }
 
-   // #]
 }
-
-/*********************************************************************
-        File Path	: Xmega192A3/debug/Basics/PwmOutput.cpp
-*********************************************************************/

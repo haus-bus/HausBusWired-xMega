@@ -19,7 +19,7 @@ UltrasonicDistanceMeter::UltrasonicDistanceMeter( DigitalOutput _triggerPin,
       ( ClassId::USD_METER << 8 ) | ( ( triggerPin.getPortNumber() + 1 ) << 4 )
       | ( triggerPin.getPinNumber() + 1 ) );
 
-   configuration = HwConfiguration::getSensorUnitConfiguration( id );
+   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
    if ( !configuration )
    {
       terminate();

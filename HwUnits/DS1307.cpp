@@ -13,7 +13,7 @@
 const uint8_t DS1307::debugLevel( DEBUG_LEVEL_OFF );
 
 DS1307::DS1307( Twi& _twi ) :
-   twi( _twi )
+   twi( &_twi )
 {
    setId( ( Object::ClassId::RTC_TIME << 8 ) | 1 );
 }
@@ -139,7 +139,7 @@ bool DS1307::notifyEvent( const Event& event )
 uint8_t DS1307::setTime( DS1307::TimeElements& timeElements )
 {
    DEBUG_H1( FSTR( ".setTime()" ) );
-   if ( twi.isBusBusy() )
+   if ( twi->isBusBusy() )
    {
       WARN_1( FSTR( "twi is busy" ) );
       return ErrorCode::TWI_BUSY;
@@ -154,7 +154,7 @@ uint8_t DS1307::setTime( DS1307::TimeElements& timeElements )
                         dec2bcd( timeElements.month ),
                         dec2bcd( timeElements.year % 100 ) };
 
-   if ( twi.master.write( ADDRESS, buffer, sizeof( buffer ) ) != sizeof( buffer ) )
+   if ( twi->master.write( ADDRESS, buffer, sizeof( buffer ) ) != sizeof( buffer ) )
    {
       ERROR_1( FSTR( "twi write failed" ) );
       return ErrorCode::TWI_WRITE_FAILED;
@@ -165,7 +165,7 @@ uint8_t DS1307::setTime( DS1307::TimeElements& timeElements )
 uint8_t DS1307::getTime( DS1307::TimeElements& timeElements )
 {
    DEBUG_H1( FSTR( ".getTime()" ) );
-   if ( twi.isBusBusy() )
+   if ( twi->isBusBusy() )
    {
       WARN_1( FSTR( "twi is busy" ) );
       return ErrorCode::TWI_BUSY;
@@ -175,14 +175,14 @@ uint8_t DS1307::getTime( DS1307::TimeElements& timeElements )
 
    // reset register pointer
    buffer[0] = 0;
-   if ( twi.master.write( ADDRESS, buffer, 1, false ) != 1 )
+   if ( twi->master.write( ADDRESS, buffer, 1, false ) != 1 )
    {
       ERROR_1( FSTR( "reset register failed" ) );
       return ErrorCode::TWI_WRITE_FAILED;
    }
 
    // request the 7 data fields   (secs, min, hr, dow, date, mth, yr)
-   if ( twi.master.read( ADDRESS, buffer, 7 ) != 7 )
+   if ( twi->master.read( ADDRESS, buffer, 7 ) != 7 )
    {
       ERROR_1( FSTR( "twi read failed" ) );
       return ErrorCode::TWI_READ_FAILED;
@@ -207,7 +207,7 @@ uint8_t DS1307::getTime( DS1307::TimeElements& timeElements )
 bool DS1307::isRunning()
 {
    DEBUG_H1( FSTR( ".isRunning()" ) );
-   if ( twi.isBusBusy() )
+   if ( twi->isBusBusy() )
    {
       return false;
    }
@@ -217,14 +217,14 @@ bool DS1307::isRunning()
    // reset register pointer
    buffer = 0;
 
-   if ( twi.master.write( ADDRESS, &buffer, sizeof( buffer ), false )
+   if ( twi->master.write( ADDRESS, &buffer, sizeof( buffer ), false )
         != sizeof( buffer ) )
    {
       ERROR_1( FSTR( "reset register failed" ) );
       return false;
    }
 
-   if ( twi.master.read( ADDRESS, &buffer, sizeof( buffer ) ) != sizeof( buffer ) )
+   if ( twi->master.read( ADDRESS, &buffer, sizeof( buffer ) ) != sizeof( buffer ) )
    {
       ERROR_1( FSTR( "twi read failed" ) );
       return ErrorCode::TWI_READ_FAILED;
@@ -236,7 +236,7 @@ bool DS1307::isRunning()
 uint8_t DS1307::setControlRegister( uint8_t data )
 {
    DEBUG_H1( FSTR( ".setControlRegister()" ) );
-   if ( twi.isBusBusy() )
+   if ( twi->isBusBusy() )
    {
       WARN_1( FSTR( "twi is busy" ) );
       return ErrorCode::TWI_BUSY;
@@ -244,7 +244,7 @@ uint8_t DS1307::setControlRegister( uint8_t data )
 
    uint8_t buffer[] = { 0x07, data };
 
-   if ( twi.master.write( ADDRESS, buffer, sizeof( buffer ) ) != sizeof( buffer ) )
+   if ( twi->master.write( ADDRESS, buffer, sizeof( buffer ) ) != sizeof( buffer ) )
    {
       ERROR_1( FSTR( "twi write failed" ) );
       return ErrorCode::TWI_WRITE_FAILED;

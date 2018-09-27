@@ -9,7 +9,8 @@
 #define HwUnits_LogicalButton_H
 
 #include "HwUnits.h"
-#include "HwConfiguration.h"
+#include <ConfigurationManager.h>
+
 class Button;
 
 class CriticalSection;
@@ -24,191 +25,240 @@ class Scheduler;
 
 class evMessage;
 
-class LogicalButton: public Reactive
+class LogicalButton : public Reactive
 {
-public:
+   public:
 
-  class Command;
+      class Configuration
+      {
+         public:
 
-  class ErrorCode;
+            static const uint8_t MAX_OBJECTS = 8;
 
-  class Response;
+            ////    Attributes    ////
 
-  class Command
-  {
-  public:
+            uint8_t buttonId[MAX_OBJECTS];
 
-    enum Commands
-    {
-      GET_CONFIGURATION = HACF::COMMANDS_START,
-      SET_CONFIGURATION,
-      OFF,
-      ON,
-      BLINK,
-      GET_STATUS,
-      SET_MIN_BRIGHTNESS,
-      RESERVED_2,
-      RESERVED_3,
-      RESERVED_4,
-      RESERVED_5,
-      SET_BUTTON_CONFIGURATION,
-      SET_LED_CONFIGURATION
-    };
+            uint8_t ledId[MAX_OBJECTS];
 
-    union Parameter
-    {
-      HwConfiguration::LogicalButton setConfiguration;
-    };
+            ////    Operations    ////
 
-    ////    Operations    ////
+            static inline Configuration getDefault()
+            {
+               Configuration defaultConfiguration;
+               memset( &defaultConfiguration, 0xFF, sizeof( defaultConfiguration ) );
+               return defaultConfiguration;
+            }
 
-    inline Parameter& getParameter()
-    {
-      return parameter;
-    }
+            inline void checkAndCorrect()
+            {
+            }
 
-    ////    Additional operations    ////
+      };
 
-    inline uint8_t getCommand() const
-    {
-      return command;
-    }
+      class EepromConfiguration : public ConfigurationManager::EepromConfigurationTmpl<Configuration>
+      {
+         public:
 
-    inline void setCommand( uint8_t p_command )
-    {
-      command = p_command;
-    }
+            uint8_tx buttonId[Configuration::MAX_OBJECTS];
 
-    inline void setParameter( Parameter p_parameter )
-    {
-      parameter = p_parameter;
-    }
+            uint8_tx ledId[Configuration::MAX_OBJECTS];
 
-    ////    Attributes    ////
+            inline uint8_t getLedId( uint8_t idx )
+            {
+               if ( idx < Configuration::MAX_OBJECTS )
+               {
+                  return ledId[idx];
+               }
+               return 0xFF;
+            }
 
-    uint8_t command;
+            inline uint8_t getButtonId( uint8_t idx )
+            {
+               if ( idx < Configuration::MAX_OBJECTS )
+               {
+                  return buttonId[idx];
+               }
+               return 0xFF;
+            }
+      };
 
-    Parameter parameter;
-  };
+      class Command
+      {
+         public:
 
-  class Response: public IResponse
-  {
-  public:
+            enum Commands
+            {
+               GET_CONFIGURATION = HACF::COMMANDS_START,
+               SET_CONFIGURATION,
+               OFF,
+               ON,
+               BLINK,
+               GET_STATUS,
+               SET_MIN_BRIGHTNESS,
+               RESERVED_2,
+               RESERVED_3,
+               RESERVED_4,
+               RESERVED_5,
+               SET_BUTTON_CONFIGURATION,
+               SET_LED_CONFIGURATION
+            };
 
-    enum Responses
-    {
-      CONFIGURATION = HACF::RESULTS_START,
-      STATUS,
+            union Parameter
+            {
+               Configuration setConfiguration;
+            };
 
-    };
+            ////    Operations    ////
 
-    union Parameter
-    {
-      HwConfiguration::LogicalButton configuration;
-      uint8_t status;
-    };
+            inline Parameter& getParameter()
+            {
+               return parameter;
+            }
 
-    ////    Constructors and destructors    ////
+            ////    Additional operations    ////
 
-    inline Response( uint16_t id ) :
-        IResponse( id )
-    {
-    }
+            inline uint8_t getCommand() const
+            {
+               return command;
+            }
 
-    inline Response( uint16_t id, const HACF& message ) :
-        IResponse( id, message )
-    {
-    }
+            inline void setCommand( uint8_t p_command )
+            {
+               command = p_command;
+            }
 
-    ////    Operations    ////
+            inline void setParameter( Parameter p_parameter )
+            {
+               parameter = p_parameter;
+            }
 
-    inline Parameter& getParameter()
-    {
-      return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
-    }
+            ////    Attributes    ////
 
-    Parameter& setConfiguration();
+            uint8_t command;
 
-    void setStatus( uint8_t status );
+            Parameter parameter;
+      };
 
-    ////    Attributes    ////
+      class Response : public IResponse
+      {
+         public:
 
-  private:
+            enum Responses
+            {
+               CONFIGURATION = HACF::RESULTS_START,
+               STATUS,
 
-    Parameter params;
-  };
+            };
 
-  class ErrorCode
-  {
-  public:
+            union Parameter
+            {
+               Configuration configuration;
+               uint8_t status;
+            };
 
-    enum Errors
-    {
-      NO_LED,
-      NO_BUTTON,
-    };
-  };
+            ////    Constructors and destructors    ////
 
-  ////    Constructors and destructors    ////
+            inline Response( uint16_t id ) :
+               IResponse( id )
+            {
+            }
 
-  LogicalButton( uint8_t _id );
+            inline Response( uint16_t id, const HACF& message ) :
+               IResponse( id, message )
+            {
+            }
 
-  ////    Operations    ////
+            ////    Operations    ////
 
-  void clearObjectList();
+            inline Parameter& getParameter()
+            {
+               return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
+            }
 
-  uint8_t getLedStatus();
+            Parameter& setConfiguration();
 
-  virtual bool notifyEvent( const Event& event );
+            void setStatus( uint8_t status );
 
-  inline void * operator new( size_t size );
+            ////    Attributes    ////
 
-  void routeMessageToButton( const Event& event );
+         private:
 
-  void routeMessageToLed( const Event& event );
+            Parameter params;
+      };
 
-  void updateObjectList();
+      class ErrorCode
+      {
+         public:
 
-protected:
+            enum Errors
+            {
+               NO_LED,
+               NO_BUTTON,
+            };
+      };
 
-  bool handleRequest( const Event& event );
+      ////    Constructors and destructors    ////
 
-  ////    Additional operations    ////
+      LogicalButton( uint8_t _id );
 
-public:
+      ////    Operations    ////
 
-  void addButton( Button* p_Button );
+      void clearObjectList();
 
-  HwConfiguration::LogicalButton* getConfiguration() const;
+      uint8_t getLedStatus();
 
-  void setConfiguration( HwConfiguration::LogicalButton* p_LogicalButton );
+      virtual bool notifyEvent( const Event& event );
 
-  void addLed( Led* p_Led );
+      inline void* operator new( size_t size );
 
-protected:
+      void routeMessageToButton( const Event& event );
 
-  inline static const uint8_t getDebugLevel()
-  {
-    return debugLevel;
-  }
+      void routeMessageToLed( const Event& event );
 
-  ////    Attributes    ////
+      void updateObjectList();
 
-  static const uint8_t debugLevel;
+   protected:
 
-  ////    Relations and components    ////
+      bool handleRequest( const Event& event );
 
-  Button* button[HwConfiguration::LogicalButton::MAX_OBJECTS];
+      ////    Additional operations    ////
 
-  HwConfiguration::LogicalButton* configuration;
+   public:
 
-  Led* led[HwConfiguration::LogicalButton::MAX_OBJECTS];
+      void addButton( Button* p_Button );
+
+      inline void setConfiguration( EepromConfiguration* _config )
+      {
+         configuration = _config;
+      }
+
+      void addLed( Led* p_Led );
+
+   protected:
+
+      inline static const uint8_t getDebugLevel()
+      {
+         return debugLevel;
+      }
+
+      ////    Attributes    ////
+
+      static const uint8_t debugLevel;
+
+      ////    Relations and components    ////
+
+      Button* button[Configuration::MAX_OBJECTS];
+
+      EepromConfiguration* configuration;
+
+      Led* led[Configuration::MAX_OBJECTS];
 
 };
 
-inline void * LogicalButton::operator new( size_t size )
+inline void* LogicalButton::operator new( size_t size )
 {
-  return allocOnce( size );
+   return allocOnce( size );
 }
 
 #endif

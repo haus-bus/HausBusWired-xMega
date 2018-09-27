@@ -17,75 +17,75 @@ class PortPin;
 
 class Scheduler;
 
-class Dht: public BaseSensorUnit
+class Dht : public BaseSensorUnit
 {
-public:
+   public:
 
-  class Temperature;
+      class Temperature;
 
-  struct Data
-  {
-    uint8_t checksum;
-    BaseSensorUnit::Status temperature;
-    BaseSensorUnit::Status humidity;
-  };
+      struct Data
+      {
+         uint8_t checksum;
+         BaseSensorUnit::Status temperature;
+         BaseSensorUnit::Status humidity;
+      };
 
-  class Temperature: public BaseSensorUnit
-  {
-    ////    Constructors and destructors    ////
+      class Temperature : public BaseSensorUnit
+      {
+         ////    Constructors and destructors    ////
 
-  public:
+         public:
 
-    Temperature( uint8_t instanceNumber );
+            Temperature( uint8_t instanceNumber );
 
-    ////    Operations    ////
+            ////    Operations    ////
 
-    virtual bool notifyEvent( const Event& event );
-  };
+            virtual bool notifyEvent( const Event& event );
+      };
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  Dht( uint8_t instanceNumber, PortPin portPin );
+      Dht( uint8_t instanceNumber, PortPin portPin );
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  void handleRunning();
+      void handleRunning();
 
-  virtual bool notifyEvent( const Event& event );
+      virtual bool notifyEvent( const Event& event );
 
-  inline void * operator new( size_t size );
+      inline void* operator new( size_t size );
 
-  void run();
+      void run();
 
-  ////    Additional operations    ////
+      ////    Additional operations    ////
 
-  Dht22* getHardware() const;
+      Dht22* getHardware() const;
 
-  Temperature* getItsTemperature() const;
+      Temperature* getItsTemperature() const;
 
-private:
+   private:
 
-  inline static const uint8_t getDebugLevel()
-  {
-    return debugLevel;
-  }
+      inline static const uint8_t getDebugLevel()
+      {
+         return debugLevel;
+      }
 
-  ////    Attributes    ////
+      ////    Attributes    ////
 
-  static const uint8_t debugLevel;
+      static const uint8_t debugLevel;
 
-  ////    Relations and components    ////
+      ////    Relations and components    ////
 
-protected:
+   protected:
 
-  Dht22 hardware;
+      Dht22 hardware;
 
-  Temperature itsTemperature;
+      Temperature itsTemperature;
 };
 
-inline void * Dht::operator new( size_t size )
+inline void* Dht::operator new( size_t size )
 {
-  return allocOnce( size );
+   return allocOnce( size );
 }
 
 #endif

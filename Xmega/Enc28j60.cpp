@@ -6,7 +6,7 @@
  */
 
 // temporarly enable DEBUG output always
-//#define _DEBUG_
+// #define _DEBUG_
 
 #include "Enc28j60.h"
 #include <DigitalOutput.h>
@@ -115,7 +115,7 @@ const uint8_t configurationData[] =
 
 Enc28j60::Enc28j60( Spi& _spi, DigitalOutput _chipSelectPin,
                     DigitalInput _interruptPin ) :
-   spi( _spi ), chipSelectPin( _chipSelectPin ), currentBank( 0 ),
+   spi( &_spi ), chipSelectPin( _chipSelectPin ), currentBank( 0 ),
    interruptPin( _interruptPin ), nextPacketPointer( 0 )
 {
 
@@ -123,7 +123,7 @@ Enc28j60::Enc28j60( Spi& _spi, DigitalOutput _chipSelectPin,
 
 uint8_t Enc28j60::init()
 {
-   spi.init<true, SPI_MODE_0_gc, true, SPI_PRESCALER_DIV4_gc, false>();
+   spi->init<true, SPI_MODE_0_gc, true, SPI_PRESCALER_DIV4_gc, false>();
 
    _delay_ms( 10 );
    DEBUG_H1( FSTR( "init..." ) );
@@ -298,7 +298,7 @@ void Enc28j60::reset()
 {
    select();
    uint8_t data = ENC_SPI_OP_SC;
-   spi.write( data );
+   spi->write( data );
    deselect();
 
    // errata #2: wait for at least 300 us
@@ -375,7 +375,7 @@ uint16_t Enc28j60::write( void* pData, uint16_t length )
 
       readBuffer( (uint8_t*) &tsv, sizeof( TransmitStatusVector ) );
 
-      if ( status & ( 1 << ENC_BIT_TXABRT )  )
+      if ( status & ( 1 << ENC_BIT_TXABRT ) )
       {
          dumpTransmitStatusVector( tsv );
          ERROR_1( FSTR( "ENC TXABRT" ) );
@@ -386,12 +386,12 @@ uint16_t Enc28j60::write( void* pData, uint16_t length )
             if ( retries )
             {
                continue;
-            }        
+            }
          }
       }
       break;
    }
-   if( ( length < 60 ) && tsv.bytesTransferred == 64 )
+   if ( ( length < 60 ) && tsv.bytesTransferred == 64 )
    {
       // all packets are automatically padded to 60 Bytes + 4Bytes CRC
       return length;
@@ -435,8 +435,8 @@ void Enc28j60::clearRegisterBits( uint8_t reg, uint8_t bits )
    uint8_t cmd = ( reg & ENC_REG_ADDR_MASK ) | ENC_SPI_OP_BFC;
 
    select();
-   spi.write( cmd );
-   spi.write( bits );
+   spi->write( cmd );
+   spi->write( bits );
    deselect();
 
 }
@@ -468,12 +468,12 @@ void Enc28j60::readBuffer( uint8_t* buffer, uint16_t length )
 {
    select();
    uint8_t command = ENC_SPI_OP_RBM;
-   spi.write( command );
+   spi->write( command );
 
    while ( length-- )
    {
       *buffer = 0;
-      spi.write( *buffer++ );
+      spi->write( *buffer++ );
    }
    deselect();
 }
@@ -506,13 +506,13 @@ uint8_t Enc28j60::readRegister( uint8_t reg )
 
    uint8_t data = addr | ENC_SPI_OP_RCR;
    select();
-   spi.write( data );
+   spi->write( data );
    if ( reg & ENC_REG_WAIT_MASK )
    {
       // read dummy
-      spi.read( data );
+      spi->read( data );
    }
-   spi.read( data );
+   spi->read( data );
    deselect();
    return data;
 }
@@ -538,8 +538,8 @@ void Enc28j60::setRegisterBits( uint8_t reg, uint8_t bits )
    uint8_t cmd = ( reg & ENC_REG_ADDR_MASK ) | ENC_SPI_OP_BFS;
 
    select();
-   spi.write( cmd );
-   spi.write( bits );
+   spi->write( cmd );
+   spi->write( bits );
    deselect();
 }
 
@@ -548,8 +548,8 @@ void Enc28j60::writeBuffer( uint8_t* buffer, uint16_t length )
    select();
 
    uint8_t command = ENC_SPI_OP_WBM;
-   spi.write( command );
-   spi.write( buffer, length );
+   spi->write( command );
+   spi->write( buffer, length );
 
    deselect();
 }
@@ -574,7 +574,7 @@ void Enc28j60::writeRegister( uint8_t reg, uint8_t value )
    }
    addr |= ENC_SPI_OP_WCR;
    select();
-   spi.write( addr );
-   spi.write( value );
+   spi->write( addr );
+   spi->write( value );
    deselect();
 }

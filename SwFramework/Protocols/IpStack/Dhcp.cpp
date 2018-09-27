@@ -135,7 +135,7 @@ uint8_t Dhcp::parseMessage( const Dhcp::Message& msg, uint8_t* end )
    if ( ( msg.op == OPCODE_REPLY ) && ( msg.xId == xId )
       && ( memcmp( &msg.chAddr, &MAC::local, sizeof( MAC ) ) == 0 ) )
    {
-      offeredLocalIp = msg.yiAddr;
+      offeredLocalIp.setAddress( msg.yiAddr );
       return parseOptions( msg, end );
    }
    return 0;
@@ -238,9 +238,9 @@ void Dhcp::run()
                // DHCP client failed, apply default settings
                if ( !IP::local.isValid() )
                {
-                  IP::local = DEFAULT_IP;
-                  IP::router = DEFAULT_ROUTER_IP;
-                  IP::netmask = DEFAULT_NETMASK;
+                  IP::local = IP::defaultIp;
+                  IP::router = IP::defaultRouterIp;
+                  IP::netmask = IP::defaultNetmask;
                }
             }
             else

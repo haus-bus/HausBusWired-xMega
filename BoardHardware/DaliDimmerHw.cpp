@@ -1,29 +1,20 @@
-/********************************************************************
-        Rhapsody	: 8.0.3
-        Login		: viktor.pankraz
-        Component	: AR8
-        Configuration   : release
-        Model Element	: DaliDimmerHw
-   //!	Generated Date	: Wed, 6, Aug 2014
-        File Path	: AR8/release/Electronics/HwUnitBoards/DaliDimmerHw.cpp
- *********************************************************************/
+/*
+ * DaliDimmerHw.cpp
+ *
+ * Created: 18.06.2014 14:12:55
+ * Author: viktor.pankraz
+ */
 
-// ## auto_generated
 #include "DaliDimmerHw.h"
-// ## package Electronics::HwUnitBoards
 
-// ## class DaliDimmerHw
 const uint8_t DaliDimmerHw::debugLevel( DEBUG_LEVEL_OFF );
 
 DaliDimmerHw::DaliDimmerHw( uint8_t _address, Dali& _daliHw ) : address( _address ), daliHw( _daliHw )
 {
-   // #[ operation DaliDimmerHw(uint8_t,Dali)
-   // #]
 }
 
 uint8_t DaliDimmerHw::hasError()
 {
-   // #[ operation hasError()
    uint8_t cmd[2];
    cmd[0] = address | 1;
    cmd[1] = Dali::GET_STATUS;
@@ -32,12 +23,10 @@ uint8_t DaliDimmerHw::hasError()
    daliHw.read( (uint8_t*)&status );
 
    return status.error;
-   // #]
 }
 
 uint16_t DaliDimmerHw::isOn()
 {
-   // #[ operation isOn()
    uint8_t cmd[2];
    cmd[0] = address | 1;
    cmd[1] = Dali::GET_CURR_VALUE;
@@ -47,12 +36,10 @@ uint16_t DaliDimmerHw::isOn()
 
    DEBUG_M4( FSTR( "addr " ), address, FSTR( " value " ), value );
    return value;
-   // #]
 }
 
 void DaliDimmerHw::on( uint8_t value )
 {
-   // #[ operation on(uint8_t)
    if ( value < 100 )
    {
       value = ( value << 1 ) + ( value >> 1 );
@@ -66,16 +53,9 @@ void DaliDimmerHw::on( uint8_t value )
    cmd[1] = value;
    daliHw.write( cmd );
    DEBUG_M4( FSTR( "addr " ), address, FSTR( " value " ), value );
-   // #]
 }
 
 uint8_t DaliDimmerHw::setMode( uint8_t mode )
 {
-   // #[ operation setMode(uint8_t)
    return 0;
-   // #]
 }
-
-/*********************************************************************
-        File Path	: AR8/release/Electronics/HwUnitBoards/DaliDimmerHw.cpp
-*********************************************************************/

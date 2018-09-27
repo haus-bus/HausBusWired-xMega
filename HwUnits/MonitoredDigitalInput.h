@@ -9,181 +9,226 @@
 #define HwUnits_MonitoredDigitalInput_H
 
 #include "HwUnits.h"
-#include "HwConfiguration.h"
+#include <ConfigurationManager.h>
 #include <MonitoredInputHw.h>
 
-class MonitoredDigitalInput: public Reactive
+class MonitoredDigitalInput : public Reactive
 {
-public:
+   public:
 
-  enum State
-  {
-    LOW,
-    HIGH,
-    MANIPULATED_OPEN,
-    MANIPULATED_SHORTEN,
-    NOT_INITIALIZED,
-  };
+      enum State
+      {
+         LOW,
+         HIGH,
+         MANIPULATED_OPEN,
+         MANIPULATED_SHORTEN,
+         NOT_INITIALIZED,
+      };
 
-  class Command
-  {
-  public:
+      class Configuration
+      {
+         public:
 
-    enum Commands
-    {
-      GET_CONFIGURATION = HACF::COMMANDS_START,
-      SET_CONFIGURATION,
-      GET_STATUS,
-    };
+            static const uint16_t DEFAULT_LOWER_THRESHOLD = 100;
+            static const uint16_t DEFAULT_UPPER_THRESHOLD = 200;
 
-    union Parameter
-    {
-      HwConfiguration::MonitoredDigitalInput setConfiguration;
-    };
+            ////    Attributes    ////
 
-    ////    Operations    ////
+            uint16_t lowerThreshold;
+            uint16_t upperThreshold;
+            uint32_t dummy;
 
-    inline Parameter& getParameter()
-    {
-      return parameter;
-    }
+            ////    Operations    ////
 
-    ////    Additional operations    ////
+            static inline Configuration getDefault()
+            {
+               Configuration defaultConfiguration =
+               {
+                  .lowerThreshold = DEFAULT_LOWER_THRESHOLD,
+                  .upperThreshold = DEFAULT_UPPER_THRESHOLD,
+                  .dummy = 0xFFFFFFFF
+               };
+               return defaultConfiguration;
+            }
 
-    inline uint8_t getCommand() const
-    {
-      return command;
-    }
+            inline void checkAndCorrect()
+            {
+            }
+      };
 
-    inline void setCommand( uint8_t p_command )
-    {
-      command = p_command;
-    }
+      class EepromConfiguration : public ConfigurationManager::EepromConfigurationTmpl<Configuration>
+      {
+         public:
 
-    inline void setParameter( Parameter p_parameter )
-    {
-      parameter = p_parameter;
-    }
+            uint16_tx lowerThreshold;
+            uint16_tx upperThreshold;
+            uint32_tx dummy;
+      };
 
-    ////    Attributes    ////
+      class Command
+      {
+         public:
 
-    uint8_t command;
+            enum Commands
+            {
+               GET_CONFIGURATION = HACF::COMMANDS_START,
+               SET_CONFIGURATION,
+               GET_STATUS,
+            };
 
-    Parameter parameter;
-  };
+            union Parameter
+            {
+               Configuration setConfiguration;
+            };
 
-  class Response: public IResponse
-  {
-  public:
+            ////    Operations    ////
 
-    enum Responses
-    {
-      CONFIGURATION = HACF::RESULTS_START,
-      STATUS,
+            inline Parameter& getParameter()
+            {
+               return parameter;
+            }
+
+            ////    Additional operations    ////
+
+            inline uint8_t getCommand() const
+            {
+               return command;
+            }
+
+            inline void setCommand( uint8_t p_command )
+            {
+               command = p_command;
+            }
+
+            inline void setParameter( Parameter p_parameter )
+            {
+               parameter = p_parameter;
+            }
+
+            ////    Attributes    ////
+
+            uint8_t command;
+
+            Parameter parameter;
+      };
+
+      class Response : public IResponse
+      {
+         public:
+
+            enum Responses
+            {
+               CONFIGURATION = HACF::RESULTS_START,
+               STATUS,
 
 
-      EVENT_LOW = HACF::EVENTS_START,
-      EVENT_HIGH,
-      EVENT_MANIPULATED_OPEN,
-      EVENT_MANIPULATED_SHORTEN,
-    };
+               EVENT_LOW = HACF::EVENTS_START,
+               EVENT_HIGH,
+               EVENT_MANIPULATED_OPEN,
+               EVENT_MANIPULATED_SHORTEN,
+            };
 
-    union Parameter
-    {
-      HwConfiguration::MonitoredDigitalInput configuration;
-      State state;
-    };
+            union Parameter
+            {
+               Configuration configuration;
+               State state;
+            };
 
-    ////    Constructors and destructors    ////
+            ////    Constructors and destructors    ////
 
-    inline Response( uint16_t id ) :
-        IResponse( id )
-    {
-    }
+            inline Response( uint16_t id ) :
+               IResponse( id )
+            {
+            }
 
-    inline Response( uint16_t id, const HACF& message ) :
-        IResponse( id, message )
-    {
-    }
+            inline Response( uint16_t id, const HACF& message ) :
+               IResponse( id, message )
+            {
+            }
 
-    ////    Operations    ////
+            ////    Operations    ////
 
-    inline Parameter& getParameter()
-    {
-      return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
-    }
+            inline Parameter& getParameter()
+            {
+               return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
+            }
 
-    inline void setStatus( State _state )
-    {
-      controlFrame.setDataLength(
-          sizeof(getResponse()) + sizeof(getParameter().state) );
-      setResponse( STATUS );
-      getParameter().state = _state;
-    }
+            inline void setStatus( State _state )
+            {
+               controlFrame.setDataLength(
+                  sizeof( getResponse() ) + sizeof( getParameter().state ) );
+               setResponse( STATUS );
+               getParameter().state = _state;
+            }
 
-    inline void setEvent( uint8_t event )
-    {
-      controlFrame.setDataLength( sizeof(getResponse()) );
-      setResponse( event );
-    }
+            inline void setEvent( uint8_t event )
+            {
+               controlFrame.setDataLength( sizeof( getResponse() ) );
+               setResponse( event );
+            }
 
-    Parameter& setConfiguration();
+            Parameter& setConfiguration();
 
-    ////    Attributes    ////
+            ////    Attributes    ////
 
-  private:
+         private:
 
-    Parameter params;
-  };
+            Parameter params;
+      };
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  MonitoredDigitalInput( PortPin _hardware );
+      MonitoredDigitalInput( PortPin _hardware );
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  bool handleRequest( HACF* message );
+      bool handleRequest( HACF* message );
 
-  virtual bool notifyEvent( const Event& event );
+      virtual bool notifyEvent( const Event& event );
 
-  State getCurrentState();
+      State getCurrentState();
 
-  inline void * operator new( size_t size )
-  {
-    return allocOnce( size );
-  }
+      inline void setConfiguration( EepromConfiguration* _config )
+      {
+         configuration = _config;
+      }
 
-private:
+      inline void* operator new( size_t size )
+      {
+         return allocOnce( size );
+      }
 
-  void run();
+   private:
 
-  void notifyNewState( State _state );
+      void run();
 
-  ////    Additional operations    ////
+      void notifyNewState( State _state );
 
-public:
+      ////    Additional operations    ////
 
-protected:
+   public:
 
-private:
+   protected:
 
-  ////    Attributes    ////
+   private:
 
-public:
+      ////    Attributes    ////
 
-protected:
+   public:
 
-  static const uint8_t debugLevel;
+   protected:
 
-private:
+      static const uint8_t debugLevel;
 
-  MonitoredInputHw hardware;
+   private:
 
-  ////    Relations and components    ////
+      MonitoredInputHw hardware;
 
-protected:
+      ////    Relations and components    ////
 
-  HwConfiguration::MonitoredDigitalInput* configuration;
+   protected:
+
+      EepromConfiguration* configuration;
 
 };
 

@@ -17,39 +17,40 @@ class Logger;
 
 class RuleEngine;
 
-class PersistentRules
+struct PersistentRules
 {
-  ////    Constructors and destructors    ////
+   ////    Constructors and destructors    ////
 
-private:
+   private:
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-public:
 
-  bool init();
+   public:
 
-  const RuleElement* next( const RuleElement* last = 0 ) const;
+      bool init();
 
-  inline static PersistentRules& instance()
-  {
-    return *reinterpret_cast<PersistentRules*>( 0 );
-  }
+      const RuleElement* next( const RuleElement* last = 0 ) const;
 
-  inline uint8_t getNumOfRules() const
-  {
-    return ApplicationTable::read( reinterpret_cast<uintptr_t>( &numOfRules ) );
-  }
+      inline static PersistentRules& instance()
+      {
+         return *reinterpret_cast<PersistentRules*>( 0 );
+      }
 
-  ////    Attributes    ////
+      inline uint8_t getNumOfRules() const
+      {
+         return ApplicationTable::read( reinterpret_cast<uintptr_t>( &numOfRules ) );
+      }
 
-private:
+      ////    Attributes    ////
 
-  const uint8_t numOfRules;
+   private:
 
-  const RuleElement firstRuleElement;
+      const uint8_t numOfRules = 0;
 
-  static const uint8_t debugLevel;
+      const RuleElement firstRuleElement;
+
+      static const uint8_t debugLevel;
 };
 
 #endif

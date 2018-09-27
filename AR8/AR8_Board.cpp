@@ -1,3 +1,10 @@
+/*
+ * AR8_Board.cpp
+ *
+ * Created: 18.06.2014 14:12:55
+ * Author: viktor.pankraz
+ */
+
 #include "AR8_Board.h"
 #include "AR8SystemHw.h"
 #include "Enc28j60.h"

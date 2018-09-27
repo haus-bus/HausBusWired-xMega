@@ -141,10 +141,10 @@ void Gateway::run()
    if ( inRunning() )
    {
 
-      uint8_t buffer[2*HACF::MAX_DATA_SIZE];
+      uint8_t buffer[2 * HACF::MAX_DATA_SIZE];
 
       // if there is some data, it will be notified by evData
-      Stream::Status status = ioStream->read( buffer, sizeof( buffer ), this );
+      ioStream->read( buffer, sizeof( buffer ), this );
 
       if ( !itsMessageQueue.isEmpty() )
       {
@@ -152,7 +152,7 @@ void Gateway::run()
          {
             uint16_t len = itsMessageQueue.front()->getLength();
 
-            if ( len > sizeof(buffer) )
+            if ( len > sizeof( buffer ) )
             {
                itsMessageQueue.pop();
                notifyError( BUFFER_OVERRUN );

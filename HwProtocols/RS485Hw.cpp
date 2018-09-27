@@ -13,20 +13,20 @@ const uint8_t RS485Hw::debugLevel( DEBUG_LEVEL_OFF );
 void RS485Hw::handleDataReceived()
 {
    uint8_t data;
-   bool isAddressFrame = usart.isAddressFrame();
-   usart.read( data );
+   bool isAddressFrame = usart->isAddressFrame();
+   usart->read( data );
 
    if ( isAddressFrame )
    {
       if ( data == 0xAA )
       {
          receiveBufferSize = 0;
-         usart.disableMpcm();
+         usart->disableMpcm();
       }
       else
       {
          // message completed
-         usart.enableMpcm();
+         usart->enableMpcm();
          if ( transmitBuffer )
          {
             disableTransmitter();
@@ -49,7 +49,7 @@ void RS485Hw::handleDataReceived()
          {
             // notify collision
             disableTransmitter();
-            usart.enableTransmitter();
+            usart->enableTransmitter();
          }
       }
       receiveBuffer[receiveBufferSize] = data;
@@ -66,11 +66,10 @@ void RS485Hw::handleDataReceived()
 
 bool RS485Hw::init()
 {
-   bool hasError = usart.init<100000, true, USART_CMODE_ASYNCHRONOUS_gc,
-                              USART_PMODE_DISABLED_gc, USART_CHSIZE_9BIT_gc, false>();
+   bool hasError = usart->init<100000>();
    if ( !hasError )
    {
-      usart.enableMpcm();
+      usart->enableMpcm();
       disableReceiver();
       disableTransmitter();
       disableRx.configOutput();
@@ -106,8 +105,8 @@ Stream::Status RS485Hw::genericCommand( IoStream::Command command,
       }
       owner = cmd->owner;
       maxReceiveBufferSize = cmd->buffersize;
-      usart.enableMpcm();
-      usart.enableReceiveCompleteInterrupt();
+      usart->enableMpcm();
+      usart->enableReceiveCompleteInterrupt();
       enableReceiver();
    }
    return SUCCESS;
@@ -122,25 +121,25 @@ Stream::Status RS485Hw::read( void* pData, uint16_t length,
 Stream::Status RS485Hw::write( void* pData, uint16_t length,
                                EventDrivenUnit* user )
 {
-   usart.enableTransmitter();
+   usart->enableTransmitter();
    enableTransmitter();
 
    // Start frame
-   usart.setAdressFrame();
-   usart.write( 0xAA );
+   usart->setAdressFrame();
+   usart->write( 0xAA );
 
    // data frames
-   usart.clearAdressFrame();
+   usart->clearAdressFrame();
    transmitBuffer = (uint8_t*) pData;
-   usart.write( transmitBuffer, length );
-   usart.waitUntilTransferCompleted();
+   usart->write( transmitBuffer, length );
+   usart->waitUntilTransferCompleted();
 
    // Stop frame
-   usart.setAdressFrame();
-   usart.write( getInstanceId() );
-   usart.waitUntilTransferCompleted();
+   usart->setAdressFrame();
+   usart->write( getInstanceId() );
+   usart->waitUntilTransferCompleted();
 
-   if ( !usart.isTransmitterEnabled() || memcmp( receiveBuffer, pData, length ) )
+   if ( !usart->isTransmitterEnabled() || memcmp( receiveBuffer, pData, length ) )
    {
       disableTransmitter();
       return ABORTED;

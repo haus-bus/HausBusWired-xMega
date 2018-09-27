@@ -1,84 +1,82 @@
-/*********************************************************************
-	Rhapsody	: 8.0.3 
-	Login		: viktor.pankraz
-	Component	: SwFrameworkAvr 
-	Configuration 	: debug
-	Model Element	: BasicQueue
-//!	Generated Date	: Wed, 18, Jun 2014  
-	File Path	: SwFrameworkAvr/debug/SwFramework/Containers/BasicQueue.h
-*********************************************************************/
+/*
+ * BasicQueue.h
+ *
+ *  Created on: 18.06.2014
+ *      Author: Viktor Pankraz
+ */
 
 #ifndef SwFramework_Containers_BasicQueue_H
 #define SwFramework_Containers_BasicQueue_H
 
-//## auto_generated
 #include "Containers.h"
-//## package SwFramework::Containers
 
-//## class BasicQueue
-template <typename DataType, typename SizeType, typename ListType> class BasicQueue {
-    ////    Constructors and destructors    ////
-    
-public :
+template<typename DataType, typename SizeType, typename ListType>
+class BasicQueue
+{
+   ////    Constructors and destructors    ////
 
-    //## operation BasicQueue()
-    BasicQueue();
-    
-    ////    Operations    ////
-    
-    //## operation back()
-    DataType& back();
-    
-    //## operation clear()
-    void clear();
-    
-    //## operation front()
-    DataType& front();
-    
-    ////    Attributes    ////
+   public:
 
-protected :
+      BasicQueue();
 
-    ListType data;		//## attribute data
-    
-    volatile SizeType full;		//## attribute full
-    
-    volatile SizeType pRead;		//## attribute pRead
-    
-    volatile SizeType pWrite;		//## attribute pWrite
+      ////    Operations    ////
+
+      DataType& back();
+
+      void clear();
+
+      DataType& front();
+
+      ////    Attributes    ////
+
+   protected:
+
+      ListType data;
+
+      volatile SizeType full;
+
+      volatile SizeType pRead;
+
+      volatile SizeType pWrite;
 };
 
-//## package SwFramework::Containers
 
-//## class BasicQueue
-template <typename DataType, typename SizeType, typename ListType> BasicQueue<DataType, SizeType, ListType>::BasicQueue() {
-    //#[ operation BasicQueue()
-    clear();
-    //#]
+template<typename DataType, typename SizeType, typename ListType>
+BasicQueue<DataType, SizeType, ListType>::BasicQueue()
+{
+   // #[ operation BasicQueue()
+   clear();
+   // #]
 }
 
-template <typename DataType, typename SizeType, typename ListType> DataType& BasicQueue<DataType, SizeType, ListType>::back() {
-    //#[ operation back()
-    return data[this->pWrite];
-    //#]
+template<typename DataType, typename SizeType, typename ListType>
+DataType& BasicQueue<DataType, SizeType, ListType>::back()
+{
+   // #[ operation back()
+   return data[this->pWrite];
+   // #]
 }
 
-template <typename DataType, typename SizeType, typename ListType> void BasicQueue<DataType, SizeType, ListType>::clear() {
-    //#[ operation clear()
-    pWrite = -1; 
-    pRead = 0;  
-    full = 0;
-    
-    //#]
+template<typename DataType, typename SizeType, typename ListType>
+void BasicQueue<DataType, SizeType, ListType>::clear()
+{
+   // #[ operation clear()
+   pWrite = -1;
+   pRead = 0;
+   full = 0;
+
+   // #]
 }
 
-template <typename DataType, typename SizeType, typename ListType> DataType& BasicQueue<DataType, SizeType, ListType>::front() {
-    //#[ operation front()
-    return data[pRead];
-    //#]
+template<typename DataType, typename SizeType, typename ListType>
+DataType& BasicQueue<DataType, SizeType, ListType>::front()
+{
+   // #[ operation front()
+   return data[pRead];
+   // #]
 }
 
 #endif
 /*********************************************************************
-	File Path	: SwFrameworkAvr/debug/SwFramework/Containers/BasicQueue.h
+        File Path	: SwFrameworkAvr/debug/SwFramework/Containers/BasicQueue.h
 *********************************************************************/

@@ -11,7 +11,7 @@
 
 const ModuleId moduleId =
 {
-   "$MOD$ "MOD_ID,
+   "$MOD$ " MOD_ID,
    0,
    Release::MAJOR,
    Release::MINOR,

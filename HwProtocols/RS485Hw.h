@@ -13,95 +13,95 @@
 #include "DigitalOutput.h"
 #include <IoStream.h>
 
-class RS485Hw: public IoStream
+class RS485Hw : public IoStream
 {
-public:
+   public:
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  inline RS485Hw( Usart& _usart, DigitalOutput _enableRx,
-                  DigitalOutput _enableTx ) :
-      owner( NULL ), transmitBuffer( NULL ), receiveBuffer( NULL ),
-      receiveBufferSize( 0 ), maxReceiveBufferSize( 0 ), usart( _usart ),
-      disableRx( _enableRx ), enableTx( _enableTx )
-  {
+      inline RS485Hw( Usart& _usart, DigitalOutput _enableRx,
+                      DigitalOutput _enableTx ) :
+         owner( NULL ), transmitBuffer( NULL ), receiveBuffer( NULL ),
+         receiveBufferSize( 0 ), maxReceiveBufferSize( 0 ), usart( &_usart ),
+         disableRx( _enableRx ), enableTx( _enableTx )
+      {
 
-  }
-  ////    Operations    ////
+      }
+      ////    Operations    ////
 
-public:
+   public:
 
-  virtual Stream::Status genericCommand( Command command, void* buffer );
+      virtual Stream::Status genericCommand( Command command, void* buffer );
 
-  virtual Stream::Status read( void * pData, uint16_t length,
-                               EventDrivenUnit* user = 0 );
+      virtual Stream::Status read( void* pData, uint16_t length,
+                                   EventDrivenUnit* user = 0 );
 
-  virtual Stream::Status write( void * pData, uint16_t length,
-                                EventDrivenUnit* user = 0 );
+      virtual Stream::Status write( void* pData, uint16_t length,
+                                    EventDrivenUnit* user = 0 );
 
-  void handleDataRegisterEmpty();
+      void handleDataRegisterEmpty();
 
-  void handleTransmitFinished();
+      void handleTransmitFinished();
 
-  void handleDataReceived();
+      void handleDataReceived();
 
-protected:
+   protected:
 
-  bool init();
+      bool init();
 
-  inline void disableReceiver()
-  {
-    disableRx.set();
-  }
+      inline void disableReceiver()
+      {
+         disableRx.set();
+      }
 
-  inline void enableReceiver()
-  {
-    disableRx.clear();
-  }
+      inline void enableReceiver()
+      {
+         disableRx.clear();
+      }
 
-  inline bool isReceiverEnabled()
-  {
-    return !disableRx.isSet();
-  }
+      inline bool isReceiverEnabled()
+      {
+         return !disableRx.isSet();
+      }
 
-  inline void disableTransmitter()
-  {
-    enableTx.clear();
-  }
+      inline void disableTransmitter()
+      {
+         enableTx.clear();
+      }
 
-  inline void enableTransmitter()
-  {
-    enableTx.set();
-  }
+      inline void enableTransmitter()
+      {
+         enableTx.set();
+      }
 
-  inline bool isTransmitterEnabled()
-  {
-    return enableTx.isSet();
-  }
+      inline bool isTransmitterEnabled()
+      {
+         return enableTx.isSet();
+      }
 
-private:
+   private:
 
-  ////    Attributes    ////
+      ////    Attributes    ////
 
-protected:
+   protected:
 
-  EventDrivenUnit* owner;
+      EventDrivenUnit* owner;
 
-  uint8_t* transmitBuffer;
+      uint8_t* transmitBuffer;
 
-  uint8_t* receiveBuffer;
+      uint8_t* receiveBuffer;
 
-  uint16_t receiveBufferSize;
+      uint16_t receiveBufferSize;
 
-  uint16_t maxReceiveBufferSize;
+      uint16_t maxReceiveBufferSize;
 
-  Usart& usart;
+      Usart* usart;
 
-  DigitalOutput disableRx;
+      DigitalOutput disableRx;
 
-  DigitalOutput enableTx;
+      DigitalOutput enableTx;
 
-  static const uint8_t debugLevel;
+      static const uint8_t debugLevel;
 
 };
 

@@ -1,152 +1,155 @@
-/*********************************************************************
-	Rhapsody	: 8.0.3 
-	Login		: viktor.pankraz
-	Component	: Xmega192A3 
-	Configuration 	: debug
-	Model Element	: Peripherals
-//!	Generated Date	: Tue, 24, Jun 2014  
-	File Path	: Xmega192A3/debug/Peripherals/Peripherals.h
-*********************************************************************/
+/*
+ * Peripherals.h
+ *
+ *  Created on: 17.07.2017
+ *      Author: Viktor Pankraz
+ */
+
 
 #ifndef Peripherals_Peripherals_H
 #define Peripherals_Peripherals_H
 
-//## operation CCPWrite(register8_t,uint8_t)
-#include "Basics.h"
+#include <avr/io.h>
+#include <CriticalSection.h>
+#include <Traces/Logger.h>
 
-//## dependency Logger
-//#[ ignore
-#ifdef _DEBUG_                                                         
-
-//#]
-#include "Traces/Logger.h"
-//#[ ignore
-
-#else  
-#include "SwFramework.h"    
-#endif
-//#]
-//## auto_generated
 class Adc;
 
-//## auto_generated
 class Clock;
 
-//## auto_generated
 class DigitalFrequencyLockedLoops;
 
-//## auto_generated
 class DmaChannel;
 
-//## auto_generated
 class DmaController;
 
-//## auto_generated
 class Eeprom;
 
-//## auto_generated
 class EventSystem;
 
-//## auto_generated
 class Flash;
 
-//## auto_generated
 class InterruptController;
 
-//## auto_generated
 class IoPort;
 
-//## auto_generated
 class NvmController;
 
-//## auto_generated
 class Oscillator;
 
-//## auto_generated
 class RealTimeCounter;
 
-//## auto_generated
 class ResetSystem;
 
-//## auto_generated
 class Spi;
 
-//## auto_generated
 class TimerCounter0;
 
-//## auto_generated
 class TimerCounter1;
 
-//## auto_generated
 class TimerCounterBase;
 
-//## auto_generated
 class Twi;
 
-//## auto_generated
 class Usart;
 
-//## auto_generated
 class WatchDog;
 
-//## package Peripherals
+enum Pin
+{
+   NoPin = 0x00,
+   Pin0 = 0x01,
+   Pin1 = 0x02,
+   Pin2 = 0x04,
+   Pin3 = 0x08,
+   Pin4 = 0x10,
+   Pin5 = 0x20,
+   Pin6 = 0x40,
+   Pin7 = 0x80,
+   AllPins = 0xFF
+};
 
+enum Port
+{
+   Port0 = 0,
+   Port1,
+   Port2,
+   Port3,
+   Port4,
+   Port5,
+   Port6,
+   Port7,
+   Port8,
+   Port9,
+   Port10,
+   Port11,
+   Port12,
+   Port13,
 
-//#[ type TRACE_PORT
+   PortA = 0,
+   PortB,
+   PortC,
+   PortD,
+   PortE,
+   PortF,
+   PortG,
+   PortH,
+   PortI,
+   PortJ,
+   PortK,
+   PortQ,
+   PortR,
+   PortDummy,
+   PortMax,
+};
+
 #define TRACE_PORT 0x80
 
-#ifdef _TRACE_PORT_ 
+#ifdef _TRACE_PORT_
   #define TRACE_PORT_INIT( pins )     _TRACE_PORT_.DIRSET = pins;    _TRACE_PORT_.OUTCLR = pins;
-  #define TRACE_PORT_PUT( pins )      if( debugLevel & TRACE_PORT )  _TRACE_PORT_.OUT = pins;
-  #define TRACE_PORT_SET( pins )      if( debugLevel & TRACE_PORT )  _TRACE_PORT_.OUTSET = pins;
-  #define TRACE_PORT_CLEAR( pins )    if( debugLevel & TRACE_PORT )  _TRACE_PORT_.OUTCLR = pins;
-  #define TRACE_PORT_TOGGLE( pins )   if( debugLevel & TRACE_PORT )  _TRACE_PORT_.OUTTGL = pins;
-#else  
-  #define TRACE_PORT_INIT( pins )  
+  #define TRACE_PORT_PUT( pins )      if ( debugLevel & TRACE_PORT ) { _TRACE_PORT_.OUT = pins; }
+  #define TRACE_PORT_SET( pins )      if ( debugLevel & TRACE_PORT ) { _TRACE_PORT_.OUTSET = pins; }
+  #define TRACE_PORT_CLEAR( pins )    if ( debugLevel & TRACE_PORT ) { _TRACE_PORT_.OUTCLR = pins; }
+  #define TRACE_PORT_TOGGLE( pins )   if ( debugLevel & TRACE_PORT ) { _TRACE_PORT_.OUTTGL = pins; }
+#else
+  #define TRACE_PORT_INIT( pins )
   #define TRACE_PORT_PUT( pins )
-  #define TRACE_PORT_SET( pins )     
-  #define TRACE_PORT_CLEAR( pins )  
+  #define TRACE_PORT_SET( pins )
+  #define TRACE_PORT_CLEAR( pins )
   #define TRACE_PORT_TOGGLE( pins )
-#endif  
-//#]
+#endif
 
-// /*! \brief CCP write helper function written in assembly.
-//  *
-//  *  This function is written in assembly because of the timecritial
-//  *  operation of writing to the registers.
-//  *
-//  *  \param address A pointer to the address to write to.
-//  *  \param value   The value to put in to the register.
-//  */
-//## operation CCPWrite(register8_t,uint8_t)
-inline static void CCPWrite(register8_t* address, uint8_t value) {
-    //#[ operation CCPWrite(register8_t,uint8_t)
-    CriticalSection doNotInterrupt;  
+///*! \brief CCP write helper function written in assembly.
+// *
+// *  This function is written in assembly because of the timecritial
+// *  operation of writing to the registers.
+// *
+// *  \param address A pointer to the address to write to.
+// *  \param value   The value to put in to the register.
+// */
+inline static void CCPWrite( register8_t* address, uint8_t value )
+{
+   CriticalSection doNotInterrupt;
     #ifdef RAMPZ
-    	RAMPZ = 0;
+   RAMPZ = 0;
     #endif
-    CCP = CCP_IOREG_gc;
-    *address = value;
-    
-    //#]
+   CCP = CCP_IOREG_gc;
+   *address = value;
+
 }
 
-//## operation barrier()
-inline void barrier() {
-    //#[ operation barrier()
+/* as long as compiler.h from asf is included
+   inline void barrier()
+   {
     __asm__ volatile ("" ::: "memory");
-    //#]
-}
+   }
+ */
 
-//## operation fatalErrorLoop()
-inline void fatalErrorLoop() {
-    //#[ operation fatalErrorLoop()
-    //TODO
-    while(1);
-    //#]
+inline void fatalErrorLoop()
+{
+   while ( 1 )
+   {
+   }
 }
 
 #endif
-/*********************************************************************
-	File Path	: Xmega192A3/debug/Peripherals/Peripherals.h
-*********************************************************************/

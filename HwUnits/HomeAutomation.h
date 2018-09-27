@@ -9,6 +9,7 @@
 #define Systems_HomeAutomation_H
 
 #include "HomeAutomationInterface.h"
+#include "HomeAutomationConfiguration.h"
 
 #include <HomeAutomationHw.h>
 #include <Reactive.h>
@@ -37,136 +38,135 @@ class WeekTime;
 
 class evMessage;
 
-class HomeAutomation: public Reactive
+class HomeAutomation : public Reactive
 {
-public:
+   public:
 
-  class LogicalUnitGroup;
+      class LogicalUnitGroup;
 
-  class MyEvent;
+      class MyEvent;
 
-  static const uint16_t TIME_TO_RESET = 100;
-  static const uint16_t MINUTE_TICKS = 0xEE00;
-  static const uint16_t MAX_TIME_DIFFERENCE = 10;
+      static const uint16_t TIME_TO_RESET = 100;
+      static const uint16_t MINUTE_TICKS = 0xEE00;
+      static const uint16_t MAX_TIME_DIFFERENCE = 10;
 
-  class LogicalUnitGroup
-  {
-  public:
+      class LogicalUnitGroup
+      {
+         public:
 
-    static const uint8_t MAX_GROUPS = 16;
+            static const uint8_t MAX_GROUPS = 16;
 
-    ////    Operations    ////
+            ////    Operations    ////
 
-    static uint8_t setState(
-        const HomeAutomationInterface::Command::SetUnitGroupState& params );
+            static uint8_t setState(
+               const HomeAutomationInterface::Command::SetUnitGroupState& params );
 
-    ////    Attributes    ////
+            ////    Attributes    ////
 
-    static uint16_t state[MAX_GROUPS];
-  };
+            static uint16_t state[MAX_GROUPS];
+      };
 
-  class MyEvent: public IResponse
-  {
-  public:
+      class MyEvent : public IResponse
+      {
+         public:
 
-    enum Events
-    {
-      EVENT_TIME = HACF::EVENTS_START,
-      EVENT_NEW_DEVICE_ID,
-      EVENT_STARTED,
-      EVENT_GROUP_ON,
-      EVENT_GROUP_UNDEFINED,
-      EVENT_GROUP_OFF,
-      EVENT_DAY,
-      EVENT_NIGHT
-    };
+            enum Events
+            {
+               EVENT_TIME = HACF::EVENTS_START,
+               EVENT_NEW_DEVICE_ID,
+               EVENT_STARTED,
+               EVENT_GROUP_ON,
+               EVENT_GROUP_UNDEFINED,
+               EVENT_GROUP_OFF,
+               EVENT_DAY,
+               EVENT_NIGHT
+            };
 
-    ////    Constructors and destructors    ////
+            ////    Constructors and destructors    ////
 
-    inline MyEvent() :
-        IResponse( HACF::SYSTEM_ID )
-    {
-      controlFrame.receiverId.setId(
-          ((uint32_t) HACF::deviceId << 16) | HACF::SYSTEM_ID );
-      controlFrame.setDataLength( 1 );
-    }
+            inline MyEvent() :
+               IResponse( HACF::SYSTEM_ID )
+            {
+               controlFrame.receiverId.setId(
+                  ( (uint32_t) HACF::deviceId << 16 ) | HACF::SYSTEM_ID );
+               controlFrame.setDataLength( 1 );
+            }
 
-    ////    Operations    ////
+            ////    Operations    ////
 
-    void setTimeEvent();
-  };
+            void setTimeEvent();
+      };
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  inline HomeAutomation() :
-      errorEvent( HACF::SYSTEM_ID )
-  {
-    setId( (ClassId::SYSTEM << 8) | HACF::SYSTEM_ID );
-    HwConfiguration::HomeAutomation& conf =
-        HwConfiguration::HomeAutomation::instance();
-    HACF::deviceId = conf.getDeviceId();
-    Calender::minuteListener = this;
-    // give some additional time to get e.g. a valid IP address from DHCP Server
-    setGlobalSleepDelay( conf.getStartupDelay() << 3 );
-  }
+      inline HomeAutomation() :
+         errorEvent( HACF::SYSTEM_ID )
+      {
+         setId( ( ClassId::SYSTEM << 8 ) | HACF::SYSTEM_ID );
+         HomeAutomationConfiguration& conf = HomeAutomationConfiguration::instance();
+         HACF::deviceId = conf.getDeviceId();
+         Calender::minuteListener = this;
+         // give some additional time to get e.g. a valid IP address from DHCP Server
+         setGlobalSleepDelay( conf.getStartupDelay() << 3 );
+      }
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  virtual bool notifyEvent( const Event& event );
+      virtual bool notifyEvent( const Event& event );
 
-  void run();
+      void run();
 
-protected:
+   protected:
 
-  void checkPersistentRules();
+      void checkPersistentRules();
 
-  void cmdGetRemoteObjects( HomeAutomationInterface::Response& response );
+      void cmdGetRemoteObjects( HomeAutomationInterface::Response& response );
 
-  void cmdReadMemory( HomeAutomationInterface::Command::ReadMemory& parameter,
-                      HomeAutomationInterface::Response& response );
+      void cmdReadMemory( HomeAutomationInterface::Command::ReadMemory& parameter,
+                          HomeAutomationInterface::Response& response );
 
-  void cmdWriteRules( HomeAutomationInterface::Command::WriteRules& parameter,
-                      uint16_t dataLength,
-                      HomeAutomationInterface::Response& response );
+      void cmdWriteRules( HomeAutomationInterface::Command::WriteRules& parameter,
+                          uint16_t dataLength,
+                          HomeAutomationInterface::Response& response );
 
-  bool handleRequest( HACF* message );
+      bool handleRequest( HACF* message );
 
-private:
+   private:
 
-  uint16_t getMinuteTicks() const;
+      uint16_t getMinuteTicks() const;
 
-  ////    Additional operations    ////
+      ////    Additional operations    ////
 
-public:
+   public:
 
-  HomeAutomationInterface::Response* getErrorEvent() const;
+      HomeAutomationInterface::Response* getErrorEvent() const;
 
-protected:
+   protected:
 
-  inline static const uint8_t getDebugLevel()
-  {
-    return debugLevel;
-  }
+      inline static const uint8_t getDebugLevel()
+      {
+         return debugLevel;
+      }
 
-private:
+   private:
 
-  ////    Attributes    ////
+      ////    Attributes    ////
 
-protected:
+   protected:
 
-  static const uint8_t debugLevel;
+      static const uint8_t debugLevel;
 
-private:
+   private:
 
-  static Timestamp lastMinuteTick;
+      static Timestamp lastMinuteTick;
 
-  static Timestamp lastMemoryReportTime;
+      static Timestamp lastMemoryReportTime;
 
-  ////    Relations and components    ////
+      ////    Relations and components    ////
 
-protected:
+   protected:
 
-  HomeAutomationInterface::Response errorEvent;
+      HomeAutomationInterface::Response errorEvent;
 
 };
 

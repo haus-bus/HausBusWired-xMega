@@ -29,6 +29,6 @@ class RuleElement;
 
 class RuleEngine;
 
-extern void * allocOnce(size_t size);
+extern void* allocOnce( size_t size );
 
 #endif

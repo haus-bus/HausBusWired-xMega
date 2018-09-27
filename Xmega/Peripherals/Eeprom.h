@@ -1,131 +1,127 @@
-/*********************************************************************
-	Rhapsody	: 8.0.3 
-	Login		: viktor.pankraz
-	Component	: Xmega192A3 
-	Configuration 	: debug
-	Model Element	: Eeprom
-//!	Generated Date	: Tue, 24, Jun 2014  
-	File Path	: Xmega192A3/debug/Peripherals/Eeprom.h
-*********************************************************************/
+/*
+ * Eeprom.h
+ *
+ *  Created on: 18.07.2017
+ *      Author: Viktor Pankraz
+ */
 
 #ifndef Peripherals_Eeprom_H
 #define Peripherals_Eeprom_H
 
-//## auto_generated
-#include "Peripherals/Peripherals.h"
-//## dependency NvmController
-#include "Peripherals/NvmController.h"
-//## operation read(uint16_t,void *,uint16_t)
-#include <Stream.h>
-//## dependency GlobalInterrupt
+#include "NvmController.h"
+
+#include <SwFramework.h>
+
 class GlobalInterrupt;
 
-//## package Peripherals
+class Eeprom
+{
+   public:
 
-//## class Eeprom
-class Eeprom {
-public :
+      class MemoryMapped
+      {
+         ////    Constructors and destructors    ////
 
-    //## class Eeprom::MemoryMapped
-    class MemoryMapped {
-        ////    Constructors and destructors    ////
-        
-    public :
-    
-        //## operation MemoryMapped()
-        inline MemoryMapped() {
-            //#[ operation MemoryMapped()
-            NVM.CTRLB |= NVM_EEMAPEN_bm;
-            //#]
-        }
-        
-        //## operation ~MemoryMapped()
-        inline ~MemoryMapped() {
-            //#[ operation ~MemoryMapped()
-            NVM.CTRLB &= ~NVM_EEMAPEN_bm;
-            //#]
-        }
-    };
-    
-    ////    Operations    ////
-    
-    //## operation disablePowerReduction()
-    inline static void disablePowerReduction() {
-        //#[ operation disablePowerReduction()
-        NVM.CTRLB &= ~NVM_EPRM_bm;
-        //#]
-    }
-    
-    //## operation enablePowerReduction()
-    inline static void enablePowerReduction() {
-        //#[ operation enablePowerReduction()
-        NVM.CTRLB |= NVM_EPRM_bm;
-        //#]
-    }
-    
-    //## operation erase()
-    inline static void erase();
-    
-    //## operation executeCommand(NVM_CMD_t)
-    static void executeCommand(NVM_CMD_t command);
-    
-    //## operation read(uint16_t)
-    static uint8_t read(uint16_t offset);
-    
-    //## operation read(uint16_t,void *,uint16_t)
-    static Stream::Status read(uint16_t offset, void * pData, uint16_t length);
-    
-    //## operation write(uint16_t,uint8_t)
-    static bool write(uint16_t offset, uint8_t value);
-    
-    //## operation write(uint16_t,void *,uint16_t)
-    static Stream::Status write(uint16_t offset, void * pData, uint16_t length);
+         public:
 
-protected :
+            inline MemoryMapped()
+            {
+               NVM.CTRLB |= NVM_EEMAPEN_bm;
+            }
 
-    //## operation fillBufferWithValue(uint8_t)
-    static void fillBufferWithValue(uint8_t value);
-    
-    //## operation flushBuffer()
-    inline static void flushBuffer();
+            inline ~MemoryMapped()
+            {
+               NVM.CTRLB &= ~NVM_EEMAPEN_bm;
+            }
 
-private :
+            static inline void enable()
+            {
+               NvmController::waitWhileBusy(); NVM.CTRLB |= NVM_EEMAPEN_bm;
+            }
 
-    //## operation isAddressInRange(uint16_t)
-    static bool isAddressInRange(uint16_t address);
-    
-    ////    Attributes    ////
+            static inline void disable()
+            {
+               NvmController::waitWhileBusy(); NVM.CTRLB &= ~NVM_EEMAPEN_bm;
+            }
 
-protected :
+            static inline bool isEnabled()
+            {
+               return NVM.CTRLB & NVM_EEMAPEN_bm;
+            }
 
-    static const uint8_t debugLevel;		//## attribute debugLevel
+            static bool isAddressInRange( uint16_t address );
+
+            static uint16_t write( uint16_t offset, const void* pData, uint16_t length );
+
+            static uint16_t read( uint16_t offset, void* pData, uint16_t length );
+      };
+
+      ////    Operations    ////
+
+      inline static void disablePowerReduction()
+      {
+         NVM.CTRLB &= ~NVM_EPRM_bm;
+      }
+
+      inline static void enablePowerReduction()
+      {
+         NVM.CTRLB |= NVM_EPRM_bm;
+      }
+
+      inline static void erase();
+
+      static void executeCommand( NVM_CMD_t command );
+
+      static uint8_t read( uint16_t offset );
+
+      static uint16_t read( uint16_t offset, void* pData, uint16_t length );
+
+      static bool write( uint16_t offset, uint8_t value );
+
+      static uint16_t write( uint16_t offset, const void* pData, uint16_t length );
+
+   protected:
+
+      static void fillBufferWithValue( uint8_t value );
+
+      inline static void flushBuffer();
+
+   private:
+
+      static bool isAddressInRange( uint16_t address );
+
+      ////    Attributes    ////
+
+   protected:
+
+      static const uint8_t debugLevel;
 };
 
-inline void Eeprom::erase() {
-    //#[ operation erase()
-    WARN_1( "ee.erase" );     
-    fillBufferWithValue( 0xFF );
-    NvmController::waitWhileBusy();
-    executeCommand( NVM_CMD_ERASE_EEPROM_gc );
-    //#]
+inline void Eeprom::erase()
+{
+   WARN_1( "ee.erase" );
+   bool mapped = MemoryMapped::isEnabled();
+   MemoryMapped::disable();
+   fillBufferWithValue( 0xFF );
+   NvmController::waitWhileBusy();
+   executeCommand( NVM_CMD_ERASE_EEPROM_gc );
+   if ( mapped )
+   {
+      MemoryMapped::enable();
+   }
 }
 
-inline void Eeprom::flushBuffer() {
-    //#[ operation flushBuffer()
-    NvmController::waitWhileBusy();
-    
-    // Flush EEPROM page buffer if necessary.
-    if( (NVM.STATUS & NVM_EELOAD_bm) != 0) 
-    {         
-      DEBUG_M1( FSTR("flush") );                
-    	executeCommand( NVM_CMD_ERASE_EEPROM_BUFFER_gc );
-    }
-    
-    
-    //#]
+inline void Eeprom::flushBuffer()
+{
+   NvmController::waitWhileBusy();
+
+   // Flush EEPROM page buffer if necessary.
+   if ( ( NVM.STATUS & NVM_EELOAD_bm ) != 0 )
+   {
+      DEBUG_M1( FSTR( "flush" ) );
+      executeCommand( NVM_CMD_ERASE_EEPROM_BUFFER_gc );
+   }
 }
 
 #endif
-/*********************************************************************
-	File Path	: Xmega192A3/debug/Peripherals/Eeprom.h
-*********************************************************************/
+

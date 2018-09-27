@@ -1,37 +1,29 @@
-/********************************************************************
-        Rhapsody	: 8.0.3
-        Login		: viktor.pankraz
-        Component	: AR8
-        Configuration   : release
-        Model Element	: DigitalPortHw
-   //!	Generated Date	: Wed, 6, Aug 2014
-        File Path	: AR8/release/Electronics/HwUnitBoards/DigitalPortHw.cpp
- *********************************************************************/
+/*
+ * DigitalPortHw.cpp
+ *
+ *  Created on: 06.08.2014
+ *      Author: Viktor Pankraz
+ */
 
-// ## auto_generated
 #include "DigitalPortHw.h"
-// ## package Electronics::HwUnitBoards
 
-// ## class DigitalPortHw
-DigitalPortHw::DigitalPortHw( uint8_t portNumber ) : port( IoPort::instance( portNumber ) ), timerCounter0( &TimerCounter0::instance( portNumber ) ), timerCounter1( &TimerCounter1::instance( portNumber ) )
+
+DigitalPortHw::DigitalPortHw( uint8_t portNumber ) : port( &IoPort::instance( portNumber ) ), timerCounter0( &TimerCounter0::instance( portNumber ) ), timerCounter1( &TimerCounter1::instance( portNumber ) )
 {
-   // #[ operation DigitalPortHw(uint8_t)
-   // #]
 }
 
 void DigitalPortHw::configure( uint8_t outputPins, uint8_t inputPins, uint8_t pwmPins )
 {
-   // #[ operation configure(uint8_t,uint8_t,uint8_t)
-   port.setPinsAsOutput( outputPins | pwmPins );
-   port.clearPins( outputPins | pwmPins );
-   port.setPinsAsInput( inputPins );
+   port->setPinsAsOutput( outputPins | pwmPins );
+   port->clearPins( outputPins | pwmPins );
+   port->setPinsAsInput( inputPins );
    if ( inputPins )
    {
-      port.configure( inputPins,
-                      PORT_OPC_PULLUP_gc,       // enable pullup
-                      false,                    // do not invert
-                      PORT_ISC_BOTHEDGES_gc,    // sense on both edges
-                      true );                   // enable slewRate
+      port->configure( inputPins,
+                       PORT_OPC_PULLUP_gc,      // enable pullup
+                       false,                   // do not invert
+                       PORT_ISC_BOTHEDGES_gc,   // sense on both edges
+                       true );                  // enable slewRate
    }
 
    if ( timerCounter0 )
@@ -61,12 +53,10 @@ void DigitalPortHw::configure( uint8_t outputPins, uint8_t inputPins, uint8_t pw
       timerCounter1->setPeriod( 100 );
       timerCounter1->enableChannels( pwmPins );
    }
-   // #]
 }
 
 void DigitalPortHw::on( uint8_t pin, uint8_t value )
 {
-   // #[ operation on(uint8_t,uint8_t)
    if ( ( pin < Pin4 ) && timerCounter0 )
    {
       if ( pin == Pin0 )
@@ -101,16 +91,11 @@ void DigitalPortHw::on( uint8_t pin, uint8_t value )
    {
       if ( value )
       {
-         port.setPins( pin );
+         port->setPins( pin );
       }
       else
       {
-         port.clearPins( pin );
+         port->clearPins( pin );
       }
    }
-   // #]
 }
-
-/*********************************************************************
-        File Path	: AR8/release/Electronics/HwUnitBoards/DigitalPortHw.cpp
-*********************************************************************/

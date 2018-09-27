@@ -10,64 +10,64 @@
 
 #include "BaseSensorUnit.h"
 
-class InternalTemperatureUnit: public BaseSensorUnit
+class InternalTemperatureUnit : public BaseSensorUnit
 {
-public:
+   public:
 
-  enum ErrorCodes
-  {
-    NO_ERROR,
-  };
+      enum ErrorCodes
+      {
+         NO_ERROR,
+      };
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  InternalTemperatureUnit();
+      InternalTemperatureUnit();
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  virtual bool notifyEvent( const Event& event );
+      virtual bool notifyEvent( const Event& event );
 
-  inline void * operator new( size_t size );
+      inline void* operator new( size_t size );
 
-private:
+   private:
 
-  void run();
+      void run();
 
-  ////    Additional operations    ////
+      ////    Additional operations    ////
 
-public:
-
-
-protected:
-
-  inline static const uint8_t getDebugLevel()
-  {
-    return debugLevel;
-  }
-
-private:
-
-  ////    Attributes    ////
-
-public:
-
-protected:
-
-  static const uint8_t debugLevel;
-
-private:
+   public:
 
 
+   protected:
 
-  ////    Relations and components    ////
+      inline static const uint8_t getDebugLevel()
+      {
+         return debugLevel;
+      }
 
-protected:
+   private:
+
+      ////    Attributes    ////
+
+   public:
+
+   protected:
+
+      static const uint8_t debugLevel;
+
+   private:
+
+
+
+      ////    Relations and components    ////
+
+   protected:
 
 };
 
-inline void * InternalTemperatureUnit::operator new( size_t size )
+inline void* InternalTemperatureUnit::operator new( size_t size )
 {
-  return allocOnce( size );
+   return allocOnce( size );
 }
 
 #endif

@@ -1,21 +1,14 @@
-/********************************************************************
-        Rhapsody	: 8.0.3
-        Login		: viktor.pankraz
-        Component	: Xmega192A3
-        Configuration   : debug
-        Model Element	: TimerCounter0
-   //!	Generated Date	: Tue, 24, Jun 2014
-        File Path	: Xmega192A3/debug/Peripherals/TimerCounter0.cpp
- *********************************************************************/
+/*
+ * TimerCounter0.cpp
+ *
+ * Created: 18.06.2014 14:12:55
+ * Author: viktor.pankraz
+ */
 
-// ## auto_generated
 #include "Peripherals/TimerCounter0.h"
-// ## package Peripherals
 
-// ## class TimerCounter0
 TimerCounter0& TimerCounter0::instance( uint8_t portNumber )
 {
-   // #[ operation instance(uint8_t)
    switch ( portNumber )
    {
     #ifdef TCC0
@@ -41,9 +34,4 @@ TimerCounter0& TimerCounter0::instance( uint8_t portNumber )
    }
 
    return *(TimerCounter0*)0;
-   // #]
 }
-
-/*********************************************************************
-        File Path	: Xmega192A3/debug/Peripherals/TimerCounter0.cpp
-*********************************************************************/

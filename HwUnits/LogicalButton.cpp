@@ -30,7 +30,7 @@ void LogicalButton::Response::setStatus( uint8_t status )
 LogicalButton::LogicalButton( uint8_t _id )
 {
    {
-      for ( int pos = 0; pos < HwConfiguration::LogicalButton::MAX_OBJECTS;
+      for ( int pos = 0; pos < Configuration::MAX_OBJECTS;
             ++pos )
       {
          led[pos] = NULL;
@@ -38,19 +38,19 @@ LogicalButton::LogicalButton( uint8_t _id )
    }
    configuration = NULL;
    {
-      for ( int pos = 0; pos < HwConfiguration::LogicalButton::MAX_OBJECTS;
+      for ( int pos = 0; pos < Configuration::MAX_OBJECTS;
             ++pos )
       {
          button[pos] = NULL;
       }
    }
    Object::setId( ( ClassId::LOGICAL_BUTTON << 8 ) | _id );
-   configuration = HwConfiguration::getLogicalButtonConfiguration( id );
+   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
 }
 
 void LogicalButton::clearObjectList()
 {
-   for ( uint8_t i = 0; i < HwConfiguration::LogicalButton::MAX_OBJECTS; i++ )
+   for ( uint8_t i = 0; i < Configuration::MAX_OBJECTS; i++ )
    {
       led[i] = 0;
       if ( button[i] )
@@ -63,7 +63,7 @@ void LogicalButton::clearObjectList()
 
 uint8_t LogicalButton::getLedStatus()
 {
-   for ( uint8_t i = 0; i < HwConfiguration::LogicalButton::MAX_OBJECTS; i++ )
+   for ( uint8_t i = 0; i < Configuration::MAX_OBJECTS; i++ )
    {
       if ( led[i] )
       {
@@ -94,7 +94,7 @@ bool LogicalButton::notifyEvent( const Event& event )
 void LogicalButton::routeMessageToButton( const Event& event )
 {
    bool consumed = true;
-   for ( uint8_t i = 0; i < HwConfiguration::LogicalButton::MAX_OBJECTS; i++ )
+   for ( uint8_t i = 0; i < Configuration::MAX_OBJECTS; i++ )
    {
       if ( button[i] )
       {
@@ -114,7 +114,7 @@ void LogicalButton::routeMessageToButton( const Event& event )
 void LogicalButton::routeMessageToLed( const Event& event )
 {
    bool consumed = true;
-   for ( uint8_t i = 0; i < HwConfiguration::LogicalButton::MAX_OBJECTS; i++ )
+   for ( uint8_t i = 0; i < Configuration::MAX_OBJECTS; i++ )
    {
       if ( led[i] )
       {
@@ -133,7 +133,7 @@ void LogicalButton::routeMessageToLed( const Event& event )
 
 void LogicalButton::updateObjectList()
 {
-   for ( uint8_t i = 0; i < HwConfiguration::LogicalButton::MAX_OBJECTS; i++ )
+   for ( uint8_t i = 0; i < Configuration::MAX_OBJECTS; i++ )
    {
       led[i] = (Led*) getObject(
          ( ClassId::LED << 8 ) | configuration->getLedId( i ) );
@@ -222,7 +222,7 @@ bool LogicalButton::handleRequest( const Event& event )
 
 void LogicalButton::addButton( Button* p_Button )
 {
-   for ( int pos = 0; pos < HwConfiguration::LogicalButton::MAX_OBJECTS; ++pos )
+   for ( int pos = 0; pos < Configuration::MAX_OBJECTS; ++pos )
    {
       if ( !button[pos] )
       {
@@ -232,20 +232,9 @@ void LogicalButton::addButton( Button* p_Button )
    }
 }
 
-HwConfiguration::LogicalButton* LogicalButton::getConfiguration() const
-{
-   return configuration;
-}
-
-void LogicalButton::setConfiguration(
-   HwConfiguration::LogicalButton* p_LogicalButton )
-{
-   configuration = p_LogicalButton;
-}
-
 void LogicalButton::addLed( Led* p_Led )
 {
-   for ( int pos = 0; pos < HwConfiguration::LogicalButton::MAX_OBJECTS; ++pos )
+   for ( int pos = 0; pos < Configuration::MAX_OBJECTS; ++pos )
    {
       if ( !led[pos] )
       {

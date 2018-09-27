@@ -1,21 +1,14 @@
-/********************************************************************
-        Rhapsody	: 8.0.3
-        Login		: viktor.pankraz
-        Component	: SwFrameworkAvr
-        Configuration   : debug
-        Model Element	: Checksum16
-   //!	Generated Date	: Wed, 18, Jun 2014
-        File Path	: SwFrameworkAvr/debug/SwFramework/Security/Checksum16.cpp
- *********************************************************************/
+/*
+ * Checksum16.cpp
+ *
+ *  Created on: 28.08.2014
+ *      Author: Viktor Pankraz
+ */
 
-// ## auto_generated
 #include "Checksum16.h"
-// ## package SwFramework::Security
 
-// ## class Checksum16
 uint16_t Checksum16::get( void* pData, uint16_t length, uint32_t checksum )
 {
-   // #[ operation get(void *,uint16_t,uint32_t)
    uint8_t* data = static_cast<uint8_t*>( pData );
    uint8_t dataH;
    uint8_t dataL;
@@ -44,9 +37,4 @@ uint16_t Checksum16::get( void* pData, uint16_t length, uint32_t checksum )
    checksum = ( ( checksum & 0x0000FFFF ) + ( ( checksum & 0xFFFF0000 ) >> 16 ) );
 
    return ~( checksum & 0x0000FFFF );
-   // #]
 }
-
-/*********************************************************************
-        File Path	: SwFrameworkAvr/debug/SwFramework/Security/Checksum16.cpp
-*********************************************************************/

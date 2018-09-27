@@ -1,23 +1,17 @@
-/********************************************************************
-        Rhapsody	: 8.0.3
-        Login		: viktor.pankraz
-        Component	: Xmega192A3
-        Configuration   : debug
-        Model Element	: Eeprom
-   //!	Generated Date	: Tue, 24, Jun 2014
-        File Path	: Xmega192A3/debug/Peripherals/Eeprom.cpp
- *********************************************************************/
+/*
+ * Eeprom.cpp
+ *
+ *  Created on: 18.07.2017
+ *      Author: Viktor Pankraz
+ */
 
-// ## auto_generated
-#include "Peripherals/Eeprom.h"
-// ## dependency GlobalInterrupt
+#include "Eeprom.h"
+
 #include <GlobalInterrupt.h>
-// ## package Peripherals
+#include <string.h>
 
-// ## class Eeprom
 const uint8_t Eeprom::debugLevel( DEBUG_LEVEL_OFF );
 
-// ## class Eeprom::MemoryMapped
 
 void Eeprom::executeCommand( NVM_CMD_t command )
 {
@@ -64,44 +58,62 @@ void Eeprom::executeCommand( NVM_CMD_t command )
    // Restore EEPROM interruptsettings
    NVM.INTCTRL = eepromintStore;
 
-
-
    NVM.CMD = oldCmd;
-   // #]
 }
 
 uint8_t Eeprom::read( uint16_t offset )
 {
-   // #[ operation read(uint16_t)
    DEBUG_M2( FSTR( "ee.r " ), offset );
    NvmController::waitWhileBusy();
+   if ( MemoryMapped::isEnabled() )
+   {
+      if ( offset < MAPPED_EEPROM_START )
+      {
+         offset += MAPPED_EEPROM_START;
+      }
+      return *( (uint8_t*)offset );
+   }
+
    MemoryMapped map;
    uint8_t* ptr = (uint8_t*)MAPPED_EEPROM_START;
    uint8_t value = ptr[offset];
-   barrier();
+// barrier();
 
    return value;
-   // #]
 }
 
-Stream::Status Eeprom::read( uint16_t offset, void* pData, uint16_t length )
+uint16_t Eeprom::read( uint16_t offset, void* pData, uint16_t length )
 {
-   // #[ operation read(uint16_t,void *,uint16_t)
    DEBUG_M4( FSTR( "ee.r " ), offset, ' ', length );
-   NvmController::waitWhileBusy();
+   if ( MemoryMapped::isEnabled() )
+   {
+      if ( offset < MAPPED_EEPROM_START )
+      {
+         offset += MAPPED_EEPROM_START;
+      }
+      return MemoryMapped::read( offset, pData, length );
+   }
 
+   NvmController::waitWhileBusy();
    {
       MemoryMapped map;
       memcpy( pData, (void*)( MAPPED_EEPROM_START + offset ), length );
    }
-   return Stream::SUCCESS;
-   // #]
+   return length;
 }
 
 bool Eeprom::write( uint16_t offset, uint8_t value )
 {
-   // #[ operation write(uint16_t,uint8_t)
    DEBUG_M2( FSTR( "ee.w " ), offset );
+   if ( MemoryMapped::isEnabled() )
+   {
+      if ( offset < MAPPED_EEPROM_START )
+      {
+         offset += MAPPED_EEPROM_START;
+      }
+      return MemoryMapped::write( offset, &value, 1 );
+   }
+
    if ( !isAddressInRange( offset ) )
    {
       return false;
@@ -124,13 +136,19 @@ bool Eeprom::write( uint16_t offset, uint8_t value )
    NVM.CMD = oldCmd;
 
    return true;
-   // #]
 }
 
-Stream::Status Eeprom::write( uint16_t offset, void* pData, uint16_t length )
+uint16_t Eeprom::write( uint16_t offset, const void* pData, uint16_t length )
 {
-   // #[ operation write(uint16_t,void *,uint16_t)
-   uint8_t* source = static_cast<uint8_t*>( pData );
+   if ( MemoryMapped::isEnabled() )
+   {
+      if ( offset < MAPPED_EEPROM_START )
+      {
+         offset += MAPPED_EEPROM_START;
+      }
+      return MemoryMapped::write( offset, pData, length );
+   }
+   const uint8_t* source = static_cast<const uint8_t*>( pData );
    while ( length )
    {
       if ( !write( offset++, *source++ ) )
@@ -140,13 +158,11 @@ Stream::Status Eeprom::write( uint16_t offset, void* pData, uint16_t length )
       length--;
    }
 
-   return ( length ? Stream::ABORTED : Stream::SUCCESS );
-   // #]
+   return length;
 }
 
 void Eeprom::fillBufferWithValue( uint8_t value )
 {
-   // #[ operation fillBufferWithValue(uint8_t)
    uint8_t oldCmd = NVM.CMD;
 
    flushBuffer();
@@ -160,19 +176,17 @@ void Eeprom::fillBufferWithValue( uint8_t value )
    NVM.ADDR2 = 0x00;
    NVM.ADDR1 = 0x00;
 
-   // Load multible bytes into page buffer
+   // Load multiple bytes into page buffer
    for ( uint8_t i = 0; i < EEPROM_PAGE_SIZE; ++i )
    {
       NVM.ADDR0 = i;
       NVM.DATA0 = value;
    }
    NVM.CMD = oldCmd;
-   // #]
 }
 
 bool Eeprom::isAddressInRange( uint16_t address )
 {
-   // #[ operation isAddressInRange(uint16_t)
    if ( ( address < EEPROM_START )
       || ( address > EEPROM_END ) )
    {
@@ -180,9 +194,67 @@ bool Eeprom::isAddressInRange( uint16_t address )
       return false;
    }
    return true;
-   // #]
 }
 
-/*********************************************************************
-        File Path	: Xmega192A3/debug/Peripherals/Eeprom.cpp
-*********************************************************************/
+bool Eeprom::MemoryMapped::isAddressInRange( uint16_t address )
+{
+   if ( ( address < MAPPED_EEPROM_START )
+      || ( address > MAPPED_EEPROM_END ) )
+   {
+      ERROR_2( address, " isOutOfRange" );
+      return false;
+   }
+   return true;
+}
+
+uint16_t Eeprom::MemoryMapped::write( uint16_t offset, const void* pData, uint16_t length )
+{
+   if ( !isAddressInRange( offset ) || !isAddressInRange( offset + length ) )
+   {
+      return 0;
+   }
+
+   uint16_t writtenLength = 0;
+   const uint8_t* source = static_cast<const uint8_t*>( pData );
+   while ( length )
+   {
+      uint8_t pageLength = EEPROM_PAGE_SIZE - ( offset % EEPROM_PAGE_SIZE );
+      if ( pageLength > length )
+      {
+         pageLength = length;
+      }
+      Eeprom::flushBuffer();
+      memcpy( (void*)( offset ), source, pageLength );
+
+      // Set address to write to
+      NVM.ADDR2 = 0x00;
+      NVM.ADDR1 = ( offset >> 8 ) & 0xFF;
+      NVM.ADDR0 = offset & 0xFF;
+
+      Eeprom::executeCommand( NVM_CMD_ERASE_WRITE_EEPROM_PAGE_gc );
+
+      source += pageLength;
+      length -= pageLength;
+      writtenLength += pageLength;
+      offset += pageLength;
+   }
+
+   return writtenLength;
+}
+
+uint16_t Eeprom::MemoryMapped::read( uint16_t offset, void* pData, uint16_t length )
+{
+   if ( !isAddressInRange( offset ) || !isAddressInRange( offset + length ) )
+   {
+      return 0;
+   }
+   memcpy( pData, (void*)( offset ), length );
+
+   return length;
+}
+
+SIGNAL(NVM_EE_vect)
+{
+   // Disable the EEPROM interrupt
+   NVM.INTCTRL = ( NVM.INTCTRL & ~NVM_EELVL_gm );
+}

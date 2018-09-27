@@ -1,3 +1,10 @@
+/*
+ * IoStream.cpp
+ *
+ *  Created on: 28.08.2014
+ *      Author: Viktor Pankraz
+ */
+
 #include "IoStream.h"
 #include "EventDrivenUnit.h"
 

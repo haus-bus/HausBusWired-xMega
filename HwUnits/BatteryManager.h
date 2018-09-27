@@ -13,163 +13,163 @@
 #include <DigitalOutput.h>
 #include <AnalogInput.h>
 
-class BatteryManager: public BaseSensorUnit
+class BatteryManager : public BaseSensorUnit
 {
-  enum SubStates
-  {
-    NO_ERROR,
-    POWER_SUPPLY_NOT_CONNECTED,
-    POWER_SUPPLY_NOK,
-    BATTERY_NOT_CONNECTED,
-    BATTERY_REVERSE_POLARITY,
-  };
+   enum SubStates
+   {
+      NO_ERROR,
+      POWER_SUPPLY_NOT_CONNECTED,
+      POWER_SUPPLY_NOK,
+      BATTERY_NOT_CONNECTED,
+      BATTERY_REVERSE_POLARITY,
+   };
 
-  class Command
-  {
-  public:
+   class Command
+   {
+      public:
 
-    enum Commands
-    {
-      ERASE = HACF::COMMANDS_START,
-      GET_LOGS,
-    };
+         enum Commands
+         {
+            ERASE = HACF::COMMANDS_START,
+            GET_LOGS,
+         };
 
-    union Parameter
-    {
-      uint32_t sector;
-    };
+         union Parameter
+         {
+            uint32_t sector;
+         };
 
-    ////    Operations    ////
+         ////    Operations    ////
 
-    inline Parameter& getParameter()
-    {
-      return parameter;
-    }
+         inline Parameter& getParameter()
+         {
+            return parameter;
+         }
 
-    ////    Additional operations    ////
+         ////    Additional operations    ////
 
-    inline uint8_t getCommand() const
-    {
-      return command;
-    }
+         inline uint8_t getCommand() const
+         {
+            return command;
+         }
 
-    inline void setCommand( uint8_t p_command )
-    {
-      command = p_command;
-    }
+         inline void setCommand( uint8_t p_command )
+         {
+            command = p_command;
+         }
 
-    inline void setParameter( Parameter p_parameter )
-    {
-      parameter = p_parameter;
-    }
+         inline void setParameter( Parameter p_parameter )
+         {
+            parameter = p_parameter;
+         }
 
-    ////    Attributes    ////
+         ////    Attributes    ////
 
-    uint8_t command;
+         uint8_t command;
 
-    Parameter parameter;
-  };
+         Parameter parameter;
+   };
 
-  class Response: public IResponse
-  {
-  public:
+   class Response : public IResponse
+   {
+      public:
 
-    enum Responses
-    {
-      LOG_DATA = HACF::RESULTS_START,
-    };
+         enum Responses
+         {
+            LOG_DATA = HACF::RESULTS_START,
+         };
 
-    union Parameter
-    {
-      uint8_t data;
-    };
+         union Parameter
+         {
+            uint8_t data;
+         };
 
-    ////    Constructors and destructors    ////
+         ////    Constructors and destructors    ////
 
-    inline Response( uint16_t id ) :
-        IResponse( id )
-    {
-    }
+         inline Response( uint16_t id ) :
+            IResponse( id )
+         {
+         }
 
-    inline Response( uint16_t id, const HACF& message ) :
-        IResponse( id, message )
-    {
-    }
+         inline Response( uint16_t id, const HACF& message ) :
+            IResponse( id, message )
+         {
+         }
 
-    ////    Operations    ////
+         ////    Operations    ////
 
-    inline Parameter& getParameter()
-    {
-      return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
-    }
+         inline Parameter& getParameter()
+         {
+            return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
+         }
 
-    Parameter& setLogData();
+         Parameter& setLogData();
 
-    ////    Attributes    ////
+         ////    Attributes    ////
 
-  private:
+      private:
 
-    Parameter params;
-  };
+         Parameter params;
+   };
 
-public:
+   public:
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  BatteryManager( DigitalOutput _charger, DigitalInput _powerSupply,
-                  AnalogInput _batteryGndVoltage );
+      BatteryManager( DigitalOutput _charger, DigitalInput _powerSupply,
+                      AnalogInput _batteryGndVoltage );
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  virtual bool notifyEvent( const Event& event );
+      virtual bool notifyEvent( const Event& event );
 
-  void run();
+      void run();
 
-  uint8_t getBatteryConnectionStatus();
+      uint8_t getBatteryConnectionStatus();
 
-  inline bool isPowerSupplyOk() const
-  {
-    return ( powerSupply.isSet() == 0 );
-  }
+      inline bool isPowerSupplyOk() const
+      {
+         return ( powerSupply.isSet() == 0 );
+      }
 
-  inline SubStates getCurrentSubState()
-  {
-    return (SubStates)state.sub;
-  }
+      inline SubStates getCurrentSubState()
+      {
+         return (SubStates)state.sub;
+      }
 
-protected:
+   protected:
 
-  bool hasBatteryStatusChanged();
+      bool hasBatteryStatusChanged();
 
-  SubStates getBatteryStatus();
+      SubStates getBatteryStatus();
 
-  inline void disableCharger()
-  {
-    charger.set();
-  }
+      inline void disableCharger()
+      {
+         charger.set();
+      }
 
-  inline void enableCharger()
-  {
-    charger.clear();
-  }
+      inline void enableCharger()
+      {
+         charger.clear();
+      }
 
-private:
+   private:
 
-  void notifyCurrentBatteryValue();
+      void notifyCurrentBatteryValue();
 
-  void sendErrorStatus();
+      void sendErrorStatus();
 
-  ////    Attributes    ////
+      ////    Attributes    ////
 
-private:
+   private:
 
-  static const uint8_t debugLevel;
+      static const uint8_t debugLevel;
 
-  uint16_t batteryValue;
+      uint16_t batteryValue;
 
-  DigitalOutput charger;
-  DigitalInput powerSupply;
-  AnalogInput batteryGndVoltage;
+      DigitalOutput charger;
+      DigitalInput powerSupply;
+      AnalogInput batteryGndVoltage;
 
 };
 

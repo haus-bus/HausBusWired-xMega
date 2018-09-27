@@ -17,52 +17,52 @@ class FlashString;
 
 class RuleEngine
 {
-  ////    Operations    ////
+   ////    Operations    ////
 
-public:
+   public:
 
 #ifdef _DEBUG_
-  static FlashString* getId();
+      static FlashString* getId();
 #endif
 
-  static void notifyEvent( const HACF::ControlFrame& message );
+      static void notifyEvent( const HACF::ControlFrame& message );
 
-  inline static void disable()
-  {
-    setNumOfRules( 0 );
-  }
+      inline static void disable()
+      {
+         setNumOfRules( 0 );
+      }
 
-  inline static uint8_t getNumOfRules()
-  {
-    return numOfRules;
-  }
+      inline static uint8_t getNumOfRules()
+      {
+         return numOfRules;
+      }
 
-  inline static Rule* getRules()
-  {
-    return rules;
-  }
+      inline static Rule* getRules()
+      {
+         return rules;
+      }
 
-  inline static void setNumOfRules( uint8_t p_numOfRules )
-  {
-    numOfRules = p_numOfRules;
-  }
+      inline static void setNumOfRules( uint8_t p_numOfRules )
+      {
+         numOfRules = p_numOfRules;
+      }
 
-  inline static void setRules( Rule* p_rules )
-  {
-    rules = p_rules;
-  }
+      inline static void setRules( Rule* p_rules )
+      {
+         rules = p_rules;
+      }
 
-  ////    Attributes    ////
+      ////    Attributes    ////
 
-public:
+   public:
 
-  static uint8_t numOfRules;
+      static uint8_t numOfRules;
 
-  static Rule* rules;
+      static Rule* rules;
 
-private:
+   private:
 
-  static const uint8_t debugLevel;
+      static const uint8_t debugLevel;
 };
 
 #endif

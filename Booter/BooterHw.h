@@ -10,7 +10,7 @@
 
 #include <Protocols/HACF.h>
 #include <HomeAutomationHw.h>
-#include <HwConfiguration.h>
+#include <HomeAutomationConfiguration.h>
 #include <Peripherals/RealTimeCounter.h>
 #include <Peripherals/Twi.h>
 
@@ -22,117 +22,117 @@ class Checksum;
 
 class ModuleId;
 
-class BooterHw: public HomeAutomationHw
+class BooterHw : public HomeAutomationHw
 {
-public:
-  static const uint16_t UDP_MIN_PACKET_SIZE = 60;
-  static const uint16_t MAGIC_NUMBER = 0xEFEF;
-  static const uint32_t UDP_PORT = 9;
-  static const uint16_t MESSAGE_TIMEOUT = 2 * 1024;
+   public:
+      static const uint16_t UDP_MIN_PACKET_SIZE = 60;
+      static const uint16_t MAGIC_NUMBER = 0xEFEF;
+      static const uint32_t UDP_PORT = 9;
+      static const uint16_t MESSAGE_TIMEOUT = 2 * 1024;
 
-  static const uint8_t UDP_CHANNEL = 1;
-  static const uint8_t USART_CHANNEL = 2;
-  static const uint8_t TWI_CHANNEL = 4;
+      static const uint8_t UDP_CHANNEL = 1;
+      static const uint8_t USART_CHANNEL = 2;
+      static const uint8_t TWI_CHANNEL = 4;
 
-  struct LanHeader
-  {
-    UdpHeader udpHeader;    //## attribute udpHeader
-    uint16_t magicNumber;   //## attribute magicNumber
-  };
+      struct LanHeader
+      {
+         UdpHeader udpHeader;
+         uint16_t magicNumber;
+      };
 
-  struct TwiHeader
-  {
-    uint8_t unused[sizeof(LanHeader) - 4];    //## attribute unused
-    uint8_t address;    //## attribute address
-    uint8_t checksum;   //## attribute checksum
-    uint16_t lastDeviceId;    //## attribute lastDeviceId
-  };
+      struct TwiHeader
+      {
+         uint8_t unused[sizeof( LanHeader ) - 4];
+         uint8_t address;
+         uint8_t checksum;
+         uint16_t lastDeviceId;
+      };
 
-  struct TransferBuffer
-  {
-    uint8_t header[sizeof(LanHeader)];    //## attribute header
-    HACF::ControlFrame controlFrame;    //## attribute controlFrame
-    uint8_t buffer[APP_SECTION_PAGE_SIZE];    //## attribute buffer
-  };
+      struct TransferBuffer
+      {
+         uint8_t header[sizeof( LanHeader )];
+         HACF::ControlFrame controlFrame;
+         uint8_t buffer[APP_SECTION_PAGE_SIZE];
+      };
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  inline BooterHw()
-#ifdef SUPPORT_UDP  
-  : enc28j60( Spi::instance( PortC ), DigitalOutput( PortD, 4 ),
-              DigitalInput( PortD, 5 ) )
-#endif			  
-  {
-  }
+      inline BooterHw()
+#ifdef SUPPORT_UDP
+         : enc28j60( Spi::instance( PortC ), DigitalOutput( PortD, 4 ),
+                     DigitalInput( PortD, 5 ) )
+#endif
+      {
+      }
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  void configure();
+      void configure();
 
-  HACF::ControlFrame* getMessage();
+      HACF::ControlFrame* getMessage();
 
-  inline static uint16_t getNewDeviceId();
+      inline static uint16_t getNewDeviceId();
 
-  inline TransferBuffer* getTransferBuffer();
+      inline TransferBuffer* getTransferBuffer();
 
-  void sendMessage();
+      void sendMessage();
 
-  ////    Additional operations    ////
+      ////    Additional operations    ////
 
-private:
+   private:
 
-  void readMessageFromTwi();
+      void readMessageFromTwi();
 
-  void writeMessageToTwi();
+      void writeMessageToTwi();
 
-  void readMessageFromUdp();
-	
-  void writeMessageToUdp();
+      void readMessageFromUdp();
 
-  inline static void setMessage( HACF::ControlFrame* p_message )
-  {
-    message = p_message;
-  }
+      void writeMessageToUdp();
 
-  inline static void setTransferBuffer( TransferBuffer p_transferBuffer )
-  {
-    transferBuffer = p_transferBuffer;
-  }
+      inline static void setMessage( HACF::ControlFrame* p_message )
+      {
+         message = p_message;
+      }
 
-  inline static Twi& getTwi()
-  {
-    return twi;
-  }
-  inline static void setTwi( Twi& p_twi )
-  {
-    twi = p_twi;
-  }
+      inline static void setTransferBuffer( TransferBuffer p_transferBuffer )
+      {
+         transferBuffer = p_transferBuffer;
+      }
 
-  ////    Attributes    ////
+      inline static Twi& getTwi()
+      {
+         return twi;
+      }
+      inline static void setTwi( Twi& p_twi )
+      {
+         twi = p_twi;
+      }
 
-  static HACF::ControlFrame* message;
+      ////    Attributes    ////
 
-  static TransferBuffer transferBuffer;
+      static HACF::ControlFrame* message;
 
-  static Twi& twi;
-  
-#ifdef SUPPORT_UDP  
+      static TransferBuffer transferBuffer;
 
-  static bool udpAvailable;
-  
-  static uint32_t ip;
-  
-  static uint16_t idCounter;
-  
-protected:
+      static Twi& twi;
 
-  Enc28j60 enc28j60;
+#ifdef SUPPORT_UDP
+
+      static bool udpAvailable;
+
+      static uint32_t ip;
+
+      static uint16_t idCounter;
+
+   protected:
+
+      Enc28j60 enc28j60;
 #endif
 };
 
 inline BooterHw::TransferBuffer* BooterHw::getTransferBuffer()
 {
-  return &transferBuffer;
+   return &transferBuffer;
 }
 
 #endif

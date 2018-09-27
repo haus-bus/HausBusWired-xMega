@@ -104,9 +104,9 @@ void SystemTime::set( SystemTime::time_t value )
    RealTimeCounter::setPrescaler( presc );
 }
 
-INTERRUPT void RTC_COMP_vect()
+SIGNAL(RTC_COMP_vect)
 {
-   RealTimeCounter::setCompareValue( RealTimeCounter::getCompareValue() + 1024 );
+   RealTimeCounter::setCompareValue(RealTimeCounter::getCompareValue() + 1024);
    Calender::now.addSecond();
    PORTR.OUTTGL = 1;
 }

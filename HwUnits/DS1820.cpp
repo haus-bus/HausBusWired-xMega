@@ -18,7 +18,7 @@ DS1820::DS1820( const OneWire& _hardware, const OneWire::RomCode& _romCode ) :
    hardware( _hardware ), romCode( _romCode )
 {
    setId( ( ClassId::TEMPERATURE << 8 ) | ++numOfInstances );
-   configuration = HwConfiguration::getSensorUnitConfiguration( id );
+   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
 }
 
 bool DS1820::isSelfPowered()

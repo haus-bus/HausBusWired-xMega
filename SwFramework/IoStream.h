@@ -1,3 +1,9 @@
+/*
+ * IoStream.h
+ *
+ *  Created on: 24.06.2014
+ *      Author: viktor.pankraz
+ */
 
 #ifndef SwFramework_IoStream_H
 #define SwFramework_IoStream_H
@@ -8,35 +14,35 @@
 
 class EventDrivenUnit;
 
-class IoStream: public Stream
+class IoStream : public Stream
 {
-public:
+   public:
 
-  enum Command
-  {
-    INIT,
-    IS_BUSY,
-    STOP,
-    RESTART
-  };
+      enum Command
+      {
+         INIT,
+         IS_BUSY,
+         STOP,
+         RESTART
+      };
 
-  class CommandINIT
-  {
-  public:
-    uint8_t deviceId;
-    uint16_t buffersize;
-    EventDrivenUnit* owner;
-  };
+      class CommandINIT
+      {
+         public:
+            uint8_t deviceId;
+            uint16_t buffersize;
+            EventDrivenUnit* owner;
+      };
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  virtual Stream::Status genericCommand( Command command, void* buffer );
+      virtual Stream::Status genericCommand( Command command, void* buffer );
 
-  virtual Stream::Status read( void * pData, uint16_t length,
-                               EventDrivenUnit* user = 0 );
+      virtual Stream::Status read( void* pData, uint16_t length,
+                                   EventDrivenUnit* user = 0 );
 
-  virtual Stream::Status write( void * pData, uint16_t length,
-                                EventDrivenUnit* user = 0 );
+      virtual Stream::Status write( void* pData, uint16_t length,
+                                    EventDrivenUnit* user = 0 );
 };
 
 #endif

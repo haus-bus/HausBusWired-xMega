@@ -16,44 +16,44 @@
  */
 class UltrasonicDistanceMeter : public BaseSensorUnit
 {
-public:
+   public:
 
-   UltrasonicDistanceMeter( DigitalOutput _triggerPin, DigitalInput _measurePin );
-
-
-   virtual bool notifyEvent( const Event& event );
-
-   inline uint16_t microsecondsToCentimeters( uint16_t microseconds )
-   {
-     // The speed of sound is 340 m/s or 29 microseconds per centimeter.
-     // The ping travels out and back, so to find the distance of the
-     // object we take half of the distance traveled.
-     return microseconds / 29 / 2;
-   }
-
-   inline void * operator new( size_t size )
-   {
-     return allocOnce( size );
-   }
-
-protected:
-
- private:
-
-   void run();
-
-   ////    Additional operations    ////
+      UltrasonicDistanceMeter( DigitalOutput _triggerPin, DigitalInput _measurePin );
 
 
-protected:
+      virtual bool notifyEvent( const Event& event );
 
-   static const uint8_t debugLevel;
+      inline uint16_t microsecondsToCentimeters( uint16_t microseconds )
+      {
+         // The speed of sound is 340 m/s or 29 microseconds per centimeter.
+         // The ping travels out and back, so to find the distance of the
+         // object we take half of the distance traveled.
+         return microseconds / 29 / 2;
+      }
 
-   DigitalOutput triggerPin;
+      inline void* operator new( size_t size )
+      {
+         return allocOnce( size );
+      }
 
-   DigitalInput echoPin;
+   protected:
 
-private:
+   private:
+
+      void run();
+
+      ////    Additional operations    ////
+
+
+   protected:
+
+      static const uint8_t debugLevel;
+
+      DigitalOutput triggerPin;
+
+      DigitalInput echoPin;
+
+   private:
 
 };
 

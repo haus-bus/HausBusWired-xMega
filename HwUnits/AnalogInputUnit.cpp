@@ -17,7 +17,7 @@ AnalogInputUnit::AnalogInputUnit( PortPin portPin ) :
       ( ClassId::ANALOG_INPUT << 8 ) | ( ( portPin.getPortNumber() + 1 ) << 4 )
       | ( portPin.getPinNumber() + 1 ) );
 
-   configuration = HwConfiguration::getSensorUnitConfiguration( id );
+   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
    if ( configuration )
    {
 // TODO

@@ -15,52 +15,52 @@
 
 class Timestamp
 {
-  ////    Constructors and destructors    ////
+   ////    Constructors and destructors    ////
 
-public:
+   public:
 
-  inline Timestamp() :
-      time( SystemTime::now() )
-  {
-  }
+      inline Timestamp() :
+         time( SystemTime::now() )
+      {
+      }
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  inline bool elapsed( const SystemTime::time_t& value )
-  {
-    return (value < SystemTime::since( time ));
-  }
+      inline bool elapsed( const SystemTime::time_t& value )
+      {
+         return ( value < SystemTime::since( time ) );
+      }
 
-  inline SystemTime::time_t since()
-  {
-    return SystemTime::since( time );
-  }
+      inline SystemTime::time_t since()
+      {
+         return SystemTime::since( time );
+      }
 
-  inline bool isValid()
-  {
-    return time != 0;
-  }
+      inline bool isValid()
+      {
+         return time != 0;
+      }
 
-  inline void reset()
-  {
-    time = 0;
-  }
+      inline void reset()
+      {
+         time = 0;
+      }
 
-  inline void operator += ( int32_t _time )
-  {
-    time += _time;
-  }
+      inline void operator +=( int32_t _time )
+      {
+         time += _time;
+      }
 
-  inline SystemTime::time_t get()
-  {
-    return time;
-  }
+      inline SystemTime::time_t get()
+      {
+         return time;
+      }
 
-  ////    Attributes    ////
+      ////    Attributes    ////
 
-private:
+   private:
 
-  SystemTime::time_t time;		//## attribute time
+      SystemTime::time_t time;
 };
 
 

@@ -14,58 +14,58 @@
 
 extern MOD_ID_SECTION const ModuleId moduleId;
 
-class PbsSystem: public HomeAutomation
+class PbsSystem : public HomeAutomation
 {
-  ////    Constructors and destructors    ////
+   ////    Constructors and destructors    ////
 
-public:
+   public:
 
-  PbsSystem();
+      PbsSystem();
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  static void start();
+      static void start();
 
-  ////    Additional operations    ////
+      ////    Additional operations    ////
 
-  inline DigitalPort* getDigitalPortA() const
-  {
-    return (DigitalPort*) &digitalPortA;
-  }
+      inline DigitalPort* getDigitalPortA() const
+      {
+         return (DigitalPort*) &digitalPortA;
+      }
 
-  inline DigitalPort* getDigitalPortB() const
-  {
-    return (DigitalPort*) &digitalPortB;
-  }
+      inline DigitalPort* getDigitalPortB() const
+      {
+         return (DigitalPort*) &digitalPortB;
+      }
 
-  inline DigitalPort* getDigitalPortC() const
-  {
-    return (DigitalPort*) &digitalPortC;
-  }
+      inline DigitalPort* getDigitalPortC() const
+      {
+         return (DigitalPort*) &digitalPortC;
+      }
 
-  inline DigitalPort* getDigitalPortD() const
-  {
-    return (DigitalPort*) &digitalPortD;
-  }
+      inline DigitalPort* getDigitalPortD() const
+      {
+         return (DigitalPort*) &digitalPortD;
+      }
 
-  inline PbsSystemHw* getHardware() const
-  {
-    return (PbsSystemHw*) &hardware;
-  }
+      inline PbsSystemHw* getHardware() const
+      {
+         return (PbsSystemHw*) &hardware;
+      }
 
-  ////    Relations and components    ////
+      ////    Relations and components    ////
 
-protected:
+   protected:
 
-  DigitalPort digitalPortA;
+      DigitalPort digitalPortA;
 
-  DigitalPort digitalPortB;
+      DigitalPort digitalPortB;
 
-  DigitalPort digitalPortC;
+      DigitalPort digitalPortC;
 
-  DigitalPort digitalPortD;
+      DigitalPort digitalPortD;
 
-  PbsSystemHw hardware;
+      PbsSystemHw hardware;
 };
 
 #endif

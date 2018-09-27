@@ -9,7 +9,7 @@
 #define HwUnits_BaseSensorUnit_H
 
 #include "HwUnits.h"
-#include "HwConfiguration.h"
+#include <ConfigurationManager.h>
 
 class CriticalSection;
 
@@ -19,199 +19,245 @@ class Scheduler;
 
 class evMessage;
 
-class BaseSensorUnit: public Reactive
+class BaseSensorUnit : public Reactive
 {
-public:
+   public:
 
-  class Command;
+      struct Status
+      {
+         int8_t value;
+         uint8_t centiValue;
+         uint8_t lastEvent;
+      };
 
-  class Response;
+      static const uint8_t MAX_ERRORS = 10;
 
-  struct Status
-  {
-    int8_t value;
-    uint8_t centiValue;
-    uint8_t lastEvent;
-  };
+      class Configuration
+      {
+         public:
 
-  static const uint8_t MAX_ERRORS = 10;
+            static const uint8_t DEFAULT_LOWER_THRESOLD = 18;
+            static const uint8_t DEFAULT_UPPER_THRESOLD = 22;
+            static const uint8_t DEFAULT_REPORT_TIME = 60;
+            static const uint8_t DEFAULT_HYSTERESIS = 5;
 
-  class Command
-  {
-  public:
+            ////    Attributes    ////
 
-    enum Commands
-    {
-      GET_CONFIGURATION = HACF::COMMANDS_START,
-      SET_CONFIGURATION,
-      GET_STATUS,
-    };
+            int8_t lowerThreshold;
 
-    union Parameter
-    {
-      HwConfiguration::SensorUnit setConfiguration;
-    };
+            int8_t upperThreshold;
 
-    ////    Operations    ////
+            uint8_t reportTime;
 
-    inline Parameter& getParameter()
-    {
-      return parameter;
-    }
+            uint8_t hysteresis;
 
-    ////    Additional operations    ////
+            ////    Operations    ////
 
-    inline uint8_t getCommand() const
-    {
-      return command;
-    }
+            static inline Configuration getDefault()
+            {
+               Configuration defaultConfiguration =
+               {
+                  .lowerThreshold = DEFAULT_LOWER_THRESOLD,
+                  .upperThreshold = DEFAULT_UPPER_THRESOLD,
+                  .reportTime = DEFAULT_REPORT_TIME,
+                  .hysteresis = DEFAULT_HYSTERESIS,
+               };
+               return defaultConfiguration;
+            }
 
-    inline void setCommand( uint8_t p_command )
-    {
-      command = p_command;
-    }
+            inline void checkAndCorrect()
+            {
+               if ( lowerThreshold > upperThreshold )
+               {
+                  lowerThreshold = upperThreshold;
+               }
+            }
+      };
 
-    inline void setParameter( Parameter p_parameter )
-    {
-      parameter = p_parameter;
-    }
+      class EepromConfiguration : public ConfigurationManager::EepromConfigurationTmpl<Configuration>
+      {
+         public:
 
-    ////    Attributes    ////
-    uint8_t command;
+            int8_tx lowerThreshold;
 
-    Parameter parameter;
-  };
+            int8_tx upperThreshold;
 
-  class Response: public IResponse
-  {
-  public:
+            uint8_tx reportTime;
 
-    enum Responses
-    {
-      CONFIGURATION = HACF::RESULTS_START,
-      STATUS,
+            uint8_tx hysteresis;
+      };
 
-      EVENT_BELOW = HACF::EVENTS_START,
-      EVENT_IN_RANGE,
-      EVENT_ABOVE,
-    };
+      class Command
+      {
+         public:
 
-    union Parameter
-    {
-      HwConfiguration::SensorUnit configuration;
-      Status status;
-    };
+            enum Commands
+            {
+               GET_CONFIGURATION = HACF::COMMANDS_START,
+               SET_CONFIGURATION,
+               GET_STATUS,
+            };
 
-    ////    Constructors and destructors    ////
+            union Parameter
+            {
+               Configuration setConfiguration;
+            };
 
-    inline Response( uint16_t id ) :
-        IResponse( id )
-    {
-    }
+            ////    Operations    ////
 
-    inline Response( uint16_t id, const HACF& message ) :
-        IResponse( id, message )
-    {
-    }
+            inline Parameter& getParameter()
+            {
+               return parameter;
+            }
 
-    ////    Operations    ////
+            ////    Additional operations    ////
 
-    inline Parameter& getParameter()
-    {
-      return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
-    }
+            inline uint8_t getCommand() const
+            {
+               return command;
+            }
 
-    inline void setEvent( uint8_t value )
-    {
-      controlFrame.setDataLength( 1 );
-      setResponse( value );
-    }
+            inline void setCommand( uint8_t p_command )
+            {
+               command = p_command;
+            }
 
-    Parameter& setConfiguration();
+            inline void setParameter( Parameter p_parameter )
+            {
+               parameter = p_parameter;
+            }
 
-    void setStatus( Status value );
+            ////    Attributes    ////
+            uint8_t command;
 
-    ////    Attributes    ////
+            Parameter parameter;
+      };
 
-  private:
-    Parameter params;
+      class Response : public IResponse
+      {
+         public:
 
-  };
+            enum Responses
+            {
+               CONFIGURATION = HACF::RESULTS_START,
+               STATUS,
 
-  ////    Constructors and destructors    ////
+               EVENT_BELOW = HACF::EVENTS_START,
+               EVENT_IN_RANGE,
+               EVENT_ABOVE,
+            };
 
-  inline BaseSensorUnit() :
-      timeToReport( 1 ), currentEvent( 0 ), lastEvent( 0 ), errorCounter( 0 )
-  {
-    configuration = NULL;
-  }
+            union Parameter
+            {
+               Configuration configuration;
+               Status status;
+            };
 
-  ////    Operations    ////
+            ////    Constructors and destructors    ////
 
-  void notifyNewValue( Status newStatus );
+            inline Response( uint16_t id ) :
+               IResponse( id )
+            {
+            }
 
-protected:
+            inline Response( uint16_t id, const HACF& message ) :
+               IResponse( id, message )
+            {
+            }
 
-  bool handleRequest( HACF* message );
+            ////    Operations    ////
 
-  ////    Additional operations    ////
+            inline Parameter& getParameter()
+            {
+               return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
+            }
 
-public:
+            inline void setEvent( uint8_t value )
+            {
+               controlFrame.setDataLength( 1 );
+               setResponse( value );
+            }
 
-  inline HwConfiguration::SensorUnit* getConfiguration() const
-  {
-    return configuration;
-  }
+            Parameter& setConfiguration();
 
-  inline void setConfiguration( HwConfiguration::SensorUnit* p_SensorUnit )
-  {
-    configuration = p_SensorUnit;
-  }
+            void setStatus( Status value );
 
-protected:
+            ////    Attributes    ////
 
-  inline static const uint8_t getDebugLevel()
-  {
-    return debugLevel;
-  }
+         private:
+            Parameter params;
 
-  inline Status getLastStatus() const
-  {
-    return lastStatus;
-  }
+      };
 
-  inline void setLastStatus( Status p_lastStatus )
-  {
-    lastStatus = p_lastStatus;
-  }
+      ////    Constructors and destructors    ////
 
-  inline uint8_t getTimeToReport() const
-  {
-    return timeToReport;
-  }
+      inline BaseSensorUnit() :
+         timeToReport( 1 ), currentEvent( 0 ), lastEvent( 0 ), errorCounter( 0 )
+      {
+         configuration = NULL;
+      }
 
-  inline void setTimeToReport( uint8_t p_timeToReport )
-  {
-    timeToReport = p_timeToReport;
-  }
+      ////    Operations    ////
 
-  ////    Attributes    ////
+      void notifyNewValue( Status newStatus );
 
-  static const uint8_t debugLevel;
+   protected:
 
-  Status lastStatus;
+      bool handleRequest( HACF* message );
 
-  uint8_t timeToReport;
+      ////    Additional operations    ////
 
-  uint8_t currentEvent;
+   public:
 
-  uint8_t lastEvent;
+      inline void setConfiguration( EepromConfiguration* _config )
+      {
+         configuration = _config;
+      }
 
-  uint8_t errorCounter;
+   protected:
 
-  ////    Relations and components    ////
+      inline static const uint8_t getDebugLevel()
+      {
+         return debugLevel;
+      }
 
-  HwConfiguration::SensorUnit* configuration;
+      inline Status getLastStatus() const
+      {
+         return lastStatus;
+      }
+
+      inline void setLastStatus( Status p_lastStatus )
+      {
+         lastStatus = p_lastStatus;
+      }
+
+      inline uint8_t getTimeToReport() const
+      {
+         return timeToReport;
+      }
+
+      inline void setTimeToReport( uint8_t p_timeToReport )
+      {
+         timeToReport = p_timeToReport;
+      }
+
+      ////    Attributes    ////
+
+      static const uint8_t debugLevel;
+
+      Status lastStatus;
+
+      uint8_t timeToReport;
+
+      uint8_t currentEvent;
+
+      uint8_t lastEvent;
+
+      uint8_t errorCounter;
+
+      ////    Relations and components    ////
+
+      EepromConfiguration* configuration;
 
 };
 

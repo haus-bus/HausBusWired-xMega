@@ -9,13 +9,14 @@
 
 #include <FlashString.h>
 #include <Peripherals/Spi.h>
+#include <Stream.h>
 
 #define getId() FSTR( "SdCard::" )
 
 const uint8_t SdCard::debugLevel( DEBUG_LEVEL_OFF );
 
 SdCard::SdCard( Spi& _spi, DigitalOutput _chipSelectPin ) :
-   spi( _spi ), chipSelectPin( _chipSelectPin ), type( 0 )
+   spi( &_spi ), chipSelectPin( _chipSelectPin ), type( 0 )
 {
    deselect();
 }
@@ -47,7 +48,7 @@ uint8_t SdCard::getInfo( SdCard::Info* info )
    for ( uint8_t i = 0; i < 18; ++i )
    {
       uint8_t b;
-      spi.read( b );
+      spi->read( b );
 
       switch ( i )
       {
@@ -104,7 +105,7 @@ uint8_t SdCard::getInfo( SdCard::Info* info )
    for ( uint8_t i = 0; i < 18; ++i )
    {
       uint8_t b;
-      spi.read( b );
+      spi->read( b );
 
       if ( i == 14 )
       {
@@ -189,7 +190,7 @@ IDiskIo::Status SdCard::init()
 
    // initialize SPI with lowest frequency;
    // max. 400kHz during identification mode of card
-   spi.init<true, SPI_MODE_0_gc, false, SPI_PRESCALER_DIV128_gc, false>();
+   spi->init<true, SPI_MODE_0_gc, false, SPI_PRESCALER_DIV128_gc, false>();
 
    deselect();
 
@@ -198,7 +199,7 @@ IDiskIo::Status SdCard::init()
    {
       // wait 8 clock cycles
       uint8_t dummy = 0xFF;
-      spi.write( dummy );
+      spi->write( dummy );
    }
 
    // reset card
@@ -229,15 +230,15 @@ IDiskIo::Status SdCard::init()
    if ( ( response & ( 1 << R1_ILL_COMMAND ) ) == 0 )
    {
       uint8_t data;
-      spi.read( data );
-      spi.read( data );
-      spi.read( data );
+      spi->read( data );
+      spi->read( data );
+      spi->read( data );
       if ( ( data & 0x01 ) == 0 )
       {
          ERROR_1( FSTR( "card operation voltage range doesn't match" ) );
          return status;
       }
-      spi.read( data );
+      spi->read( data );
       if ( data != 0xaa )
       {
          ERROR_1( FSTR( "wrong test pattern" ) );
@@ -305,14 +306,14 @@ IDiskIo::Status SdCard::init()
          return status;
       }
       uint8_t data;
-      spi.read( data );
+      spi->read( data );
       if ( data & 0x40 )
       {
          type |= ( 1 << SD_RAW_SPEC_SDHC );
       }
-      spi.read( data );
-      spi.read( data );
-      spi.read( data );
+      spi->read( data );
+      spi->read( data );
+      spi->read( data );
    }
 
    // set block size to 512 bytes */
@@ -326,7 +327,7 @@ IDiskIo::Status SdCard::init()
    deselect();
 
    // switch to highest SPI frequency possible
-   spi.init<true, SPI_MODE_0_gc, true, SPI_PRESCALER_DIV4_gc, false>();
+   spi->init<true, SPI_MODE_0_gc, true, SPI_PRESCALER_DIV4_gc, false>();
 
    status.clear();
    return status;
@@ -374,7 +375,7 @@ IDiskIo::Results SdCard::read( uint8_t* buffer, uint32_t sector, uint8_t count )
          return NOT_READY;
       }
 
-      if ( spi.read( buffer, BLOCK_SIZE ) != Stream::SUCCESS )
+      if ( spi->read( buffer, BLOCK_SIZE ) != Stream::SUCCESS )
       {
          ERROR_1( FSTR( "read sector failed!" ) );
          return ERROR;
@@ -382,13 +383,13 @@ IDiskIo::Results SdCard::read( uint8_t* buffer, uint32_t sector, uint8_t count )
 
       // read crc16
       uint8_t data;
-      spi.read( data );
-      spi.read( data );
+      spi->read( data );
+      spi->read( data );
 
       deselect();
 
       // let card some time to finish
-      spi.read( data );
+      spi->read( data );
 
       buffer += BLOCK_SIZE;
       sector++;
@@ -421,27 +422,27 @@ IDiskIo::Results SdCard::write( const uint8_t* buffer, uint32_t sector,
 
       // send start byte
       uint8_t data = 0xFE;
-      spi.write( data );
+      spi->write( data );
 
       // write byte block
-      if ( spi.write( buffer, BLOCK_SIZE ) != Stream::SUCCESS )
+      if ( spi->write( buffer, BLOCK_SIZE ) != Stream::SUCCESS )
       {
          ERROR_1( FSTR( "write sector failed!" ) );
          return ERROR;
       }
 
       // write dummy crc16
-      spi.read( data );  // send 0xff
-      spi.read( data );  // send 0xff
+      spi->read( data );  // send 0xff
+      spi->read( data );  // send 0xff
 
       // wait while card is busy
       do
       {
-         spi.read( data );
+         spi->read( data );
       }
       while ( data != 0xFF );
 
-      spi.read( data );
+      spi->read( data );
 
       // deaddress card
       deselect();
@@ -512,16 +513,16 @@ uint8_t SdCard::sendCommand( uint8_t command, uint32_t arg )
 {
    // wait some clock cycles
    uint8_t data;
-   spi.read( data );
+   spi->read( data );
 
    // send command via SPI
    data = ( 0x40 | command );
-   spi.write( data );
+   spi->write( data );
 
-   spi.write( ( (convert_u*) &arg )->byte[3] );
-   spi.write( ( (convert_u*) &arg )->byte[2] );
-   spi.write( ( (convert_u*) &arg )->byte[1] );
-   spi.write( ( (convert_u*) &arg )->byte[0] );
+   spi->write( ( (convert_u*) &arg )->byte[3] );
+   spi->write( ( (convert_u*) &arg )->byte[2] );
+   spi->write( ( (convert_u*) &arg )->byte[1] );
+   spi->write( ( (convert_u*) &arg )->byte[0] );
 
    switch ( command )
    {
@@ -538,12 +539,12 @@ uint8_t SdCard::sendCommand( uint8_t command, uint32_t arg )
          break;
    }
 
-   spi.write( data );
+   spi->write( data );
 
    // receive response
    for ( uint8_t i = 0; i < 10; ++i )
    {
-      spi.read( data );
+      spi->read( data );
       if ( data != 0xff )
       {
          break;
@@ -560,7 +561,7 @@ uint8_t SdCard::waitForDataBlockStarts()
    uint8_t data;
    do
    {
-      spi.read( data );
+      spi->read( data );
       timeout--;
    }
    while ( ( data != 0xFE ) && timeout );

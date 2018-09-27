@@ -21,12 +21,12 @@ Counter::Response::Parameter& Counter::Response::setConfiguration()
 Counter::Counter( uint8_t _id )
 {
    Object::setId( ( ClassId::COUNTER << 8 ) | _id );
-   configuration = HwConfiguration::getCounterConfiguration( id );
+   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
    if ( configuration )
    {
       mode = configuration->getMode();
-      timeToReport = configuration->getReportTime();
-      value = configuration->getValue();
+      timeToReport = configuration->reportTime;
+      value = configuration->value;
       lastValue = value;
    }
    else
@@ -60,7 +60,7 @@ bool Counter::handleRequest( HACF* message )
       DEBUG_H1( FSTR( ".setConfiguration()" ) );
       configuration->set( data->parameter.setConfiguration );
       mode = configuration->getMode();
-      timeToReport = configuration->getReportTime();
+      timeToReport = configuration->reportTime;
    }
    else if ( cf.isCommand( Command::SET_VALUE ) )
    {
@@ -110,27 +110,17 @@ void Counter::tick()
    setSleepTime( SystemTime::MIN );
 
    // save the current value in eeprom to restore after reset
-   configuration->setValue( value );
+   configuration->value = value;
 
    if ( timeToReport )
    {
       if ( --timeToReport == 0 )
       {
-         timeToReport = configuration->getReportTime();
+         timeToReport = configuration->reportTime;
          Response event( getId() );
          event.setStatus( value - lastValue );
          event.queue();
          lastValue = value;
       }
    }
-}
-
-HwConfiguration::Counter* Counter::getConfiguration() const
-{
-   return configuration;
-}
-
-void Counter::setConfiguration( HwConfiguration::Counter* p_Button )
-{
-   configuration = p_Button;
 }

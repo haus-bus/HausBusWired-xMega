@@ -84,8 +84,6 @@ bool ModBusSlave::notifyEvent( const Event& event )
       HACF* message = event.isEvMessage()->getMessage();
       HACF::ControlFrame& cf = message->controlFrame;
 
-      Command* data = reinterpret_cast<Command*>( cf.getData() );
-
       Response response( getId(), *message );
 
       if ( cf.isCommand( Command::READ_COIL_STATUS ) )

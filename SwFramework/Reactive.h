@@ -15,133 +15,133 @@
 
 class Scheduler;
 
-class Reactive: public EventDrivenUnit
+class Reactive : public EventDrivenUnit
 {
-public:
+   public:
 
-  enum SleepTimes
-  {
-    NO_WAKE_UP = 0xFFFF,
-    WAKE_UP = 0
-  };
+      enum SleepTimes
+      {
+         NO_WAKE_UP = 0xFFFF,
+         WAKE_UP = 0
+      };
 
-  enum MainStates
-  {
-    STARTUP,
-    STANDBY,
-    IDLE,
-    RUNNING,
-    FAILTURE,
-    FATAL_ERROR
-  };
+      enum MainStates
+      {
+         STARTUP,
+         STANDBY,
+         IDLE,
+         RUNNING,
+         FAILTURE,
+         FATAL_ERROR
+      };
 
-  struct State
-  {
-    uint8_t main :3;
-    uint8_t sub :5;
-  };
+      struct State
+      {
+         uint8_t main : 3;
+         uint8_t sub : 5;
+      };
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  Reactive();
+      Reactive();
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  Reactive* getNextOfClass( uint8_t classId, uint8_t& startIndex );
+      Reactive* getNextOfClass( uint8_t classId, uint8_t& startIndex );
 
-  Reactive* getObject( uint16_t objectId );
+      Reactive* getObject( uint16_t objectId );
 
-  Reactive** getObjectList();
+      Reactive** getObjectList();
 
-  uint8_t getMaxObjectListSize();
+      uint8_t getMaxObjectListSize();
 
-  State getState() const;
+      State getState() const;
 
-  inline bool inFailture()
-  {
-    return state.main == FAILTURE;
-  }
+      inline bool inFailture()
+      {
+         return state.main == FAILTURE;
+      }
 
-  inline bool inFatalError()
-  {
-    return (state.main == FATAL_ERROR);
-  }
+      inline bool inFatalError()
+      {
+         return ( state.main == FATAL_ERROR );
+      }
 
-  inline bool inIdle()
-  {
-    return (state.main == IDLE);
-  }
+      inline bool inIdle()
+      {
+         return ( state.main == IDLE );
+      }
 
-  inline bool inRunning()
-  {
-    return (state.main == RUNNING);
-  }
+      inline bool inRunning()
+      {
+         return ( state.main == RUNNING );
+      }
 
-  inline bool inStandby()
-  {
-    return (state.main == STANDBY);
-  }
+      inline bool inStandby()
+      {
+         return ( state.main == STANDBY );
+      }
 
-  inline bool inStartUp()
-  {
-    return (state.main == STARTUP);
-  }
+      inline bool inStartUp()
+      {
+         return ( state.main == STARTUP );
+      }
 
-  inline bool inSubState( uint8_t _state )
-  {
-    return (state.sub == _state);
-  }
+      inline bool inSubState( uint8_t _state )
+      {
+         return ( state.sub == _state );
+      }
 
-  inline bool isReady()
-  {
-    return ((state.main == IDLE) || (state.main == FAILTURE));
-  }
+      inline bool isReady()
+      {
+         return ( ( state.main == IDLE ) || ( state.main == FAILTURE ) );
+      }
 
-  void setRemoteAccess( bool enable )
-  {
-    remoteAccess = enable;
-  }
+      void setRemoteAccess( bool enable )
+      {
+         remoteAccess = enable;
+      }
 
-  bool hasRemoteAccess()
-  {
-    return remoteAccess;
-  }
+      bool hasRemoteAccess()
+      {
+         return remoteAccess;
+      }
 
-  void terminate();
+      void terminate();
 
-protected:
+   protected:
 
-  void setMainState( uint8_t mainState );
+      void setMainState( uint8_t mainState );
 
-  void setState( const State& p_state );
+      void setState( const State& p_state );
 
-  void setSubState( uint8_t subState );
+      void setSubState( uint8_t subState );
 
-  void setGlobalSleepDelay( uint16_t delay );
+      void setGlobalSleepDelay( uint16_t delay );
 
-  ////    Additional operations    ////
+      ////    Additional operations    ////
 
-public:
+   public:
 
-  inline uint16_t getSleepTime() const
-  {
-    return sleepTime;
-  }
+      inline uint16_t getSleepTime() const
+      {
+         return sleepTime;
+      }
 
-  inline void setSleepTime( uint16_t p_sleepTime )
-  {
-    sleepTime = p_sleepTime;
-  }
+      inline void setSleepTime( uint16_t p_sleepTime )
+      {
+         sleepTime = p_sleepTime;
+      }
 
-  ////    Attributes    ////
+      ////    Attributes    ////
 
-  uint16_t sleepTime;
+      uint16_t sleepTime;
 
-protected:
+   protected:
 
-  State state;
+      State state;
 
-  bool remoteAccess;
+      bool remoteAccess;
 };
 
 #endif

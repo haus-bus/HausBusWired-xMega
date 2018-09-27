@@ -12,55 +12,54 @@
 
 class DebugOptions
 {
-public:
+   public:
 
-  enum OPTIONS
-  {
-    SEND_TRIGGERED_RULE_EVENT = 0x01,
-    GATEWAYS_READ_ONLY = 0x02,
-    SEND_MSG_LOAD_EVENT = 0x04
-  };
+      enum OPTIONS
+      {
+         SEND_TRIGGERED_RULE_EVENT = 0x01,
+         GATEWAYS_READ_ONLY = 0x02,
+         SEND_MSG_LOAD_EVENT = 0x04
+      };
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  inline static uint8_t gatewaysReadOnly()
-  {
-    return options & GATEWAYS_READ_ONLY;
-  }
+      inline static uint8_t gatewaysReadOnly()
+      {
+         return options & GATEWAYS_READ_ONLY;
+      }
 
-  inline static uint8_t notifyTriggeredRule()
-  {
-    return options & SEND_TRIGGERED_RULE_EVENT;
-  }
+      inline static uint8_t notifyTriggeredRule()
+      {
+         return options & SEND_TRIGGERED_RULE_EVENT;
+      }
 
-  inline static uint8_t notifyMessageLoad()
-  {
-    return options & SEND_MSG_LOAD_EVENT;
-  }
+      inline static uint8_t notifyMessageLoad()
+      {
+         return options & SEND_MSG_LOAD_EVENT;
+      }
 
-  inline static void set( uint8_t _options )
-  {
-    options = _options;
-  }
+      inline static void set( uint8_t _options )
+      {
+         options = _options;
+      }
 
-  ////    Additional operations    ////
+      ////    Additional operations    ////
 
-private:
+   private:
 
-  inline static uint8_t getOptions()
-  {
-    return options;
-  }
+      inline static uint8_t getOptions()
+      {
+         return options;
+      }
 
-  //## auto_generated
-  inline static void setOptions( uint8_t p_options )
-  {
-    options = p_options;
-  }
+      inline static void setOptions( uint8_t p_options )
+      {
+         options = p_options;
+      }
 
-  ////    Attributes    ////
+      ////    Attributes    ////
 
-  static uint8_t options;
+      static uint8_t options;
 };
 
 #endif

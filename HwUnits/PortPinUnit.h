@@ -10,7 +10,8 @@
 
 #include "HwUnits.h"
 #include <DigitalOutput.h>
-#include "HwConfiguration.h"
+#include <ConfigurationManager.h>
+
 class CriticalSection;
 
 class Event;
@@ -23,292 +24,363 @@ class Scheduler;
 
 class evMessage;
 
-class PortPinUnit: public Reactive
+class PortPinUnit : public Reactive
 {
-public:
+   public:
 
-  class Command;
-
-  class Response;
-
-  enum State
-  {
-    OFF,
-    ON
-  };
-
-  static const uint8_t MAX_BRIGHTNESS = 100;
-  static const uint8_t FEEDBACK_BRIGHTNESS = MAX_BRIGHTNESS;
-
-  class Command
-  {
-  public:
-
-    enum Commands
-    {
-      GET_CONFIGURATION = HACF::COMMANDS_START,
-      SET_CONFIGURATION,
-      OFF,
-      ON,
-      TOGGLE,
-      GET_STATUS,
-    };
-
-    struct On
-    {
-      uint16_t duration;
-    };
-
-    struct Toggle
-    {
-      uint8_t offTime;
-      uint8_t onTime;
-      uint8_t quantity;
-    };
-
-    union Parameter
-    {
-      HwConfiguration::PortPin setConfiguration;
-      On on;
-      Toggle toggle;
-    };
-
-    ////    Operations    ////
-
-    inline Parameter& getParameter()
-    {
-      return parameter;
-    }
-
-    ////    Additional operations    ////
-
-    inline uint8_t getCommand() const
-    {
-      return command;
-    }
-
-    inline void setCommand( uint8_t p_command )
-    {
-      command = p_command;
-    }
-
-    inline void setParameter( Parameter p_parameter )
-    {
-      parameter = p_parameter;
-    }
-
-    ////    Attributes    ////
-
-    uint8_t command;
-
-    Parameter parameter;
-  };
-
-  class Response: public IResponse
-  {
-  public:
-
-    enum Responses
-    {
-      CONFIGURATION = HACF::RESULTS_START,
-      STATUS,
-
-      EVENT_OFF = HACF::EVENTS_START,
-      EVENT_ON,
-      EVENT_TOGGLE
-    };
-
-    union Parameter
-    {
-      HwConfiguration::PortPin configuration;
-      uint8_t status;
-      uint16_t duration;
-    };
-
-    ////    Constructors and destructors    ////
-
-    inline Response( uint16_t id ) :
-        IResponse( id )
-    {
-    }
-
-    inline Response( uint16_t id, const HACF& message ) :
-        IResponse( id, message )
-    {
-    }
-
-    ////    Operations    ////
-
-    inline Parameter& getParameter()
-    {
-      return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
-    }
-
-    inline uint8_t isOn()
-    {
-      if ( getResponse() == EVENT_ON )
+      enum State
       {
-         return getParameter().status;
+         OFF,
+         ON
+      };
+
+      static const uint8_t MAX_BRIGHTNESS = 100;
+      static const uint8_t FEEDBACK_BRIGHTNESS = MAX_BRIGHTNESS;
+
+      struct Configuration
+      {
+         static const uint8_t DEFAULT_DUTY_OFFSET = 0;
+         static const uint8_t DEFAULT_MIN_DUTY = 0;
+         static const uint8_t DEFAULT_OPTIONS = 0x06; // driveOff, driveOn, !invert
+         static const uint8_t MAX_OPTIONS_MASK = 7;
+         static const uint16_t DEFAULT_TIME_BASE = 1000;
+
+         struct Options
+         {
+            uint8_t invert : 1;
+            uint8_t driveOn : 1;
+            uint8_t driveOff : 1;
+            uint8_t reserved : 5;
+         };
+
+         union Option
+         {
+            uint8_t mask;
+            Options options;
+         };
+
+         ////    Attributes    ////
+
+         uint8_t dutyOffset;
+
+         uint8_t minDuty;
+
+         uint16_t timeBase;
+
+         Option option;
+
+         ////    Operations    ////
+
+         static inline Configuration getDefault()
+         {
+            Configuration defaultConfiguration =
+            {
+               .dutyOffset = DEFAULT_DUTY_OFFSET,
+               .minDuty = DEFAULT_MIN_DUTY,
+               .timeBase = DEFAULT_TIME_BASE,
+               .option = { DEFAULT_OPTIONS }
+            };
+            return defaultConfiguration;
+         }
+
+         inline void checkAndCorrect()
+         {
+            if ( option.mask > MAX_OPTIONS_MASK )
+            {
+               option.mask = DEFAULT_OPTIONS;
+            }
+         }
+
+      };
+
+      class EepromConfiguration : public ConfigurationManager::EepromConfigurationTmpl<Configuration>
+      {
+         public:
+
+            uint8_tx dutyOffset;
+
+            uint8_tx minDuty;
+
+            uint16_tx timeBase;
+
+            XEeprom<Configuration::Option> option;
+
+            inline Configuration::Options getOptions() const
+            {
+               return option.operator*().options;
+            }
+      };
+
+      class Command
+      {
+         public:
+
+            enum Commands
+            {
+               GET_CONFIGURATION = HACF::COMMANDS_START,
+               SET_CONFIGURATION,
+               OFF,
+               ON,
+               TOGGLE,
+               GET_STATUS,
+            };
+
+            struct On
+            {
+               uint16_t duration;
+            };
+
+            struct Toggle
+            {
+               uint8_t offTime;
+               uint8_t onTime;
+               uint8_t quantity;
+            };
+
+            union Parameter
+            {
+               Configuration setConfiguration;
+               On on;
+               Toggle toggle;
+            };
+
+            ////    Operations    ////
+
+            inline Parameter& getParameter()
+            {
+               return parameter;
+            }
+
+            ////    Additional operations    ////
+
+            inline uint8_t getCommand() const
+            {
+               return command;
+            }
+
+            inline void setCommand( uint8_t p_command )
+            {
+               command = p_command;
+            }
+
+            inline void setParameter( Parameter p_parameter )
+            {
+               parameter = p_parameter;
+            }
+
+            ////    Attributes    ////
+
+            uint8_t command;
+
+            Parameter parameter;
+      };
+
+      class Response : public IResponse
+      {
+         public:
+
+            enum Responses
+            {
+               CONFIGURATION = HACF::RESULTS_START,
+               STATUS,
+
+               EVENT_OFF = HACF::EVENTS_START,
+               EVENT_ON,
+               EVENT_TOGGLE
+            };
+
+            union Parameter
+            {
+               Configuration configuration;
+               uint8_t status;
+               uint16_t duration;
+            };
+
+            ////    Constructors and destructors    ////
+
+            inline Response( uint16_t id ) :
+               IResponse( id )
+            {
+            }
+
+            inline Response( uint16_t id, const HACF& message ) :
+               IResponse( id, message )
+            {
+            }
+
+            ////    Operations    ////
+
+            inline Parameter& getParameter()
+            {
+               return *reinterpret_cast<Parameter*>( IResponse::getParameter() );
+            }
+
+            inline uint8_t isOn()
+            {
+               if ( getResponse() == EVENT_ON )
+               {
+                  return getParameter().status;
+               }
+               return 0;
+            }
+
+            Parameter& setConfiguration();
+
+            void setEvent( uint8_t event );
+
+            void setEventOn( uint16_t duration );
+
+            void setStatus( uint8_t status );
+
+            ////    Attributes    ////
+
+         private:
+
+            Parameter params;
+      };
+
+      ////    Constructors and destructors    ////
+
+      PortPinUnit( PortPin _hardware );
+
+      ////    Operations    ////
+
+      void cmdToggle( const Command::Toggle& parameter );
+
+      void enableFeedback( bool enable = true );
+
+      bool handleRequest( HACF* message );
+
+      virtual bool notifyEvent( const Event& event );
+
+      inline void* operator new( size_t size )
+      {
+         return allocOnce( size );
       }
-      return 0;
-    }
 
-    Parameter& setConfiguration();
+      void updateConfiguration();
 
-    void setEvent( uint8_t event );
+   protected:
 
-    void setEventOn( uint16_t duration );
+      bool run();
 
-    void setStatus( uint8_t status );
+      void updateQuantity();
 
-    ////    Attributes    ////
+   private:
 
-  private:
+      void updateHw();
 
-    Parameter params;
-  };
+      ////    Additional operations    ////
 
-  ////    Constructors and destructors    ////
+   public:
 
-  PortPinUnit( PortPin _hardware );
+      inline bool getFeedback() const
+      {
+         return feedback;
+      }
 
-  ////    Operations    ////
+      inline void setConfiguration( EepromConfiguration* _config )
+      {
+         configuration = _config;
+      }
 
-  void cmdToggle( const Command::Toggle& parameter );
+      DigitalOutput* getHardware() const;
 
-  void enableFeedback( bool enable = true );
+   protected:
 
-  bool handleRequest( HACF* message );
+      inline static const uint8_t getDebugLevel()
+      {
+         return debugLevel;
+      }
 
-  virtual bool notifyEvent( const Event& event );
+      inline uint8_t getQuantity() const
+      {
+         return quantity;
+      }
 
-  inline void * operator new( size_t size )
-  {
-    return allocOnce( size );
-  }
+      inline void setQuantity( uint8_t p_quantity )
+      {
+         quantity = p_quantity;
+      }
 
-  void updateConfiguration();
+      inline uint8_t getOnTime() const
+      {
+         return onTime;
+      }
 
-protected:
+      inline void setOnTime( uint8_t p_onTime )
+      {
+         onTime = p_onTime;
+      }
 
-  bool run();
+      inline uint8_t getOffTime() const
+      {
+         return offTime;
+      }
 
-  void updateQuantity();
+      inline void setOffTime( uint8_t p_offTime )
+      {
+         offTime = p_offTime;
+      }
 
-private:
+      inline uint16_t getDuration() const
+      {
+         return duration;
+      }
 
-  void updateHw();
+      inline void setDuration( uint16_t p_duration )
+      {
+         duration = p_duration;
+      }
 
-  ////    Additional operations    ////
+      inline void setFeedback( bool p_feedback )
+      {
+         feedback = p_feedback;
+      }
 
-public:
+      inline bool getDriveOnState() const
+      {
+         return driveOnState;
+      }
 
-  inline bool getFeedback() const
-  {
-    return feedback;
-  }
+      inline void setDriveOnState( bool p_driveOnState )
+      {
+         driveOnState = p_driveOnState;
+      }
 
-  HwConfiguration::PortPin* getConfiguration() const;
+      inline bool getDriveOffState() const
+      {
+         return driveOffState;
+      }
 
-  void setConfiguration( HwConfiguration::PortPin* p_PortPin );
+      inline void setDriveOffState( bool p_driveOffState )
+      {
+         driveOffState = p_driveOffState;
+      }
 
-  DigitalOutput* getHardware() const;
+      ////    Attributes    ////
 
-protected:
+      static const uint8_t debugLevel;
 
-  inline static const uint8_t getDebugLevel()
-  {
-    return debugLevel;
-  }
+      uint8_t quantity;
 
-  inline uint8_t getQuantity() const
-  {
-    return quantity;
-  }
+      uint8_t onTime;
 
-  inline void setQuantity( uint8_t p_quantity )
-  {
-    quantity = p_quantity;
-  }
+      uint8_t offTime;
 
-  inline uint8_t getOnTime() const
-  {
-    return onTime;
-  }
+      uint16_t duration;
 
-  inline void setOnTime( uint8_t p_onTime )
-  {
-    onTime = p_onTime;
-  }
+      bool feedback : 1;
 
-  inline uint8_t getOffTime() const
-  {
-    return offTime;
-  }
+      bool driveOnState : 1;
 
-  inline void setOffTime( uint8_t p_offTime )
-  {
-    offTime = p_offTime;
-  }
+      bool driveOffState : 1;
 
-  inline uint16_t getDuration() const
-  {
-    return duration;
-  }
+      ////    Relations and components    ////
 
-  inline void setDuration( uint16_t p_duration )
-  {
-    duration = p_duration;
-  }
+      EepromConfiguration* configuration;
 
-  inline void setFeedback( bool p_feedback )
-  {
-    feedback = p_feedback;
-  }
-
-  inline bool getDriveOnState() const
-  {
-    return driveOnState;
-  }
-
-  inline void setDriveOnState( bool p_driveOnState )
-  {
-    driveOnState = p_driveOnState;
-  }
-
-  inline bool getDriveOffState() const
-  {
-    return driveOffState;
-  }
-
-  inline void setDriveOffState( bool p_driveOffState )
-  {
-    driveOffState = p_driveOffState;
-  }
-
-  ////    Attributes    ////
-
-  static const uint8_t debugLevel;
-
-  uint8_t quantity;
-
-  uint8_t onTime;
-
-  uint8_t offTime;
-
-  uint16_t duration;
-
-  bool feedback :1;
-
-  bool driveOnState :1;
-
-  bool driveOffState :1;
-
-  ////    Relations and components    ////
-
-  HwConfiguration::PortPin* configuration;
-
-  DigitalOutput hardware;
+      DigitalOutput hardware;
 
 };
 

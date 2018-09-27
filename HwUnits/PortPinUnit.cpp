@@ -114,7 +114,7 @@ bool PortPinUnit::handleRequest( HACF* message )
             SET_STATE_L2( ON );
             setQuantity( 1 );
             setDuration( data->parameter.on.duration );
-            setSleepTime( duration ? configuration->getTimeBase() : NO_WAKE_UP );
+            setSleepTime( duration ? configuration->timeBase : NO_WAKE_UP );
             response.setEventOn( duration );
          }
          else if ( cf.isCommand( Command::TOGGLE ) )
@@ -159,7 +159,7 @@ bool PortPinUnit::notifyEvent( const Event& event )
 
 void PortPinUnit::updateConfiguration()
 {
-   HwConfiguration::PortPin::Options options = configuration->getOptions();
+   Configuration::Options options = configuration->getOptions();
    hardware.setInverted( options.invert );
    setDriveOnState( options.driveOn );
    setDriveOffState( options.driveOff );
@@ -169,14 +169,14 @@ bool PortPinUnit::run()
 {
    if ( inStartUp() )
    {
-      configuration = HwConfiguration::getPortPinConfiguration( id );
+      setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
       updateConfiguration();
       SET_STATE_L1( RUNNING );
       setSleepTime( NO_WAKE_UP );
    }
    else
    {
-      uint16_t timeBase = configuration->getTimeBase();
+      uint16_t timeBase = configuration->timeBase;
       setSleepTime( timeBase );
       if ( duration != 0 )
       {
@@ -240,19 +240,4 @@ void PortPinUnit::updateHw()
          hardware.configInput();
       }
    }
-}
-
-HwConfiguration::PortPin* PortPinUnit::getConfiguration() const
-{
-   return configuration;
-}
-
-void PortPinUnit::setConfiguration( HwConfiguration::PortPin* p_PortPin )
-{
-   configuration = p_PortPin;
-}
-
-DigitalOutput* PortPinUnit::getHardware() const
-{
-   return (DigitalOutput*) &hardware;
 }

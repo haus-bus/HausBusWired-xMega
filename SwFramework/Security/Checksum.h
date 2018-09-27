@@ -13,22 +13,22 @@
 
 class Checksum
 {
-public:
+   public:
 
-  enum Constants
-  {
-    StartValue = 1
-  };
+      enum Constants
+      {
+         StartValue = 1
+      };
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  static uint8_t get( void * pData, uint16_t length, uint8_t checksum =
-                          StartValue );
+      static uint8_t get( void* pData, uint16_t length, uint8_t checksum
+                             = StartValue );
 
-  inline static uint8_t hasError( void * pData, uint16_t length )
-  {
-    return get( pData, length );
-  }
+      inline static uint8_t hasError( void* pData, uint16_t length )
+      {
+         return get( pData, length );
+      }
 };
 
 #endif

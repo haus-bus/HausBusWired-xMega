@@ -16,7 +16,7 @@ InternalTemperatureUnit::InternalTemperatureUnit()
    Object::setId(
       ( ClassId::TEMPERATURE << 8 ) | 0xFF );
 
-   configuration = HwConfiguration::getSensorUnitConfiguration( id );
+   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
    if ( configuration )
    {
 // TODO

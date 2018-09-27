@@ -12,27 +12,29 @@
 
 class SoftTwi : public IoStream
 {
-public:
+   public:
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  inline SoftTwi( ){}
+      inline SoftTwi()
+      {
+      }
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-public:
+   public:
 
-  virtual Stream::Status genericCommand( Command command, void* buffer );
+      virtual Stream::Status genericCommand( Command command, void* buffer );
 
-  virtual Stream::Status read( void * pData, uint16_t length,
-                               EventDrivenUnit* user = 0 );
+      virtual Stream::Status read( void* pData, uint16_t length,
+                                   EventDrivenUnit* user = 0 );
 
-  virtual Stream::Status write( void * pData, uint16_t length,
-                                EventDrivenUnit* user = 0 );
+      virtual Stream::Status write( void* pData, uint16_t length,
+                                    EventDrivenUnit* user = 0 );
 
-  ////    Attributes    ////
+      ////    Attributes    ////
 
-protected:
+   protected:
 
 };
 

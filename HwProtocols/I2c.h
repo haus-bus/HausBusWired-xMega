@@ -17,63 +17,63 @@ class PortPin;
 class I2c
 {
 
-  enum State
-  {
-    IDLE,
-    MASTER,
-    SLAVE,
-    BUSY
-  };
-  ////    Constructors and destructors    ////
+   enum State
+   {
+      IDLE,
+      MASTER,
+      SLAVE,
+      BUSY
+   };
+   ////    Constructors and destructors    ////
 
-public:
+   public:
 
-  I2c( PortPin sclPin, PortPin sdaPin );
+      I2c( PortPin sclPin, PortPin sdaPin );
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-public:
+   public:
 
-  bool isIdle();
+      bool isIdle();
 
-  uint16_t sendReceive( uint8_t* data, uint16_t sendLength,
-                        uint16_t receiveLength );
+      uint16_t sendReceive( uint8_t* data, uint16_t sendLength,
+                            uint16_t receiveLength );
 
-protected:
+   protected:
 
-  inline bool isMaster()
-  {
-    return (state == MASTER);
-  }
+      inline bool isMaster()
+      {
+         return ( state == MASTER );
+      }
 
-  inline bool isSlave()
-  {
-    return (state == SLAVE);
-  }
+      inline bool isSlave()
+      {
+         return ( state == SLAVE );
+      }
 
-private:
+   private:
 
-  void start();
+      void start();
 
-  void stop();
+      void stop();
 
-  void sendReceiveByte( uint8_t& data );
+      void sendReceiveByte( uint8_t& data );
 
 ////    Attributes    ////
 
-public:
+   public:
 
-protected:
+   protected:
 
-  State state;
+      State state;
 
-private:
+   private:
 
-  DigitalOutput scl;
+      DigitalOutput scl;
 
-  DigitalOutput sda;
+      DigitalOutput sda;
 
-  static const uint8_t debugLevel;    //## attribute debugLevel
+      static const uint8_t debugLevel;
 
 ////    Relations and components    ////
 

@@ -24,7 +24,7 @@ class UdpConnection;
 
 #define IP_STACK_BUFFER_SIZE 1024
 
-extern void * allocOnce(size_t size);
+extern void* allocOnce( size_t size );
 
 #endif
 

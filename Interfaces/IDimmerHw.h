@@ -12,49 +12,49 @@
 
 class IDimmerHw
 {
-public:
+   public:
 
-  class ErrorCode;
+      class ErrorCode;
 
-  static const uint8_t MAX_BRIGHTNESS = 100;
+      static const uint8_t MAX_BRIGHTNESS = 100;
 
-  enum SuspendModes
-  {
-    ENABLE,
-    DISABLE,
-    CHECK_ENABLED
-  };
+      enum SuspendModes
+      {
+         ENABLE,
+         DISABLE,
+         CHECK_ENABLED
+      };
 
-  class ErrorCode
-  {
-  public:
+      class ErrorCode
+      {
+         public:
 
-    enum Errors
-    {
-      NO_FAILTURE,
-      NO_ZERO_CROSS_DETECTED,
-      INVALID_PERIOD,
-      INVALID_MODE,
-      DEFECT,
-    };
-  };
+            enum Errors
+            {
+               NO_FAILTURE,
+               NO_ZERO_CROSS_DETECTED,
+               INVALID_PERIOD,
+               INVALID_MODE,
+               DEFECT,
+            };
+      };
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  virtual uint8_t hasError() = 0;
+      virtual uint8_t hasError() = 0;
 
-  virtual uint16_t isOn() = 0;
+      virtual uint16_t isOn() = 0;
 
-  virtual void on( uint16_t value ) = 0;
+      virtual void on( uint16_t value ) = 0;
 
-  virtual uint8_t setMode( uint8_t mode ) = 0;
+      virtual uint8_t setMode( uint8_t mode ) = 0;
 
-  virtual uint8_t suspend( uint8_t mode );
+      virtual uint8_t suspend( uint8_t mode );
 
-  inline void off()
-  {
-    on( 0 );
-  }
+      inline void off()
+      {
+         on( 0 );
+      }
 };
 
 #endif

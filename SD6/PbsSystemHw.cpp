@@ -8,7 +8,7 @@
 #include "PbsSystemHw.h"
 #include <Release.h>
 #include <Security/Checksum.h>
-#include <HwConfiguration.h>
+#include <HomeAutomationConfiguration.h>
 #include <Traces/Logger.h>
 #include <LogicalButton.h>
 #include <Security/ModuleId.h>
@@ -28,7 +28,7 @@ PbsSystemHw::PbsSystemHw()
 #ifdef _DEBUG_
 void putc( char c )
 {
-   Usart::instance( PortE, 0 ).write( c );
+   Usart::instance<PortE, 0>().write( c );
 }
 #endif
 
@@ -36,17 +36,9 @@ void PbsSystemHw::configure()
 {
 #ifdef _DEBUG_
    // configure Logger
-   Usart::instance( PortE, 0 ).init<BAUDRATE,   // baudrate
-                                    true,       // doubleClock
-                                    USART_CMODE_ASYNCHRONOUS_gc, // asynchronous communication
-                                    USART_PMODE_DISABLED_gc, // NoParity
-                                    USART_CHSIZE_8BIT_gc, // 8-Bits
-                                    false       // 1 stopBit
-                                    >();
+   Usart::instance<PortE, 0>().init<BAUDRATE>();
    Logger::instance().setStream( putc );
 #endif // _DEBUG_
-
-   HwConfiguration::storage = &internalEeprom;
 
    // configure ports
    TRACE_PORT_INIT( AllPins );
@@ -72,7 +64,7 @@ void PbsSystemHw::configureLogicalButtons()
    DEBUG_M1( FSTR( "LButtons" ) );
 
    uint8_t i = 0;
-   uint8_t mask = HwConfiguration::HomeAutomation::instance().getLogicalButtonMask();
+   uint8_t mask = HomeAutomationConfiguration::instance().getLogicalButtonMask();
    while ( mask )
    {
       if ( mask & 1 )

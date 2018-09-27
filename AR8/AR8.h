@@ -10,10 +10,10 @@
 
 #include <SystemBoards.h>
 
-static const uint8_t MAX_GATEWAYS        =    4;
-static const uint8_t MAX_SENSORS         =   16;
-static const uint8_t MAX_LOGICAL_BUTTONS =    8;
-static const uint16_t SIZEOF_RULES       = 1600;
+static const uint8_t MAX_GATEWAYS = 4;
+static const uint8_t MAX_SENSORS = 16;
+static const uint8_t MAX_LOGICAL_BUTTONS = 8;
+static const uint16_t SIZEOF_RULES = 1600;
 
 void notifyBusy();
 

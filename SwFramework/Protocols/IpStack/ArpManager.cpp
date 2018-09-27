@@ -53,7 +53,6 @@ uint16_t ArpManager::notifyArpPacket( ArpHeader* arpHeader )
          break;
    }
    return 0;
-   // #]
 }
 
 void ArpManager::notifyIpPacket( const IpHeader* ipHeader )

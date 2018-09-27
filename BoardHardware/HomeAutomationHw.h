@@ -26,99 +26,99 @@ class ModuleId;
 
 class HomeAutomationHw
 {
-public:
+   public:
 
-  static const uint32_t BAUDRATE = 115200;
+      static const uint32_t BAUDRATE = 115200;
 
-  ////    Constructors and destructors    ////
+      ////    Constructors and destructors    ////
 
-  inline HomeAutomationHw()
-  {
-  }
+      inline HomeAutomationHw()
+      {
+      }
 
-  ////    Operations    ////
+      ////    Operations    ////
 
-  inline void enableInterrupts();
+      inline void enableInterrupts();
 
-  inline static Flash::address_t findModuleIdPosition( bool loaderModId );
+      inline static Flash::address_t findModuleIdPosition( bool loaderModId );
 
-  inline static uint8_t getFirmwareId();
+      inline static uint8_t getFirmwareId();
 
 #ifdef _DEBUG_
 
-  static FlashString* getId();
+      static FlashString* getId();
 
 #endif
 
-  static bool getModuleId( uint8_t index, ModuleId* moduleId );
+      static bool getModuleId( uint8_t index, ModuleId* moduleId );
 
-  inline static Stream::Status readRules( uint16_t offset, void * pData,
-                                          uint16_t length );
+      inline static uint16_t readRules( uint16_t offset, void* pData,
+                                        uint16_t length );
 
-  inline static Stream::Status writeRules( uint16_t offset, void * pData,
-                                           uint16_t length );
+      inline static uint16_t writeRules( uint16_t offset, void* pData,
+                                         uint16_t length );
 
-  ////    Additional operations    ////
+      ////    Additional operations    ////
 
-protected:
+   protected:
 
-  inline static const uint8_t getDebugLevel()
-  {
-    return debugLevel;
-  }
+      inline static const uint8_t getDebugLevel()
+      {
+         return debugLevel;
+      }
 
-  ////    Attributes    ////
+      ////    Attributes    ////
 
-  static const uint8_t debugLevel;		//## attribute debugLevel
+      static const uint8_t debugLevel;
 };
 
 inline void HomeAutomationHw::enableInterrupts()
 {
-  PMIC.CTRL |= PMIC_LOLVLEN_bm | PMIC_MEDLVLEN_bm | PMIC_HILVLEN_bm;
-  GlobalInterrupt::enable();
+   PMIC.CTRL |= PMIC_LOLVLEN_bm | PMIC_MEDLVLEN_bm | PMIC_HILVLEN_bm;
+   GlobalInterrupt::enable();
 }
 
 inline Flash::address_t HomeAutomationHw::findModuleIdPosition(
-    bool loaderModId )
+   bool loaderModId )
 {
-  Flash::address_t address;
-  if ( loaderModId )
-  {
-    address = BOOT_SECTION_START + _VECTORS_SIZE;
-  }
-  else
-  {
-    address = APP_SECTION_START + _VECTORS_SIZE;
-  }
+   Flash::address_t address;
+   if ( loaderModId )
+   {
+      address = BOOT_SECTION_START + _VECTORS_SIZE;
+   }
+   else
+   {
+      address = APP_SECTION_START + _VECTORS_SIZE;
+   }
 
-  if ( Flash::read( address ) == '$' )
-  {
-    return address - 1;
-  }
-  return -1;
+   if ( Flash::read( address ) == '$' )
+   {
+      return address - 1;
+   }
+   return -1;
 }
 
 inline uint8_t HomeAutomationHw::getFirmwareId()
 {
-  return Flash::readUserSignature( 0 );
+   return Flash::readUserSignature( 0 );
 }
 
-inline Stream::Status HomeAutomationHw::readRules( uint16_t offset,
-                                                   void * pData,
-                                                   uint16_t length )
+inline uint16_t HomeAutomationHw::readRules( uint16_t offset,
+                                             void* pData,
+                                             uint16_t length )
 {
-  return ApplicationTable::read( offset, pData, length );
+   return ApplicationTable::read( offset, pData, length );
 }
 
-inline Stream::Status HomeAutomationHw::writeRules( uint16_t offset,
-                                                    void * pData,
-                                                    uint16_t length )
+inline uint16_t HomeAutomationHw::writeRules( uint16_t offset,
+                                              void* pData,
+                                              uint16_t length )
 {
-  if ( length )
-  {
-    return ApplicationTable::write( offset, pData, length );
-  }
-  return Stream::SUCCESS;
+   if ( length )
+   {
+      return ApplicationTable::write( offset, pData, length );
+   }
+   return length;
 }
 
 #endif
