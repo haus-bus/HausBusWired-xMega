@@ -159,8 +159,7 @@ uint16_t BooterHw::idCounter;
 
 void BooterHw::readMessageFromUdp()
 {
-   uint16_t bytesTransferred = enc28j60.read( &transferBuffer,
-                                              sizeof( transferBuffer ) );
+   uint16_t bytesTransferred = enc28j60.read( &transferBuffer, sizeof( transferBuffer ) );
    if ( bytesTransferred )
    {
       LanHeader* header = reinterpret_cast<LanHeader*>( transferBuffer.header );
@@ -168,10 +167,9 @@ void BooterHw::readMessageFromUdp()
          && header->udpHeader.isDestinationPort( UDP_PORT ) )
       {
          if ( ( bytesTransferred == UDP_MIN_PACKET_SIZE )
-            || ( bytesTransferred
-                 == ( sizeof( transferBuffer ) - sizeof( transferBuffer.buffer )
-                      - sizeof( transferBuffer.controlFrame )
-                      + transferBuffer.controlFrame.getLength() ) ) )
+            || ( bytesTransferred == ( sizeof( transferBuffer ) - sizeof( transferBuffer.buffer )
+                                       - sizeof( transferBuffer.controlFrame )
+                                       + transferBuffer.controlFrame.getLength() ) ) )
          {
             if ( transferBuffer.controlFrame.isCommand()
                && transferBuffer.controlFrame.isRelevantForComponent()

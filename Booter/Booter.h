@@ -45,37 +45,32 @@ class Booter
 
       inline static const void cmdPing();
 
-      inline static void cmdReadMemory(
-         HomeAutomationInterface::Command::ReadMemory& parameter );
+      inline static void cmdReadMemory( HomeAutomationInterface::Command::ReadMemory& parameter );
 
       inline static const void cmdReset();
 
-      inline static void cmdSetConfiguration(
-         HomeAutomationConfiguration& configuration )
+      inline static void cmdSetConfiguration( HomeAutomationConfiguration& configuration )
       {
          DEBUG_H2( getId(), FSTR( ".setConfiguration()" ) );
          message->setDataLength( 0 );
          HomeAutomationConfiguration::instance().set( configuration );
       }
 
-      inline static void cmdWriteMemory(
-         HomeAutomationInterface::Command::WriteMemory& parameter )
+      inline static void cmdWriteMemory( HomeAutomationInterface::Command::WriteMemory& parameter )
       {
          DEBUG_H2( getId(), FSTR( ".writeMemory()" ) );
 #ifdef _DEBUG_
          WARN_1( FSTR( "writeMemory not possible in debug mode" ) );
          getResponse()->setMemoryStatus( Stream::LOCKED );
 #else
-         uint16_t dataLength = message->getDataLength() - sizeof( parameter.address )
-                               - 1; // sizeof( command )
+         uint16_t dataLength = message->getDataLength() - sizeof( parameter.address ) - 1; // sizeof( command )
          if ( !downloadAllowed )
          {
             static uint8_t buffer[3 * APP_SECTION_PAGE_SIZE];
             if ( ( parameter.address + dataLength ) <= sizeof( buffer ) )
             {
                memcpy( &buffer[parameter.address], parameter.data, dataLength );
-               if ( ( parameter.address + dataLength )
-                    < ( _VECTORS_SIZE + sizeof( ModuleId ) ) )
+               if ( ( parameter.address + dataLength ) < ( _VECTORS_SIZE + sizeof( ModuleId ) ) )
                {
                   // get more data into buffer to analyze ModuleId
                   getResponse()->setMemoryStatus( Stream::SUCCESS );
@@ -90,12 +85,12 @@ class Booter
                      {
                         if ( modId->minorRelease >= Release::MINOR )
                         {
-                           if ( Flash::write( 0, buffer, Flash::getPageSize() ) == Flash::getPageSize() )
+                           if ( Flash::write( 0, buffer, Flash::getPageSize() ) )
                            {
                               downloadAllowed = true;
                               if ( parameter.address >= ( 2 * APP_SECTION_PAGE_SIZE ) )
                               {
-                                 downloadAllowed = ( Flash::write( APP_SECTION_PAGE_SIZE, &buffer[APP_SECTION_PAGE_SIZE], Flash::getPageSize() ) == Flash::getPageSize() );
+                                 downloadAllowed = Flash::write( APP_SECTION_PAGE_SIZE, &buffer[APP_SECTION_PAGE_SIZE], Flash::getPageSize() );
                               }
 
                            }
@@ -108,7 +103,7 @@ class Booter
          Stream::Status result = Stream::ABORTED;
          if ( downloadAllowed )
          {
-            if ( Flash::write( parameter.address, parameter.data, dataLength ) == dataLength )
+            if ( Flash::write( parameter.address, parameter.data, dataLength ) )
             {
                result = Stream::SUCCESS;
             }
@@ -124,8 +119,7 @@ class Booter
 
       inline static HomeAutomationInterface::Response* getResponse()
       {
-         return reinterpret_cast<HomeAutomationInterface::Response*>( ( (uint16_t) message )
-                                                                      - sizeof( HACF::Header ) );
+         return reinterpret_cast<HomeAutomationInterface::Response*>( ( (uint16_t) message ) - sizeof( HACF::Header ) );
       }
 
       inline static bool handleMessage();
@@ -217,8 +211,11 @@ inline void Booter::checkFirmware()
       uint32_t cCrc = Flash::getRangeCRC( 0, installedMod.getSize() - 1 );
       Flash::read( installedMod.getSize(), &fCrc, sizeof( fCrc ) );
 
-      DEBUG_M2( FSTR( "name:    " ), installedMod.name ); DEBUG_M2( FSTR( "size:    0x" ), installedMod.size ); DEBUG_M4( FSTR( "release: " ), installedMod.majorRelease, '.',
-                                                                                                                          installedMod.minorRelease ); DEBUG_M2( FSTR( "cCRC:    0x" ), cCrc ); DEBUG_M2( FSTR( "fCRC:    0x" ), fCrc );
+      DEBUG_M2( FSTR( "name:    " ), installedMod.name );
+      DEBUG_M2( FSTR( "size:    0x" ), installedMod.size );
+      DEBUG_M4( FSTR( "release: " ), installedMod.majorRelease, '.', installedMod.minorRelease );
+      DEBUG_M2( FSTR( "cCRC:    0x" ), cCrc );
+      DEBUG_M2( FSTR( "fCRC:    0x" ), fCrc );
 
       if ( ( fCrc == cCrc ) && ( Release::MAJOR == installedMod.majorRelease ) )
       {
@@ -265,8 +262,7 @@ inline void Booter::cmdReadMemory(
    DEBUG_H2( getId(), FSTR( ".readMemory()" ) );
 
    HomeAutomationInterface::Response* response = getResponse();
-   uint8_t* dest = response->setReadMemory( parameter.address,
-                                            parameter.length );
+   uint8_t* dest = response->setReadMemory( parameter.address, parameter.length );
    if ( parameter.address & HomeAutomationInterface::DATA_SECTION_MASK )
    {
       uint8_t* source = reinterpret_cast<uint8_t*>( parameter.address & 0xFFFF );
@@ -295,8 +291,7 @@ inline bool Booter::handleMessage()
 {
    bool consumed = true;
 
-   HomeAutomationInterface::Command* data
-      = reinterpret_cast<HomeAutomationInterface::Command*>( message->getData() );
+   HomeAutomationInterface::Command* data = reinterpret_cast<HomeAutomationInterface::Command*>( message->getData() );
    uint8_t command = data->getCommand();
    if ( command < HACF::RESULTS_START )
    {
