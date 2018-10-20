@@ -28,7 +28,7 @@ class HomeAutomationHw
 {
    public:
 
-      static const uint32_t BAUDRATE = 115200;
+      static const uint32_t DBG_BAUDRATE = 115200;
 
       ////    Constructors and destructors    ////
 

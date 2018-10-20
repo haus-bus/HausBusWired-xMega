@@ -21,12 +21,15 @@
 
 IrDecoder* irDecoder( 0 );
 
-const ModuleId moduleId = { "$MOD$ AR8      ", 0, Release::MAJOR,
-                            Release::MINOR, Release::AR8_ID, 0 };
+const ModuleId moduleId = { "$MOD$ AR8      ", 
+                             0, 
+                             Release::MAJOR,
+                             Release::MINOR, 
+                             Release::AR8_ID, 
+                             0 
+                          };
 
 SlotHw slotHw[MAX_SLOTS];
-
-Dali daliHw( DigitalInput( PortE, 4 ), DigitalOutput( PortE, 5 ) );
 
 DigitalOutput chipSelectSdCard( PortC, 4 );
 

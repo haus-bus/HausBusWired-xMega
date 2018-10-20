@@ -4,17 +4,17 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>7.0</ProjectVersion>
     <ToolchainName>com.Atmel.AVRGCC8.CPP</ToolchainName>
-    <ProjectGuid>{df75a8a9-65e8-4bb8-a551-762dab58f179}</ProjectGuid>
-    <avrdevice>ATxmega32A4U</avrdevice>
+    <ProjectGuid>dce6c7e3-ee26-4d79-826b-08594b9ad897</ProjectGuid>
+    <avrdevice>ATxmega192A3U</avrdevice>
     <avrdeviceseries>none</avrdeviceseries>
     <OutputType>Executable</OutputType>
     <Language>CPP</Language>
     <OutputFileName>$(MSBuildProjectName)</OutputFileName>
     <OutputFileExtension>.elf</OutputFileExtension>
     <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
-    <AssemblyName>SD6</AssemblyName>
-    <Name>SD6</Name>
-    <RootNamespace>SD6</RootNamespace>
+    <AssemblyName>AR8</AssemblyName>
+    <Name>XMega192A3_Firmware</Name>
+    <RootNamespace>AR8</RootNamespace>
     <ToolchainFlavour>Native</ToolchainFlavour>
     <KeepTimersRunning>true</KeepTimersRunning>
     <OverrideVtor>false</OverrideVtor>
@@ -40,8 +40,7 @@
     </AsfFrameworkConfig>
     <avrtool>com.atmel.avrdbg.tool.atmelice</avrtool>
     <avrtoolserialnumber>J41800037616</avrtoolserialnumber>
-    <avrdeviceexpectedsignature>0x1E9541</avrdeviceexpectedsignature>
-    <avrtoolinterface>PDI</avrtoolinterface>
+    <avrdeviceexpectedsignature>0x1E9744</avrdeviceexpectedsignature>
     <com_atmel_avrdbg_tool_atmelice>
       <ToolOptions>
         <InterfaceProperties>
@@ -53,6 +52,7 @@
       <ToolNumber>J41800037616</ToolNumber>
       <ToolName>Atmel-ICE</ToolName>
     </com_atmel_avrdbg_tool_atmelice>
+    <avrtoolinterface>PDI</avrtoolinterface>
     <avrtoolinterfaceclock>4000000</avrtoolinterfaceclock>
     <ResetRule>0</ResetRule>
     <EraseKey />
@@ -60,112 +60,176 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
       <AvrGccCpp>
-  <avrgcc.common.Device>-mmcu=atxmega32a4u -B "%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\gcc\dev\atxmega32a4u"</avrgcc.common.Device>
-  <avrgcc.common.optimization.RelaxBranches>True</avrgcc.common.optimization.RelaxBranches>
-  <avrgcc.common.outputfiles.hex>False</avrgcc.common.outputfiles.hex>
-  <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
-  <avrgcc.common.outputfiles.eep>False</avrgcc.common.outputfiles.eep>
-  <avrgcc.common.outputfiles.srec>False</avrgcc.common.outputfiles.srec>
-  <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
-  <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
-  <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
-  <avrgcc.compiler.directories.IncludePaths><ListValues><Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\include</Value></ListValues></avrgcc.compiler.directories.IncludePaths>
-  <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
-  <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
-  <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
-  <avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>
-  <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
-  <avrgcccpp.compiler.symbols.DefSymbols><ListValues>
-  <Value>CONTROLLER_ID=Release::SD6_ID</Value>
-  <Value>F_CPU=32000000</Value>
-  <Value>USE_ANALOGIN</Value>
-  <Value>USE_IR</Value>
-  <Value>USE_DHT</Value>
-  <Value>USE_OW</Value>
-  <Value>_HEAP_SIZE_=2048</Value>
-  <Value>NDEBUG</Value>
-</ListValues></avrgcccpp.compiler.symbols.DefSymbols>
-  <avrgcccpp.compiler.directories.IncludePaths><ListValues><Value>../../Interfaces</Value><Value>../../Xmega</Value><Value>../../SwFramework</Value><Value>../../HwUnits</Value><Value>../../SwUnits</Value><Value>../../HwProtocols</Value><Value>../../BoardHardware</Value><Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\include</Value></ListValues></avrgcccpp.compiler.directories.IncludePaths>
-  <avrgcccpp.compiler.optimization.OtherFlags>-fno-exceptions -fno-threadsafe-statics -fno-jump-tables</avrgcccpp.compiler.optimization.OtherFlags>
-  <avrgcccpp.compiler.optimization.PackStructureMembers>True</avrgcccpp.compiler.optimization.PackStructureMembers>
-  <avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>
-  <avrgcccpp.compiler.warnings.AllWarnings>True</avrgcccpp.compiler.warnings.AllWarnings>
-  <avrgcccpp.compiler.miscellaneous.OtherFlags>-std=c++11</avrgcccpp.compiler.miscellaneous.OtherFlags>
-  <avrgcccpp.linker.libraries.Libraries><ListValues><Value>libm</Value></ListValues></avrgcccpp.linker.libraries.Libraries>
-  <avrgcccpp.linker.memorysettings.Flash><ListValues><Value>.BOOT=0x47DE</Value><Value>.RULES=0x3800</Value></ListValues></avrgcccpp.linker.memorysettings.Flash>
-  <avrgcccpp.assembler.general.IncludePaths><ListValues><Value>../../SwFramework</Value><Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\include</Value></ListValues></avrgcccpp.assembler.general.IncludePaths>
-  <avrgcc.compiler.symbols.DefSymbols><ListValues><Value>NDEBUG</Value></ListValues></avrgcc.compiler.symbols.DefSymbols>
-  <avrgcc.compiler.optimization.level>Optimize for size (-Os)</avrgcc.compiler.optimization.level>
-  <avrgcc.compiler.optimization.DebugLevel>Maximum (-g3)</avrgcc.compiler.optimization.DebugLevel>
-  <avrgcccpp.compiler.optimization.level>Optimize for size (-Os)</avrgcccpp.compiler.optimization.level>
-  <avrgcccpp.compiler.optimization.DebugLevel>Maximum (-g3)</avrgcccpp.compiler.optimization.DebugLevel>
-</AvrGccCpp>
+        <avrgcc.common.Device>-mmcu=atxmega192a3u -B "%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\gcc\dev\atxmega192a3u"</avrgcc.common.Device>
+        <avrgcc.common.optimization.RelaxBranches>True</avrgcc.common.optimization.RelaxBranches>
+        <avrgcc.common.outputfiles.hex>False</avrgcc.common.outputfiles.hex>
+        <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
+        <avrgcc.common.outputfiles.eep>False</avrgcc.common.outputfiles.eep>
+        <avrgcc.common.outputfiles.srec>False</avrgcc.common.outputfiles.srec>
+        <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
+        <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcc.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>F_CPU=32000000</Value>
+          </ListValues>
+        </avrgcc.compiler.symbols.DefSymbols>
+        <avrgcc.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>../../Interfaces</Value>
+            <Value>../../SwFramework</Value>
+            <Value>../../Xmega</Value>
+            <Value>../../HwUnits</Value>
+            <Value>../../SwUnits</Value>
+            <Value>../../HwProtocols</Value>
+            <Value>../../BoardHardware</Value>
+            <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\include</Value>
+          </ListValues>
+        </avrgcc.compiler.directories.IncludePaths>
+        <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
+        <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
+        <avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcccpp.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>F_CPU=32000000</Value>
+            <Value>USE_IR</Value>
+            <Value>USE_DHT</Value>
+            <Value>USE_OW</Value>
+            <Value>USE_ANALOGIN</Value>
+            <Value>_HEAP_SIZE_=8160</Value>
+          </ListValues>
+        </avrgcccpp.compiler.symbols.DefSymbols>
+        <avrgcccpp.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>../../Interfaces</Value>
+            <Value>../../Xmega</Value>
+            <Value>../../SwFramework</Value>
+            <Value>../../HwUnits</Value>
+            <Value>../../SwUnits</Value>
+            <Value>../../HwProtocols</Value>
+            <Value>../../BoardHardware</Value>
+            <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\include</Value>
+          </ListValues>
+        </avrgcccpp.compiler.directories.IncludePaths>
+        <avrgcccpp.compiler.optimization.OtherFlags>-fno-exceptions -fno-threadsafe-statics -fno-jump-tables</avrgcccpp.compiler.optimization.OtherFlags>
+        <avrgcccpp.compiler.optimization.PackStructureMembers>True</avrgcccpp.compiler.optimization.PackStructureMembers>
+        <avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcccpp.compiler.optimization.DebugLevel>Maximum (-g3)</avrgcccpp.compiler.optimization.DebugLevel>
+        <avrgcccpp.compiler.warnings.AllWarnings>True</avrgcccpp.compiler.warnings.AllWarnings>
+        <avrgcccpp.compiler.miscellaneous.OtherFlags>-std=c++11</avrgcccpp.compiler.miscellaneous.OtherFlags>
+        <avrgcccpp.linker.libraries.Libraries>
+          <ListValues>
+            <Value>libm</Value>
+          </ListValues>
+        </avrgcccpp.linker.libraries.Libraries>
+        <avrgcccpp.linker.memorysettings.Flash>
+          <ListValues>
+            <Value>.BOOT=0x18FDE</Value>
+          </ListValues>
+        </avrgcccpp.linker.memorysettings.Flash>
+        <avrgcccpp.assembler.general.IncludePaths>
+          <ListValues>
+            <Value>../../SwFramework</Value>
+            <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\include</Value>
+          </ListValues>
+        </avrgcccpp.assembler.general.IncludePaths>
+        <avrgcc.compiler.optimization.level>Optimize for size (-Os)</avrgcc.compiler.optimization.level>
+        <avrgcc.compiler.optimization.DebugLevel>Maximum (-g3)</avrgcc.compiler.optimization.DebugLevel>
+        <avrgcccpp.compiler.optimization.level>Optimize for size (-Os)</avrgcccpp.compiler.optimization.level>
+      </AvrGccCpp>
     </ToolchainSettings>
-    <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .data -O binary  $(OutputFileName).elf  $(OutputFileName).bin &amp;&amp; "$(SolutionDir)utils\bin\modid" $(OutputFileName).bin "$(SolutionDir)Binaries\SD6"</PostBuildEvent>
+    <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .data -O binary  $(OutputFileName).elf  $(OutputFileName).bin &amp;&amp; "$(SolutionDir)utils\bin\modid" $(OutputFileName).bin "$(SolutionDir)Binaries\AR8"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>
       <AvrGccCpp>
-  <avrgcc.common.Device>-mmcu=atxmega32a4u -B "%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\gcc\dev\atxmega32a4u"</avrgcc.common.Device>
-  <avrgcc.common.optimization.RelaxBranches>True</avrgcc.common.optimization.RelaxBranches>
-  <avrgcc.common.outputfiles.hex>False</avrgcc.common.outputfiles.hex>
-  <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
-  <avrgcc.common.outputfiles.eep>False</avrgcc.common.outputfiles.eep>
-  <avrgcc.common.outputfiles.srec>False</avrgcc.common.outputfiles.srec>
-  <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
-  <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
-  <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
-  <avrgcc.compiler.directories.IncludePaths><ListValues><Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\include</Value></ListValues></avrgcc.compiler.directories.IncludePaths>
-  <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
-  <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
-  <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
-  <avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>
-  <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
-  <avrgcccpp.compiler.symbols.DefSymbols><ListValues>
-  <Value>CONTROLLER_ID=Release::SD6_ID</Value>
-  <Value>F_CPU=32000000</Value>
-  <Value>USE_ANALOGIN</Value>
-  <Value>USE_IR</Value>
-  <Value>USE_DHT</Value>
-  <Value>USE_OW</Value>
-  <Value>_HEAP_SIZE_=2048</Value>
-  <Value>_DEBUG_</Value>
-</ListValues></avrgcccpp.compiler.symbols.DefSymbols>
-  <avrgcccpp.compiler.directories.IncludePaths><ListValues><Value>../../Interfaces</Value><Value>../../Xmega</Value><Value>../../SwFramework</Value><Value>../../HwUnits</Value><Value>../../SwUnits</Value><Value>../../HwProtocols</Value><Value>../../BoardHardware</Value><Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\include</Value></ListValues></avrgcccpp.compiler.directories.IncludePaths>
-  <avrgcccpp.compiler.optimization.OtherFlags>-fno-exceptions -fno-threadsafe-statics -fno-jump-tables</avrgcccpp.compiler.optimization.OtherFlags>
-  <avrgcccpp.compiler.optimization.PackStructureMembers>True</avrgcccpp.compiler.optimization.PackStructureMembers>
-  <avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>
-  <avrgcccpp.compiler.warnings.AllWarnings>True</avrgcccpp.compiler.warnings.AllWarnings>
-  <avrgcccpp.compiler.miscellaneous.OtherFlags>-std=c++11</avrgcccpp.compiler.miscellaneous.OtherFlags>
-  <avrgcccpp.linker.libraries.Libraries><ListValues><Value>libm</Value></ListValues></avrgcccpp.linker.libraries.Libraries>
-  <avrgcccpp.linker.memorysettings.Flash><ListValues><Value>.BOOT=0x47DE</Value><Value>.RULES=0x3800</Value></ListValues></avrgcccpp.linker.memorysettings.Flash>
-  <avrgcccpp.assembler.general.IncludePaths><ListValues><Value>../../SwFramework</Value><Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\include</Value></ListValues></avrgcccpp.assembler.general.IncludePaths>
-  <avrgcc.compiler.symbols.DefSymbols><ListValues><Value>DEBUG</Value></ListValues></avrgcc.compiler.symbols.DefSymbols>
-  <avrgcc.compiler.optimization.level>Optimize (-O1)</avrgcc.compiler.optimization.level>
-  <avrgcc.compiler.optimization.DebugLevel>Default (-g2)</avrgcc.compiler.optimization.DebugLevel>
-  <avrgcccpp.compiler.optimization.level>Optimize (-O1)</avrgcccpp.compiler.optimization.level>
-  <avrgcccpp.compiler.optimization.DebugLevel>Default (-g2)</avrgcccpp.compiler.optimization.DebugLevel>
-  <avrgcccpp.assembler.debugging.DebugLevel>Default (-Wa,-g)</avrgcccpp.assembler.debugging.DebugLevel>
-</AvrGccCpp>
+        <avrgcc.common.Device>-mmcu=atxmega192a3u -B "%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\gcc\dev\atxmega192a3u"</avrgcc.common.Device>
+        <avrgcc.common.optimization.RelaxBranches>True</avrgcc.common.optimization.RelaxBranches>
+        <avrgcc.common.outputfiles.hex>False</avrgcc.common.outputfiles.hex>
+        <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
+        <avrgcc.common.outputfiles.eep>False</avrgcc.common.outputfiles.eep>
+        <avrgcc.common.outputfiles.srec>False</avrgcc.common.outputfiles.srec>
+        <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
+        <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcc.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>F_CPU=32000000</Value>
+            <Value>_DEBUG_</Value>
+          </ListValues>
+        </avrgcc.compiler.symbols.DefSymbols>
+        <avrgcc.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>../../Interfaces</Value>
+            <Value>../../SwFramework</Value>
+            <Value>../../Xmega</Value>
+            <Value>../../HwUnits</Value>
+            <Value>../../SwUnits</Value>
+            <Value>../../HwProtocols</Value>
+            <Value>../../BoardHardware</Value>
+            <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\include</Value>
+          </ListValues>
+        </avrgcc.compiler.directories.IncludePaths>
+        <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
+        <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
+        <avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcccpp.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>F_CPU=32000000</Value>
+            <Value>USE_IR</Value>
+            <Value>USE_DHT</Value>
+            <Value>USE_OW</Value>
+            <Value>USE_ANALOGIN</Value>
+            <Value>_HEAP_SIZE_=8160</Value>
+            <Value>_DEBUG_</Value>
+          </ListValues>
+        </avrgcccpp.compiler.symbols.DefSymbols>
+        <avrgcccpp.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>../../Interfaces</Value>
+            <Value>../../Xmega</Value>
+            <Value>../../SwFramework</Value>
+            <Value>../../HwUnits</Value>
+            <Value>../../SwUnits</Value>
+            <Value>../../HwProtocols</Value>
+            <Value>../../BoardHardware</Value>
+            <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\include</Value>
+          </ListValues>
+        </avrgcccpp.compiler.directories.IncludePaths>
+        <avrgcccpp.compiler.optimization.OtherFlags>-fno-exceptions -fno-threadsafe-statics -fno-jump-tables</avrgcccpp.compiler.optimization.OtherFlags>
+        <avrgcccpp.compiler.optimization.PackStructureMembers>True</avrgcccpp.compiler.optimization.PackStructureMembers>
+        <avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcccpp.compiler.optimization.DebugLevel>Maximum (-g3)</avrgcccpp.compiler.optimization.DebugLevel>
+        <avrgcccpp.compiler.warnings.AllWarnings>True</avrgcccpp.compiler.warnings.AllWarnings>
+        <avrgcccpp.compiler.miscellaneous.OtherFlags>-std=c++11</avrgcccpp.compiler.miscellaneous.OtherFlags>
+        <avrgcccpp.linker.libraries.Libraries>
+          <ListValues>
+            <Value>libm</Value>
+          </ListValues>
+        </avrgcccpp.linker.libraries.Libraries>
+        <avrgcccpp.linker.memorysettings.Flash>
+          <ListValues>
+            <Value>.BOOT=0x18FDE</Value>
+          </ListValues>
+        </avrgcccpp.linker.memorysettings.Flash>
+        <avrgcccpp.assembler.general.IncludePaths>
+          <ListValues>
+            <Value>../../SwFramework</Value>
+            <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\include</Value>
+          </ListValues>
+        </avrgcccpp.assembler.general.IncludePaths>
+        <avrgcc.compiler.optimization.level>Optimize (-O1)</avrgcc.compiler.optimization.level>
+        <avrgcc.compiler.optimization.DebugLevel>Default (-g2)</avrgcc.compiler.optimization.DebugLevel>
+        <avrgcccpp.compiler.optimization.level>Optimize (-O1)</avrgcccpp.compiler.optimization.level>
+        <avrgcccpp.assembler.debugging.DebugLevel>Default (-Wa,-g)</avrgcccpp.assembler.debugging.DebugLevel>
+      </AvrGccCpp>
     </ToolchainSettings>
-    <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .data -O binary  $(OutputFileName).elf  $(OutputFileName).bin</PostBuildEvent>
+    <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .data -O binary  $(OutputFileName).elf  $(OutputFileName).bin &amp;&amp; "$(SolutionDir)utils\bin\modid" $(OutputFileName).bin "$(SolutionDir)Binaries\AR8Debug"</PostBuildEvent>
   </PropertyGroup>
-  <ItemGroup>
-    <Folder Include="BoardHardware\" />
-    <Folder Include="HwProtocols\" />
-    <Folder Include="HwUnits\" />
-    <Folder Include="Interfaces\" />
-    <Folder Include="SwFramework\" />
-    <Folder Include="SwFramework\Container\" />
-    <Folder Include="SwFramework\EventPkg\" />
-    <Folder Include="SwFramework\Protocols\" />
-    <Folder Include="SwFramework\Security\" />
-    <Folder Include="SwFramework\Time\" />
-    <Folder Include="SwFramework\Traces\" />
-    <Folder Include="SwUnits\" />
-    <Folder Include="Xmega\" />
-    <Folder Include="Xmega\Peripherals\" />
-  </ItemGroup>
   <ItemGroup>
     <Compile Include="..\BoardHardware\DigitalPortHw.cpp">
       <SubType>compile</SubType>
@@ -187,9 +251,33 @@
       <SubType>compile</SubType>
       <Link>BoardHardware\HwUnitBoards.h</Link>
     </Compile>
+    <Compile Include="..\BoardHardware\RollerShutterHw.cpp">
+      <SubType>compile</SubType>
+      <Link>BoardHardware\RollerShutterHw.cpp</Link>
+    </Compile>
+    <Compile Include="..\BoardHardware\RollerShutterHw.h">
+      <SubType>compile</SubType>
+      <Link>BoardHardware\RollerShutterHw.h</Link>
+    </Compile>
+    <Compile Include="..\BoardHardware\SlotHw.cpp">
+      <SubType>compile</SubType>
+      <Link>BoardHardware\SlotHw.cpp</Link>
+    </Compile>
+    <Compile Include="..\BoardHardware\SlotHw.h">
+      <SubType>compile</SubType>
+      <Link>BoardHardware\SlotHw.h</Link>
+    </Compile>
     <Compile Include="..\BoardHardware\SystemBoards.h">
       <SubType>compile</SubType>
       <Link>BoardHardware\SystemBoards.h</Link>
+    </Compile>
+    <Compile Include="..\HwProtocols\Dali.cpp">
+      <SubType>compile</SubType>
+      <Link>HwProtocols\Dali.cpp</Link>
+    </Compile>
+    <Compile Include="..\HwProtocols\Dali.h">
+      <SubType>compile</SubType>
+      <Link>HwProtocols\Dali.h</Link>
     </Compile>
     <Compile Include="..\HwProtocols\Dht22.cpp">
       <SubType>compile</SubType>
@@ -210,6 +298,14 @@
     <Compile Include="..\HwProtocols\IrDecoder.h">
       <SubType>compile</SubType>
       <Link>HwProtocols\IrDecoder.h</Link>
+    </Compile>
+    <Compile Include="..\HwProtocols\KnxHw.cpp">
+      <SubType>compile</SubType>
+      <Link>HwProtocols\KnxHw.cpp</Link>
+    </Compile>
+    <Compile Include="..\HwProtocols\KnxHw.h">
+      <SubType>compile</SubType>
+      <Link>HwProtocols\KnxHw.h</Link>
     </Compile>
     <Compile Include="..\HwProtocols\MonitoredInputHw.cpp">
       <SubType>compile</SubType>
@@ -259,14 +355,6 @@
       <SubType>compile</SubType>
       <Link>HwUnits\BaseSensorUnit.h</Link>
     </Compile>
-    <Compile Include="..\HwUnits\BatteryManager.cpp">
-      <SubType>compile</SubType>
-      <Link>HwUnits\BatteryManager.cpp</Link>
-    </Compile>
-    <Compile Include="..\HwUnits\BatteryManager.h">
-      <SubType>compile</SubType>
-      <Link>HwUnits\BatteryManager.h</Link>
-    </Compile>
     <Compile Include="..\HwUnits\Button.cpp">
       <SubType>compile</SubType>
       <Link>HwUnits\Button.cpp</Link>
@@ -283,14 +371,6 @@
       <SubType>compile</SubType>
       <Link>HwUnits\Counter.h</Link>
     </Compile>
-    <Compile Include="..\HwUnits\DaliLine.cpp">
-      <SubType>compile</SubType>
-      <Link>HwUnits\DaliLine.cpp</Link>
-    </Compile>
-    <Compile Include="..\HwUnits\DaliLine.h">
-      <SubType>compile</SubType>
-      <Link>HwUnits\DaliLine.h</Link>
-    </Compile>
     <Compile Include="..\HwUnits\Dht.cpp">
       <SubType>compile</SubType>
       <Link>HwUnits\Dht.cpp</Link>
@@ -299,14 +379,6 @@
       <SubType>compile</SubType>
       <Link>HwUnits\Dht.h</Link>
     </Compile>
-    <Compile Include="..\HwUnits\DigitalPort.cpp">
-      <SubType>compile</SubType>
-      <Link>HwUnits\DigitalPort.cpp</Link>
-    </Compile>
-    <Compile Include="..\HwUnits\DigitalPort.h">
-      <SubType>compile</SubType>
-      <Link>HwUnits\DigitalPort.h</Link>
-    </Compile>
     <Compile Include="..\HwUnits\DigitalOutputUnit.cpp">
       <SubType>compile</SubType>
       <Link>HwUnits\DigitalOutputUnit.cpp</Link>
@@ -314,6 +386,14 @@
     <Compile Include="..\HwUnits\DigitalOutputUnit.h">
       <SubType>compile</SubType>
       <Link>HwUnits\DigitalOutputUnit.h</Link>
+    </Compile>
+    <Compile Include="..\HwUnits\DigitalPort.cpp">
+      <SubType>compile</SubType>
+      <Link>HwUnits\DigitalPort.cpp</Link>
+    </Compile>
+    <Compile Include="..\HwUnits\DigitalPort.h">
+      <SubType>compile</SubType>
+      <Link>HwUnits\DigitalPort.h</Link>
     </Compile>
     <Compile Include="..\HwUnits\Dimmer.cpp">
       <SubType>compile</SubType>
@@ -338,6 +418,14 @@
     <Compile Include="..\HwUnits\DS1820.h">
       <SubType>compile</SubType>
       <Link>HwUnits\DS1820.h</Link>
+    </Compile>
+    <Compile Include="..\HwUnits\HacfIpStackManager.cpp">
+      <SubType>compile</SubType>
+      <Link>HwUnits\HacfIpStackManager.cpp</Link>
+    </Compile>
+    <Compile Include="..\HwUnits\HacfIpStackManager.h">
+      <SubType>compile</SubType>
+      <Link>HwUnits\HacfIpStackManager.h</Link>
     </Compile>
     <Compile Include="..\HwUnits\HomeAutomation.cpp">
       <SubType>compile</SubType>
@@ -391,6 +479,14 @@
       <SubType>compile</SubType>
       <Link>HwUnits\Led.h</Link>
     </Compile>
+    <Compile Include="..\HwUnits\LoggerMemory.cpp">
+      <SubType>compile</SubType>
+      <Link>HwUnits\LoggerMemory.cpp</Link>
+    </Compile>
+    <Compile Include="..\HwUnits\LoggerMemory.h">
+      <SubType>compile</SubType>
+      <Link>HwUnits\LoggerMemory.h</Link>
+    </Compile>
     <Compile Include="..\HwUnits\LogicalButton.cpp">
       <SubType>compile</SubType>
       <Link>HwUnits\LogicalButton.cpp</Link>
@@ -398,6 +494,14 @@
     <Compile Include="..\HwUnits\LogicalButton.h">
       <SubType>compile</SubType>
       <Link>HwUnits\LogicalButton.h</Link>
+    </Compile>
+    <Compile Include="..\HwUnits\ModBusSlave.cpp">
+      <SubType>compile</SubType>
+      <Link>HwUnits\ModBusSlave.cpp</Link>
+    </Compile>
+    <Compile Include="..\HwUnits\ModBusSlave.h">
+      <SubType>compile</SubType>
+      <Link>HwUnits\ModBusSlave.h</Link>
     </Compile>
     <Compile Include="..\HwUnits\PortPinUnit.cpp">
       <SubType>compile</SubType>
@@ -407,6 +511,14 @@
       <SubType>compile</SubType>
       <Link>HwUnits\PortPinUnit.h</Link>
     </Compile>
+    <Compile Include="..\HwUnits\RollerShutter.cpp">
+      <SubType>compile</SubType>
+      <Link>HwUnits\RollerShutter.cpp</Link>
+    </Compile>
+    <Compile Include="..\HwUnits\RollerShutter.h">
+      <SubType>compile</SubType>
+      <Link>HwUnits\RollerShutter.h</Link>
+    </Compile>
     <Compile Include="..\HwUnits\UltrasonicDistanceMeter.cpp">
       <SubType>compile</SubType>
       <Link>HwUnits\UltrasonicDistanceMeter.cpp</Link>
@@ -414,6 +526,18 @@
     <Compile Include="..\HwUnits\UltrasonicDistanceMeter.h">
       <SubType>compile</SubType>
       <Link>HwUnits\UltrasonicDistanceMeter.h</Link>
+    </Compile>
+    <Compile Include="..\Interfaces\IDimmerHw.cpp">
+      <SubType>compile</SubType>
+      <Link>Interfaces\IDimmerHw.cpp</Link>
+    </Compile>
+    <Compile Include="..\Interfaces\IDimmerHw.h">
+      <SubType>compile</SubType>
+      <Link>Interfaces\IDimmerHw.h</Link>
+    </Compile>
+    <Compile Include="..\Interfaces\IDiskIo.h">
+      <SubType>compile</SubType>
+      <Link>Interfaces\IDiskIo.h</Link>
     </Compile>
     <Compile Include="..\Interfaces\Release.h">
       <SubType>compile</SubType>
@@ -451,6 +575,10 @@
       <SubType>compile</SubType>
       <Link>SwFramework\DefaultTypes.h</Link>
     </Compile>
+    <Compile Include="..\SwFramework\Enc28j60.h">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Enc28j60.h</Link>
+    </Compile>
     <Compile Include="..\SwFramework\EventDrivenUnit.h">
       <SubType>compile</SubType>
       <Link>SwFramework\EventDrivenUnit.h</Link>
@@ -470,6 +598,14 @@
     <Compile Include="..\SwFramework\EventPkg\EventPkg.h">
       <SubType>compile</SubType>
       <Link>SwFramework\EventPkg\EventPkg.h</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\FileSystems\FatSystem.cpp">
+      <SubType>compile</SubType>
+      <Link>SwFramework\FileSystems\FatSystem.cpp</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\FileSystems\FatSystem.h">
+      <SubType>compile</SubType>
+      <Link>SwFramework\FileSystems\FatSystem.h</Link>
     </Compile>
     <Compile Include="..\SwFramework\FlashString.h">
       <SubType>compile</SubType>
@@ -495,6 +631,62 @@
       <SubType>compile</SubType>
       <Link>SwFramework\Object.h</Link>
     </Compile>
+    <Compile Include="..\SwFramework\Protocols\Ethernet\ArpHeader.h">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\Ethernet\ArpHeader.h</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\Ethernet\Ethernet.h">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\Ethernet\Ethernet.h</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\Ethernet\EthernetHeader.h">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\Ethernet\EthernetHeader.h</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\Ethernet\IcmpHeader.h">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\Ethernet\IcmpHeader.h</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\Ethernet\IP.cpp">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\Ethernet\IP.cpp</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\Ethernet\IP.h">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\Ethernet\IP.h</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\Ethernet\IpHeader.cpp">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\Ethernet\IpHeader.cpp</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\Ethernet\IpHeader.h">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\Ethernet\IpHeader.h</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\Ethernet\MAC.cpp">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\Ethernet\MAC.cpp</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\Ethernet\MAC.h">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\Ethernet\MAC.h</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\Ethernet\TcpHeader.cpp">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\Ethernet\TcpHeader.cpp</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\Ethernet\TcpHeader.h">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\Ethernet\TcpHeader.h</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\Ethernet\UdpHeader.cpp">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\Ethernet\UdpHeader.cpp</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\Ethernet\UdpHeader.h">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\Ethernet\UdpHeader.h</Link>
+    </Compile>
     <Compile Include="..\SwFramework\Protocols\HACF.cpp">
       <SubType>compile</SubType>
       <Link>SwFramework\Protocols\HACF.cpp</Link>
@@ -503,9 +695,77 @@
       <SubType>compile</SubType>
       <Link>SwFramework\Protocols\HACF.h</Link>
     </Compile>
+    <Compile Include="..\SwFramework\Protocols\IpStack\ArpManager.cpp">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\IpStack\ArpManager.cpp</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\IpStack\ArpManager.h">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\IpStack\ArpManager.h</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\IpStack\Dhcp.cpp">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\IpStack\Dhcp.cpp</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\IpStack\Dhcp.h">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\IpStack\Dhcp.h</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\IpStack\IpConnection.cpp">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\IpStack\IpConnection.cpp</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\IpStack\IpConnection.h">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\IpStack\IpConnection.h</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\IpStack\IpStack.h">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\IpStack\IpStack.h</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\IpStack\IpStackManager.cpp">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\IpStack\IpStackManager.cpp</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\IpStack\IpStackManager.h">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\IpStack\IpStackManager.h</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\IpStack\TcpConnection.cpp">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\IpStack\TcpConnection.cpp</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\IpStack\TcpConnection.h">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\IpStack\TcpConnection.h</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\IpStack\UdpConnection.cpp">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\IpStack\UdpConnection.cpp</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\IpStack\UdpConnection.h">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\IpStack\UdpConnection.h</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\ModBusTcp.cpp">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\ModBusTcp.cpp</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\ModBusTcp.h">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\ModBusTcp.h</Link>
+    </Compile>
     <Compile Include="..\SwFramework\Protocols\Protocols.h">
       <SubType>compile</SubType>
       <Link>SwFramework\Protocols\Protocols.h</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\Snmp.cpp">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\Snmp.cpp</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Protocols\Snmp.h">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Protocols\Snmp.h</Link>
     </Compile>
     <Compile Include="..\SwFramework\Reactive.cpp">
       <SubType>compile</SubType>
@@ -530,6 +790,14 @@
     <Compile Include="..\SwFramework\Security\Checksum.h">
       <SubType>compile</SubType>
       <Link>SwFramework\Security\Checksum.h</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Security\Checksum16.cpp">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Security\Checksum16.cpp</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Security\Checksum16.h">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Security\Checksum16.h</Link>
     </Compile>
     <Compile Include="..\SwFramework\Security\Crc7.cpp">
       <SubType>compile</SubType>
@@ -739,6 +1007,14 @@
       <SubType>compile</SubType>
       <Link>Xmega\Electronics.h</Link>
     </Compile>
+    <Compile Include="..\Xmega\Enc28j60.cpp">
+      <SubType>compile</SubType>
+      <Link>Xmega\Enc28j60.cpp</Link>
+    </Compile>
+    <Compile Include="..\Xmega\Enc28j60.h">
+      <SubType>compile</SubType>
+      <Link>Xmega\Enc28j60.h</Link>
+    </Compile>
     <Compile Include="..\Xmega\GlobalInterrupt.h">
       <SubType>compile</SubType>
       <Link>Xmega\GlobalInterrupt.h</Link>
@@ -935,27 +1211,58 @@
       <SubType>compile</SubType>
       <Link>Xmega\SystemTime.cpp</Link>
     </Compile>
-    <Compile Include="IrSupport.cpp">
+    <Compile Include="..\Xmega\WiFi.cpp">
+      <SubType>compile</SubType>
+      <Link>Xmega\WiFi.cpp</Link>
+    </Compile>
+    <Compile Include="..\Xmega\WiFi.h">
+      <SubType>compile</SubType>
+      <Link>Xmega\WiFi.h</Link>
+    </Compile>
+    <Compile Include="..\Xmega\xEeprom.h">
+      <SubType>compile</SubType>
+      <Link>Xmega\xEeprom.h</Link>
+    </Compile>
+    <Compile Include="AR8.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="IrSupport.h">
+    <Compile Include="AR8System.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="PbsSystem.cpp">
+    <Compile Include="AR8System.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="PbsSystem.h">
+    <Compile Include="AR8SystemHw.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="PbsSystemHw.cpp">
+    <Compile Include="AR8SystemHw.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="PbsSystemHw.h">
+    <Compile Include="AR8_Board.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="mainSD6.cpp">
+    <Compile Include="AR8_Board.h">
       <SubType>compile</SubType>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Interfaces" />
+    <Folder Include="HwUnits" />
+    <Folder Include="BoardHardware" />
+    <Folder Include="HwProtocols" />
+    <Folder Include="SwFramework\Container" />
+    <Folder Include="SwFramework\EventPkg" />
+    <Folder Include="SwFramework\FileSystems" />
+    <Folder Include="SwFramework\Protocols\Ethernet" />
+    <Folder Include="SwFramework\Protocols\IpStack" />
+    <Folder Include="SwFramework\Traces" />
+    <Folder Include="SwFramework\Time" />
+    <Folder Include="SwFramework\Security" />
+    <Folder Include="SwFramework\Protocols" />
+    <Folder Include="SwUnits" />
+    <Folder Include="SwFramework" />
+    <Folder Include="Xmega" />
+    <Folder Include="Xmega\Peripherals" />
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>

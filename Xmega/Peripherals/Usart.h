@@ -9,6 +9,7 @@
 #define Peripherals_Usart_H
 
 #include "Peripherals.h"
+#include <DigitalOutput.h>
 
 class Usart
 {
@@ -127,6 +128,21 @@ class Usart
          return false;
       }
 
+      
+      template<uint8_t portNumber, uint8_t channel>
+      static inline void configPortPins()
+      {
+         if ( channel == 0 )
+         {
+            DigitalInputTmpl<portNumber, 2> rx;
+            DigitalOutputTmpl<portNumber, 3> tx;
+         }
+         else if ( channel == 1 )
+         {
+            DigitalInputTmpl<portNumber, 6> rx;
+            DigitalOutputTmpl<portNumber, 7> tx;
+         }
+      }
 
       template<uint8_t portNumber, uint8_t channel>
       static inline Usart& instance()

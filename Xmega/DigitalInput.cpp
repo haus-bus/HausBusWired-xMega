@@ -7,10 +7,6 @@
 
 #include "DigitalInput.h"
 
-uint8_t DigitalInput::isSet() const
-{
-   return getIoPort().get() & getPin();
-}
 
 uint16_t DigitalInput::getPulseWidth( bool level, uint16_t timeout ) const
 {

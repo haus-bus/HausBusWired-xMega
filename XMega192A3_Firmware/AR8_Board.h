@@ -35,9 +35,6 @@ class PortPin;
 
 class SlotHw;
 
-static const uint8_t DALI_IN_PIN = Pin4;
-static const uint8_t DALI_OUT_PIN = Pin5;
-
 extern IrDecoder* irDecoder;
 
 extern MOD_ID_SECTION const ModuleId moduleId;
@@ -47,8 +44,6 @@ static const uint16_t ZCD_DEFAULT_PERIOD( 40960 );
 static const uint8_t debugLevel( DEBUG_LEVEL_OFF );
 
 extern SlotHw slotHw[MAX_SLOTS];
-
-extern Dali daliHw;
 
 extern DigitalOutput chipSelectSdCard;
 

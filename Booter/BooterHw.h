@@ -58,10 +58,6 @@ class BooterHw : public HomeAutomationHw
       ////    Constructors and destructors    ////
 
       inline BooterHw()
-#ifdef SUPPORT_UDP
-         : enc28j60( Spi::instance( PortC ), DigitalOutput( PortD, 4 ),
-                     DigitalInput( PortD, 5 ) )
-#endif
       {
       }
 
@@ -73,40 +69,21 @@ class BooterHw : public HomeAutomationHw
 
       inline static uint16_t getNewDeviceId();
 
-      inline TransferBuffer* getTransferBuffer();
-
       void sendMessage();
 
       ////    Additional operations    ////
 
    private:
 
-      void readMessageFromTwi();
+      bool readMessageFromTwi();
 
-      void writeMessageToTwi();
-
-      void readMessageFromUdp();
+      bool readMessageFromUdp();
 
       void writeMessageToUdp();
 
-      inline static void setMessage( HACF::ControlFrame* p_message )
-      {
-         message = p_message;
-      }
+      bool readMessageFromRS485();
 
-      inline static void setTransferBuffer( TransferBuffer p_transferBuffer )
-      {
-         transferBuffer = p_transferBuffer;
-      }
-
-      inline static Twi& getTwi()
-      {
-         return twi;
-      }
-      inline static void setTwi( Twi& p_twi )
-      {
-         twi = p_twi;
-      }
+      void writeMessageToRS485( uint8_t* pData, uint16_t length );
 
       ////    Attributes    ////
 
@@ -114,25 +91,8 @@ class BooterHw : public HomeAutomationHw
 
       static TransferBuffer transferBuffer;
 
-      static Twi& twi;
-
-#ifdef SUPPORT_UDP
-
-      static bool udpAvailable;
-
-      static uint32_t ip;
-
-      static uint16_t idCounter;
-
    protected:
 
-      Enc28j60 enc28j60;
-#endif
 };
-
-inline BooterHw::TransferBuffer* BooterHw::getTransferBuffer()
-{
-   return &transferBuffer;
-}
 
 #endif

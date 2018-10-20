@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>7.0</ProjectVersion>
     <ToolchainName>com.Atmel.AVRGCC8.CPP</ToolchainName>
-    <ProjectGuid>{6471ba3c-7973-4221-b370-fc1bab652cb5}</ProjectGuid>
+    <ProjectGuid>{bdb27f46-9747-4334-9105-e13fade69968}</ProjectGuid>
     <avrdevice>ATxmega32A4U</avrdevice>
     <avrdeviceseries>none</avrdeviceseries>
     <OutputType>Executable</OutputType>
@@ -12,18 +12,18 @@
     <OutputFileName>$(MSBuildProjectName)</OutputFileName>
     <OutputFileExtension>.elf</OutputFileExtension>
     <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
-    <AssemblyName>SD6_Booter</AssemblyName>
-    <Name>SD6_Booter</Name>
-    <RootNamespace>SD6_Booter</RootNamespace>
+    <AssemblyName>SD6_Booterloader</AssemblyName>
+    <Name>XMega32A4_Booterloader</Name>
+    <RootNamespace>SD6_Booterloader</RootNamespace>
     <ToolchainFlavour>Native</ToolchainFlavour>
     <KeepTimersRunning>true</KeepTimersRunning>
     <OverrideVtor>false</OverrideVtor>
     <CacheFlash>true</CacheFlash>
     <ProgFlashFromRam>true</ProgFlashFromRam>
-    <RamSnippetAddress>0x20000000</RamSnippetAddress>
+    <RamSnippetAddress />
     <UncachedRange />
     <preserveEEPROM>true</preserveEEPROM>
-    <OverrideVtorValue>exception_table</OverrideVtorValue>
+    <OverrideVtorValue />
     <BootSegment>2</BootSegment>
     <eraseonlaunchrule>0</eraseonlaunchrule>
     <AsfFrameworkConfig>
@@ -38,22 +38,6 @@
         </dependencies>
       </framework-data>
     </AsfFrameworkConfig>
-    <avrtool>com.atmel.avrdbg.tool.atmelice</avrtool>
-    <avrtoolserialnumber>J41800037616</avrtoolserialnumber>
-    <avrdeviceexpectedsignature>0x1E9541</avrdeviceexpectedsignature>
-    <avrtoolinterface>PDI</avrtoolinterface>
-    <com_atmel_avrdbg_tool_atmelice>
-      <ToolOptions>
-        <InterfaceProperties>
-          <PdiClock>4000000</PdiClock>
-        </InterfaceProperties>
-        <InterfaceName>PDI</InterfaceName>
-      </ToolOptions>
-      <ToolType>com.atmel.avrdbg.tool.atmelice</ToolType>
-      <ToolNumber>J41800037616</ToolNumber>
-      <ToolName>Atmel-ICE</ToolName>
-    </com_atmel_avrdbg_tool_atmelice>
-    <avrtoolinterfaceclock>4000000</avrtoolinterfaceclock>
     <ResetRule>0</ResetRule>
     <EraseKey />
   </PropertyGroup>
@@ -62,7 +46,7 @@
       <AvrGccCpp>
         <avrgcc.common.Device>-mmcu=atxmega32a4u -B "%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\gcc\dev\atxmega32a4u"</avrgcc.common.Device>
         <avrgcc.common.optimization.RelaxBranches>True</avrgcc.common.optimization.RelaxBranches>
-        <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
+        <avrgcc.common.outputfiles.hex>False</avrgcc.common.outputfiles.hex>
         <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
         <avrgcc.common.outputfiles.eep>False</avrgcc.common.outputfiles.eep>
         <avrgcc.common.outputfiles.srec>False</avrgcc.common.outputfiles.srec>
@@ -81,22 +65,21 @@
         <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
         <avrgcccpp.compiler.symbols.DefSymbols>
           <ListValues>
-            <Value>F_CPU=8000000</Value>
-            <Value>MOD_ID=\"PBSBooter\"</Value>
-            <Value>BOOTER_SIZE=4096</Value>
+            <Value>F_CPU=32000000</Value>
+            <Value>MOD_ID=\"SD6Loader\"</Value>
             <Value>CONTROLLER_ID=Release::SD6_ID</Value>
-            <Value>BOARD_FCKE=FCKE_V3_0</Value>
             <Value>NDEBUG</Value>
           </ListValues>
         </avrgcccpp.compiler.symbols.DefSymbols>
         <avrgcccpp.compiler.directories.IncludePaths>
           <ListValues>
-            <Value>../../Interfaces</Value>
-            <Value>../../Xmega</Value>
-            <Value>../../SwFramework</Value>
             <Value>../../BoardHardware</Value>
+            <Value>../../SwFramework</Value>
             <Value>../../HwUnits</Value>
             <Value>../../SwUnits</Value>
+            <Value>../../Xmega</Value>
+            <Value>../../Interfaces</Value>
+            <Value>..</Value>
             <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\include</Value>
           </ListValues>
         </avrgcccpp.compiler.directories.IncludePaths>
@@ -110,12 +93,6 @@
             <Value>libm</Value>
           </ListValues>
         </avrgcccpp.linker.libraries.Libraries>
-        <avrgcccpp.linker.memorysettings.Flash>
-          <ListValues>
-            <Value>.BOOT=0x47DE</Value>
-            <Value>.text=0x4000</Value>
-          </ListValues>
-        </avrgcccpp.linker.memorysettings.Flash>
         <avrgcccpp.assembler.general.IncludePaths>
           <ListValues>
             <Value>../../SwFramework</Value>
@@ -131,16 +108,22 @@
         <avrgcc.compiler.optimization.DebugLevel>Maximum (-g3)</avrgcc.compiler.optimization.DebugLevel>
         <avrgcccpp.compiler.optimization.level>Optimize for size (-Os)</avrgcccpp.compiler.optimization.level>
         <avrgcccpp.compiler.optimization.DebugLevel>Maximum (-g3)</avrgcccpp.compiler.optimization.DebugLevel>
+        <avrgcccpp.linker.memorysettings.Flash>
+          <ListValues>
+            <Value>.BOOT=0x47DE</Value>
+          </ListValues>
+        </avrgcccpp.linker.memorysettings.Flash>
       </AvrGccCpp>
     </ToolchainSettings>
-    <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .data -j .BOOT -O binary  $(OutputFileName).elf  $(OutputFileName).bin</PostBuildEvent>
+    <PreBuildEvent>"$(SolutionDir)utils\bin\bin2header"  ..\..\SD6_Booter\Release\SD6_Booter.bin  $(MSBuildProjectDirectory)\BooterFw.h</PreBuildEvent>
+    <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .data -O binary  $(OutputFileName).elf  $(OutputFileName).bin &amp;&amp; "$(SolutionDir)utils\bin\modid" $(OutputFileName).bin "$(SolutionDir)Binaries\SD6_BOOTER"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>
       <AvrGccCpp>
         <avrgcc.common.Device>-mmcu=atxmega32a4u -B "%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\gcc\dev\atxmega32a4u"</avrgcc.common.Device>
         <avrgcc.common.optimization.RelaxBranches>True</avrgcc.common.optimization.RelaxBranches>
-        <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
+        <avrgcc.common.outputfiles.hex>False</avrgcc.common.outputfiles.hex>
         <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
         <avrgcc.common.outputfiles.eep>False</avrgcc.common.outputfiles.eep>
         <avrgcc.common.outputfiles.srec>False</avrgcc.common.outputfiles.srec>
@@ -159,22 +142,21 @@
         <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
         <avrgcccpp.compiler.symbols.DefSymbols>
           <ListValues>
-            <Value>F_CPU=8000000</Value>
-            <Value>MOD_ID=\"PBSBooter\"</Value>
-            <Value>BOOTER_SIZE=4096</Value>
+            <Value>F_CPU=32000000</Value>
+            <Value>MOD_ID=\"SD6Loader\"</Value>
             <Value>CONTROLLER_ID=Release::SD6_ID</Value>
-            <Value>BOARD_FCKE=FCKE_V3_0</Value>
             <Value>_DEBUG_</Value>
           </ListValues>
         </avrgcccpp.compiler.symbols.DefSymbols>
         <avrgcccpp.compiler.directories.IncludePaths>
           <ListValues>
-            <Value>../../Interfaces</Value>
-            <Value>../../Xmega</Value>
-            <Value>../../SwFramework</Value>
             <Value>../../BoardHardware</Value>
+            <Value>../../SwFramework</Value>
             <Value>../../HwUnits</Value>
             <Value>../../SwUnits</Value>
+            <Value>../../Xmega</Value>
+            <Value>../../Interfaces</Value>
+            <Value>..</Value>
             <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\include</Value>
           </ListValues>
         </avrgcccpp.compiler.directories.IncludePaths>
@@ -188,11 +170,6 @@
             <Value>libm</Value>
           </ListValues>
         </avrgcccpp.linker.libraries.Libraries>
-        <avrgcccpp.linker.memorysettings.Flash>
-          <ListValues>
-            <Value>.BOOT=0x47DE</Value>
-          </ListValues>
-        </avrgcccpp.linker.memorysettings.Flash>
         <avrgcccpp.assembler.general.IncludePaths>
           <ListValues>
             <Value>../../SwFramework</Value>
@@ -201,7 +178,7 @@
         </avrgcccpp.assembler.general.IncludePaths>
         <avrgcc.compiler.symbols.DefSymbols>
           <ListValues>
-            <Value>_DEBUG_</Value>
+            <Value>DEBUG</Value>
           </ListValues>
         </avrgcc.compiler.symbols.DefSymbols>
         <avrgcc.compiler.optimization.level>Optimize (-O1)</avrgcc.compiler.optimization.level>
@@ -211,16 +188,11 @@
         <avrgcccpp.assembler.debugging.DebugLevel>Default (-Wa,-g)</avrgcccpp.assembler.debugging.DebugLevel>
       </AvrGccCpp>
     </ToolchainSettings>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="BoardHardware\" />
-    <Folder Include="HwUnits\" />
-    <Folder Include="Interfaces\" />
-    <Folder Include="SwFramework\" />
-    <Folder Include="SwFramework\Traces" />
-    <Folder Include="SwFramework\Protocols\" />
-    <Folder Include="SwFramework\Security\" />
-    <Folder Include="SwUnits\" />
     <Folder Include="Xmega\" />
     <Folder Include="Xmega\Peripherals\" />
   </ItemGroup>
@@ -241,125 +213,21 @@
       <SubType>compile</SubType>
       <Link>BoardHardware\HomeAutomationHw.h</Link>
     </Compile>
-    <Compile Include="..\Booter\Booter.cpp">
+    <Compile Include="..\Booterloader\BooterLoader.cpp">
       <SubType>compile</SubType>
-      <Link>Booter.cpp</Link>
+      <Link>BooterLoader.cpp</Link>
     </Compile>
-    <Compile Include="..\Booter\Booter.h">
+    <Compile Include="..\Booterloader\BooterLoader.h">
       <SubType>compile</SubType>
-      <Link>Booter.h</Link>
+      <Link>BooterLoader.h</Link>
     </Compile>
-    <Compile Include="..\Booter\BooterHw.cpp">
+    <Compile Include="..\Booterloader\BooterLoaderHw.cpp">
       <SubType>compile</SubType>
-      <Link>BooterHw.cpp</Link>
+      <Link>BooterLoaderHw.cpp</Link>
     </Compile>
-    <Compile Include="..\Booter\BooterHw.h">
+    <Compile Include="..\Booterloader\BooterLoaderHw.h">
       <SubType>compile</SubType>
-      <Link>BooterHw.h</Link>
-    </Compile>
-    <Compile Include="..\HwUnits\HomeAutomationConfiguration.cpp">
-      <SubType>compile</SubType>
-      <Link>HwUnits\HomeAutomationConfiguration.cpp</Link>
-    </Compile>
-    <Compile Include="..\HwUnits\HomeAutomationConfiguration.h">
-      <SubType>compile</SubType>
-      <Link>HwUnits\HomeAutomationConfiguration.h</Link>
-    </Compile>
-    <Compile Include="..\HwUnits\HomeAutomationInterface.cpp">
-      <SubType>compile</SubType>
-      <Link>HwUnits\HomeAutomationInterface.cpp</Link>
-    </Compile>
-    <Compile Include="..\HwUnits\HomeAutomationInterface.h">
-      <SubType>compile</SubType>
-      <Link>HwUnits\HomeAutomationInterface.h</Link>
-    </Compile>
-    <Compile Include="..\Interfaces\Release.h">
-      <SubType>compile</SubType>
-      <Link>Interfaces\Release.h</Link>
-    </Compile>
-    <Compile Include="..\SwFramework\Assembler.h">
-      <SubType>compile</SubType>
-      <Link>SwFramework\Assembler.h</Link>
-    </Compile>
-    <Compile Include="..\SwFramework\Protocols\HACF.cpp">
-      <SubType>compile</SubType>
-      <Link>SwFramework\Protocols\HACF.cpp</Link>
-    </Compile>
-    <Compile Include="..\SwFramework\Protocols\HACF.h">
-      <SubType>compile</SubType>
-      <Link>SwFramework\Protocols\HACF.h</Link>
-    </Compile>
-    <Compile Include="..\SwFramework\Protocols\Protocols.h">
-      <SubType>compile</SubType>
-      <Link>SwFramework\Protocols\Protocols.h</Link>
-    </Compile>
-    <Compile Include="..\SwFramework\Security\Checksum.cpp">
-      <SubType>compile</SubType>
-      <Link>SwFramework\Security\Checksum.cpp</Link>
-    </Compile>
-    <Compile Include="..\SwFramework\Security\Checksum.h">
-      <SubType>compile</SubType>
-      <Link>SwFramework\Security\Checksum.h</Link>
-    </Compile>
-    <Compile Include="..\SwFramework\Security\Crc8.cpp">
-      <SubType>compile</SubType>
-      <Link>SwFramework\Security\Crc8.cpp</Link>
-    </Compile>
-    <Compile Include="..\SwFramework\Security\Crc8.h">
-      <SubType>compile</SubType>
-      <Link>SwFramework\Security\Crc8.h</Link>
-    </Compile>
-    <Compile Include="..\SwFramework\Security\ModuleId.h">
-      <SubType>compile</SubType>
-      <Link>SwFramework\Security\ModuleId.h</Link>
-    </Compile>
-    <Compile Include="..\SwFramework\Security\Security.h">
-      <SubType>compile</SubType>
-      <Link>SwFramework\Security\Security.h</Link>
-    </Compile>
-    <Compile Include="..\SwFramework\Stream.cpp">
-      <SubType>compile</SubType>
-      <Link>SwFramework\Stream.cpp</Link>
-    </Compile>
-    <Compile Include="..\SwFramework\Stream.h">
-      <SubType>compile</SubType>
-      <Link>SwFramework\Stream.h</Link>
-    </Compile>
-    <Compile Include="..\SwFramework\SwFramework.cpp">
-      <SubType>compile</SubType>
-      <Link>SwFramework\SwFramework.cpp</Link>
-    </Compile>
-    <Compile Include="..\SwFramework\SwFramework.h">
-      <SubType>compile</SubType>
-      <Link>SwFramework\SwFramework.h</Link>
-    </Compile>
-    <Compile Include="..\SwFramework\Traces\Logger.cpp">
-      <SubType>compile</SubType>
-      <Link>SwFramework\Traces\Logger.cpp</Link>
-    </Compile>
-    <Compile Include="..\SwFramework\Traces\Logger.h">
-      <SubType>compile</SubType>
-      <Link>SwFramework\Traces\Logger.h</Link>
-    </Compile>
-    <Compile Include="..\SwFramework\Traces\Traces.cpp">
-      <SubType>compile</SubType>
-      <Link>SwFramework\Traces\Traces.cpp</Link>
-    </Compile>
-    <Compile Include="..\SwFramework\Traces\Traces.h">
-      <SubType>compile</SubType>
-      <Link>SwFramework\Traces\Traces.h</Link>
-    </Compile>
-    <Compile Include="..\SwUnits\IResponse.cpp">
-      <SubType>compile</SubType>
-      <Link>SwUnits\IResponse.cpp</Link>
-    </Compile>
-    <Compile Include="..\SwUnits\IResponse.h">
-      <SubType>compile</SubType>
-      <Link>SwUnits\IResponse.h</Link>
-    </Compile>
-    <Compile Include="..\SwUnits\SwUnits.h">
-      <SubType>compile</SubType>
-      <Link>SwUnits\SwUnits.h</Link>
+      <Link>BooterLoaderHw.h</Link>
     </Compile>
     <Compile Include="..\Xmega\Peripherals\Flash.cpp">
       <SubType>compile</SubType>
@@ -381,21 +249,8 @@
       <SubType>compile</SubType>
       <Link>Xmega\Peripherals\NvmLowLevel.S</Link>
     </Compile>
-    <Compile Include="..\Xmega\Peripherals\Twi.cpp">
+    <Compile Include="BooterFW.h">
       <SubType>compile</SubType>
-      <Link>Xmega\Peripherals\Twi.cpp</Link>
-    </Compile>
-    <Compile Include="..\Xmega\Peripherals\Twi.h">
-      <SubType>compile</SubType>
-      <Link>Xmega\Peripherals\Twi.h</Link>
-    </Compile>
-    <Compile Include="..\Xmega\Peripherals\Usart.cpp">
-      <SubType>compile</SubType>
-      <Link>Xmega\Peripherals\Usart.cpp</Link>
-    </Compile>
-    <Compile Include="..\Xmega\Peripherals\Usart.h">
-      <SubType>compile</SubType>
-      <Link>Xmega\Peripherals\Usart.h</Link>
     </Compile>
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />

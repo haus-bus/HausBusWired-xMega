@@ -7,9 +7,9 @@
 
 #include "Security/Checksum.h"
 
-uint8_t Checksum::get( void* pData, uint16_t length, uint8_t checksum )
+uint8_t Checksum::get( const void* pData, uint16_t length, uint8_t checksum )
 {
-   uint8_t* data = static_cast<uint8_t*>( pData );
+   const uint8_t* data = static_cast<const uint8_t*>( pData );
 
    while ( length-- )
    {

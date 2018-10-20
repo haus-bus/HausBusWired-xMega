@@ -32,6 +32,8 @@ class AR8SystemHw : public HomeAutomationHw
 
       void configureEthernet();
 
+      void configureRs485();
+
       void configureTwi();
 
       void configureLogicalButtons();

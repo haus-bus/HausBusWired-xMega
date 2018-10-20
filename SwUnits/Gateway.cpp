@@ -96,8 +96,7 @@ bool Gateway::notifyEvent( const Event& event )
             if ( *( (uint16_t*) td->pData ) == MAGIC_NUMBER )
             {
                msg = (HACF::ControlFrame*) ( td->pData + sizeof( MAGIC_NUMBER ) );
-               if ( msg->getLength()
-                    >= ( td->bytesTransferred - sizeof( MAGIC_NUMBER ) ) )
+               if ( msg->getLength() >= ( td->bytesTransferred - sizeof( MAGIC_NUMBER ) ) )
                {
                   notifyMessageReceived( msg );
                }

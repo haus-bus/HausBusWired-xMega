@@ -17,7 +17,14 @@
 AR8System::AR8System() :
    digitalPortE( PortE ), digitalPortF( PortF )
 {
-   digitalPortE.setNotUseablePins( Pin0 | Pin1 | Pin4 | Pin5 );
+   if ( getFckE() < FCKE_V4_0 )
+   {
+      digitalPortE.setNotUseablePins( Pin0 | Pin1 | Pin4 | Pin5 );
+   }
+   else
+   {
+      digitalPortE.setNotUseablePins( Pin0 | Pin1 | Pin2 | Pin3 );  
+   }
 
 #ifdef _TRACE_PORT_
    digitalPortF.terminate();

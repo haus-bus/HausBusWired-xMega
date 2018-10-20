@@ -11,19 +11,30 @@
 #include "HwProtocols.h"
 #include "Peripherals/Usart.h"
 #include "DigitalOutput.h"
-#include <IoStream.h>
+#include <Stream.h>
 
-class RS485Hw : public IoStream
+class RS485Hw
 {
    public:
 
+      enum Consts
+      {
+         FRAME_STARTBYTE = 0xFD,
+         FRAME_STOPBYTE = 0xFE,
+         ESCAPE_BYTE = 0xFC
+      };
+
       ////    Constructors and destructors    ////
 
-      inline RS485Hw( Usart& _usart, DigitalOutput _enableRx,
-                      DigitalOutput _enableTx ) :
-         owner( NULL ), transmitBuffer( NULL ), receiveBuffer( NULL ),
-         receiveBufferSize( 0 ), maxReceiveBufferSize( 0 ), usart( &_usart ),
-         disableRx( _enableRx ), enableTx( _enableTx )
+      inline RS485Hw( Usart& _usart, DigitalOutput _enableRx, DigitalOutput _enableTx ) :
+         transmitBuffer( NULL ), 
+         receiveBuffer( NULL ),
+         receiveBufferSize( 0 ), 
+         maxReceiveBufferSize( 0 ), 
+         usart( &_usart ),
+         disableRx( _enableRx ), 
+         enableTx( _enableTx ),
+         pendingEscape( false )
       {
 
       }
@@ -31,13 +42,11 @@ class RS485Hw : public IoStream
 
    public:
 
-      virtual Stream::Status genericCommand( Command command, void* buffer );
+      Stream::Status init( void* buffer, uint16_t buffersize );
 
-      virtual Stream::Status read( void* pData, uint16_t length,
-                                   EventDrivenUnit* user = 0 );
+      uint16_t read( void* pData, uint16_t length );
 
-      virtual Stream::Status write( void* pData, uint16_t length,
-                                    EventDrivenUnit* user = 0 );
+      uint16_t write( void* pData, uint16_t length );
 
       void handleDataRegisterEmpty();
 
@@ -85,8 +94,6 @@ class RS485Hw : public IoStream
 
    protected:
 
-      EventDrivenUnit* owner;
-
       uint8_t* transmitBuffer;
 
       uint8_t* receiveBuffer;
@@ -100,6 +107,8 @@ class RS485Hw : public IoStream
       DigitalOutput disableRx;
 
       DigitalOutput enableTx;
+
+      bool pendingEscape;
 
       static const uint8_t debugLevel;
 

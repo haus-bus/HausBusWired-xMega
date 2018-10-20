@@ -27,8 +27,7 @@ void Led::Response::setBrightness( uint8_t brightness )
 
 Led::Response::Parameter& Led::Response::setConfiguration()
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().configuration ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().configuration ) );
    setResponse( CONFIGURATION );
    return getParameter();
 }
@@ -41,8 +40,7 @@ void Led::Response::setEvent( uint8_t event )
 
 void Led::Response::setStatus( uint8_t status )
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().status ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().status ) );
    setResponse( STATUS );
    getParameter().status = status;
 }

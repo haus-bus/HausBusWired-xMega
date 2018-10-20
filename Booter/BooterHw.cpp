@@ -11,16 +11,44 @@
 #include <Security/ModuleId.h>
 #include <Release.h>
 
+enum CommChannel
+{
+   COMM_NO,
+   COMM_UDP,
+   COMM_RS485,
+   COMM_TWI
+};
+
 HACF::ControlFrame* BooterHw::message;
 
 BooterHw::TransferBuffer BooterHw::transferBuffer;
 
-Twi& BooterHw::twi( *reinterpret_cast<Twi*>( &TWIE ) );
+CommChannel activeComm = COMM_NO;
+
+#ifdef SUPPORT_TWI
+   Twi& twi( Twi::instance<PortE>() );
+#endif
+
+#ifdef SUPPORT_RS485
+   enum RS485ProtocolDefines
+   {
+      FRAME_STARTBYTE = 0xFD,
+      FRAME_STOPBYTE = 0xFE,
+      ESCAPE_BYTE = 0xFC
+   };
+
+   DigitalOutputTmpl<PortA, 5> rs485TxEnable;
+   Usart& rs485( Usart::instance<PortE, 0>() );
+#endif
+
+#ifdef SUPPORT_UDP
+   Enc28j60 enc28j60( Spi::instance( PortC ), DigitalOutput( PortD, 4 ), DigitalInput( PortD, 5 ) );
+#endif
 
 #ifdef _DEBUG_
 void putc( char c )
 {
-   Usart::instance<PortE, 0>().write( c );
+   Usart::instance<DBG_PORT, DBG_CHANNEL>().write( c );
 }
 #endif
 
@@ -28,8 +56,10 @@ void BooterHw::configure()
 {
 #ifdef _DEBUG_
    // configure Logger
-   Usart::instance<PortE, 0>().init<BAUDRATE>();
+   Usart::instance<DBG_PORT, DBG_CHANNEL>().init<DBG_BAUDRATE>();
+   Usart::configPortPins<DBG_PORT, DBG_CHANNEL>();
    Logger::instance().setStream( putc );
+   Logger::instance() << newTraceLine << FSTR( "Logger configured" );
 #endif
 
    if ( getFirmwareId() != CONTROLLER_ID )
@@ -43,14 +73,6 @@ void BooterHw::configure()
    // configure ports
    PORTR.DIRSET = Pin0 | Pin1;
 
-   // enable pullup for TWI
-   PORTCFG.MPCMASK = Pin0 | Pin1 | Pin2;
-   PORTE.PIN0CTRL = PORT_OPC_PULLUP_gc;
-
-   // enable power to external pullups
-   PORTE.DIRSET = Pin3;
-   PORTE.OUTSET = Pin3;
-
 #ifdef SUPPORT_UDP
    PORTC.DIRSET = Pin4 | Pin5 | Pin7;
    PORTC.OUTSET = Pin4;                 // deselect sd card
@@ -61,14 +83,30 @@ void BooterHw::configure()
 
    uint16_t deviceId = HomeAutomationConfiguration::instance().getDeviceId();
    MAC::local.set( 0xAE, 0xDE, 0x48, 0, HBYTE( deviceId ), LBYTE( deviceId ) );
-   udpAvailable = !enc28j60.init();
-   if ( udpAvailable )
+   if ( enc28j60.init() == Enc28j60::OK )
    {
       enc28j60.enableInterrupt();
    }
    else
 #endif
+
+#ifdef SUPPORT_RS485
+   DigitalInputTmpl<PortE, 2> rx;
+   DigitalOutputTmpl<PortE, 3> tx;
+   DigitalOutputTmpl<PortA, 6> rxEnable;
+   rs485.init<56000>();
+#endif
+
+#ifdef SUPPORT_TWI
+   // enable pullup for TWI
+   PORTCFG.MPCMASK = Pin0 | Pin1 | Pin2;
+   PORTE.PIN0CTRL = PORT_OPC_PULLUP_gc;
+
+   // enable power to external pullups
+   PORTE.DIRSET = Pin3;
+   PORTE.OUTSET = Pin3;
    twi.init<true, 30000, TWI_MASTER_INTLVL_OFF_gc, TWI_SLAVE_INTLVL_OFF_gc>();
+#endif
 
    // set statusLed to red
    PORTR.OUTSET = Pin0;
@@ -80,117 +118,216 @@ HACF::ControlFrame* BooterHw::getMessage()
    RealTimeCounter::setCount( 0 );
    message = 0;
 
+   while ( !message && ( RealTimeCounter::getCount() < MESSAGE_TIMEOUT ) )
+   {
 #ifdef SUPPORT_UDP
-   if ( udpAvailable )
-   {
-      while ( !message && ( RealTimeCounter::getCount() < MESSAGE_TIMEOUT ) )
+      if ( readMessageFromUdp() )
       {
-         if ( enc28j60.isInterruptPending() )
-         {
-            readMessageFromUdp();
-         }
+         activeComm = COMM_UDP;
       }
-   }
-   else
+      else
 #endif
-   {
-      twi.slave.enable();
-      while ( !message && ( RealTimeCounter::getCount() < MESSAGE_TIMEOUT ) )
+#ifdef SUPPORT_RS485
+      if ( readMessageFromRS485() )
       {
-         if ( twi.slave.isNewStatusAvailable() )
-         {
-            readMessageFromTwi();
-         }
+         activeComm = COMM_RS485;
       }
-      twi.slave.disable();
+      else
+#endif
+#ifdef SUPPORT_TWI
+      if ( readMessageFromTwi() )
+      {
+         activeComm = COMM_TWI;
+      }
+      else
+#endif
+      {
+         ERROR_1( FSTR("NO COMM INTERFACE AVAILABLE") );
+      }
    }
    return message;
 }
 
-void BooterHw::readMessageFromTwi()
+void BooterHw::sendMessage()
 {
-   TwiHeader* header = reinterpret_cast<TwiHeader*>( transferBuffer.header );
-   uint16_t length = twi.slave.read(
-      &header->address, sizeof( transferBuffer ) - sizeof( header->unused ) );
-
-   if ( !Checksum::hasError( &header->address, length )
-      && transferBuffer.controlFrame.isCommand()
-      && transferBuffer.controlFrame.isRelevantForComponent()
-      && transferBuffer.controlFrame.isRelevantForObject( HACF::BOOTLOADER_ID ) )
-   {
-      message = &transferBuffer.controlFrame;
-   }
-}
-
-void BooterHw::writeMessageToTwi()
-{
+   // prepare header for RS485 or TWI
    TwiHeader* header = reinterpret_cast<TwiHeader*>( transferBuffer.header );
    header->address = 0;
    header->lastDeviceId = HomeAutomationConfiguration::instance().getDeviceId();
 
-   uint16_t length = sizeof( TwiHeader ) - sizeof( header->unused )
-                     + transferBuffer.controlFrame.getLength();
+   uint16_t length = sizeof( TwiHeader ) - sizeof( header->unused ) + transferBuffer.controlFrame.getLength();
 
    header->checksum = 0;
    header->checksum = Checksum::get( &header->address, length );
-
-   twi.master.write( header->address, &header->checksum, length - 1 );
-}
-
-void BooterHw::sendMessage()
-{
-#ifdef SUPPORT_UDP
-   if ( udpAvailable )
+   
+   #ifdef SUPPORT_UDP
+   if ( ( activeComm == COMM_UDP ) || ( activeComm == COMM_NO ) )
    {
       writeMessageToUdp();
    }
    else
-#endif
+   #endif
+   #ifdef SUPPORT_RS485
+   if ( ( activeComm == COMM_RS485 ) || ( activeComm == COMM_NO ) )
    {
-      writeMessageToTwi();
+      writeMessageToRS485( &header->address, length );
+   }
+   else
+   #endif
+   #ifdef SUPPORT_TWI
+   if ( ( activeComm == COMM_TWI ) || ( activeComm == COMM_NO ) )
+   {
+      twi.master.write( header->address, &header->checksum, length - 1 );
+   }
+   else
+   #endif
+   {
+      ERROR_1( FSTR("NO COMM INTERFACE AVAILABLE") );
    }
 }
 
-#ifdef SUPPORT_UDP
-
-bool BooterHw::udpAvailable;
-
-uint16_t BooterHw::idCounter;
-
-void BooterHw::readMessageFromUdp()
+#ifdef SUPPORT_TWI
+bool BooterHw::readMessageFromTwi()
 {
-   uint16_t bytesTransferred = enc28j60.read( &transferBuffer, sizeof( transferBuffer ) );
-   if ( bytesTransferred )
+   if ( twi.slave.isNewStatusAvailable() )
    {
-      LanHeader* header = reinterpret_cast<LanHeader*>( transferBuffer.header );
-      if ( header->udpHeader.isIpDatagramm() && header->udpHeader.isProtocollUdp()
-         && header->udpHeader.isDestinationPort( UDP_PORT ) )
+      TwiHeader* header = reinterpret_cast<TwiHeader*>( transferBuffer.header );
+      uint16_t length = twi.slave.read( &header->address, sizeof( transferBuffer ) - sizeof( header->unused ) );
+
+      if ( !Checksum::hasError( &header->address, length )
+         && transferBuffer.controlFrame.isCommand()
+         && transferBuffer.controlFrame.isRelevantForComponent()
+         && transferBuffer.controlFrame.isRelevantForObject( HACF::BOOTLOADER_ID ) )
       {
-         if ( ( bytesTransferred == UDP_MIN_PACKET_SIZE )
-            || ( bytesTransferred == ( sizeof( transferBuffer ) - sizeof( transferBuffer.buffer )
-                                       - sizeof( transferBuffer.controlFrame )
-                                       + transferBuffer.controlFrame.getLength() ) ) )
+         message = &transferBuffer.controlFrame;
+         return true;
+      }
+   }
+   return false;
+}
+#endif
+
+#ifdef SUPPORT_RS485
+bool BooterHw::readMessageFromRS485()
+{
+   static TwiHeader* const header = reinterpret_cast<TwiHeader*>( transferBuffer.header );
+   static uint8_t* const receiveBuffer = &header->address;
+   static const uint8_t* receiveBufferEnd = transferBuffer.header + sizeof(transferBuffer);
+
+   static uint16_t receiveBufferPosition = 0;
+   static bool pendingEscape = false;
+
+   if ( rs485.isReceiveCompleted() )
+   {
+      uint8_t data;
+      rs485.read( data );
+
+      if ( data == FRAME_STARTBYTE )
+      {
+         receiveBufferPosition = 0;
+         pendingEscape = false;
+      }
+      else if ( data == FRAME_STOPBYTE )
+      {
+         if ( !Checksum::hasError( &header->address, receiveBufferPosition )
+         && transferBuffer.controlFrame.isCommand()
+         && transferBuffer.controlFrame.isRelevantForComponent()
+         && transferBuffer.controlFrame.isRelevantForObject( HACF::BOOTLOADER_ID ) )
          {
-            if ( transferBuffer.controlFrame.isCommand()
+            message = &transferBuffer.controlFrame;
+            return true;
+         }
+      }
+      else if ( data == ESCAPE_BYTE )
+      {
+         pendingEscape = true;
+      }
+      else
+      {
+         // restore data first
+         if ( pendingEscape )
+         {
+            data |= 0x80;
+            pendingEscape = false;
+         }
+         receiveBuffer[receiveBufferPosition] = data;
+         if ( ( receiveBuffer + receiveBufferPosition ) < receiveBufferEnd )
+         {
+            receiveBufferPosition++;
+         }
+         else
+         {
+            // notify buffer overrun
+         }
+      }
+   }
+   return false;
+}
+
+void BooterHw::writeMessageToRS485( uint8_t* pData, uint16_t length )
+{
+   rs485TxEnable.set();
+   rs485.write( FRAME_STARTBYTE );
+
+   uint16_t transmitIdx = 0;
+   while ( transmitIdx < length )
+   {
+      uint8_t data = pData[transmitIdx++];
+      if ( ( data == FRAME_STARTBYTE ) || ( data == FRAME_STOPBYTE ) || ( data == ESCAPE_BYTE )  )
+      {
+         rs485.write( ESCAPE_BYTE );
+         data &= 0x7F;
+      }
+      rs485.write( data );
+   }
+   rs485.write( FRAME_STOPBYTE );
+   rs485.waitUntilTransferCompleted();
+
+   rs485TxEnable.clear();
+}
+#endif
+
+#ifdef SUPPORT_UDP
+bool BooterHw::readMessageFromUdp()
+{
+   if ( enc28j60.isInterruptPending() )
+   {
+      uint16_t bytesTransferred = enc28j60.read( &transferBuffer, sizeof( transferBuffer ) );
+      if ( bytesTransferred )
+      {
+         LanHeader* header = reinterpret_cast<LanHeader*>( transferBuffer.header );
+         if ( header->udpHeader.isIpDatagramm() && header->udpHeader.isProtocollUdp()
+         && header->udpHeader.isDestinationPort( UDP_PORT ) )
+         {
+            if ( ( bytesTransferred == UDP_MIN_PACKET_SIZE )
+            || ( bytesTransferred == ( sizeof( transferBuffer ) - sizeof( transferBuffer.buffer )
+            - sizeof( transferBuffer.controlFrame )
+            + transferBuffer.controlFrame.getLength() ) ) )
+            {
+               if ( transferBuffer.controlFrame.isCommand()
                && transferBuffer.controlFrame.isRelevantForComponent()
                && transferBuffer.controlFrame.isRelevantForObject( HACF::BOOTLOADER_ID ) )
-            {
-               DEBUG_L3( endl, "data received: 0x", bytesTransferred );
-               message = &transferBuffer.controlFrame;
-            }
-            IP* sourceIp = header->udpHeader.getSourceAddress();
-            if ( ( IP::local == IP::defaultIp ) && !sourceIp->isBroadcast() )
-            {
-               IP::local.setAddress( ( sourceIp->getAddress() & 0x00FFFFFF ) | 0xFE000000 );
+               {
+                  DEBUG_L3( endl, "data received: 0x", bytesTransferred );
+                  message = &transferBuffer.controlFrame;
+               }
+               IP* sourceIp = header->udpHeader.getSourceAddress();
+               if ( ( IP::local == IP::defaultIp ) && !sourceIp->isBroadcast() )
+               {
+                  IP::local.setAddress( ( sourceIp->getAddress() & 0x00FFFFFF ) | 0xFE000000 );
+               }
             }
          }
       }
    }
+   return message != NULL;
 }
 
 void BooterHw::writeMessageToUdp()
 {
-   LanHeader* header = reinterpret_cast<LanHeader*>( transferBuffer.header );
+   static uint16_t idCounter = 0;
+   static LanHeader* const header = reinterpret_cast<LanHeader*>( transferBuffer.header );
+
    header->magicNumber = MAGIC_NUMBER;
 
    // ETHERNET HEADER

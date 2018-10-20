@@ -27,6 +27,9 @@
 #include <HacfIpStackManager.h>
 #include <HomeAutomationConfiguration.h>
 
+#include <SoftTwi.h>
+#include <RS485Hw.h>
+
 AR8SystemHw::AR8SystemHw()
 {
    configure();
@@ -36,7 +39,7 @@ void AR8SystemHw::configure()
 {
    // configure Logger
    Logger::instance().setStream( putc );
-   Usart::instance<PortD, 1>().init<BAUDRATE>();
+   Usart::instance<PortD, 1>().init<DBG_BAUDRATE>();
 
    // configure ports
    IoPort::instance( PortC ).setPinsAsOutput( Pin4 | Pin5 | Pin7 );
@@ -60,6 +63,7 @@ void AR8SystemHw::configure()
    configureZeroCrossDetection();
    configureLogicalButtons();
    configureEthernet();
+   configureRs485();
    configureTwi();
 
    enableInterrupts();
@@ -78,12 +82,16 @@ void AR8SystemHw::configureEthernet()
    }
 }
 
-#include <SoftTwi.h>
-
 void AR8SystemHw::configureTwi()
 {
    static SoftTwi twi;
    new Gateway( &twi, Gateway::TWI );
+}
+
+void AR8SystemHw::configureRs485()
+{
+   //static RS485Hw rs485;
+   //new Gateway( &rs485, Gateway::RS485 );
 }
 
 void AR8SystemHw::configureLogicalButtons()

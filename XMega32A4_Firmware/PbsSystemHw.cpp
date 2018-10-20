@@ -36,7 +36,7 @@ void PbsSystemHw::configure()
 {
 #ifdef _DEBUG_
    // configure Logger
-   Usart::instance<PortE, 0>().init<BAUDRATE>();
+   Usart::instance<PortE, 0>().init<DBG_BAUDRATE>();
    Logger::instance().setStream( putc );
 #endif // _DEBUG_
 
