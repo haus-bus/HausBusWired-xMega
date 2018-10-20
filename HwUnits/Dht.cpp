@@ -71,7 +71,7 @@ void Dht::handleRunning()
 
       errorCounter = 0;
    }
-   setSleepTime( SystemTime::MIN );
+   setSleepTime( SystemTime::S* configuration->reportTimeBase );
 }
 
 bool Dht::notifyEvent( const Event& event )

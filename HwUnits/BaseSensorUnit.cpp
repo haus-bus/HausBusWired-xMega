@@ -33,9 +33,11 @@ void BaseSensorUnit::notifyNewValue( BaseSensorUnit::Status newStatus )
       return;
    }
    uint8_t nextEvent = currentEvent;
-   int8_t lower = configuration->lowerThreshold;
-   int8_t upper = configuration->upperThreshold;
-   uint8_t hysteresis = configuration->hysteresis;
+
+   int16_t newStatusValue = newStatus.getCompleteValue();
+   int16_t lowerThreshold = configuration->lowerThreshold * 100 + configuration->lowerThresholdFraction;
+   int16_t upperThreshold = configuration->upperThreshold * 100 + configuration->upperThresholdFraction;
+   int16_t hysteresis = configuration->hysteresis * 10;
 
    // | old | new | Event
    // ---------------------
@@ -56,11 +58,11 @@ void BaseSensorUnit::notifyNewValue( BaseSensorUnit::Status newStatus )
    if ( ( hysteresis == 0 ) || ( currentEvent == 0 ) )
    {
       // this is the first value after reset or hysteresis is disabled
-      if ( newStatus.value < lower )
+      if ( newStatusValue < lowerThreshold )
       {
          nextEvent = Response::EVENT_BELOW;
       }
-      else if ( newStatus.value >= upper )
+      else if ( newStatusValue >= upperThreshold )
       {
          nextEvent = Response::EVENT_ABOVE;
       }
@@ -71,24 +73,24 @@ void BaseSensorUnit::notifyNewValue( BaseSensorUnit::Status newStatus )
    }
    else // hysteresis != 0
    {
-      if ( newStatus.value < lower )
+      if ( newStatusValue < lowerThreshold )
       {
          if ( lastEvent != Response::EVENT_BELOW )
          {
             nextEvent = Response::EVENT_BELOW;
          }
-         else if ( newStatus.value < ( lower - hysteresis ) )
+         else if ( newStatusValue < ( lowerThreshold - hysteresis ) )
          {
             nextEvent = Response::EVENT_BELOW;
          }
       }
-      else if ( newStatus.value >= upper )
+      else if ( newStatusValue >= upperThreshold )
       {
          if ( lastEvent != Response::EVENT_ABOVE )
          {
             nextEvent = Response::EVENT_ABOVE;
          }
-         else if ( newStatus.value > ( upper + hysteresis ) )
+         else if ( newStatusValue > ( upperThreshold + hysteresis ) )
          {
             nextEvent = Response::EVENT_ABOVE;
          }
@@ -99,8 +101,8 @@ void BaseSensorUnit::notifyNewValue( BaseSensorUnit::Status newStatus )
          {
             nextEvent = Response::EVENT_IN_RANGE;
          }
-         else if ( ( newStatus.value > ( lower + hysteresis ) )
-                 || ( newStatus.value < ( upper - hysteresis ) ) )
+         else if ( ( newStatusValue > ( lowerThreshold + hysteresis ) )
+                 || ( newStatusValue < ( upperThreshold - hysteresis ) ) )
          {
             nextEvent = Response::EVENT_IN_RANGE;
          }
@@ -120,11 +122,13 @@ void BaseSensorUnit::notifyNewValue( BaseSensorUnit::Status newStatus )
    }
    newStatus.lastEvent = currentEvent;
 
-   if ( timeToReport )
+   timeSinceReport++;
+   if ( timeSinceReport > configuration->minReportTime )
    {
-      if ( --timeToReport == 0 )
+      if ( ( timeSinceReport > configuration->maxReportTime )
+         || ( abs( lastStatus.getCompleteValue() - newStatusValue ) > hysteresis ) )
       {
-         timeToReport = configuration->reportTime;
+         timeSinceReport = 0;
          Response event( getId() );
          event.setStatus( newStatus );
          event.queue();
@@ -147,6 +151,7 @@ bool BaseSensorUnit::handleRequest( HACF* message )
    {
       DEBUG_H1( FSTR( ".setConfiguration()" ) );
       configuration->set( data->parameter.setConfiguration );
+      timeSinceReport = configuration->maxReportTime;
    }
    else
    {
@@ -155,7 +160,6 @@ bool BaseSensorUnit::handleRequest( HACF* message )
       {
          DEBUG_H1( FSTR( ".getConfiguration()" ) );
          configuration->get( response.setConfiguration().configuration );
-         timeToReport = configuration->reportTime;
       }
       else if ( cf.isCommand( Command::GET_STATUS ) )
       {

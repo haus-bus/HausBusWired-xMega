@@ -98,7 +98,7 @@ void DS1820::run()
          event.setErrorCode( error );
          event.queue();
       }
-      setSleepTime( SystemTime::MIN );
+      setSleepTime( SystemTime::S* configuration->reportTimeBase );
    }
 
 }

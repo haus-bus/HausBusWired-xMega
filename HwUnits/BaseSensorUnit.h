@@ -23,11 +23,24 @@ class BaseSensorUnit : public Reactive
 {
    public:
 
+      typedef uint8_t Hysteresis;
+
       struct Status
       {
          int8_t value;
          uint8_t centiValue;
          uint8_t lastEvent;
+
+         int16_t getCompleteValue() const
+         {
+            return ( value * 100 + centiValue );
+         }
+
+         void setCompleteValue( int16_t _completeValue )
+         {
+            value = _completeValue / 100;
+            centiValue = _completeValue % 100;
+         }
       };
 
       static const uint8_t MAX_ERRORS = 10;
@@ -38,16 +51,29 @@ class BaseSensorUnit : public Reactive
 
             static const uint8_t DEFAULT_LOWER_THRESOLD = 18;
             static const uint8_t DEFAULT_UPPER_THRESOLD = 22;
-            static const uint8_t DEFAULT_REPORT_TIME = 60;
-            static const uint8_t DEFAULT_HYSTERESIS = 5;
+            static const uint8_t DEFAULT_THRESHOLD_FRACTION = 0;
+            static const uint8_t MAX_THRESHOLD_FRACTION = 99;
+            static const uint8_t MAX_REPORT_TIME_BASE = 60;     // seconds
+            static const uint8_t DEFAULT_REPORT_TIME_BASE = 10; // seconds
+            static const uint8_t DEFAULT_MIN_REPORT_TIME = 6;   // * ReportTimeBase
+            static const uint8_t DEFAULT_MAX_REPORT_TIME = 60;  // * ReportTimeBase
+            static const uint8_t DEFAULT_HYSTERESIS = 10;       // 0.1 * unit of threshold
 
             ////    Attributes    ////
 
             int8_t lowerThreshold;
 
+            uint8_t lowerThresholdFraction;
+
             int8_t upperThreshold;
 
-            uint8_t reportTime;
+            uint8_t upperThresholdFraction;
+
+            uint8_t reportTimeBase;
+
+            uint8_t minReportTime;
+
+            uint8_t maxReportTime;
 
             uint8_t hysteresis;
 
@@ -58,8 +84,12 @@ class BaseSensorUnit : public Reactive
                Configuration defaultConfiguration =
                {
                   .lowerThreshold = DEFAULT_LOWER_THRESOLD,
+                  .lowerThresholdFraction = DEFAULT_THRESHOLD_FRACTION,
                   .upperThreshold = DEFAULT_UPPER_THRESOLD,
-                  .reportTime = DEFAULT_REPORT_TIME,
+                  .upperThresholdFraction = DEFAULT_THRESHOLD_FRACTION,
+                  .reportTimeBase = DEFAULT_REPORT_TIME_BASE,
+                  .minReportTime = DEFAULT_MIN_REPORT_TIME,
+                  .maxReportTime = DEFAULT_MAX_REPORT_TIME,
                   .hysteresis = DEFAULT_HYSTERESIS,
                };
                return defaultConfiguration;
@@ -67,9 +97,33 @@ class BaseSensorUnit : public Reactive
 
             inline void checkAndCorrect()
             {
-               if ( lowerThreshold > upperThreshold )
+               if ( reportTimeBase > MAX_REPORT_TIME_BASE )
+               {
+                  reportTimeBase = MAX_REPORT_TIME_BASE;
+               }
+
+               if ( minReportTime > maxReportTime )
+               {
+                  minReportTime = maxReportTime;
+               }
+
+               if ( upperThresholdFraction > MAX_THRESHOLD_FRACTION )
+               {
+                  upperThresholdFraction = MAX_THRESHOLD_FRACTION;
+               }
+
+               if ( lowerThresholdFraction > MAX_THRESHOLD_FRACTION )
+               {
+                  lowerThresholdFraction = MAX_THRESHOLD_FRACTION;
+               }
+
+               if ( lowerThreshold >= upperThreshold )
                {
                   lowerThreshold = upperThreshold;
+                  if ( lowerThresholdFraction > upperThresholdFraction )
+                  {
+                     lowerThresholdFraction = upperThresholdFraction;
+                  }
                }
             }
       };
@@ -80,9 +134,17 @@ class BaseSensorUnit : public Reactive
 
             int8_tx lowerThreshold;
 
+            uint8_tx lowerThresholdFraction;
+
             int8_tx upperThreshold;
 
-            uint8_tx reportTime;
+            uint8_tx upperThresholdFraction;
+
+            uint8_tx reportTimeBase;
+
+            uint8_tx minReportTime;
+
+            uint8_tx maxReportTime;
 
             uint8_tx hysteresis;
       };
@@ -192,7 +254,7 @@ class BaseSensorUnit : public Reactive
       ////    Constructors and destructors    ////
 
       inline BaseSensorUnit() :
-         timeToReport( 1 ), currentEvent( 0 ), lastEvent( 0 ), errorCounter( 0 )
+         timeSinceReport( 1 ), currentEvent( 0 ), lastEvent( 0 ), errorCounter( 0 )
       {
          configuration = NULL;
       }
@@ -231,14 +293,14 @@ class BaseSensorUnit : public Reactive
          lastStatus = p_lastStatus;
       }
 
-      inline uint8_t getTimeToReport() const
+      inline uint8_t getTimeSinceReport() const
       {
-         return timeToReport;
+         return timeSinceReport;
       }
 
-      inline void setTimeToReport( uint8_t p_timeToReport )
+      inline void setTimeSinceReport( uint8_t p_timeSinceReport )
       {
-         timeToReport = p_timeToReport;
+         timeSinceReport = p_timeSinceReport;
       }
 
       ////    Attributes    ////
@@ -247,7 +309,7 @@ class BaseSensorUnit : public Reactive
 
       Status lastStatus;
 
-      uint8_t timeToReport;
+      uint8_t timeSinceReport;
 
       uint8_t currentEvent;
 
