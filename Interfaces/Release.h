@@ -20,7 +20,7 @@ class Release
          AR8_ID,
          MS6_ID,
          SD6_ID,
-         IOA485_ID,
+         SD485_ID,
          MAX_FW_ID
       };
 

@@ -38,11 +38,9 @@ class IoStream : public Stream
 
       virtual Stream::Status genericCommand( Command command, void* buffer );
 
-      virtual Stream::Status read( void* pData, uint16_t length,
-                                   EventDrivenUnit* user = 0 );
+      virtual Stream::Status read( void* pData, uint16_t length, EventDrivenUnit* user = 0 );
 
-      virtual Stream::Status write( void* pData, uint16_t length,
-                                    EventDrivenUnit* user = 0 );
+      virtual Stream::Status write( void* pData, uint16_t length, EventDrivenUnit* user = 0 );
 };
 
 #endif

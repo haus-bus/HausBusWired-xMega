@@ -23,7 +23,7 @@ AR8System::AR8System() :
    }
    else
    {
-      digitalPortE.setNotUseablePins( Pin0 | Pin1 | Pin2 | Pin3 );  
+      digitalPortE.setNotUseablePins( Pin0 | Pin1 | Pin2 | Pin3 );
    }
 
 #ifdef _TRACE_PORT_

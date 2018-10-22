@@ -35,6 +35,8 @@ class PortPin;
 
 class SlotHw;
 
+class RS485Hw;
+
 extern IrDecoder* irDecoder;
 
 extern MOD_ID_SECTION const ModuleId moduleId;
@@ -48,6 +50,8 @@ extern SlotHw slotHw[MAX_SLOTS];
 extern DigitalOutput chipSelectSdCard;
 
 extern Enc28j60 enc28j60;
+
+extern RS485Hw rs485Hw;
 
 void configureInfraRedHw( PortPin portPin, IrDecoder* decoder );
 

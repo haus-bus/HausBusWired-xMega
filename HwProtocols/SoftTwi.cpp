@@ -431,7 +431,7 @@ Stream::Status SoftTwi::read( void* pData, uint16_t length, EventDrivenUnit* use
       if ( ( wasMaster != isMaster ) && ( streamState == Stream::WRITING ) )
       {
          // increase buffer while switching to slave mode
-         length = HACF::MAX_DATA_SIZE - bytesTransferred;
+         length = HACF::MAX_BUFFER_SIZE - bytesTransferred;
          streamState = Stream::READING;
          status = Stream::ARB_LOST;
       }

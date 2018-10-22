@@ -128,7 +128,7 @@ class Usart
          return false;
       }
 
-      
+
       template<uint8_t portNumber, uint8_t channel>
       static inline void configPortPins()
       {

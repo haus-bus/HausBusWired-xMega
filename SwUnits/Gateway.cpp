@@ -122,10 +122,9 @@ void Gateway::run()
    {
       IoStream::CommandINIT data;
       data.deviceId = HACF::getDeviceId() & 0x7F;
-      data.buffersize = HACF::MAX_DATA_SIZE;
+      data.buffersize = HACF::MAX_BUFFER_SIZE;
       data.owner = this;
-      if ( ioStream
-         && ( ioStream->genericCommand( IoStream::INIT, &data ) == Stream::SUCCESS ) )
+      if ( ioStream && ( ioStream->genericCommand( IoStream::INIT, &data ) == Stream::SUCCESS ) )
       {
          // configuration = HwConfiguration::getUdpStreamConfiguration( id );
          SET_STATE_L1( RUNNING );
@@ -140,7 +139,7 @@ void Gateway::run()
    if ( inRunning() )
    {
 
-      uint8_t buffer[2 * HACF::MAX_DATA_SIZE];
+      uint8_t buffer[HACF::MAX_BUFFER_SIZE];
 
       // if there is some data, it will be notified by evData
       ioStream->read( buffer, sizeof( buffer ), this );
@@ -239,7 +238,7 @@ void Gateway::notifyEndOfReadTransfer( Stream::TransferDescriptor* td )
    {
       Header* hdr = (Header*) td->pData;
       HACF* hacf = (HACF*) td->pData;
-      checksum = Checksum::get( td->pData, transferred );
+      checksum = 0; // Checksum::get( td->pData, transferred );
       notRelevant = ( ( hdr->lastDeviceId == HACF::deviceId )
                     || ( ( numOfGateways < 2 )
                        && ( !hacf->controlFrame.isRelevantForComponent()

@@ -21,7 +21,7 @@ class HACF
       class Object;
 
       static const uint8_t MAX_DATA_SIZE = 128;
-
+      static const uint8_t MAX_BUFFER_SIZE = 20 + MAX_DATA_SIZE;
       static const uint8_t COMMANDS_START = 0;
       static const uint8_t COMMAND_WITH_RESPONSE_START = 0x40;
       static const uint8_t COMMANDS_END = 0x7F;

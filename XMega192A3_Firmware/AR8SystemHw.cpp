@@ -45,11 +45,8 @@ void AR8SystemHw::configure()
    IoPort::instance( PortC ).setPinsAsOutput( Pin4 | Pin5 | Pin7 );
 
    IoPort::instance( PortD ).setPinsAsOutput( Pin4 | Pin7 );
-   IoPort::instance( PortD ).configure( Pin5, PORT_OPC_PULLUP_gc, false,
-                                        PORT_ISC_LEVEL_gc );
-
-   IoPort::instance( PortE ).configure( Pin0 | Pin1 | Pin2 | Pin4,
-                                        PORT_OPC_PULLUP_gc );
+   IoPort::instance( PortD ).configure( Pin5, PORT_OPC_PULLUP_gc, false, PORT_ISC_LEVEL_gc );
+   IoPort::instance( PortE ).configure( Pin0 | Pin1 | Pin2 | Pin4, PORT_OPC_PULLUP_gc );
    IoPort::instance( PortE ).setPinsAsOutput( Pin3 | Pin5 );
    IoPort::instance( PortE ).setPins( Pin3 );
 
@@ -90,8 +87,9 @@ void AR8SystemHw::configureTwi()
 
 void AR8SystemHw::configureRs485()
 {
-   //static RS485Hw rs485;
-   //new Gateway( &rs485, Gateway::RS485 );
+   DEBUG_M1( FSTR( "RS485" ) );
+   Usart::configPortPins<PortE, 0>();
+   new Gateway( &rs485Hw, Gateway::RS485 );
 }
 
 void AR8SystemHw::configureLogicalButtons()
@@ -99,8 +97,7 @@ void AR8SystemHw::configureLogicalButtons()
    DEBUG_M1( FSTR( "LButtons" ) );
 
    uint8_t i = 0;
-   uint8_t mask
-      = HomeAutomationConfiguration::instance().getLogicalButtonMask();
+   uint8_t mask = HomeAutomationConfiguration::instance().getLogicalButtonMask();
    while ( mask )
    {
       if ( mask & 1 )

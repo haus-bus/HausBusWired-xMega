@@ -5,15 +5,17 @@
  *      Author: viktor.pankraz
  */
 
-#ifndef HWPROTOCOLS_RS485HW_H_
-#define HWPROTOCOLS_RS485HW_H_
+
+
+#ifndef HW_PROTOCOLS_RS485HW_H_
+#define HW_PROTOCOLS_RS485HW_H_
 
 #include "HwProtocols.h"
 #include "Peripherals/Usart.h"
 #include "DigitalOutput.h"
-#include <Stream.h>
+#include <IoStream.h>
 
-class RS485Hw
+class RS485Hw : public IoStream
 {
    public:
 
@@ -27,12 +29,13 @@ class RS485Hw
       ////    Constructors and destructors    ////
 
       inline RS485Hw( Usart& _usart, DigitalOutput _enableRx, DigitalOutput _enableTx ) :
-         transmitBuffer( NULL ), 
+         transmitBuffer( NULL ),
          receiveBuffer( NULL ),
-         receiveBufferSize( 0 ), 
-         maxReceiveBufferSize( 0 ), 
+         receiveBufferSize( 0 ),
+         maxReceiveBufferSize( 0 ),
          usart( &_usart ),
-         disableRx( _enableRx ), 
+         user( NULL ),
+         disableRx( _enableRx ),
          enableTx( _enableTx ),
          pendingEscape( false )
       {
@@ -42,11 +45,11 @@ class RS485Hw
 
    public:
 
-      Stream::Status init( void* buffer, uint16_t buffersize );
+      Stream::Status genericCommand( Command command, void* buffer );
 
-      uint16_t read( void* pData, uint16_t length );
+      Stream::Status read( void* pData, uint16_t length, EventDrivenUnit* user = 0 );
 
-      uint16_t write( void* pData, uint16_t length );
+      Stream::Status write( void* pData, uint16_t length, EventDrivenUnit* user = 0 );
 
       void handleDataRegisterEmpty();
 
@@ -103,6 +106,8 @@ class RS485Hw
       uint16_t maxReceiveBufferSize;
 
       Usart* usart;
+
+      EventDrivenUnit* user;
 
       DigitalOutput disableRx;
 

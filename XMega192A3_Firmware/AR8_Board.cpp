@@ -13,6 +13,7 @@
 #include <DigitalOutput.h>
 #include <PortPin.h>
 #include <SlotHw.h>
+#include <RS485Hw.h>
 #include <Peripherals/DmaChannel.h>
 #include <Peripherals/DmaController.h>
 #include <Peripherals/EventSystem.h>
@@ -21,13 +22,12 @@
 
 IrDecoder* irDecoder( 0 );
 
-const ModuleId moduleId = { "$MOD$ AR8      ", 
-                             0, 
-                             Release::MAJOR,
-                             Release::MINOR, 
-                             Release::AR8_ID, 
-                             0 
-                          };
+const ModuleId moduleId = { "$MOD$ AR8      ",
+                            0,
+                            Release::MAJOR,
+                            Release::MINOR,
+                            Release::AR8_ID,
+                            0 };
 
 SlotHw slotHw[MAX_SLOTS];
 
@@ -35,6 +35,13 @@ DigitalOutput chipSelectSdCard( PortC, 4 );
 
 Enc28j60 enc28j60( Spi::instance( PortC ), DigitalOutput( PortD, 4 ),
                    DigitalInput( PortD, 5 ) );
+
+RS485Hw rs485Hw( Usart::instance<PortE, 0>(), DigitalOutput( PortA, 6 ), DigitalOutput( PortA, 5 ) );
+
+INTERRUPT void USARTE0_RXC_vect()
+{
+   rs485Hw.handleDataReceived();
+}
 
 INTERRUPT void PORTA_INT0_vect()
 {

@@ -30,6 +30,13 @@ void RS485Hw::handleDataReceived()
          transmitBuffer = NULL;
          receiveBufferSize = 0;
       }
+      else if ( user )
+      {
+         Stream::TransferDescriptor td;
+         td.setBytesTransferred( receiveBufferSize );
+         td.setPData( receiveBuffer );
+         evData( user, &td ).send();
+      }
    }
    else if ( data == ESCAPE_BYTE )
    {
@@ -67,79 +74,81 @@ void RS485Hw::handleDataReceived()
 bool RS485Hw::init()
 {
    bool hasError = usart->init<56000>();
-   if ( !hasError )
-   {
-      disableReceiver();
-      disableTransmitter();
-      disableRx.configOutput();
-      enableTx.configOutput();
-   }
    return hasError;
 }
 
-Stream::Status RS485Hw::init( void* buffer, uint16_t bufferSize )
+Stream::Status RS485Hw::genericCommand( IoStream::Command command, void* buffer )
 {
-   DEBUG_H1( FSTR( "init..." ) );
-   receiveBuffer = (uint8_t*)buffer;
-   maxReceiveBufferSize = bufferSize;
-
-   if ( !receiveBuffer )
+   if ( command == IoStream::INIT )
    {
-      return Stream::Status::INVALID_BUFFER;
-   }
+      DEBUG_H1( FSTR( "init..." ) );
+      IoStream::CommandINIT* cmd = (IoStream::CommandINIT*) buffer;
 
-   DEBUG_M2( FSTR( "bufferSize: 0x" ), maxReceiveBufferSize );
-   bool error = init();
-   if ( error )
-   {
-      ERROR_1( FSTR( "hardware init failed!" ) )
-      return Stream::Status::ABORTED;
-   }
-   usart->enableReceiveCompleteInterrupt();
+      receiveBuffer = new uint8_t[cmd->buffersize];
 
-   return Stream::Status::SUCCESS;
+      if ( !receiveBuffer )
+      {
+         return Stream::Status::INVALID_BUFFER;
+      }
+      maxReceiveBufferSize = cmd->buffersize;
+
+      DEBUG_M2( FSTR( "bufferSize: 0x" ), maxReceiveBufferSize );
+      bool error = init();
+      if ( error )
+      {
+         ERROR_1( FSTR( "hardware init failed!" ) )
+         return Stream::Status::ABORTED;
+      }
+      usart->enableReceiveCompleteInterrupt();
+
+      return Stream::Status::SUCCESS;
+   }
+   return Stream::Status::ABORTED;
 }
 
-uint16_t RS485Hw::read( void* pData, uint16_t length )
+Stream::Status RS485Hw::read( void* pData, uint16_t length, EventDrivenUnit* user )
 {
    CriticalSection doNotInterrupt;
-   if ( receiveBuffer && (receiveBuffer[0] == FRAME_STARTBYTE ) && (receiveBuffer[receiveBufferSize] == FRAME_STOPBYTE ) )
-   {  
+   this->user = user;
+   /*
+      if ( receiveBuffer && (receiveBuffer[0] == FRAME_STARTBYTE ) && (receiveBuffer[receiveBufferSize] == FRAME_STOPBYTE ) )
+      {
       length = receiveBufferSize;
       memcpy( pData, receiveBuffer, length );
       receiveBufferSize = 0;
       DEBUG_H1( FSTR( "Msg recieved" ) );
       DEBUG_M2( FSTR( "received bytes: 0x" ), length );
-      return length;
-   }
-   else if ( receiveBufferSize )
-   {
-      DEBUG_H2( FSTR( "received bytes: 0x" ), receiveBufferSize );  
-   }
-   return 0;
+      return Stream::SUCCESS;
+      }
+      else if ( receiveBufferSize )
+      {
+      DEBUG_H2( FSTR( "received bytes: 0x" ), receiveBufferSize );
+      }
+    */
+   return Stream::NO_DATA;
 }
 
-uint16_t RS485Hw::write( void* pData, uint16_t length )
+Stream::Status RS485Hw::write( void* pData, uint16_t length, EventDrivenUnit* user )
 {
    DEBUG_H3( FSTR( "sending 0x" ), length, FSTR( " Bytes" ) );
    usart->enableTransmitter();
    enableTransmitter();
 
-   bool success = usart->write( FRAME_STARTBYTE );
-
    transmitBuffer = (uint8_t*) pData;
    uint16_t transmitIdx = 0;
+   bool success = usart->write( FRAME_STARTBYTE );
+
    while ( success && ( transmitIdx < length ) )
    {
-      uint8_t data = transmitBuffer[transmitIdx++];
-      if ( ( data == FRAME_STARTBYTE ) || ( data == FRAME_STOPBYTE ) || ( data == ESCAPE_BYTE )  )
+      uint8_t data = ( (uint8_t*)pData )[transmitIdx++];
+      if ( ( data == FRAME_STARTBYTE ) || ( data == FRAME_STOPBYTE ) || ( data == ESCAPE_BYTE ) )
       {
-         success &= usart->write( ESCAPE_BYTE ); 
-         data &= 0x7F;     
+         success &= usart->write( ESCAPE_BYTE );
+         data &= 0x7F;
       }
       if ( success )
       {
-         success &= usart->write( data ); 
+         success &= usart->write( data );
       }
    }
    if ( success )
@@ -153,11 +162,12 @@ uint16_t RS485Hw::write( void* pData, uint16_t length )
    // 1. usart transmitter will be disabled if collision is detected
    // 2. compare the receiveBuffer against the data that should be sent
    // return 0 to indicate that transmission has been failed
+   CriticalSection doNotInterrupt;
    if ( !usart->isTransmitterEnabled() || memcmp( receiveBuffer, pData, length ) )
    {
       ERROR_1( FSTR( "COLLISION!" ) );
-      return 0;
+      return Stream::ABORTED;
    }
-   return transmitIdx;
+   return Stream::SUCCESS;
 }
 

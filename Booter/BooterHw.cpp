@@ -26,23 +26,23 @@ BooterHw::TransferBuffer BooterHw::transferBuffer;
 CommChannel activeComm = COMM_NO;
 
 #ifdef SUPPORT_TWI
-   Twi& twi( Twi::instance<PortE>() );
+Twi& twi( Twi::instance<PortE>( ) );
 #endif
 
 #ifdef SUPPORT_RS485
-   enum RS485ProtocolDefines
-   {
-      FRAME_STARTBYTE = 0xFD,
-      FRAME_STOPBYTE = 0xFE,
-      ESCAPE_BYTE = 0xFC
-   };
+enum RS485ProtocolDefines
+{
+   FRAME_STARTBYTE = 0xFD,
+   FRAME_STOPBYTE = 0xFE,
+   ESCAPE_BYTE = 0xFC
+};
 
-   DigitalOutputTmpl<PortA, 5> rs485TxEnable;
-   Usart& rs485( Usart::instance<PortE, 0>() );
+DigitalOutputTmpl<PortA, 5> rs485TxEnable;
+Usart& rs485( Usart::instance<PortE, 0>( ) );
 #endif
 
 #ifdef SUPPORT_UDP
-   Enc28j60 enc28j60( Spi::instance( PortC ), DigitalOutput( PortD, 4 ), DigitalInput( PortD, 5 ) );
+Enc28j60 enc28j60( Spi::instance( PortC ), DigitalOutput( PortD, 4 ), DigitalInput( PortD, 5 ) );
 #endif
 
 #ifdef _DEBUG_
@@ -137,12 +137,14 @@ HACF::ControlFrame* BooterHw::getMessage()
 #ifdef SUPPORT_TWI
       if ( readMessageFromTwi() )
       {
+         #if defined( SUPPORT_RS485 ) || defined( SUPPORT_UDP )
          activeComm = COMM_TWI;
+         #endif
       }
       else
 #endif
       {
-         ERROR_1( FSTR("NO COMM INTERFACE AVAILABLE") );
+         ERROR_1( FSTR( "NO COMM INTERFACE AVAILABLE" ) );
       }
    }
    return message;
@@ -159,7 +161,7 @@ void BooterHw::sendMessage()
 
    header->checksum = 0;
    header->checksum = Checksum::get( &header->address, length );
-   
+
    #ifdef SUPPORT_UDP
    if ( ( activeComm == COMM_UDP ) || ( activeComm == COMM_NO ) )
    {
@@ -175,14 +177,19 @@ void BooterHw::sendMessage()
    else
    #endif
    #ifdef SUPPORT_TWI
+   #if defined( SUPPORT_RS485 ) || defined( SUPPORT_UDP )
    if ( ( activeComm == COMM_TWI ) || ( activeComm == COMM_NO ) )
    {
       twi.master.write( header->address, &header->checksum, length - 1 );
    }
    else
+   #else
+   twi.master.write( header->address, &header->checksum, length - 1 );
+   if ( false )
+   #endif
    #endif
    {
-      ERROR_1( FSTR("NO COMM INTERFACE AVAILABLE") );
+      ERROR_1( FSTR( "NO COMM INTERFACE AVAILABLE" ) );
    }
 }
 
@@ -212,7 +219,7 @@ bool BooterHw::readMessageFromRS485()
 {
    static TwiHeader* const header = reinterpret_cast<TwiHeader*>( transferBuffer.header );
    static uint8_t* const receiveBuffer = &header->address;
-   static const uint8_t* receiveBufferEnd = transferBuffer.header + sizeof(transferBuffer);
+   static const uint8_t* receiveBufferEnd = transferBuffer.header + sizeof( transferBuffer );
 
    static uint16_t receiveBufferPosition = 0;
    static bool pendingEscape = false;
@@ -230,9 +237,9 @@ bool BooterHw::readMessageFromRS485()
       else if ( data == FRAME_STOPBYTE )
       {
          if ( !Checksum::hasError( &header->address, receiveBufferPosition )
-         && transferBuffer.controlFrame.isCommand()
-         && transferBuffer.controlFrame.isRelevantForComponent()
-         && transferBuffer.controlFrame.isRelevantForObject( HACF::BOOTLOADER_ID ) )
+            && transferBuffer.controlFrame.isCommand()
+            && transferBuffer.controlFrame.isRelevantForComponent()
+            && transferBuffer.controlFrame.isRelevantForObject( HACF::BOOTLOADER_ID ) )
          {
             message = &transferBuffer.controlFrame;
             return true;
@@ -258,6 +265,8 @@ bool BooterHw::readMessageFromRS485()
          else
          {
             // notify buffer overrun
+            receiveBufferPosition = 0;
+            ERROR_1( FSTR( "TOO MANY DATA WITHOUT STOP_BYTE" ) );
          }
       }
    }
@@ -273,7 +282,7 @@ void BooterHw::writeMessageToRS485( uint8_t* pData, uint16_t length )
    while ( transmitIdx < length )
    {
       uint8_t data = pData[transmitIdx++];
-      if ( ( data == FRAME_STARTBYTE ) || ( data == FRAME_STOPBYTE ) || ( data == ESCAPE_BYTE )  )
+      if ( ( data == FRAME_STARTBYTE ) || ( data == FRAME_STOPBYTE ) || ( data == ESCAPE_BYTE ) )
       {
          rs485.write( ESCAPE_BYTE );
          data &= 0x7F;
@@ -297,16 +306,16 @@ bool BooterHw::readMessageFromUdp()
       {
          LanHeader* header = reinterpret_cast<LanHeader*>( transferBuffer.header );
          if ( header->udpHeader.isIpDatagramm() && header->udpHeader.isProtocollUdp()
-         && header->udpHeader.isDestinationPort( UDP_PORT ) )
+            && header->udpHeader.isDestinationPort( UDP_PORT ) )
          {
             if ( ( bytesTransferred == UDP_MIN_PACKET_SIZE )
-            || ( bytesTransferred == ( sizeof( transferBuffer ) - sizeof( transferBuffer.buffer )
-            - sizeof( transferBuffer.controlFrame )
-            + transferBuffer.controlFrame.getLength() ) ) )
+               || ( bytesTransferred == ( sizeof( transferBuffer ) - sizeof( transferBuffer.buffer )
+                                          - sizeof( transferBuffer.controlFrame )
+                                          + transferBuffer.controlFrame.getLength() ) ) )
             {
                if ( transferBuffer.controlFrame.isCommand()
-               && transferBuffer.controlFrame.isRelevantForComponent()
-               && transferBuffer.controlFrame.isRelevantForObject( HACF::BOOTLOADER_ID ) )
+                  && transferBuffer.controlFrame.isRelevantForComponent()
+                  && transferBuffer.controlFrame.isRelevantForObject( HACF::BOOTLOADER_ID ) )
                {
                   DEBUG_L3( endl, "data received: 0x", bytesTransferred );
                   message = &transferBuffer.controlFrame;
