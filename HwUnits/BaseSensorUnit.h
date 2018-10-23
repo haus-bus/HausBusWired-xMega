@@ -147,6 +147,8 @@ class BaseSensorUnit : public Reactive
             uint8_tx maxReportTime;
 
             uint8_tx hysteresis;
+
+            uint16_tx reserve;
       };
 
       class Command

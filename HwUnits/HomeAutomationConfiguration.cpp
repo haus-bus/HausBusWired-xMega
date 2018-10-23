@@ -11,13 +11,11 @@
 
 uint16_t HomeAutomationConfiguration::getDeviceId()
 {
-   uint16_t id = Flash::readUserSignature(
-      reinterpret_cast<uint16_t>( &deviceId ) );
-   id |= ( Flash::readUserSignature( reinterpret_cast<uint16_t>( &deviceId ) + 1 )
-           << 8 );
+   uint16_t id = Flash::readUserSignature( reinterpret_cast<uint16_t>( &deviceId ) );
+   id |= ( Flash::readUserSignature( reinterpret_cast<uint16_t>( &deviceId ) + 1 ) << 8 );
    if ( ( id == 0 ) || ( id > 0x7FFF ) )
    {
-      id = 0x7FFF;
+      id = ( 0xFFFF >> CONTROLLER_ID );
    }
    return id;
 }

@@ -37,7 +37,11 @@ enum RS485ProtocolDefines
    ESCAPE_BYTE = 0xFC
 };
 
+#if ( CONTROLLER_ID == 4 )
+DigitalOutputTmpl<PortR, 0> rs485TxEnable;
+#else
 DigitalOutputTmpl<PortA, 5> rs485TxEnable;
+#endif
 Usart& rs485( Usart::instance<PortE, 0>( ) );
 #endif
 
@@ -70,9 +74,6 @@ void BooterHw::configure()
    InterruptController::selectBootInterruptSection();
 #endif
 
-   // configure ports
-   PORTR.DIRSET = Pin0 | Pin1;
-
 #ifdef SUPPORT_UDP
    PORTC.DIRSET = Pin4 | Pin5 | Pin7;
    PORTC.OUTSET = Pin4;                 // deselect sd card
@@ -93,7 +94,10 @@ void BooterHw::configure()
 #ifdef SUPPORT_RS485
    DigitalInputTmpl<PortE, 2> rx;
    DigitalOutputTmpl<PortE, 3> tx;
+#if ( CONTROLLER_ID != 4 )
    DigitalOutputTmpl<PortA, 6> rxEnable;
+#endif
+
    rs485.init<56000>();
 #endif
 
@@ -108,8 +112,15 @@ void BooterHw::configure()
    twi.init<true, 30000, TWI_MASTER_INTLVL_OFF_gc, TWI_SLAVE_INTLVL_OFF_gc>();
 #endif
 
-   // set statusLed to red
-   PORTR.OUTSET = Pin0;
+#if ( CONTROLLER_ID == 1 )
+   // configure status leds
+   DigitalOutputTmpl<PortR, 0> greenLed;
+   DigitalOutputTmpl<PortR, 1> redLed;
+   greenLed.set();
+#endif
+#if ( CONTROLLER_ID == 4 )
+   DigitalOutputTmpl<PortA, 6> redLed;
+#endif
 }
 
 HACF::ControlFrame* BooterHw::getMessage()

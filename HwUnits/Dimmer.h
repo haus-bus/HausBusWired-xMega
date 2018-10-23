@@ -130,6 +130,8 @@ class Dimmer : public Reactive
             uint8_tx dimmingRangeStart;
 
             uint8_tx dimmingRangeEnd;
+
+            uint16_tx reserve;
       };
 
       class Command

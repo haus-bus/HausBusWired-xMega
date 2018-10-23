@@ -28,31 +28,6 @@ class PbsSystem : public HomeAutomation
 
       ////    Additional operations    ////
 
-      inline DigitalPort* getDigitalPortA() const
-      {
-         return (DigitalPort*) &digitalPortA;
-      }
-
-      inline DigitalPort* getDigitalPortB() const
-      {
-         return (DigitalPort*) &digitalPortB;
-      }
-
-      inline DigitalPort* getDigitalPortC() const
-      {
-         return (DigitalPort*) &digitalPortC;
-      }
-
-      inline DigitalPort* getDigitalPortD() const
-      {
-         return (DigitalPort*) &digitalPortD;
-      }
-
-      inline PbsSystemHw* getHardware() const
-      {
-         return (PbsSystemHw*) &hardware;
-      }
-
       ////    Relations and components    ////
 
    protected:

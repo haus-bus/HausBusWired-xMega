@@ -69,6 +69,7 @@ class PortPinUnit : public Reactive
 
          Option option;
 
+
          ////    Operations    ////
 
          static inline Configuration getDefault()
@@ -104,6 +105,8 @@ class PortPinUnit : public Reactive
             uint16_tx timeBase;
 
             XEeprom<Configuration::Option> option;
+
+            uint16_tx reserve;
 
             inline Configuration::Options getOptions() const
             {

@@ -100,6 +100,8 @@ class HacfIpStackManager : public IpStackManager
 
             XEeprom<Configuration::Option> option;
 
+            uint16_tx reserve;
+
             inline Configuration::Options getOptions() const
             {
                return option.operator*().bit;

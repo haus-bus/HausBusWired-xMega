@@ -87,6 +87,8 @@ class DigitalPort : public Reactive
 
             uint8_tx pinFunction[Configuration::MAX_PINS];
 
+            uint16_tx reserve;
+
             inline uint8_t getPinFunction( uint8_t idx )
             {
                if ( idx < Configuration::MAX_PINS )

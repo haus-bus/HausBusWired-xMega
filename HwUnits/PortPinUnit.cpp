@@ -12,8 +12,7 @@ const uint8_t PortPinUnit::debugLevel( DEBUG_LEVEL_OFF );
 
 PortPinUnit::Response::Parameter& PortPinUnit::Response::setConfiguration()
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().configuration ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().configuration ) );
    setResponse( CONFIGURATION );
    return getParameter();
 }
@@ -33,8 +32,7 @@ void PortPinUnit::Response::setEventOn( uint16_t duration )
 
 void PortPinUnit::Response::setStatus( uint8_t status )
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().status ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().status ) );
    setResponse( STATUS );
    getParameter().status = status;
 }
@@ -45,9 +43,8 @@ PortPinUnit::PortPinUnit( PortPin _hardware ) :
    hardware( _hardware.getPortNumber(), _hardware.getPinNumber() )
 {
    configuration = NULL;
-   Object::setId(
-      ( ClassId::DIGITAL_OUTPUT << 8 ) | ( ( _hardware.getPortNumber() + 1 ) << 4 )
-      | ( _hardware.getPinNumber() + 1 ) );
+   Object::setId( ( ClassId::DIGITAL_OUTPUT << 8 ) | ( ( _hardware.getPortNumber() + 1 ) << 4 )
+                  | ( _hardware.getPinNumber() + 1 ) );
 }
 
 void PortPinUnit::cmdToggle( const PortPinUnit::Command::Toggle& parameter )

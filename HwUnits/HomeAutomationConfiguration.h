@@ -126,8 +126,8 @@ inline void HomeAutomationConfiguration::restoreFactoryConfiguration(
    buffer[1] = fcke;
    buffer[2] = 0;
    buffer[3] = 0;
-   buffer[4] = 0xFF;
-   buffer[5] = 0x7F;
+   buffer[4] = LBYTE( 0xFFFF >> CONTROLLER_ID );
+   buffer[5] = HBYTE( 0xFFFF >> CONTROLLER_ID );
    Flash::writeUserSignature( 0, &buffer, sizeof( buffer ) );
 }
 

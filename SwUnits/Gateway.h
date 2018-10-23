@@ -16,6 +16,7 @@
 #include <Protocols/HACF.h>
 #include <Containers/StaticQueue.h>
 #include <Time/Timestamp.h>
+#include <ConfigurationManager.h>
 
 class IResponse;
 
@@ -71,6 +72,109 @@ class Gateway : public Reactive
          uint16_t remaining;
       };
 
+      struct Configuration
+      {
+         static const uint8_t DEFAULT_OPTIONS = 0x01; // enabled
+         static const uint8_t MAX_OPTIONS_MASK = 1;
+
+         struct Options
+         {
+            uint8_t enabled : 1;
+            uint8_t reserved : 7;
+         };
+
+         union Option
+         {
+            uint8_t mask;
+            Options options;
+         };
+
+         ////    Attributes    ////
+
+         Option option;
+
+
+
+         ////    Operations    ////
+
+         static inline Configuration getDefault()
+         {
+            Configuration defaultConfiguration =
+            {
+               .option = { DEFAULT_OPTIONS }
+            };
+            return defaultConfiguration;
+         }
+
+         inline void checkAndCorrect()
+         {
+            if ( option.mask > MAX_OPTIONS_MASK )
+            {
+               option.mask = DEFAULT_OPTIONS;
+            }
+         }
+
+      };
+
+      class EepromConfiguration : public ConfigurationManager::EepromConfigurationTmpl<Configuration>
+      {
+         public:
+
+            XEeprom<Configuration::Option> option;
+
+            uint32_tx reserve;
+
+            inline Configuration::Options getOptions() const
+            {
+               return option.operator*().options;
+            }
+      };
+
+      class Command
+      {
+         public:
+
+            enum Commands
+            {
+               GET_CONFIGURATION = HACF::COMMANDS_START,
+               SET_CONFIGURATION
+            };
+
+            union Parameter
+            {
+               Configuration setConfiguration;
+            };
+
+            ////    Operations    ////
+
+            inline Parameter& getParameter()
+            {
+               return parameter;
+            }
+
+            ////    Additional operations    ////
+
+            inline uint8_t getCommand() const
+            {
+               return command;
+            }
+
+            inline void setCommand( uint8_t p_command )
+            {
+               command = p_command;
+            }
+
+            inline void setParameter( Parameter p_parameter )
+            {
+               parameter = p_parameter;
+            }
+
+            ////    Attributes    ////
+
+            uint8_t command;
+
+            Parameter parameter;
+      };
 
       class Response : public IResponse
       {
@@ -78,6 +182,7 @@ class Gateway : public Reactive
 
             enum Responses
             {
+               CONFIGURATION = HACF::RESULTS_START,
 
                EVENT_GATEWAY_LOAD = HACF::EVENTS_START,
             };
@@ -91,18 +196,17 @@ class Gateway : public Reactive
 
             union Parameter
             {
+               Configuration configuration;
                GatewayLoad gatewayLoad;
             };
 
             ////    Constructors and destructors    ////
 
-            inline Response( uint16_t id ) :
-               IResponse( id )
+            inline Response( uint16_t id ) : IResponse( id )
             {
             }
 
-            inline Response( uint16_t id, const HACF& message ) :
-               IResponse( id, message )
+            inline Response( uint16_t id, const HACF& message ) : IResponse( id, message )
             {
             }
 
@@ -115,6 +219,8 @@ class Gateway : public Reactive
 
             void setGatewayLoad( GatewayLoad& gatewayLoad );
 
+            Parameter& setConfiguration();
+
             ////    Attributes    ////
 
          private:
@@ -124,7 +230,7 @@ class Gateway : public Reactive
 
       ////    Constructors and destructors    ////
 
-      inline Gateway( IoStream* _ioStream = NULL, Instances iId = UNKNOWN ) : packetCounter( 0 ), ioStream( _ioStream )
+      inline Gateway( IoStream* _ioStream = NULL, Instances iId = UNKNOWN ) : packetCounter( 0 ), ioStream( _ioStream ), configuration( NULL )
       {
          addGateway();
          gatewayLoad.bytesPerMinute = 0;
@@ -155,6 +261,10 @@ class Gateway : public Reactive
          listener = _listener;
       }
 
+      inline void setConfiguration( EepromConfiguration* _config )
+      {
+         configuration = _config;
+      }
 
    protected:
 
@@ -179,6 +289,8 @@ class Gateway : public Reactive
       void reportGatewayLoad();
 
       void setNumOfGateways( uint8_t p_numOfGateways );
+
+      bool handleRequest( HACF* message );
 
       ////    Attributes    ////
 
@@ -207,6 +319,8 @@ class Gateway : public Reactive
       ReadFailedData readFailedData;
 
       MessageQueue itsMessageQueue;
+
+      EepromConfiguration* configuration;
 };
 
 #endif

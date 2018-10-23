@@ -16,9 +16,14 @@
 #include <Peripherals/TimerCounter0.h>
 #include <Gateway.h>
 #include <SoftTwi.h>
+#include <RS485Hw.h>
 
-MOD_ID_SECTION const ModuleId moduleId = { "$MOD$ PBS      ", 0, Release::MAJOR,
-                                           Release::MINOR, CONTROLLER_ID, 0 };
+MOD_ID_SECTION const ModuleId moduleId = { "$MOD$ PBS      ",
+                                           0,
+                                           Release::MAJOR,
+                                           Release::MINOR,
+                                           CONTROLLER_ID,
+                                           0 };
 
 PbsSystemHw::PbsSystemHw()
 {
@@ -28,7 +33,7 @@ PbsSystemHw::PbsSystemHw()
 #ifdef _DEBUG_
 void putc( char c )
 {
-   Usart::instance<PortE, 0>().write( c );
+   Usart::instance<DBG_PORT, DBG_CHANNEL>().write( c );
 }
 #endif
 
@@ -36,25 +41,29 @@ void PbsSystemHw::configure()
 {
 #ifdef _DEBUG_
    // configure Logger
-   Usart::instance<PortE, 0>().init<DBG_BAUDRATE>();
+   Usart::instance<DBG_PORT, DBG_CHANNEL>().init<DBG_BAUDRATE>();
    Logger::instance().setStream( putc );
 #endif // _DEBUG_
 
    // configure ports
    TRACE_PORT_INIT( AllPins );
 
+   DEBUG_H1( FSTR( "configure" ) );
+
+   configureLogicalButtons();
+#if ( CONTROLLER_ID == 4 )
+   configureRs485();
+   DigitalOutputTmpl<PortA, 6> redLed;
+   redLed.set();
+#else
    IoPort::instance( PortE ).configure( Pin0 | Pin1 | Pin2, PORT_OPC_PULLUP_gc );
    IoPort::instance( PortE ).setPinsAsOutput( Pin3 );
    IoPort::instance( PortE ).setPins( Pin3 );
 
    IoPort::instance( PortR ).setPinsAsOutput( Pin0 | Pin1 );
    IoPort::instance( PortR ).setPins( Pin0 | Pin1 );
-
-   DEBUG_H1( FSTR( "configure" ) );
-
-   configureLogicalButtons();
    configureTwi();
-
+#endif
    // enable interrupts
    enableInterrupts();
 }
@@ -76,9 +85,23 @@ void PbsSystemHw::configureLogicalButtons()
    }
 }
 
+#if ( CONTROLLER_ID == 4 )
+
+RS485Hw rs485Hw( Usart::instance<PortE, 0>(), DigitalOutput( PortDummy, 0 ), DigitalOutput( PortR, 0 ) );
+
+void PbsSystemHw::configureRs485()
+{
+   DEBUG_M1( FSTR( "RS485" ) );
+   Usart::configPortPins<PortE, 0>();
+   new Gateway( &rs485Hw, Gateway::RS485 );
+}
+#else
+
+SoftTwi twi;
+
 void PbsSystemHw::configureTwi()
 {
-   static SoftTwi twi;
    new Gateway( &twi, Gateway::TWI );
 }
 
+#endif

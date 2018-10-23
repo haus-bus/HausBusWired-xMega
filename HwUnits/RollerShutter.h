@@ -108,7 +108,7 @@ class RollerShutter : public Reactive
 
             XEeprom<Configuration::Option> option;
 
-            uint8_tx reserve;
+            uint16_tx reserve;
 
             uint8_tx position;
 

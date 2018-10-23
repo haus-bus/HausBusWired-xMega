@@ -27,6 +27,8 @@ class PbsSystemHw : public HomeAutomationHw
 
       void configureTwi();
 
+      void configureRs485();
+
       ////    Additional operations    ////
 
 

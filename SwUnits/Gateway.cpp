@@ -54,13 +54,11 @@ bool Gateway::notifyEvent( const Event& event )
    {
       run();
    }
-/*
    else if ( event.isEvMessage() )
    {
-    DEBUG_H1( FSTR(".evMessage") );
-    handleRequest( event.isEvMessage()->getMessage() );
+      DEBUG_H1( FSTR( ".evMessage" ) );
+      handleRequest( event.isEvMessage()->getMessage() );
    }
- */
    else if ( event.isEvGatewayMessage() )
    {
       DEBUG_H1( FSTR( ".evGatewayMessage" ) );
@@ -120,6 +118,14 @@ void Gateway::run()
 {
    if ( inStartUp() )
    {
+      setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
+
+      if ( configuration && !configuration->getOptions().enabled )
+      {
+         setSleepTime( NO_WAKE_UP );
+         return;
+      }
+
       IoStream::CommandINIT data;
       data.deviceId = HACF::getDeviceId() & 0x7F;
       data.buffersize = HACF::MAX_BUFFER_SIZE;
@@ -138,7 +144,6 @@ void Gateway::run()
 
    if ( inRunning() )
    {
-
       uint8_t buffer[HACF::MAX_BUFFER_SIZE];
 
       // if there is some data, it will be notified by evData
@@ -375,4 +380,39 @@ void Gateway::reportGatewayLoad()
       gatewayLoad.bytesPerMinute = 0;
       gatewayLoad.messagesPerMinute = 0;
    }
+}
+
+bool Gateway::handleRequest( HACF* message )
+{
+   if ( !message->controlFrame.isCommand() )
+   {
+      return false;
+   }
+   HACF::ControlFrame& cf = message->controlFrame;
+   Command* data = reinterpret_cast<Command*>( cf.getData() );
+
+   if ( cf.isCommand( Command::SET_CONFIGURATION ) )
+   {
+      DEBUG_H1( FSTR( ".setConfiguration()" ) );
+      configuration->set( data->parameter.setConfiguration );
+   }
+   else if ( cf.isCommand( Command::GET_CONFIGURATION ) )
+   {
+      DEBUG_H1( FSTR( ".getConfiguration()" ) );
+      Response response( getId(), *message );
+      configuration->get( response.setConfiguration().configuration );
+      response.queue( getObject( message->header.getSenderId() ) );
+   }
+   else
+   {
+      return false;
+   }
+   return true;
+}
+
+Gateway::Response::Parameter& Gateway::Response::setConfiguration()
+{
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().configuration ) );
+   setResponse( CONFIGURATION );
+   return getParameter();
 }
