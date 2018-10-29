@@ -357,6 +357,9 @@ bool HmwDevice::processMessage( HmwMessageBase& msg )
    else if ( msg.isCommand( HmwMessageBase::GET_FW_VERSION ) )
    {
       DEBUG_M1( FSTR( "C: GET_FW_VERSION" ) );
+      // this command is allowed to be broadcast and should be handled as a non broadcast
+      // This is needed by the Loxone bridge from HAUS-BUS.de
+      msg.setTargetAddress( ownAddress );
       ( (HmwMsgGetFwVersion*)&msg )->setupResponse( ( Release::MAJOR << 8 ) | Release::MINOR );
       ackOnly = false;
    }

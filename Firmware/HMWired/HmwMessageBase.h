@@ -314,6 +314,11 @@ class HmwMessageBase
          return senderAddress;
       }
 
+      inline void setTargetAddress( uint32_t& _address )
+      {
+         targetAddress = _address;
+      }
+
       inline const uint32_t& getTargetAddress() const
       {
          return targetAddress;
