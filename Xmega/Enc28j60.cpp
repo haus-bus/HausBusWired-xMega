@@ -15,7 +15,7 @@
 
 #define getId() FSTR( "Enc28j60::" )
 
-const uint8_t Enc28j60::debugLevel( DEBUG_LEVEL_LOW );
+const uint8_t Enc28j60::debugLevel( DEBUG_LEVEL_OFF );
 
 extern const uint8_t configurationData[] PROGMEM;
 const uint8_t configurationData[] =

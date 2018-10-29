@@ -8,7 +8,7 @@
 
 #include "ConfigurationManager.h"
 
-const uint8_t ConfigurationManager::debugLevel( DEBUG_LEVEL_LOW );
+const uint8_t ConfigurationManager::debugLevel( DEBUG_LEVEL_OFF );
 
 ConfigurationManager::EepromConfigurationBase* ConfigurationManager::findConfiguration( uint16_t id, uint8_t size )
 {

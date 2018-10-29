@@ -66,6 +66,7 @@ bool Gateway::notifyEvent( const Event& event )
       if ( DebugOptions::gatewaysReadOnly() || !configuration->getOptions().enabled )
       {
          WARN_1( FSTR( "read only!" ) );
+		 delete message;
       }
       else
       {
@@ -153,6 +154,7 @@ void Gateway::run()
             {
                itsMessageQueue.pop();
                notifyError( BUFFER_OVERRUN );
+               ERROR_2( FSTR( "BUFFER_OVERRUN: 0x" ), len );
                return;
             }
 
