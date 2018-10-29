@@ -43,7 +43,8 @@ class Gateway : public Reactive
          MSG_QUEUE_OVERRUN,
          BUSY_BUS,
          RESET_BUS,
-         BUFFER_OVERRUN
+         BUFFER_OVERRUN,
+         NO_CONFIGURATION
       };
 
       enum Instances

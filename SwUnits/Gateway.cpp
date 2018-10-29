@@ -63,7 +63,7 @@ bool Gateway::notifyEvent( const Event& event )
    {
       DEBUG_H1( FSTR( ".evGatewayMessage" ) );
       HACF* message = event.isEvGatewayMessage()->getMessage();
-      if ( DebugOptions::gatewaysReadOnly() )
+      if ( DebugOptions::gatewaysReadOnly() || !configuration->getOptions().enabled )
       {
          WARN_1( FSTR( "read only!" ) );
       }
@@ -120,17 +120,11 @@ void Gateway::run()
    {
       setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
 
-      if ( configuration && !configuration->getOptions().enabled )
-      {
-         setSleepTime( NO_WAKE_UP );
-         return;
-      }
-
       IoStream::CommandINIT data;
       data.deviceId = HACF::getDeviceId() & 0x7F;
       data.buffersize = HACF::MAX_BUFFER_SIZE;
       data.owner = this;
-      if ( ioStream && ( ioStream->genericCommand( IoStream::INIT, &data ) == Stream::SUCCESS ) )
+      if ( configuration && ioStream && ( ioStream->genericCommand( IoStream::INIT, &data ) == Stream::SUCCESS ) )
       {
          // configuration = HwConfiguration::getUdpStreamConfiguration( id );
          SET_STATE_L1( RUNNING );
