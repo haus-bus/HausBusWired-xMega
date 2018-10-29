@@ -9,19 +9,33 @@
 #include <EventPkg/EventPkg.h>
 
 #define getId() FSTR( "RS485Hw::" )
-const uint8_t RS485Hw::debugLevel( DEBUG_LEVEL_LOW );
+const uint8_t RS485Hw::debugLevel( TRACE_PORT | DEBUG_LEVEL_LOW );
+
+enum TracePins
+{
+	RX_INT = Pin0,
+   RX_MSG = Pin1,
+   RX_ESC = Pin2,
+   RX_COLL = Pin3,
+   TX_MSG = Pin4,
+	
+};
 
 void RS485Hw::handleDataReceived()
 {
+   TRACE_PORT_SET( RX_INT );
    uint8_t data;
    usart->read( data );
 
    if ( data == FRAME_STARTBYTE )
    {
+      TRACE_PORT_SET( RX_MSG );
+      TRACE_PORT_CLEAR( RX_COLL );
       receiveBufferSize = 0;
    }
    else if ( data == FRAME_STOPBYTE )
    {
+      TRACE_PORT_CLEAR( RX_MSG );
       // message completed
       if ( transmitBuffer )
       {
@@ -40,6 +54,7 @@ void RS485Hw::handleDataReceived()
    }
    else if ( data == ESCAPE_BYTE )
    {
+      TRACE_PORT_SET( RX_ESC );
       pendingEscape = true;
    }
    else
@@ -49,6 +64,7 @@ void RS485Hw::handleDataReceived()
       {
          data |= 0x80;
          pendingEscape = false;
+         TRACE_PORT_CLEAR( RX_ESC );
       }
       if ( transmitBuffer )
       {
@@ -57,6 +73,7 @@ void RS485Hw::handleDataReceived()
             // notify collision
             disableTransmitter();
             usart->disableTransmitter();
+            TRACE_PORT_SET( RX_COLL );
          }
       }
       receiveBuffer[receiveBufferSize] = data;
@@ -69,6 +86,7 @@ void RS485Hw::handleDataReceived()
          // notify buffer overrun
       }
    }
+   TRACE_PORT_CLEAR( RX_INT );
 }
 
 bool RS485Hw::init()
@@ -130,6 +148,7 @@ Stream::Status RS485Hw::read( void* pData, uint16_t length, EventDrivenUnit* use
 
 Stream::Status RS485Hw::write( void* pData, uint16_t length, EventDrivenUnit* user )
 {
+   TRACE_PORT_SET( TX_MSG );
    DEBUG_H3( FSTR( "sending 0x" ), length, FSTR( " Bytes" ) );
    usart->enableTransmitter();
    enableTransmitter();
@@ -162,12 +181,13 @@ Stream::Status RS485Hw::write( void* pData, uint16_t length, EventDrivenUnit* us
    // 1. usart transmitter will be disabled if collision is detected
    // 2. compare the receiveBuffer against the data that should be sent
    // return 0 to indicate that transmission has been failed
+   Stream::Status status = Stream::SUCCESS;
    CriticalSection doNotInterrupt;
    if ( !usart->isTransmitterEnabled() || memcmp( receiveBuffer, pData, length ) )
    {
-      ERROR_1( FSTR( "COLLISION!" ) );
-      return Stream::ABORTED;
+      status = Stream::ABORTED;
    }
-   return Stream::SUCCESS;
+   TRACE_PORT_CLEAR( TX_MSG );
+   return status;
 }
 
