@@ -75,6 +75,8 @@ class HacfIpStackManager : public IpStackManager
 
             Option option;
 
+            uint16_t port;
+
             ////    Operations    ////
 
             static inline Configuration getDefault()
@@ -82,7 +84,8 @@ class HacfIpStackManager : public IpStackManager
                Configuration defaultConfiguration =
                {
                   .ip = IP::defaultIp.address,
-                  .option = { DEFAULT_OPTIONS }
+                  .option = { DEFAULT_OPTIONS },
+                  .port = 0,
                };
                return defaultConfiguration;
             }
@@ -100,7 +103,7 @@ class HacfIpStackManager : public IpStackManager
 
             XEeprom<Configuration::Option> option;
 
-            uint16_tx reserve;
+            uint16_tx port;
 
             inline Configuration::Options getOptions() const
             {

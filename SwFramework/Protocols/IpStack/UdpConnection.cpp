@@ -66,8 +66,7 @@ void UdpConnection::fillNoConnectionHeader( UdpHeader* pHdr,
    pHdr->setChecksum();
 }
 
-void UdpConnection::convertHeaderToResponse( UdpHeader* pHdr,
-                                             uint16_t dataLength )
+void UdpConnection::convertHeaderToResponse( UdpHeader* pHdr, uint16_t dataLength )
 {
    IpConnection::fillNoConnectionHeader(
       pHdr, dataLength + sizeof( UdpHeader ) - sizeof( IpHeader ),
@@ -80,8 +79,7 @@ void UdpConnection::convertHeaderToResponse( UdpHeader* pHdr,
    pHdr->setChecksum();
 }
 
-Stream::Status UdpConnection::genericCommand( IoStream::Command command,
-                                              void* buffer )
+Stream::Status UdpConnection::genericCommand( IoStream::Command command, void* buffer )
 {
    if ( command == IoStream::INIT )
    {
@@ -92,14 +90,12 @@ Stream::Status UdpConnection::genericCommand( IoStream::Command command,
    return NOT_SUPPORTED;
 }
 
-Stream::Status UdpConnection::read( void* pData, uint16_t length,
-                                    EventDrivenUnit* user )
+Stream::Status UdpConnection::read( void* pData, uint16_t length, EventDrivenUnit* user )
 {
    return NOT_SUPPORTED;
 }
 
-Stream::Status UdpConnection::write( void* pData, uint16_t length,
-                                     EventDrivenUnit* user )
+Stream::Status UdpConnection::write( void* pData, uint16_t length, EventDrivenUnit* user )
 {
    if ( !stream )
    {

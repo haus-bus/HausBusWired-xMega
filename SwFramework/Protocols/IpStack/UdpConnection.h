@@ -29,24 +29,19 @@ class UdpConnection : public IpConnection,
 
       ////    Operations    ////
 
-      static UdpConnection* connect( const IP& _remoteIp, uint16_t _remotePort,
-                                     uint16_t _localPort, EventDrivenUnit* _user );
+      static UdpConnection* connect( const IP& _remoteIp, uint16_t _remotePort, uint16_t _localPort, EventDrivenUnit* _user );
 
       static UdpConnection* getConnection( UdpHeader* packet );
 
-      static void fillNoConnectionHeader(
-         UdpHeader* pHdr, uint16_t dataLength, uint16_t _destPort,
-         const IP& destIp = IP::broadcast() );
+      static void fillNoConnectionHeader( UdpHeader* pHdr, uint16_t dataLength, uint16_t _destPort, const IP& destIp = IP::broadcast() );
 
       static void convertHeaderToResponse( UdpHeader* pHdr, uint16_t dataLength );
 
       virtual Stream::Status genericCommand( Command command, void* buffer );
 
-      virtual Stream::Status read( void* pData, uint16_t length,
-                                   EventDrivenUnit* user = 0 );
+      virtual Stream::Status read( void* pData, uint16_t length, EventDrivenUnit* user = 0 );
 
-      virtual Stream::Status write( void* pData, uint16_t length,
-                                    EventDrivenUnit* user = 0 );
+      virtual Stream::Status write( void* pData, uint16_t length, EventDrivenUnit* user = 0 );
 
       ////    Additional operations    ////
 

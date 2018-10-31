@@ -198,11 +198,9 @@ uint16_t IpStackManager::handleIcmpPacket( IcmpHeader* icmp )
    }
 
    icmp->setType( IcmpHeader::ECHO_REPLY );
-   if ( icmp->checksum
-        >= changeEndianness( (uint16_t) ( 0xFFFF - ( IcmpHeader::ECHO << 8 ) ) ) )
+   if ( icmp->checksum >= changeEndianness( (uint16_t) ( 0xFFFF - ( IcmpHeader::ECHO << 8 ) ) ) )
    {
-      icmp->checksum += changeEndianness( (uint16_t) ( IcmpHeader::ECHO << 8 ) )
-                        + 1;
+      icmp->checksum += changeEndianness( (uint16_t) ( IcmpHeader::ECHO << 8 ) ) + 1;
    }
    else
    {
@@ -339,8 +337,7 @@ uint16_t IpStackManager::handleUdpPacket( UdpHeader* header )
       transferDescriptor.bytesRemaining = 0;
       if ( evData( user, &transferDescriptor ).send() )
       {
-         UdpConnection::convertHeaderToResponse(
-            header, transferDescriptor.bytesTransferred );
+         UdpConnection::convertHeaderToResponse( header, transferDescriptor.bytesTransferred );
          return transferDescriptor.bytesTransferred;
       }
    }
@@ -421,8 +418,7 @@ void IpStackManager::run()
       {
          handleUdpPacket( (UdpHeader*) buffer );
       }
-      else if ( ipHdr->destinationAddress.isForMe()
-              || ( !IP::local.isValid() && ipHdr->isProtocollIcmp() ) )
+      else if ( ipHdr->destinationAddress.isForMe() || ( !IP::local.isValid() && ipHdr->isProtocollIcmp() ) )
       {
          if ( ipHdr->isProtocollUdp() )
          {
@@ -464,17 +460,14 @@ void IpStackManager::run()
    }
 }
 
-bool IpStackManager::sendToUdp( uint16_t port, void* pData, uint16_t len,
-                                const IP& _remoteIp )
+bool IpStackManager::sendToUdp( uint16_t port, void* pData, uint16_t len, const IP& _remoteIp )
 {
    memcpy( &buffer[sizeof( UdpHeader )], pData, len );
-   UdpConnection::fillNoConnectionHeader( (UdpHeader*) buffer, len, port,
-                                          _remoteIp );
+   UdpConnection::fillNoConnectionHeader( (UdpHeader*) buffer, len, port, _remoteIp );
 
    // ArpManager might change the packet into an arp-request, in this case the return value will be false
    bool success = ArpManager::prepareOutPacket( (IpHeader*) buffer, len );
-   if ( !IpConnection::stream
-      || ( IpConnection::stream->write( buffer, len ) != len ) )
+   if ( !IpConnection::stream || ( IpConnection::stream->write( buffer, len ) != len ) )
    {
       return false;
    }

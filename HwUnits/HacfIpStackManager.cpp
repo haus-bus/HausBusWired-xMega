@@ -28,24 +28,21 @@ void HacfIpStackManager::Command::setCommand( uint8_t p_command )
    command = p_command;
 }
 
-void HacfIpStackManager::Command::setParameter(
-   const HacfIpStackManager::Command::Parameter& p_parameter )
+void HacfIpStackManager::Command::setParameter( const HacfIpStackManager::Command::Parameter& p_parameter )
 {
    parameter = p_parameter;
 }
 
 HacfIpStackManager::Response::Parameter& HacfIpStackManager::Response::setConfiguration()
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().configuration ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().configuration ) );
    setResponse( CONFIGURATION );
    return getParameter();
 }
 
 void HacfIpStackManager::Response::setCurrentIp()
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().ip ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().ip ) );
    setResponse( CURRENT_IP );
    getParameter().ip = IP::local.getAddress();
 }
@@ -81,6 +78,10 @@ bool HacfIpStackManager::notifyEvent( const Event& event )
          if ( options.modBusTcp )
          {
             new ModBusSlave();
+         }
+         if ( configuration->port )
+         {
+            new Gateway( UdpConnection::connect( IP::broadcast(), configuration->port, configuration->port, NULL ), Gateway::UDP );
          }
       }
 
