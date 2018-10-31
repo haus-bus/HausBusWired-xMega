@@ -74,8 +74,7 @@ void AR8SystemHw::configureEthernet()
    if ( enc28j60.init() == Enc28j60::OK )
    {
       new HacfIpStackManager( enc28j60 );
-      new Gateway( UdpConnection::connect( IP::broadcast(), 9, 9, NULL ),
-                   Gateway::UDP );
+      new Gateway( UdpConnection::connect( IP::broadcast(), 9, 9, NULL ), Gateway::UDP_9 );
    }
 }
 

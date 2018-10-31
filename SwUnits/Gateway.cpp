@@ -12,7 +12,7 @@
 #include <Security/Checksum.h>
 #include <Scheduler.h>
 
-static const uint8_t debugLevel( DEBUG_LEVEL_LOW );
+static const uint8_t debugLevel( DEBUG_LEVEL_OFF );
 
 EventDrivenUnit* Gateway::listener( NULL );
 
@@ -65,8 +65,7 @@ bool Gateway::notifyEvent( const Event& event )
       HACF* message = event.isEvGatewayMessage()->getMessage();
       if ( DebugOptions::gatewaysReadOnly() || !configuration->getOptions().enabled )
       {
-         WARN_1( FSTR( "read only!" ) );
-		 delete message;
+         delete message;
       }
       else
       {
@@ -90,7 +89,7 @@ bool Gateway::notifyEvent( const Event& event )
 
          HACF::ControlFrame* msg = (HACF::ControlFrame*) ( td->pData );
 
-         if ( getInstanceId() == UDP )
+         if ( ( getInstanceId() == UDP_9 ) || ( getInstanceId() == UDP ) )
          {
             if ( *( (uint16_t*) td->pData ) == MAGIC_NUMBER )
             {
@@ -164,7 +163,7 @@ void Gateway::run()
             // message->getControlFrame()->setPacketCounter( packetCounter );
             // message->getControlFrame()->encrypt();
 
-            if ( getInstanceId() == UDP )
+            if ( ( getInstanceId() == UDP_9 ) || ( getInstanceId() == UDP ) )
             {
                buffer[2] = LBYTE( MAGIC_NUMBER );
                buffer[3] = HBYTE( MAGIC_NUMBER );
@@ -239,7 +238,7 @@ void Gateway::notifyEndOfReadTransfer( Stream::TransferDescriptor* td )
    {
       Header* hdr = (Header*) td->pData;
       HACF* hacf = (HACF*) td->pData;
-      checksum = 0; // Checksum::get( td->pData, transferred );
+      checksum = Checksum::get( td->pData, transferred );
       notRelevant = ( ( hdr->lastDeviceId == HACF::deviceId )
                     || ( ( numOfGateways < 2 )
                        && ( !hacf->controlFrame.isRelevantForComponent()

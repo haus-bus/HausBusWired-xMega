@@ -13,12 +13,14 @@ const uint8_t RS485Hw::debugLevel( TRACE_PORT | DEBUG_LEVEL_LOW );
 
 enum TracePins
 {
-	RX_INT = Pin0,
+   RX_INT = Pin0,
    RX_MSG = Pin1,
    RX_ESC = Pin2,
    RX_COLL = Pin3,
-   TX_MSG = Pin4,
-	
+   RX_READ = Pin4,
+   TX_MSG = Pin5,
+   TX_ERR = Pin6
+
 };
 
 void RS485Hw::handleDataReceived()
@@ -31,26 +33,23 @@ void RS485Hw::handleDataReceived()
    {
       TRACE_PORT_SET( RX_MSG );
       TRACE_PORT_CLEAR( RX_COLL );
+      if ( rxMsgComplete )
+      {
+         rxBufferOverflow = true;
+         rxMsgComplete = false;
+      }
       receiveBufferSize = 0;
+      transmissionPending = true;
    }
    else if ( data == FRAME_STOPBYTE )
    {
       TRACE_PORT_CLEAR( RX_MSG );
       // message completed
-      if ( transmitBuffer )
+      if ( transmitBuffer == NULL )
       {
-         // sending operation was in progress
-         disableTransmitter();
-         transmitBuffer = NULL;
-         receiveBufferSize = 0;
+         rxMsgComplete = true;
       }
-      else if ( user )
-      {
-         Stream::TransferDescriptor td;
-         td.setBytesTransferred( receiveBufferSize );
-         td.setPData( receiveBuffer );
-         evData( user, &td ).send();
-      }
+      transmissionPending = false;
    }
    else if ( data == ESCAPE_BYTE )
    {
@@ -72,7 +71,6 @@ void RS485Hw::handleDataReceived()
          {
             // notify collision
             disableTransmitter();
-            usart->disableTransmitter();
             TRACE_PORT_SET( RX_COLL );
          }
       }
@@ -126,23 +124,32 @@ Stream::Status RS485Hw::genericCommand( IoStream::Command command, void* buffer 
 
 Stream::Status RS485Hw::read( void* pData, uint16_t length, EventDrivenUnit* user )
 {
-   CriticalSection doNotInterrupt;
-   this->user = user;
-   /*
-      if ( receiveBuffer && (receiveBuffer[0] == FRAME_STARTBYTE ) && (receiveBuffer[receiveBufferSize] == FRAME_STOPBYTE ) )
+   Stream::TransferDescriptor td;
+   {
+      CriticalSection doNotInterrupt;
+      if ( rxBufferOverflow )
       {
-      length = receiveBufferSize;
-      memcpy( pData, receiveBuffer, length );
-      receiveBufferSize = 0;
-      DEBUG_H1( FSTR( "Msg recieved" ) );
-      DEBUG_M2( FSTR( "received bytes: 0x" ), length );
+         rxBufferOverflow = false;
+         return Stream::BUFFER_OVERFLOW;
+      }
+      if ( rxMsgComplete )
+      {
+         TRACE_PORT_SET( RX_READ );
+         memcpy( pData, receiveBuffer, receiveBufferSize );
+         td.setBytesTransferred( receiveBufferSize );
+         td.setPData( (uint8_t*)pData );
+         rxMsgComplete = false;
+      }
+   }
+   if ( td.pData )
+   {
+      if ( user )
+      {
+         evData( user, &td ).send();
+      }
+      TRACE_PORT_CLEAR( RX_READ );
       return Stream::SUCCESS;
-      }
-      else if ( receiveBufferSize )
-      {
-      DEBUG_H2( FSTR( "received bytes: 0x" ), receiveBufferSize );
-      }
-    */
+   }
    return Stream::NO_DATA;
 }
 
@@ -150,43 +157,43 @@ Stream::Status RS485Hw::write( void* pData, uint16_t length, EventDrivenUnit* us
 {
    TRACE_PORT_SET( TX_MSG );
    DEBUG_H3( FSTR( "sending 0x" ), length, FSTR( " Bytes" ) );
-   usart->enableTransmitter();
+
+   if ( transmissionPending || rxMsgComplete )
+   {
+      // read first the incoming message because receiveBuffer will be overwritten with transmitting new message
+      return Stream::LOCKED;
+   }
    enableTransmitter();
 
    transmitBuffer = (uint8_t*) pData;
    uint16_t transmitIdx = 0;
-   bool success = usart->write( FRAME_STARTBYTE );
+   usart->write( FRAME_STARTBYTE );
 
-   while ( success && ( transmitIdx < length ) )
+   while ( isTransmitterEnabled() && ( transmitIdx < length ) )
    {
       uint8_t data = ( (uint8_t*)pData )[transmitIdx++];
       if ( ( data == FRAME_STARTBYTE ) || ( data == FRAME_STOPBYTE ) || ( data == ESCAPE_BYTE ) )
       {
-         success &= usart->write( ESCAPE_BYTE );
+         usart->write( ESCAPE_BYTE );
          data &= 0x7F;
       }
-      if ( success )
-      {
-         success &= usart->write( data );
-      }
+      usart->write( data );
    }
-   if ( success )
-   {
-      success &= usart->write( FRAME_STOPBYTE );
-   }
+   usart->write( FRAME_STOPBYTE );
    usart->waitUntilTransferCompleted();
-   disableTransmitter();
 
    // check if transmission was successful
-   // 1. usart transmitter will be disabled if collision is detected
+   // 1. transmitter will be disabled if collision is detected
    // 2. compare the receiveBuffer against the data that should be sent
    // return 0 to indicate that transmission has been failed
    Stream::Status status = Stream::SUCCESS;
    CriticalSection doNotInterrupt;
-   if ( !usart->isTransmitterEnabled() || memcmp( receiveBuffer, pData, length ) )
+   if ( !isTransmitterEnabled() || memcmp( receiveBuffer, pData, length ) )
    {
       status = Stream::ABORTED;
    }
+   disableTransmitter();
+   transmitBuffer = NULL;
    TRACE_PORT_CLEAR( TX_MSG );
    return status;
 }

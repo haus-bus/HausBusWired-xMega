@@ -37,7 +37,10 @@ class RS485Hw : public IoStream
          user( NULL ),
          disableRx( _enableRx ),
          enableTx( _enableTx ),
-         pendingEscape( false )
+         pendingEscape( false ),
+         rxMsgComplete( false ),
+         rxBufferOverflow( false ),
+         transmissionPending( false )
       {
 
       }
@@ -101,7 +104,7 @@ class RS485Hw : public IoStream
 
       uint8_t* receiveBuffer;
 
-      uint16_t receiveBufferSize;
+      volatile uint16_t receiveBufferSize;
 
       uint16_t maxReceiveBufferSize;
 
@@ -114,6 +117,12 @@ class RS485Hw : public IoStream
       DigitalOutput enableTx;
 
       bool pendingEscape;
+
+      volatile bool rxMsgComplete;
+
+      volatile bool rxBufferOverflow;
+
+      volatile bool transmissionPending;
 
       static const uint8_t debugLevel;
 

@@ -35,7 +35,8 @@ class Stream : public Object
          NO_ACK,
          NO_RECEIVER,
          NO_DATA,
-         ARB_LOST
+         ARB_LOST,
+         BUFFER_OVERFLOW
       };
 
       enum SeekPosition
