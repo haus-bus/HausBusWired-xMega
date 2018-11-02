@@ -74,6 +74,7 @@ bool PortPinUnit::handleRequest( HACF* message )
    {
       DEBUG_H1( FSTR( ".setConfiguration()" ) );
       configuration->set( data->parameter.setConfiguration );
+      updateConfiguration();
    }
    else
    {

@@ -11,8 +11,7 @@
 #include "HwUnitBoards.h"
 
 #include <Peripherals/IoPort.h>
-#include <Peripherals/TimerCounter0.h>
-#include <Peripherals/TimerCounter1.h>
+#include <Peripherals/TimerCounter.h>
 
 class DigitalPortHw
 {
@@ -42,22 +41,22 @@ class DigitalPortHw
          port = p_port;
       }
 
-      inline TimerCounter0* getTimerCounter0() const
+      inline TimerCounter* getTimerCounter0() const
       {
          return timerCounter0;
       }
 
-      inline void setTimerCounter0( TimerCounter0* p_timerCounter0 )
+      inline void setTimerCounter0( TimerCounter* p_timerCounter0 )
       {
          timerCounter0 = p_timerCounter0;
       }
 
-      inline TimerCounter1* getTimerCounter1() const
+      inline TimerCounter* getTimerCounter1() const
       {
          return timerCounter1;
       }
 
-      inline void setTimerCounter1( TimerCounter1* p_timerCounter1 )
+      inline void setTimerCounter1( TimerCounter* p_timerCounter1 )
       {
          timerCounter1 = p_timerCounter1;
       }
@@ -66,9 +65,9 @@ class DigitalPortHw
 
       IoPort* port;
 
-      TimerCounter0* timerCounter0;
+      TimerCounter* timerCounter0;
 
-      TimerCounter1* timerCounter1;
+      TimerCounter* timerCounter1;
 };
 
 inline void DigitalPortHw::off( uint8_t pin )

@@ -11,7 +11,7 @@
 #include "HwUnitBoards.h"
 #include <DigitalOutput.h>
 #include <IDimmerHw.h>
-#include <Peripherals/TimerCounter0.h>
+#include <Peripherals/TimerCounter.h>
 class Logger;
 
 
@@ -77,12 +77,12 @@ class SlotHw : public IDimmerHw
 
       ////    Additional operations    ////
 
-      inline TimerCounter0* getTimerCounter0() const
+      inline TimerCounter* getTimerCounter0() const
       {
          return timerCounter0;
       }
 
-      inline void setTimerCounter0( TimerCounter0* p_timerCounter0 )
+      inline void setTimerCounter0( TimerCounter* p_timerCounter0 )
       {
          timerCounter0 = p_timerCounter0;
       }
@@ -124,7 +124,7 @@ class SlotHw : public IDimmerHw
 
    public:
 
-      TimerCounter0* timerCounter0;
+      TimerCounter* timerCounter0;
 
       uint8_t type : 4;
 

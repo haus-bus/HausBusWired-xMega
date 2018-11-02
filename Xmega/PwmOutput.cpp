@@ -1,87 +1,66 @@
 /*
  * PwmOutput.cpp
  *
- * Created: 18.06.2014 14:12:55
- * Author: viktor.pankraz
+ *  Created on: 17.07.2017
+ *      Author: Viktor Pankraz
  */
 
+#include <stddef.h>
 #include "PwmOutput.h"
-#include "Peripherals/TimerCounter0.h"
-#include "Peripherals/TimerCounter1.h"
+#include "Peripherals/TimerCounter.h"
 
-uint16_t PwmOutput::isSet()
+
+PwmOutput::PwmOutput( uint8_t _portNumber, uint8_t _pinNumber, uint16_t _period ) : DigitalOutput( _portNumber, _pinNumber )
 {
-   TimerCounter0* tc0 = &TimerCounter0::instance( portNumber );
-   if ( tc0 && ( pinNumber < Pin4 ) )
+   TimerCounter* tc = getTC();
+   if ( tc )
    {
-      if ( pinNumber == 0 )
-      {
-         return tc0->getCaptureA();
-      }
-      else if ( pinNumber == 1 )
-      {
-         return tc0->getCaptureB();
-      }
-      else if ( pinNumber == 2 )
-      {
-         return tc0->getCaptureC();
-      }
-      else
-      {
-         return tc0->getCaptureD();
-      }
+      tc->configClockSource( TC_CLKSEL_DIV1_gc );
+      tc->configWGM( TC_WGMODE_SS_gc );
+      tc->setPeriod( _period );
+      tc->enableChannel( tc->getChannelFromPinNumber( pinNumber ) );
    }
+}
 
-   TimerCounter1* tc1 = &TimerCounter1::instance( portNumber );
-   if ( tc1 && ( pinNumber >= Pin4 ) )
+uint16_t PwmOutput::isSet() const
+{
+   TimerCounter* tc = getTC();
+   if ( tc )
    {
-      if ( pinNumber == 4 )
-      {
-         tc1->getCaptureA();
-      }
-      else if ( pinNumber == 5 )
-      {
-         tc1->getCaptureB();
-      }
+      return tc->getCapture( tc->getChannelFromPinNumber( pinNumber ) );
    }
    return 0;
 }
 
-void PwmOutput::set( uint8_t value )
+void PwmOutput::set( uint16_t value )
 {
-   TimerCounter0* tc0 = &TimerCounter0::instance( portNumber );
-   if ( tc0 && ( pinNumber < Pin4 ) )
+   TimerCounter* tc = getTC();
+   if ( tc )
    {
-      if ( pinNumber == 0 )
-      {
-         tc0->setCompareA( value );
-      }
-      else if ( pinNumber == 1 )
-      {
-         tc0->setCompareB( value );
-      }
-      else if ( pinNumber == 2 )
-      {
-         tc0->setCompareC( value );
-      }
-      else
-      {
-         tc0->setCompareD( value );
-      }
-      return;
+      tc->setCompare( tc->getChannelFromPinNumber( pinNumber ), value );
    }
-
-   TimerCounter1* tc1 = &TimerCounter1::instance( portNumber );
-   if ( tc1 && ( pinNumber >= Pin4 ) )
-   {
-      if ( pinNumber == 4 )
-      {
-         tc1->setCompareA( value );
-      }
-      else if ( pinNumber == 5 )
-      {
-         tc1->setCompareB( value );
-      }
-   }
-
 }
+
+void PwmOutput::setPeriode( uint16_t period )
+{
+   TimerCounter* tc = getTC();
+
+   if ( tc )
+   {
+      tc->setPeriod( period );
+   }
+}
+
+TimerCounter* PwmOutput::getTC() const
+{
+   if ( pinNumber < 4 )
+   {
+      return &TimerCounter::instance( portNumber, 0 );
+   }
+   else if ( pinNumber < 6 )
+   {
+      return &TimerCounter::instance( portNumber, 1 );
+   }
+   return NULL;
+}
+

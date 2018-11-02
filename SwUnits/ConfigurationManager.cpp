@@ -19,7 +19,7 @@ ConfigurationManager::EepromConfigurationBase* ConfigurationManager::findConfigu
    {
       if ( conf->isMine( id, size ) )
       {
-         DEBUG_M4( FSTR( "new Conf in own slot " ), id, FSTR( "->" ), (uint16_t)conf );
+         DEBUG_M4( FSTR( "existing Conf in own slot " ), id, FSTR( "->" ), (uint16_t)conf );
          return conf;
       }
       else if ( conf->isFree() )

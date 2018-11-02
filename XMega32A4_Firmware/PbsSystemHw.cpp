@@ -13,7 +13,7 @@
 #include <LogicalButton.h>
 #include <Security/ModuleId.h>
 #include <PersistentRules.h>
-#include <Peripherals/TimerCounter0.h>
+#include <Peripherals/TimerCounter.h>
 #include <Gateway.h>
 #include <SoftTwi.h>
 #include <RS485Hw.h>
@@ -88,6 +88,11 @@ void PbsSystemHw::configureLogicalButtons()
 #if ( CONTROLLER_ID == 4 )
 
 RS485Hw rs485Hw( Usart::instance<PortE, 0>(), DigitalOutput( PortDummy, 0 ), DigitalOutput( PortR, 0 ) );
+
+INTERRUPT void USARTE0_RXC_vect()
+{
+   rs485Hw.handleDataReceived();
+}
 
 void PbsSystemHw::configureRs485()
 {

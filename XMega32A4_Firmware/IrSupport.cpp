@@ -9,7 +9,7 @@
 
 #include <PortPin.h>
 #include <Peripherals/EventSystem.h>
-#include <Peripherals/TimerCounter0.h>
+#include <Peripherals/TimerCounter.h>
 
 static IrDecoder* irDecoder( 0 );
 
@@ -51,7 +51,7 @@ void configureInfraRedHw( PortPin portPin, IrDecoder* decoder )
          (EVSYS_CHMUX_t) ( EVSYS_CHMUX_PORTA_PIN0_gc
                            + ( portPin.getPortNumber() << 3 ) + portPin.getPinNumber() ) );
 
-      TimerCounter0& t = TimerCounter0::instance( PortE );
+      TimerCounter& t = TimerCounter::instance( PortE, 0 );
       t.configWGM( TC_WGMODE_NORMAL_gc );
       t.setPeriod( 0x7FFF );
 #if F_CPU == 32000000UL

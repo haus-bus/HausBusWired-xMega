@@ -43,9 +43,7 @@ class ResetSystem;
 
 class Spi;
 
-class TimerCounter0;
-
-class TimerCounter1;
+class TimerCounter;
 
 class TimerCounterBase;
 

@@ -53,11 +53,11 @@ INTERRUPT void PORTA_INT0_vect()
 
    // check for ZeroCrossDetection is OK
 #if F_CPU == 32000000UL
-   TimerCounter0::instance( PortC ).configClockSource( TC_CLKSEL_DIV8_gc );
-   TimerCounter0::instance( PortD ).configClockSource( TC_CLKSEL_DIV8_gc );
+   TimerCounter::instance( PortC, 0 ).configClockSource( TC_CLKSEL_DIV8_gc );
+   TimerCounter::instance( PortD, 0 ).configClockSource( TC_CLKSEL_DIV8_gc );
 #elif F_CPU == 8000000UL
-   TimerCounter0::instance( PortC ).configClockSource( TC_CLKSEL_DIV2_gc );
-   TimerCounter0::instance( PortD ).configClockSource( TC_CLKSEL_DIV2_gc );
+   TimerCounter::instance( PortC, 0 ).configClockSource( TC_CLKSEL_DIV2_gc );
+   TimerCounter::instance( PortD, 0 ).configClockSource( TC_CLKSEL_DIV2_gc );
 #else
 #    error "F_CPU is not supported for ZeroCrossDetection"
 #endif
@@ -101,8 +101,8 @@ INTERRUPT void TCD1_OVF_vect()
 #endif
 
    // if we get here, zero cross detection fails
-   TimerCounter0::instance( PortC ).configClockSource( TC_CLKSEL_OFF_gc );
-   TimerCounter0::instance( PortD ).configClockSource( TC_CLKSEL_OFF_gc );
+   TimerCounter::instance( PortC, 0 ).configClockSource( TC_CLKSEL_OFF_gc );
+   TimerCounter::instance( PortD, 0 ).configClockSource( TC_CLKSEL_OFF_gc );
 
    TRACE_PORT_CLEAR( TR_INT_PIN );
 
@@ -120,7 +120,7 @@ void configureInfraRedHw( PortPin portPin, IrDecoder* decoder )
          (EVSYS_CHMUX_t) ( EVSYS_CHMUX_PORTA_PIN0_gc
                            + ( portPin.getPortNumber() << 3 ) + portPin.getPinNumber() ) );
 
-      TimerCounter1& t = TimerCounter1::instance( PortC );
+      TimerCounter& t = TimerCounter::instance( PortC, 1 );
       t.configWGM( TC_WGMODE_NORMAL_gc );
       t.setPeriod( 0x7FFF );
 #if F_CPU == 32000000UL

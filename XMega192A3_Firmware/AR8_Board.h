@@ -13,7 +13,7 @@
 #include <TwiHw.h>
 #include <Security/ModuleId.h>
 #include "AR8.h"
-#include <Peripherals/TimerCounter1.h>
+#include <Peripherals/TimerCounter.h>
 
 class AR8SystemHw;
 

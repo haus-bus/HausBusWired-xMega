@@ -20,7 +20,7 @@
 #include <PersistentRules.h>
 #include <DigitalOutputUnit.h>
 #include <RollerShutter.h>
-#include <Peripherals/TimerCounter0.h>
+#include <Peripherals/TimerCounter.h>
 #include <Protocols/IpStack/UdpConnection.h>
 #include <Protocols/Ethernet/MAC.h>
 #include <Gateway.h>
@@ -55,6 +55,9 @@ void AR8SystemHw::configure()
    IoPort::instance( PortR ).setPinsAsOutput( Pin0 | Pin1 );
    IoPort::instance( PortR ).set( Pin0 | Pin1 );
 
+   // red LED
+   new DigitalOutputUnit( PortPin( PortR, Pin0 ) );
+
    DEBUG_H1( FSTR( "configure" ) );
    configureSlots();
    configureZeroCrossDetection();
@@ -80,15 +83,21 @@ void AR8SystemHw::configureEthernet()
 
 void AR8SystemHw::configureTwi()
 {
-   static SoftTwi twi;
-   new Gateway( &twi, Gateway::TWI );
+   if ( getFckE() == FCKE_V4_1 )
+   {
+      static SoftTwi twi;
+      new Gateway( &twi, Gateway::TWI );
+   }
 }
 
 void AR8SystemHw::configureRs485()
 {
-   DEBUG_M1( FSTR( "RS485" ) );
-   Usart::configPortPins<PortE, 0>();
-   new Gateway( &rs485Hw, Gateway::RS485 );
+   if ( getFckE() == FCKE_V4_0 )
+   {
+      DEBUG_M1( FSTR( "RS485" ) );
+      Usart::configPortPins<PortE, 0>();
+      new Gateway( &rs485Hw, Gateway::RS485 );
+   }
 }
 
 void AR8SystemHw::configureLogicalButtons()
@@ -121,13 +130,13 @@ void AR8SystemHw::configureSlots()
       {
          slotHw[slot].getDigitalOutput1()->setPortNumber( PortA );
          slotHw[slot].getDigitalOutput0()->setPortNumber( PortC );
-         slotHw[slot].setTimerCounter0( &TimerCounter0::instance( PortC ) );
+         slotHw[slot].setTimerCounter0( &TimerCounter::instance( PortC, 0 ) );
       }
       else
       {
          slotHw[slot].getDigitalOutput1()->setPortNumber( PortB );
          slotHw[slot].getDigitalOutput0()->setPortNumber( PortD );
-         slotHw[slot].setTimerCounter0( &TimerCounter0::instance( PortD ) );
+         slotHw[slot].setTimerCounter0( &TimerCounter::instance( PortD, 0 ) );
       }
       if ( pinNumber > 3 )
       {
@@ -167,19 +176,19 @@ void AR8SystemHw::configureSlots()
 
 void AR8SystemHw::configureZeroCrossDetection()
 {
-   TimerCounter1& phaseShifter = TimerCounter1::instance( PortD );
+   TimerCounter& phaseShifter = TimerCounter::instance( PortD, 1 );
    phaseShifter.configEventAction( TC_EVSEL_CH1_gc, TC_EVACT_RESTART_gc );
    phaseShifter.configWGM( TC_WGMODE_NORMAL_gc );
    phaseShifter.setPeriod( 0xFFFF );
    // Select TCD1_CCA as event channel 0 multiplexer input.
    EventSystem::setEventSource( 0, EVSYS_CHMUX_TCD1_CCA_gc );
 
-   TimerCounter0& dimmerC = TimerCounter0::instance( PortC );
+   TimerCounter& dimmerC = TimerCounter::instance( PortC, 0 );
    dimmerC.configWGM( TC_WGMODE_SS_gc );
    dimmerC.configEventAction( TC_EVSEL_CH0_gc, TC_EVACT_RESTART_gc );
    dimmerC.setPeriod( ZCD_DEFAULT_PERIOD );
 
-   TimerCounter0& dimmerD = TimerCounter0::instance( PortD );
+   TimerCounter& dimmerD = TimerCounter::instance( PortD, 0 );
    dimmerD.configWGM( TC_WGMODE_SS_gc );
    dimmerD.configEventAction( TC_EVSEL_CH0_gc, TC_EVACT_RESTART_gc );
    dimmerD.setPeriod( ZCD_DEFAULT_PERIOD );

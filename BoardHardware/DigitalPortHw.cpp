@@ -8,7 +8,7 @@
 #include "DigitalPortHw.h"
 
 
-DigitalPortHw::DigitalPortHw( uint8_t portNumber ) : port( &IoPort::instance( portNumber ) ), timerCounter0( &TimerCounter0::instance( portNumber ) ), timerCounter1( &TimerCounter1::instance( portNumber ) )
+DigitalPortHw::DigitalPortHw( uint8_t portNumber ) : port( &IoPort::instance( portNumber ) ), timerCounter0( &TimerCounter::instance( portNumber, 0 ) ), timerCounter1( &TimerCounter::instance( portNumber, 1 ) )
 {
 }
 
