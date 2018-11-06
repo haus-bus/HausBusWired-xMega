@@ -15,9 +15,6 @@
 #include <Release.h>
 #include "PbsSystem.h"
 
-const ModuleId moduleId = { "$MOD$ SD6      ", 0, Release::MAJOR,
-                            Release::MINOR, Release::SD6_ID, 0 };
-
 PbsSystem::PbsSystem() :
    digitalPortA( PortA ), digitalPortB( PortB ), digitalPortC( PortC ),
    digitalPortD( PortD )

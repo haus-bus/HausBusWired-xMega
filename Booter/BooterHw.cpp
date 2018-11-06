@@ -98,7 +98,7 @@ void BooterHw::configure()
    DigitalOutputTmpl<PortA, 6> rxEnable;
 #endif
 
-   rs485.init<56000>();
+   rs485.init<135, -2>();
 #endif
 
 #ifdef SUPPORT_TWI
@@ -155,7 +155,6 @@ HACF::ControlFrame* BooterHw::getMessage()
       else
 #endif
       {
-         ERROR_1( FSTR( "NO COMM INTERFACE AVAILABLE" ) );
       }
    }
    return message;
@@ -238,7 +237,11 @@ bool BooterHw::readMessageFromRS485()
    if ( rs485.isReceiveCompleted() )
    {
       uint8_t data;
-      rs485.read( data );
+      uint8_t status = rs485.getStatus();
+      if ( !rs485.read( data ) )
+      {
+         ERROR_4( FSTR( "UART::status: 0x" ), status, FSTR( " at pos: " ), receiveBufferPosition );
+      }
 
       if ( data == FRAME_STARTBYTE )
       {
@@ -286,6 +289,7 @@ bool BooterHw::readMessageFromRS485()
 
 void BooterHw::writeMessageToRS485( uint8_t* pData, uint16_t length )
 {
+   rs485.disableReceiver();
    rs485TxEnable.set();
    rs485.write( FRAME_STARTBYTE );
 
@@ -304,6 +308,7 @@ void BooterHw::writeMessageToRS485( uint8_t* pData, uint16_t length )
    rs485.waitUntilTransferCompleted();
 
    rs485TxEnable.clear();
+   rs485.enableReceiver();
 }
 #endif
 

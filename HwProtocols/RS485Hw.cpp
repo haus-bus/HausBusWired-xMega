@@ -89,7 +89,7 @@ void RS485Hw::handleDataReceived()
 
 bool RS485Hw::init()
 {
-   bool hasError = usart->init<56000>();
+   bool hasError = usart->init<135, -2>();
    return hasError;
 }
 

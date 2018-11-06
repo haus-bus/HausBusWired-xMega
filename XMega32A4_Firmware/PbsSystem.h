@@ -12,8 +12,6 @@
 
 #include "PbsSystemHw.h"
 
-extern MOD_ID_SECTION const ModuleId moduleId;
-
 class PbsSystem : public HomeAutomation
 {
    ////    Constructors and destructors    ////

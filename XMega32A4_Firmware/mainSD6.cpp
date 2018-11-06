@@ -18,7 +18,6 @@ int main( int argc, char* argv[] )
 void notifyBusy()
 {
    TRACE_PORT_SET( TR_IDLE_PIN );
-   PORTR.OUTSET = Pin0;
 }
 
 void notifyIdle()
@@ -27,8 +26,6 @@ void notifyIdle()
 
 #ifndef _DEBUG_
    WatchDog::reset();
-#else
-   PORTR.OUTCLR = Pin0;
 #endif
 
 }

@@ -122,8 +122,19 @@ class Usart
 
          setBaudrate( getPrescaler<baudrate, doubleClock>(), 0 );
          setFormat( mode, characterSize, parity, twoStopBits );
-         reg.CTRLB = ( USART_TXEN_bm | USART_RXEN_bm
-                       | ( doubleClock ? USART_CLK2X_bm : 0 ) );
+         reg.CTRLB = ( USART_TXEN_bm | USART_RXEN_bm | ( doubleClock ? USART_CLK2X_bm : 0 ) );
+
+         return false;
+      }
+
+      template<uint16_t bsel, int8_t bscale, USART_CMODE_t mode = USART_CMODE_ASYNCHRONOUS_gc,
+               USART_PMODE_t parity = USART_PMODE_DISABLED_gc, USART_CHSIZE_t characterSize = USART_CHSIZE_8BIT_gc,
+               bool twoStopBits = false, bool doubleClock = false>
+      inline bool init()
+      {
+         setBaudrate( bsel, bscale );
+         setFormat( mode, characterSize, parity, twoStopBits );
+         reg.CTRLB = ( USART_TXEN_bm | USART_RXEN_bm | ( doubleClock ? USART_CLK2X_bm : 0 ) );
 
          return false;
       }
@@ -315,6 +326,11 @@ class Usart
          waitUntilDataRegisterEmpty();
          reg.DATA = data;
          return true;
+      }
+
+      inline uint8_t getStatus() const
+      {
+         return reg.STATUS;
       }
 
       uint16_t write( void* pData, uint16_t length );

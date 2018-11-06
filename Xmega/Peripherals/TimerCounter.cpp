@@ -54,7 +54,7 @@ TimerCounter& TimerCounter::instance( uint8_t portNumber, uint8_t type )
          #endif
       }
    }
-   fatalErrorLoop();
+   WARN_3( FSTR( "Requested Timer not exists! port" ), (uint8_t)( 'A' + portNumber ), type );
    return *(TimerCounter*)0;
 }
 
