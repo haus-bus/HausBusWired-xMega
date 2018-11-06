@@ -12,17 +12,31 @@
 
 bool RollerShutterHw::isDirectionToClose()
 {
+   if ( independent )
+   {
+      return direction == To_CLOSE;
+   }
    return digitalOutput0.isSet();
 }
 
 bool RollerShutterHw::isDirectionToOpen()
 {
+   if ( independent )
+   {
+      return direction == TO_OPEN;
+   }
    return !digitalOutput0.isSet();
 }
 
 void RollerShutterHw::off()
 {
    digitalOutput1.clear();
+
+   if ( independent )
+   {
+      digitalOutput0.clear();
+      return;
+   }
    _delay_ms( POWER_SWITCH_DELAY );
 
    if ( digitalOutput0.isInverted() )
@@ -37,16 +51,42 @@ void RollerShutterHw::off()
 
 void RollerShutterHw::on()
 {
+   if ( independent )
+   {
+      if ( direction ^ inverted )
+      {
+         digitalOutput0.set();
+      }
+      else
+      {
+         digitalOutput1.set();
+      }
+      return;
+   }
    digitalOutput1.set();
    _delay_ms( POWER_SWITCH_DELAY );
 }
 
 void RollerShutterHw::setDirectionToClose()
 {
-   digitalOutput0.set();
+   if ( independent )
+   {
+      direction = To_CLOSE;
+   }
+   else
+   {
+      digitalOutput0.set();
+   }
 }
 
 void RollerShutterHw::setDirectionToOpen()
 {
-   digitalOutput0.clear();
+   if ( independent )
+   {
+      direction = TO_OPEN;
+   }
+   else
+   {
+      digitalOutput0.clear();
+   }
 }

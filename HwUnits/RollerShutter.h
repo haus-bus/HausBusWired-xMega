@@ -63,6 +63,7 @@ class RollerShutter : public Reactive
          struct Options
          {
             uint8_t inverted : 1;
+            uint8_t independent : 1;
          };
 
          union Option
@@ -90,6 +91,10 @@ class RollerShutter : public Reactive
                .openTime = DEFAULT_OPEN_TIME,
                .option = { DEFAULT_OPTIONS }
             };
+            if ( getFckE() >= FCKE_V4_0 )
+            {
+               defaultConfiguration.option.bit.independent = true;
+            }
             return defaultConfiguration;
          }
 

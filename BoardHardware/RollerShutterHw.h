@@ -17,6 +17,12 @@ class RollerShutterHw : public SlotHw
 {
    public:
 
+      enum Direction
+      {
+         To_CLOSE,
+         TO_OPEN
+      };
+
       class ErrorCode
       {
          public:
@@ -26,6 +32,11 @@ class RollerShutterHw : public SlotHw
                INVALID_MOTOR_STATE,
             };
       };
+
+      inline RollerShutterHw() : direction( false ), inverted( false ), independent( false )
+      {
+
+      }
 
       ////    Operations    ////
 
@@ -41,12 +52,26 @@ class RollerShutterHw : public SlotHw
 
       void setDirectionToOpen();
 
-      inline void setInverted( bool inverted );
+      inline void setInverted( bool _inverted )
+      {
+         inverted = _inverted;
+         if ( !independent )
+         {
+            digitalOutput0.setInverted( inverted );
+         }
+      }
+
+      inline void setIndependent( bool _independent )
+      {
+         independent = _independent;
+      }
+
+   private:
+
+      uint8_t direction : 1;
+
+      uint8_t inverted : 1;
+
+      uint8_t independent : 1;
 };
-
-inline void RollerShutterHw::setInverted( bool inverted )
-{
-   digitalOutput0.setInverted( inverted );
-}
-
 #endif

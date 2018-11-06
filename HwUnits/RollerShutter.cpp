@@ -13,8 +13,7 @@ const uint8_t RollerShutter::debugLevel( DEBUG_LEVEL_OFF | DEBUG_STATE_L3 );
 
 RollerShutter::Response::Parameter& RollerShutter::Response::setConfiguration()
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().configuration ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().configuration ) );
    setResponse( Response::CONFIGURATION );
    return getParameter();
 }
@@ -77,16 +76,12 @@ void RollerShutter::cmdMoveToPosition( uint8_t target )
       else
       {
          hardware->setDirectionToOpen();
-         setPollTime(
-            ( SystemTime::S / Configuration::MAX_LEVEL )
-            * configuration->openTime );
+         setPollTime( ( SystemTime::S / Configuration::MAX_LEVEL ) * configuration->openTime );
       }
       SET_STATE_L2( START_MOTOR );
       startingChannels++;
       DEBUG_M2( FSTR( "startingUnits+: " ), startingChannels );
-      setSleepTime(
-         startingChannels
-         * Configuration::DEFAULT_MOTOR_START_DELAY );
+      setSleepTime( startingChannels * Configuration::DEFAULT_MOTOR_START_DELAY );
    }
    else
    {
@@ -134,6 +129,7 @@ void RollerShutter::run()
    else if ( inIdle() )
    {
       hardware->setInverted( configuration->getOptions().inverted );
+      hardware->setIndependent( configuration->getOptions().independent );
       hardware->off();
       setSleepTime( NO_WAKE_UP );
    }
