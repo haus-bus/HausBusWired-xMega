@@ -18,25 +18,38 @@ void debug( char c )
    Usart::instance<PortD, 1>().write( c );
 }
 
+DigitalInputTmpl< PortE, 2 > rxHmwStream;
+
 HBWGenericDeviceHw::HBWGenericDeviceHw()
 {
    // setup debug console
-        #ifdef DEBUG
+#ifdef DEBUG
    DigitalInputTmpl< PortD, 6 > rxDebug;
    DigitalOutputTmpl<PortD, 7> txDebug;
    Usart::instance<PortD, 1>().init<115200>();
    Logger::instance().setStream( debug );
-        #endif
+   TRACE_PORT_INIT( Pin0 | Pin1 | Pin2 | Pin3 | Pin4 | Pin5 );
+#endif
 
    // setup the serial for HmwStream, the txEnable/rxEnable lines have to be set in the special HW version
-   DigitalInputTmpl< PortE, 2 > rxHmwStream;
    DigitalOutputTmpl<PortE, 3> txHmwStream;
    serial = &Usart::instance<PortE, 0>();
+   rxHmwStream.enableInterrupt0();
+   rxHmwStream.enableInterrupt0Source();
 }
 
 SIGNAL(USARTE0_RXC_vect)
 {
-   HmwStream::nextByteReceivedFromISR(Usart::instance<PortE,0>().readDataRegisterFromISR());
+   if ( HmwStream::nextByteReceivedFromISR(Usart::instance<PortE,0>().readDataRegisterFromISR()) )
+   {
+      rxHmwStream.enableInterrupt0Source();
+   }
+}
+
+SIGNAL(PORTE_INT0_vect)
+{
+   HmwStream::notifyRxStartFromISR();
+   rxHmwStream.disableInterrupt0Source();
 }
 
 static void

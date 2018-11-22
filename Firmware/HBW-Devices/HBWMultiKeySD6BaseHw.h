@@ -30,8 +30,10 @@ class HBWMultiKeySD6BaseHw : public HBWGenericDeviceHw
       HmwKey extHbwKey1, extHbwKey2, extHbwKey3, extHbwKey4, extHbwKey5, extHbwKey6;
 
       HmwDimmer hbwLed1, hbwLed2, hbwLed3, hbwLed4, hbwLed5, hbwLed6;
-      HmwDimmer extHbwLed1, extHbwLed2, extHbwLed3, extHbwLed4, extHbwLed5, extHbwLed6;
 
+   #ifndef DEBUG // use the IOs for debugging
+      HmwDimmer extHbwLed1, extHbwLed2, extHbwLed3, extHbwLed4, extHbwLed5, extHbwLed6;
+   #endif
       OneWire ow;
       HmwDS1820 hbwTmp1, hbwTmp2, hbwTmp3, hbwTmp4, hbwTmp5, hbwTmp6;
 

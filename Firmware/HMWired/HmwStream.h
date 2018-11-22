@@ -86,7 +86,7 @@ class HmwStream : public HmwStreamBase
          }
       }
 
-      static inline void nextByteReceivedFromISR( uint8_t data )
+      static inline bool nextByteReceivedFromISR( uint8_t data )
       {
          // this function is not secured because it should be called from ISR only
          HmwMessageBase* msg = nextByteReceived( data );
@@ -100,7 +100,9 @@ class HmwStream : public HmwStreamBase
                   inMessageQueue.push( newMsg );
                }
             }
+            return true;
          }
+         return false;
       }
 
    protected:

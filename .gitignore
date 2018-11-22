@@ -2,7 +2,6 @@
 Debug*/
 Release*/
 .vs/
-*.atsln
 
 # for testing only
 Tools/hterm.cfg

@@ -49,8 +49,18 @@ class HmwStreamBase
 
       static inline bool isIdle()
       {
-         // toDo
-         return lastReceivedTime.since() > MIN_IDLE_TIME;
+      #ifdef _BOOTER_
+         uint8_t randomDelay = MIN_IDLE_TIME;
+      #else
+         uint8_t randomDelay = ( rand() & 0xF ) + MIN_IDLE_TIME;
+         CriticalSection doNotInterrupt;
+      #endif
+         return lastReceivedTime.since() > randomDelay;
+      }
+
+      static inline void notifyRxStartFromISR()
+      {
+         lastReceivedTime = Timestamp();
       }
 
       static inline void sync( uint8_t _receiverNum )

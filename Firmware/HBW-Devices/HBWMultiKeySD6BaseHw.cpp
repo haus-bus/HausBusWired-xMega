@@ -48,12 +48,14 @@ HBWMultiKeySD6BaseHw::HBWMultiKeySD6BaseHw( PortPin txEnablePin, PortPin owPin, 
    hbwLed5( PortPin( PortC, 4 ), &config.ledcfg[4], invertLed1To6 ),
    hbwLed6( PortPin( PortC, 5 ), &config.ledcfg[5], invertLed1To6 ),
 
+#ifndef DEBUG  // use the IOs for debugging
    extHbwLed1( PortPin( PortD, 0 ), &config.ledcfg[6] ),
    extHbwLed2( PortPin( PortD, 1 ), &config.ledcfg[7] ),
    extHbwLed3( PortPin( PortD, 2 ), &config.ledcfg[8] ),
    extHbwLed4( PortPin( PortD, 3 ), &config.ledcfg[9] ),
    extHbwLed5( PortPin( PortD, 4 ), &config.ledcfg[10] ),
    extHbwLed6( PortPin( PortD, 5 ), &config.ledcfg[11] ),
+#endif
 
    ow( owPin ),
    hbwTmp1( ow, &config.ds1820cfg[0] ),

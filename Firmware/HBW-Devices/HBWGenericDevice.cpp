@@ -43,7 +43,11 @@ int main( void )
       ERROR_1( FSTR( "Flash::read() failed" ) );
       booterModId.firmwareId = Release::HBW_GENERIC;
    }
-   HmwDevice::setHardware( booterModId.firmwareId, HBWDeviceFactory::createDevice( (Release::FirmwareId)booterModId.firmwareId ) );
+   HmwDeviceHw* hardware = HBWDeviceFactory::createDevice( (Release::FirmwareId)booterModId.firmwareId );
+   HmwDevice::setHardware( booterModId.firmwareId, hardware );
+
+   // initialize random generator with unique device id
+   srand( hardware->getBasicConfig()->ownAddress );
 
    // Authorize interrupts
    InterruptController::selectAppInterruptSection();
