@@ -48,6 +48,12 @@ class BooterHw : public HomeAutomationHw
          uint16_t lastDeviceId;
       };
 
+      struct Rs485Header
+      {
+         uint8_t unused[sizeof( LanHeader ) - 1];
+         uint8_t checksum;
+      };
+
       struct TransferBuffer
       {
          uint8_t header[sizeof( LanHeader )];

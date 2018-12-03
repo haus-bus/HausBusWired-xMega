@@ -162,12 +162,22 @@ void Gateway::run()
 
             // message->getControlFrame()->setPacketCounter( packetCounter );
             // message->getControlFrame()->encrypt();
+            uint8_t* pData = buffer;
 
             if ( ( getInstanceId() == UDP_9 ) || ( getInstanceId() == UDP ) )
             {
                buffer[2] = LBYTE( MAGIC_NUMBER );
                buffer[3] = HBYTE( MAGIC_NUMBER );
-               notifyEndOfWriteTransfer( ioStream->write( &buffer[2], len - 2, this ) );
+               pData += 2;
+               len -= 2;
+
+            }
+            else if ( getInstanceId() == RS485 )
+            {
+               // do not send complete header over the comm line, only checksum
+               pData += 3;
+               len -= 3;
+               *pData = Checksum::get( &pData[1], len - 1 );
             }
             else
             {
@@ -176,8 +186,8 @@ void Gateway::run()
                header->checksum = 0;
                header->lastDeviceId = HACF::deviceId;
                header->checksum = Checksum::get( buffer, len );
-               notifyEndOfWriteTransfer( ioStream->write( buffer, len, this ) );
             }
+            notifyEndOfWriteTransfer( ioStream->write( pData, len, this ) );
          }
       }
       reportGatewayLoad();
@@ -231,21 +241,21 @@ void Gateway::notifyEndOfReadTransfer( Stream::TransferDescriptor* td )
    bool notRelevant = false;
    bool readFailed = false;
    uint16_t transferred = td->bytesTransferred;
-   const uint8_t minLength = sizeof( HACF )
-                             - HACF::ControlFrame::DEFAULT_DATA_LENGTH;
+   const uint8_t minLength = sizeof( HACF ) - HACF::ControlFrame::DEFAULT_DATA_LENGTH;
 
    if ( transferred > minLength )
    {
-      Header* hdr = (Header*) td->pData;
-      HACF* hacf = (HACF*) td->pData;
       checksum = Checksum::get( td->pData, transferred );
-      notRelevant = ( ( hdr->lastDeviceId == HACF::deviceId )
-                    || ( ( numOfGateways < 2 )
-                       && ( !hacf->controlFrame.isRelevantForComponent()
-                          || hacf->controlFrame.isForBootloader() ) ) );
-      if ( ( checksum == 0 ) && ( transferred == hacf->getLength() ) && !notRelevant )
+      uint8_t headerSize = sizeof( HACF::Header );
+      if ( getInstanceId() == RS485 )
       {
-         notifyMessageReceived( hacf->getControlFrame() );
+         headerSize = 1;
+      }
+      HACF::ControlFrame* cf = ( (HACF::ControlFrame*)&td->pData[headerSize] );
+      notRelevant = cf->isFromThisDevice() || ( ( numOfGateways < 2 ) && ( !cf->isRelevantForComponent() || cf->isForBootloader() ) );
+      if ( ( checksum == 0 ) && ( transferred == cf->getLength() ) && !notRelevant )
+      {
+         notifyMessageReceived( cf );
          DEBUG_M1( FSTR( "SUCCESS" ) );
       }
       else

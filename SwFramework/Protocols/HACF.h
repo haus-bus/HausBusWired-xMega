@@ -237,6 +237,11 @@ class HACF
 
             inline bool isFromBootloader() const;
 
+            inline bool isFromThisDevice() const
+            {
+               return senderId.getDeviceId() == deviceId;
+            }
+
             inline bool isRelevantForComponent() const
             {
                return ( isBroadcast() || ( receiverId.getDeviceId() == deviceId ) );
@@ -336,7 +341,7 @@ class HACF
 
       inline bool isFromThisDevice()
       {
-         return ( controlFrame.senderId.getDeviceId() == deviceId );
+         return controlFrame.isFromThisDevice();
       }
 
       void operator delete( void* obj, size_t size );
