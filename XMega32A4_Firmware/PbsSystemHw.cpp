@@ -18,12 +18,12 @@
 #include <SoftTwi.h>
 #include <RS485Hw.h>
 
-MOD_ID_SECTION const ModuleId moduleId = { "$MOD$ PBS      ",
-                                           0,
-                                           Release::MAJOR,
-                                           Release::MINOR,
-                                           CONTROLLER_ID,
-                                           0 };
+const ModuleId moduleId = { "$MOD$ PBS      ",
+                            0,
+                            Release::MAJOR,
+                            Release::MINOR,
+                            CONTROLLER_ID,
+                            0 };
 
 PbsSystemHw::PbsSystemHw()
 {

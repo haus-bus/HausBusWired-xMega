@@ -241,7 +241,7 @@ void Gateway::notifyEndOfReadTransfer( Stream::TransferDescriptor* td )
    bool notRelevant = false;
    bool readFailed = false;
    uint16_t transferred = td->bytesTransferred;
-   const uint8_t minLength = sizeof( HACF ) - HACF::ControlFrame::DEFAULT_DATA_LENGTH;
+   const uint8_t minLength = sizeof( HACF::ControlFrame ) - HACF::ControlFrame::DEFAULT_DATA_LENGTH;
 
    if ( transferred > minLength )
    {
@@ -253,7 +253,7 @@ void Gateway::notifyEndOfReadTransfer( Stream::TransferDescriptor* td )
       }
       HACF::ControlFrame* cf = ( (HACF::ControlFrame*)&td->pData[headerSize] );
       notRelevant = cf->isFromThisDevice() || ( ( numOfGateways < 2 ) && ( !cf->isRelevantForComponent() || cf->isForBootloader() ) );
-      if ( ( checksum == 0 ) && ( transferred == cf->getLength() ) && !notRelevant )
+      if ( ( checksum == 0 ) && ( transferred == ( cf->getLength() + headerSize ) ) && !notRelevant )
       {
          notifyMessageReceived( cf );
          DEBUG_M1( FSTR( "SUCCESS" ) );

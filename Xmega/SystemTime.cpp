@@ -108,6 +108,5 @@ SIGNAL(RTC_COMP_vect)
 {
    RealTimeCounter::setCompareValue(RealTimeCounter::getCompareValue() + 1024);
    Calender::now.addSecond();
-   PORTR.OUTTGL = 1;
 }
 

@@ -11,6 +11,8 @@
 #include <HomeAutomationHw.h>
 #include <InternalEeprom.h>
 
+extern MOD_ID_SECTION const ModuleId moduleId;
+
 class PbsSystemHw : public HomeAutomationHw
 {
    ////    Constructors and destructors    ////

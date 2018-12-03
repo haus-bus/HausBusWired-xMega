@@ -98,7 +98,7 @@ void BooterHw::configure()
    DigitalOutputTmpl<PortA, 6> rxEnable;
 #endif
 
-   rs485.init<135, -2>();
+   rs485.init<135, -2, USART_CMODE_ASYNCHRONOUS_gc, USART_PMODE_EVEN_gc>();
 #endif
 
 #ifdef SUPPORT_TWI
