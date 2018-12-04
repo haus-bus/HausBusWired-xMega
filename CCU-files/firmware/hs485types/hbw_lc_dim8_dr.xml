@@ -2,8 +2,8 @@
 
 <device version="01" eep_size="2048">
 <supported_types>
-	<type name="Haus-Bus.de dimming actuator 8-channel universal (DIN rails)" id="HBW-LC-Dim8U-IN4-DR" priority="2">
-		<parameter index="0" size="1" const_value="0xB4"/>
+	<type name="Haus-Bus.de dimming actuator 8-channel universal (DIN rails)" id="HBW-LC-Dim8U-DR" priority="2">
+		<parameter index="0" size="1" const_value="0xB8"/>
 		<parameter index="1" size="1" const_value="0"/>
 	</type>
 </supported_types>
@@ -100,99 +100,11 @@
 		</paramset>
 	</channel>
 	
-<channel index="1" physical_index_offset="-1" count="12" type="KEY">
-	<link_roles>
-		<source name="SWITCH"/>
-	</link_roles>
-	
-	<paramset type="MASTER" id="hmw_input_ch_master" address_start="0x07" address_step="2">
-		<parameter id="INPUT_TYPE">
-			<logical type="option">
-				<option id="PUSHBUTTON" default="true"/>
-				<option id="SWITCH"/>
-			</logical>
-			<physical size="0.3" type="integer" interface="eeprom">
-				<address index="+0.0"/>
-			</physical>
-		</parameter>
-		<parameter id="INPUT_LOCKED">
-			<logical type="boolean" default="false"/>
-			<physical size="0.1" type="integer" interface="eeprom">
-				<address index="+0.3"/>
-			</physical>
-			<conversion type="boolean_integer" invert="true"/>
-		</parameter>
-		<parameter id="REPEAT_ON_LONG_PRESS">
-			<logical type="boolean" default="true"/>
-			<physical size="0.1" type="integer" interface="eeprom">
-				<address index="+0.6"/>
-			</physical>
-			<conversion type="boolean_integer"/>
-		</parameter>		
-		<parameter id="LONG_PRESS_TIME">
-			<logical type="float" min="0.4" max="5.0" default="1.0" unit="s"/>
-			<physical type="integer" size="1.0" interface="eeprom">
-				<address index="+1.0"/>
-			</physical>
-			<conversion type="float_integer_scale" factor="10"/>
-			<conversion type="integer_integer_map">
-				<value_map device_value="0xff" parameter_value="10" from_device="true" to_device="false"/>
-			</conversion>
-		</parameter>
-	</paramset>
-	
-	<paramset type="LINK" id="hmw_input_ch_link" peer_param="ACTUATOR" channel_param="CHANNEL" count="40" address_start="0x0010" address_step="6">
-		<parameter id="CHANNEL" operations="none" hidden="true">
-			<logical type="integer" min="0" max="255" default="255"/>
-			<physical type="integer" size="1.0" interface="eeprom">
-				<address index="+0"/>
-			</physical>
-		</parameter>
-		<parameter id="ACTUATOR" operations="none" hidden="true">
-			<logical type="address"/>
-			<physical type="array">
-				<physical type="integer" size="4.0" interface="eeprom">
-					<address index="+1"/>
-				</physical>
-				<physical type="integer" size="1.0" interface="eeprom">
-					<address index="+5"/>
-				</physical>
-			</physical>	
-		</parameter>
-	</paramset>
-	
-	<paramset type="VALUES" id="hmw_input_ch_values">
-		<parameter id="PRESS_SHORT" operations="event,write" control="BUTTON.SHORT" loopback="true">
-			<logical type="action"/>
-			<physical type="integer" interface="command" value_id="COUNTER">
-				<event frame="KEY_EVENT_SHORT"/>
-				<set request="KEY_SIM_SHORT"/>
-			</physical>
-			<conversion type="action_key_counter" sim_counter="SIM_COUNTER" counter_size="6"/>
-		</parameter>
-		<parameter id="PRESS_LONG" operations="event,write" control="BUTTON.LONG" loopback="true">
-			<logical type="action"/>
-			<physical type="integer" interface="command" value_id="COUNTER">
-				<event frame="KEY_EVENT_LONG"/>
-				<set request="KEY_SIM_LONG"/>
-			</physical>
-			<conversion type="action_key_counter" sim_counter="SIM_COUNTER" counter_size="6"/>
-		</parameter>
-		<parameter id="INSTALL_TEST" operations="event" ui_flags="internal">
-			<logical type="action"/>
-			<physical type="integer" interface="command" value_id="TEST_COUNTER">
-				<event frame="KEY_EVENT_SHORT"/>
-				<event frame="KEY_EVENT_LONG"/>
-			</physical>
-		</parameter>
-	</paramset>
-</channel>
-
-<channel index="13" physical_index_offset="-1" count="8" type="DIMMER">
+<channel index="1" physical_index_offset="-1" count="8" type="DIMMER">
 	<link_roles>
 		<target name="SWITCH"/>
 	</link_roles>
-	<paramset type="MASTER" id="hmw_dimmer_ch_master" address_start="0x0B" address_step="1">
+	<paramset type="MASTER" id="hmw_dimmer_ch_master" address_start="0x10" address_step="1">
 		<parameter id="LOGGING">
 			<logical type="option">
 				<option id="OFF"/>
@@ -203,7 +115,7 @@
 			</physical>
 		</parameter>
 	</paramset>
-	<paramset type="LINK" id="hmw_dimmer_ch_link" peer_param="SENSOR" channel_param="CHANNEL" count="16" address_start="0x0C" address_step="54">
+	<paramset type="LINK" id="hmw_dimmer_ch_link" peer_param="SENSOR" channel_param="CHANNEL" count="16" address_start="0x11" address_step="54">
 		<parameter id="UI_HINT">
 			<logical type="string" default="" use_default_on_failure="true"/>
 			<physical type="string" interface="store" id="UI_HINT" save_on_change="true"/>

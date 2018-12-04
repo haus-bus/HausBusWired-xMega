@@ -1,18 +1,18 @@
 /*
-** HBWLinkDimmer
+** HBWLinkLed
 **
-** Direkte Verknuepfung (Peering), zu Dimmern
+** Direkte Verknuepfung (Peering), zu Leds
 ** Ein Link-Objekt steht immer fuer alle (direkt aufeinander folgenden) Verknuepfungen
 ** des entsprechenden Typs.
 **
 */
 
-#include "HmwLinkDimmer.h"
+#include "HmwLinkLed.h"
 #include "HmwChannel.h"
 #include "HmwDevice.h"
 
 
-HmwLinkDimmer::HmwLinkDimmer( uint8_t _numLinks, Config* _links )
+HmwLinkLed::HmwLinkLed( uint8_t _numLinks, Config* _links )
 {
    numLinks = _numLinks;
    links = _links;
@@ -20,8 +20,8 @@ HmwLinkDimmer::HmwLinkDimmer( uint8_t _numLinks, Config* _links )
 
 // processKeyEvent wird aufgerufen, wenn ein Tastendruck empfangen wurde
 
-void HmwLinkDimmer::receiveKeyEvent( const uint32_t&  senderAddress, uint8_t senderChannel,
-                                     uint8_t targetChannel, bool longPress )
+void HmwLinkLed::receiveKeyEvent( const uint32_t&  senderAddress, uint8_t senderChannel,
+                                  uint8_t targetChannel, bool longPress )
 {
    // read what to do from EEPROM
    for ( uint8_t i = 0; i < numLinks; i++ )

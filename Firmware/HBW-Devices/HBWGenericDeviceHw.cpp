@@ -5,20 +5,21 @@
  *  Author: viktor.pankraz
  */
 
- #include "HBWGenericDeviceHw.h"
+#include "HBWGenericDeviceHw.h"
 
- #include <Peripherals/Oscillator.h>
- #include <Peripherals/Clock.h>
- #include <Peripherals/DigitalFrequencyLockedLoops.h>
- #include <Peripherals/WatchDog.h>
- #include <DigitalOutput.h>
+#include <Peripherals/Oscillator.h>
+#include <Peripherals/Clock.h>
+#include <Peripherals/DigitalFrequencyLockedLoops.h>
+#include <Peripherals/WatchDog.h>
+#include <DigitalOutput.h>
+
+DigitalInputTmpl< PortE, 2 > rxHmwStream;
+DigitalOutputTmpl<PortE, 3> txHmwStream;
 
 void debug( char c )
 {
    Usart::instance<PortD, 1>().write( c );
 }
-
-DigitalInputTmpl< PortE, 2 > rxHmwStream;
 
 HBWGenericDeviceHw::HBWGenericDeviceHw()
 {
@@ -32,7 +33,6 @@ HBWGenericDeviceHw::HBWGenericDeviceHw()
 #endif
 
    // setup the serial for HmwStream, the txEnable/rxEnable lines have to be set in the special HW version
-   DigitalOutputTmpl<PortE, 3> txHmwStream;
    serial = &Usart::instance<PortE, 0>();
    rxHmwStream.enableInterrupt0();
    rxHmwStream.enableInterrupt0Source();

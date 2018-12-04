@@ -76,7 +76,7 @@
         </dependencies>
       </framework-data>
     </AsfFrameworkConfig>
-    <Name>HBW-Devices</Name>
+    <Name>HBW-X32A4-Devices</Name>
     <ResetRule>0</ResetRule>
     <EraseKey />
   </PropertyGroup>
@@ -298,9 +298,6 @@
     <Compile Include="Framwork\Tracing\Logger.h">
       <SubType>compile</SubType>
     </Compile>
-    <None Include="HMWired\HmwAnalogIn.cpp">
-      <SubType>compile</SubType>
-    </None>
     <Compile Include="HBW-Devices\HBWDeviceFactory.h">
       <SubType>compile</SubType>
     </Compile>
@@ -334,7 +331,7 @@
     <Compile Include="HBW-Devices\HBWIo12OneWireUpHw.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwAnalogIn.h">
+    <Compile Include="HBW-Devices\HBWX32A4DeviceFactory.cpp">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="HMWired\HmwBrightness.cpp">
@@ -364,10 +361,10 @@
     <Compile Include="HMWired\HmwKey.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwLinkDimmer.cpp">
+    <Compile Include="HMWired\HmwLed.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwLinkDimmer.h">
+    <Compile Include="HMWired\HmwLed.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="HMWired\HmwLinkKey.cpp">
@@ -386,6 +383,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="HMWired\HmwDevice.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HMWired\HmwLinkLed.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HMWired\HmwLinkLed.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="HMWired\HmwLinkReceiver.cpp">

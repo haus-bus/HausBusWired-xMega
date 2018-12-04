@@ -16,11 +16,11 @@ struct hbw_config
    HmwDeviceHw::BasicConfig basicConfig;  // 0x0000 - 0x0009
    uint8_tx reserved[6];                  // 0x000A - 0x000F
    HmwKey::Config keycfg[12];             // 0x0010 - 0x0027
-   HmwDimmer::Config ledcfg[12];          // 0x0028 - 0x003F
+   HmwLed::Config ledcfg[12];          // 0x0028 - 0x003F
    HmwDS1820::Config ds1820cfg[6];        // 0x0040 - 0x0063
    HmwBrightness::Config brightnessCfg[2];// 0x0064 - 0x006F
    HmwLinkKey::Config keyLinks[40];       // 0x0070 - 0x015F
-   HmwLinkDimmer::Config ledLinks[40];    // 0x0160 - 0x03DF
+   HmwLinkLed::Config ledLinks[40];    // 0x0160 - 0x03DF
 };
 
 static hbw_config& config = *reinterpret_cast<hbw_config*>( MAPPED_EEPROM_START );
