@@ -23,28 +23,31 @@ class HmwDimmer : public HmwChannel
       {
          enum OptionMask
          {
-            LOGGING_MASK = 0x80,
-            PWM_RANGE_MASK = 0x7F
+            LOGGING_MASK   = 0x80,
+
+            DIMMING_MODE_MASK = 0x03,
          };
 
          uint8_tx options;
-
          uint8_tx reserve;
 
          public:
+
+            enum Mode
+            {
+               SWITCH = 0,
+               DIMM_L,
+               DIMM_CR
+            };
+
             inline bool isLogging() const
             {
                return options & LOGGING_MASK;
             }
 
-            inline uint8_t getPwmRange()
+            inline uint8_t getDimmingMode() const
             {
-               return ( options & PWM_RANGE_MASK );
-            }
-
-            inline void setPwmRange( uint8_t value )
-            {
-               options.update( ( options & ~PWM_RANGE_MASK ) | ( value & PWM_RANGE_MASK ) );
+               return ( options & DIMMING_MODE_MASK );
             }
       };
 
@@ -56,22 +59,12 @@ class HmwDimmer : public HmwChannel
    private:
       Config* config;
       PwmOutput pwmOutput;
-      bool feedbackCmdActive;
       uint8_t currentLevel;
-      uint8_t onLevel;
-      uint8_t offLevel;
-      uint8_t blinkOnTime;
-      uint8_t blinkOffTime;
-      uint8_t blinkQuantity;
       Timestamp nextFeedbackTime;
-      Timestamp nextBlinkTime;
-      uint8_t logicalState;
-
-      const uint8_t defaultPwmRange;
 
 // functions
    public:
-      HmwDimmer( PortPin _portPin, Config* _config, bool _inverted = false, uint8_t _defaultPwmRange = 100 );
+      HmwDimmer( PortPin _portPin, Config* _config );
 
       // definition of needed functions from HBWChannel class
       virtual uint8_t get( uint8_t* data );
@@ -86,40 +79,7 @@ class HmwDimmer : public HmwChannel
       uint8_t getLevel() const;
 
    private:
-      inline bool isToggleCmd( uint8_t cmd )
-      {
-         return cmd == TOGGLE;
-      }
 
-      inline bool isBlinkOnCmd( uint8_t cmd )
-      {
-         return cmd == BLINK_ON;
-      }
-
-      inline bool isBlinkToggleCmd( uint8_t cmd )
-      {
-         return cmd == BLINK_TOGGLE;
-      }
-
-      inline bool isKeyFeedbackOnCmd( uint8_t cmd )
-      {
-         return cmd == KEY_FEEDBACK_ON;
-      }
-
-      inline bool isKeyFeedbackOffCmd( uint8_t cmd )
-      {
-         return cmd == KEY_FEEDBACK_OFF;
-      }
-
-      inline bool isLogicalOn( void )
-      {
-         return logicalState != OFF;
-      }
-
-      inline void setLogicalState( uint8_t state )
-      {
-         logicalState = state;
-      }
 
 }; // HmwDimmer
 

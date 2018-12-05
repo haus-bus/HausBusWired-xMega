@@ -10,9 +10,8 @@
 #include "Peripherals/TimerCounter.h"
 
 
-PwmOutput::PwmOutput( uint8_t _portNumber, uint8_t _pinNumber, uint16_t _period ) : PortPin( _portNumber, _pinNumber )
+PwmOutput::PwmOutput( uint8_t _portNumber, uint8_t _pinNumber, uint16_t _period ) : DigitalOutput( _portNumber, _pinNumber )
 {
-   configOutput();
    TimerCounter* tc = getTC();
    if ( tc )
    {
@@ -30,15 +29,19 @@ uint16_t PwmOutput::isSet() const
    {
       return tc->getCapture( tc->getChannelFromPinNumber( pinNumber ) );
    }
-   return 0;
+   return DigitalInput::isSet();
 }
 
 void PwmOutput::set( uint16_t value )
 {
    TimerCounter* tc = getTC();
-   if ( tc )
+   if ( tc  )
    {
       tc->setCompare( tc->getChannelFromPinNumber( pinNumber ), value );
+   }
+   if( !tc || !tc->isRunning() )
+   {
+      value ? DigitalOutput::set() : DigitalOutput::clear();
    }
 }
 

@@ -9,23 +9,14 @@
 #include "HmwDimmer.h"
 #include "HmwDevice.h"
 
-HmwDimmer::HmwDimmer( PortPin _portPin, Config* _config, bool _inverted, uint8_t _defaultPwmRange ) :
-   pwmOutput( _portPin.getPortNumber(), _portPin.getPinNumber(), MAX_LEVEL_PERIOD ),
-   defaultPwmRange( _defaultPwmRange )
+HmwDimmer::HmwDimmer( PortPin _portPin, Config* _config ) :
+   pwmOutput( _portPin.getPortNumber(), _portPin.getPinNumber() )
 {
    type = HmwChannel::HMW_DIMMER;
    config = _config;
-   pwmOutput.setInverted( _inverted );
-   feedbackCmdActive = false;
-   logicalState = OFF;
+   pwmOutput.setInverted( config->getDimmingMode() == Config::DIMM_L );
    currentLevel = 0;
-   onLevel = MAX_LEVEL;
-   offLevel = 0;
-   blinkOnTime = 10;
-   blinkOffTime = 10;
-   blinkQuantity = 255;
    nextFeedbackTime.reset();
-   nextBlinkTime.reset();
 }
 
 
@@ -34,60 +25,6 @@ void HmwDimmer::set( uint8_t length, uint8_t const* const data )
    if ( *data <= MAX_LEVEL )
    {
       currentLevel = *data;
-      nextBlinkTime.reset();
-      setLogicalState( *data ? ON : OFF );
-   }
-   else if ( isKeyFeedbackOnCmd( *data ) )
-   {
-      setLevel( MAX_LEVEL );
-      feedbackCmdActive = true;
-      return;   // no logging for feedbackCmd
-   }
-   else if ( isKeyFeedbackOffCmd( *data ) )
-   {
-      feedbackCmdActive = false;
-      return;   // no logging for feedbackCmd
-   }
-   else if ( length >= 6 )
-   {
-      offLevel = data[1];
-      onLevel = data[2];
-      blinkOnTime = data[3];
-      blinkOffTime = data[4];
-      blinkQuantity = data[5];
-
-      if ( isBlinkOnCmd( *data ) )
-      {
-         nextBlinkTime = Timestamp();
-         setLogicalState( BLINK_ON );
-      }
-      else if ( isBlinkToggleCmd( *data ) )
-      {
-         if ( logicalState != BLINK_ON )
-         {
-            nextBlinkTime = Timestamp();
-            setLogicalState( BLINK_ON );
-         }
-         else
-         {
-            nextBlinkTime.reset();
-            setLogicalState( OFF );
-         }
-      }
-      else if ( isToggleCmd( *data ) )
-      {
-         if ( isLogicalOn() )
-         {
-            currentLevel = offLevel;
-            setLogicalState( OFF );
-         }
-         else
-         {
-            currentLevel = onLevel;
-            setLogicalState( ON );
-         }
-         nextBlinkTime.reset();
-      }
    }
    else  // toggle
    {
@@ -99,7 +36,6 @@ void HmwDimmer::set( uint8_t length, uint8_t const* const data )
       {
          currentLevel = MAX_LEVEL;
       }
-      nextBlinkTime.reset();
    }
 
    // Logging
@@ -120,41 +56,9 @@ uint8_t HmwDimmer::get( uint8_t* data )
 
 void HmwDimmer::loop( uint8_t channel )
 {
-   if ( nextBlinkTime.isValid() && nextBlinkTime.since() )
-   {
-      // handle blinking
-      if ( getLevel() == onLevel )
-      {
-         // is ON
-         nextBlinkTime += ( blinkOffTime * 100 );
-         setLevel( offLevel );
-      }
-      else
-      {
-         // is OFF
-         if ( blinkQuantity )
-         {
-            nextBlinkTime += ( blinkOnTime * 100 );
-            setLevel( onLevel );
 
-            if ( blinkQuantity != 255 )
-            {
-               blinkQuantity--;
-            }
-         }
-         else
-         {
-            nextBlinkTime.reset();
-            setLogicalState( currentLevel == onLevel ? ON : OFF );
-         }
-      }
-
-   }
-   if ( !feedbackCmdActive && !nextBlinkTime.isValid() )
-   {
-      // the default range is 0-200, this must be mapped to 0-100% duty cycle
-      setLevel( currentLevel );
-   }
+    // the default range is 0-200, this must be mapped to 0-100% duty cycle
+    setLevel( currentLevel );
 
    // feedback trigger set?
    if ( !nextFeedbackTime.isValid() )
@@ -185,31 +89,20 @@ void HmwDimmer::loop( uint8_t channel )
 
 void HmwDimmer::checkConfig()
 {
-   if ( config->getPwmRange() > 100 )
-   {
-      config->setPwmRange( defaultPwmRange );
-   }
+   pwmOutput.setInverted( config->getDimmingMode() == Config::DIMM_L );
 }
 
 void HmwDimmer::setLevel( uint8_t level )
 {
    // special function for Config::levelFactor == 0, no PWM
-   if ( config->getPwmRange() )
+   if ( getLevel() != level )
    {
-      pwmOutput.set( level * config->getPwmRange() / NORMALIZE_LEVEL );
-   }
-   else
-   {
-      pwmOutput.set( level ? MAX_LEVEL_PERIOD : 0 );
+      pwmOutput.set( level * NORMALIZE_LEVEL );
    }
 }
 
 uint8_t HmwDimmer::getLevel() const
 {
-   // special function for Config::levelFactor == 0, no PWM
-   if ( config->getPwmRange() )
-   {
-      return pwmOutput.isSet() * NORMALIZE_LEVEL / config->getPwmRange();
-   }
-   return pwmOutput.isSet() ? MAX_LEVEL : 0;
+   // normalize to 0-200 
+   return pwmOutput.isSet() / NORMALIZE_LEVEL;
 }

@@ -104,7 +104,7 @@
 	<link_roles>
 		<target name="SWITCH"/>
 	</link_roles>
-	<paramset type="MASTER" id="hmw_dimmer_ch_master" address_start="0x10" address_step="1">
+	<paramset type="MASTER" id="hmw_dimmer_ch_master" address_start="0x10" address_step="2">
 		<parameter id="LOGGING">
 			<logical type="option">
 				<option id="OFF"/>
@@ -115,7 +115,7 @@
 			</physical>
 		</parameter>
 	</paramset>
-	<paramset type="LINK" id="hmw_dimmer_ch_link" peer_param="SENSOR" channel_param="CHANNEL" count="16" address_start="0x11" address_step="54">
+	<paramset type="LINK" id="hmw_dimmer_ch_link" peer_param="SENSOR" channel_param="CHANNEL" count="32" address_start="0x20" address_step="54">
 		<parameter id="UI_HINT">
 			<logical type="string" default="" use_default_on_failure="true"/>
 			<physical type="string" interface="store" id="UI_HINT" save_on_change="true"/>

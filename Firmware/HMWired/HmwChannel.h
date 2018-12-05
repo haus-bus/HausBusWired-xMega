@@ -20,7 +20,7 @@ class HmwChannel
 {
 // variables
    public:
-      enum Commands
+      enum LedCommands
       {
          ON = 201,
          OFF,
@@ -28,7 +28,20 @@ class HmwChannel
          BLINK_ON,
          BLINK_TOGGLE,
          KEY_FEEDBACK_ON,
-         KEY_FEEDBACK_OFF
+         KEY_FEEDBACK_OFF,
+      };
+
+      enum DimmerActions
+      {
+      	INACTIVE = 201,
+      	JUMP_TO_TARGET,
+      	TOGGLE_TO_COUNTER,
+      	TOGGLE_INVERS_TO_COUNTER,
+      	UPDIM,
+      	DOWNDIM,
+      	TOGGLEDIM,
+      	TOGGLEDIM_TO_COUNTER,
+      	TOGGLEDIM_INVERS_TO_COUNTER,
       };
 
       enum Type

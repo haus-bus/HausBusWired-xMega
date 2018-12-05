@@ -12,6 +12,8 @@
 #include "HBWGenericDeviceHw.h"
 
 #include <HMWired/HmwDimmer.h>
+#include <HMWired/HmwLinkDimmer.h>
+#include <HMWired/HmwDS1820.h>
 #include <PortPin.h>
 
 
@@ -19,11 +21,23 @@ class HBWLcDim8BaseHw : public HBWGenericDeviceHw
 {
 // variables
    public:
+
    protected:
 
       HmwDimmer hbwDimmer1, hbwDimmer2, hbwDimmer3, hbwDimmer4, hbwDimmer5, hbwDimmer6, hbwDimmer7, hbwDimmer8;
+      OneWire ow;
+      HmwDS1820 hbwTmp1, hbwTmp2, hbwTmp3, hbwTmp4, hbwTmp5, hbwTmp6;
 
    private:
+
+      static const uint16_t ZCD_DEFAULT_PERIOD = 41000;
+   
+      DigitalOutputTmpl<PortA, 5> txEnable;
+      DigitalOutputTmpl<PortA, 6> rxEnable;
+      DigitalOutputTmpl<PortR, 0> greenLed;
+      DigitalOutputTmpl<PortR, 1> configLed;
+      DigitalInputTmpl<PortE, 7> configButton;
+      HmwLinkDimmer linkReceiver;
 
 // functions
    public:
@@ -35,17 +49,17 @@ class HBWLcDim8BaseHw : public HBWGenericDeviceHw
       virtual inline void enableTranceiver( bool enable )
       {
          enable ? txEnable.set() : txEnable.clear();
+         enable ? greenLed.set() : greenLed.clear();
       }
 
       virtual inline bool isConfigButtonPressed()
       {
-         return false;
+         return !configButton.isSet();
       }
 
       virtual inline void notifyConfigButtonState( ConfigButtonState state )
       {
          static Timestamp lastLEDtime;
-         static DigitalOutputTmpl<PortR, 1> configLed;
 
          switch ( state )
          {
@@ -92,10 +106,8 @@ class HBWLcDim8BaseHw : public HBWGenericDeviceHw
    protected:
 
    private:
-      
-      DigitalOutputTmpl<PortA, 5> txEnable;
 
-      DigitalOutputTmpl<PortA, 6> rxEnable;
+      void configureZeroCrossDetection();      
 
 }; // HBWLcDim8BaseHw
 

@@ -22,12 +22,11 @@
     <preserveEEPROM>true</preserveEEPROM>
     <OverrideVtorValue>exception_table</OverrideVtorValue>
     <BootSegment>2</BootSegment>
-    <eraseonlaunchrule>0</eraseonlaunchrule>
+    <eraseonlaunchrule>1</eraseonlaunchrule>
     <ExternalProgrammingToolCommand />
-    <avrtool>
-    </avrtool>
+    <avrtool>com.atmel.avrdbg.tool.atmelice</avrtool>
     <avrtoolserialnumber>J41800037616</avrtoolserialnumber>
-    <avrdeviceexpectedsignature>0x1E9541</avrdeviceexpectedsignature>
+    <avrdeviceexpectedsignature>0x1E9744</avrdeviceexpectedsignature>
     <com_atmel_avrdbg_tool_simulator>
       <ToolOptions>
         <InterfaceProperties>
@@ -341,10 +340,22 @@
     <Compile Include="HMWired\HmwDevice.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="HMWired\HmwDS1820.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HMWired\HmwDS1820.h">
+      <SubType>compile</SubType>
+    </Compile>	
     <Compile Include="HMWired\HmwLinkReceiver.cpp">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="HMWired\HmwLinkReceiver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HMWired\HmwLinkDimmer.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HMWired\HmwLinkDimmer.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="HMWired\HmwMessageBase.cpp">

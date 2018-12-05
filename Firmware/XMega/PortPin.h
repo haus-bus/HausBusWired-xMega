@@ -190,7 +190,7 @@ class PortPinTmpl
          return getIoPort().isPinInverted( pinNumber );
       }
 
-      inline void setInverted( bool inverted )
+      inline void setInverted( bool inverted = true )
       {
          getIoPort().setPinInverted( pinNumber, inverted );
       }
