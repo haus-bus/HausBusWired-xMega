@@ -5,11 +5,7 @@ Release*/
 
 # for testing only
 Tools/hterm.cfg
-Tools/restoreHbwSd6MultikeyOnCCU.cmd
-Tools/webui.js
-Tools/DEVDB.tcl
-Tools/webui.js.org
-Tools/DEVDB.tcl.org
+Tools/addOnTests/
 
 # build directories
 Firmware/HBW-SD6-v0/

@@ -2,7 +2,7 @@
 
 <device version="01" eep_size="2048">
 <supported_types>
-	<type name="Haus-Bus.de dimming actuator 8-channel universal (DIN rails)" id="HBW-LC-Dim8U-DR" priority="2">
+	<type name="Haus-Bus.de dimming actuator 8-channel universal (DIN rails)" id="HBW-LC-DIM8-DR" priority="2">
 		<parameter index="0" size="1" const_value="0xB8"/>
 		<parameter index="1" size="1" const_value="0"/>
 	</type>
