@@ -31,23 +31,11 @@ class HmwChannel
          KEY_FEEDBACK_OFF,
       };
 
-      enum DimmerActions
-      {
-      	INACTIVE = 201,
-      	JUMP_TO_TARGET,
-      	TOGGLE_TO_COUNTER,
-      	TOGGLE_INVERS_TO_COUNTER,
-      	UPDIM,
-      	DOWNDIM,
-      	TOGGLEDIM,
-      	TOGGLEDIM_TO_COUNTER,
-      	TOGGLEDIM_INVERS_TO_COUNTER,
-      };
-
       enum Type
       {
          UNKNOWN,
          HMW_KEY,
+         HMW_LED,
          HMW_DIMMER,
          HMW_DS18X20
       };
@@ -55,6 +43,7 @@ class HmwChannel
    protected:
 
       Type type;
+      uint8_t channelId;
       HmwChannel();
 
    private:

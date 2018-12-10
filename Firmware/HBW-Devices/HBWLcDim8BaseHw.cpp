@@ -27,14 +27,14 @@ static hbw_config& config = *reinterpret_cast<hbw_config*>( MAPPED_EEPROM_START 
 // default constructor
 HBWLcDim8BaseHw::HBWLcDim8BaseHw() :
 
-   hbwDimmer1( PortPin( PortC, 3 ), &config.dimmerCfg[0] ),
-   hbwDimmer2( PortPin( PortC, 2 ), &config.dimmerCfg[1] ),
-   hbwDimmer3( PortPin( PortC, 1 ), &config.dimmerCfg[2] ),
-   hbwDimmer4( PortPin( PortC, 0 ), &config.dimmerCfg[3] ),
-   hbwDimmer5( PortPin( PortD, 3 ), &config.dimmerCfg[4] ),
-   hbwDimmer6( PortPin( PortD, 2 ), &config.dimmerCfg[5] ),
-   hbwDimmer7( PortPin( PortD, 1 ), &config.dimmerCfg[6] ),
-   hbwDimmer8( PortPin( PortD, 0 ), &config.dimmerCfg[7] ),
+   hbwDimmer1( PortPin( PortC, 3 ), PortPin( PortA, 3 ), &config.dimmerCfg[0] ),
+   hbwDimmer2( PortPin( PortC, 2 ), PortPin( PortA, 2 ), &config.dimmerCfg[1] ),
+   hbwDimmer3( PortPin( PortC, 1 ), PortPin( PortA, 1 ), &config.dimmerCfg[2] ),
+   hbwDimmer4( PortPin( PortC, 0 ), PortPin( PortA, 0 ), &config.dimmerCfg[3] ),
+   hbwDimmer5( PortPin( PortD, 3 ), PortPin( PortB, 3 ), &config.dimmerCfg[4] ),
+   hbwDimmer6( PortPin( PortD, 2 ), PortPin( PortB, 2 ), &config.dimmerCfg[5] ),
+   hbwDimmer7( PortPin( PortD, 1 ), PortPin( PortB, 1 ), &config.dimmerCfg[6] ),
+   hbwDimmer8( PortPin( PortD, 0 ), PortPin( PortB, 0 ), &config.dimmerCfg[7] ),
 
    ow( PortPin( PortE, 4 ) ),
    hbwTmp1( ow, &config.ds1820cfg[0] ),
@@ -83,7 +83,7 @@ void HBWLcDim8BaseHw::configureZeroCrossDetection()
    portA.configure( Pin7, PORT_OPC_PULLUP_gc, false, PORT_ISC_RISING_gc );
    portA.enableInterrupt0Source( Pin7 );
    EventSystem::setEventSource( 1, EVSYS_CHMUX_PORTA_PIN7_gc );
-   
+
    // start counters
    phaseShifter.forceUpdate();
    #if F_CPU == 32000000UL

@@ -31,7 +31,7 @@ class HBWLcDim8BaseHw : public HBWGenericDeviceHw
    private:
 
       static const uint16_t ZCD_DEFAULT_PERIOD = 41000;
-   
+
       DigitalOutputTmpl<PortA, 5> txEnable;
       DigitalOutputTmpl<PortA, 6> rxEnable;
       DigitalOutputTmpl<PortR, 0> greenLed;
@@ -107,7 +107,7 @@ class HBWLcDim8BaseHw : public HBWGenericDeviceHw
 
    private:
 
-      void configureZeroCrossDetection();      
+      void configureZeroCrossDetection();
 
 }; // HBWLcDim8BaseHw
 

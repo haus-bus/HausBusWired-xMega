@@ -13,7 +13,7 @@ HmwLed::HmwLed( PortPin _portPin, Config* _config, bool _inverted, uint8_t _defa
    pwmOutput( _portPin.getPortNumber(), _portPin.getPinNumber(), MAX_LEVEL_PERIOD ),
    defaultPwmRange( _defaultPwmRange )
 {
-   type = HmwChannel::HMW_DIMMER;
+   type = HmwChannel::HMW_LED;
    config = _config;
    pwmOutput.setInverted( _inverted );
    feedbackCmdActive = false;

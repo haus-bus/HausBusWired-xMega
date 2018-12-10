@@ -35,11 +35,20 @@ uint16_t PwmOutput::isSet() const
 void PwmOutput::set( uint16_t value )
 {
    TimerCounter* tc = getTC();
-   if ( tc  )
+   TimerCounter::Channel channel = tc->getChannelFromPinNumber( pinNumber );
+   if ( tc )
    {
-      tc->setCompare( tc->getChannelFromPinNumber( pinNumber ), value );
+      tc->setCompare( channel, value );
+      if ( tc->isRunning() && value )
+      {
+         tc->enableChannel( channel );
+      }
+      else
+      {
+         tc->disableChannel( channel );
+      }
    }
-   if( !tc || !tc->isRunning() )
+   if ( !tc || !tc->isRunning() )
    {
       value ? DigitalOutput::set() : DigitalOutput::clear();
    }

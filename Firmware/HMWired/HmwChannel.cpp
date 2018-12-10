@@ -11,10 +11,9 @@
 uint8_t HmwChannel::numChannels = 0;
 HmwChannel* HmwChannel::instances[];
 
-HmwChannel::HmwChannel()
+HmwChannel::HmwChannel() : type( UNKNOWN ), channelId( numChannels )
 {
    instances[numChannels++] = this;
-   type = UNKNOWN;
 }
 
 void HmwChannel::set( uint8_t length, uint8_t const* const data )

@@ -9,32 +9,56 @@
 #include "HmwDimmer.h"
 #include "HmwDevice.h"
 
-HmwDimmer::HmwDimmer( PortPin _portPin, Config* _config ) :
-   pwmOutput( _portPin.getPortNumber(), _portPin.getPinNumber() )
+#define getId() FSTR( "HmwDimmer." ) << channelId
+
+const uint8_t HmwDimmer::debugLevel( DEBUG_LEVEL_HIGH | DEBUG_STATE_L3 );
+
+HmwDimmer::HmwDimmer( PortPin _portPin, PortPin _enablePin, Config* _config ) :
+   pwmOutput( _portPin.getPortNumber(), _portPin.getPinNumber() ),
+   enableOutput( _enablePin ),
+   config( _config ),
+   actionParameter( NULL ),
+   nextFeedbackTime( 0 ),
+   nextActionTime( 0 )
 {
    type = HmwChannel::HMW_DIMMER;
-   config = _config;
+   SET_STATE_L1( OFF );
    pwmOutput.setInverted( config->getDimmingMode() == Config::DIMM_L );
-   currentLevel = 0;
-   nextFeedbackTime.reset();
 }
 
 
 void HmwDimmer::set( uint8_t length, uint8_t const* const data )
 {
-   if ( *data <= MAX_LEVEL )
+   if ( ( length == 1 ) && ( *data <= MAX_LEVEL ) )
    {
-      currentLevel = *data;
+      setLevel( *data );
+      nextActionTime.reset();
    }
-   else  // toggle
+   else
    {
-      if ( currentLevel )
+      if ( length == sizeof( ActionParameter ) )
       {
-         currentLevel = 0;
+         actionParameter = (ActionParameter const*)data;
+         switch ( actionParameter->actionType )
+         {
+            case JUMP_TO_TARGET:
+            {
+               handleJumpToTargetCmd();
+               break;
+            }
+            default:
+            {
+               WARN_3( FSTR( "HmwDimmer::set actionType: 0x" ), (uint8_t)actionParameter->actionType, FSTR( " not implemented" ) );
+            }
+         }
+      }
+      else if ( getLevel() )
+      {
+         setLevel( 0 );
       }
       else
       {
-         currentLevel = MAX_LEVEL;
+         setLevel( MAX_LEVEL );
       }
    }
 
@@ -50,15 +74,16 @@ void HmwDimmer::set( uint8_t length, uint8_t const* const data )
 uint8_t HmwDimmer::get( uint8_t* data )
 {
    // map 0-100% to 0-200
-   ( *data ) = currentLevel;
+   ( *data ) = getLevel();
    return 1;
 }
 
 void HmwDimmer::loop( uint8_t channel )
 {
-
-    // the default range is 0-200, this must be mapped to 0-100% duty cycle
-    setLevel( currentLevel );
+   if ( nextActionTime.isValid() && nextActionTime.since() )
+   {
+      handleStateChart();
+   }
 
    // feedback trigger set?
    if ( !nextFeedbackTime.isValid() )
@@ -97,12 +122,119 @@ void HmwDimmer::setLevel( uint8_t level )
    // special function for Config::levelFactor == 0, no PWM
    if ( getLevel() != level )
    {
+      level ? enableOutput.set() : enableOutput.clear();
       pwmOutput.set( level * NORMALIZE_LEVEL );
    }
 }
 
 uint8_t HmwDimmer::getLevel() const
 {
-   // normalize to 0-200 
+   // normalize to 0-200
    return pwmOutput.isSet() / NORMALIZE_LEVEL;
+}
+
+void HmwDimmer::handleStateChart( bool fromMainLoop )
+{
+   if ( actionParameter == NULL )
+   {
+      return;
+   }
+   switch ( state )
+   {
+      case TIME_OFF:
+      case OFF:
+      {
+         if ( isValidActionTime( actionParameter->onDelayTime ) )
+         {
+            SET_STATE_L1( DELAY_ON );
+            nextActionTime = Timestamp();
+            nextActionTime += actionParameter->onDelayTime * SystemTime::S / 10;
+         }
+         else
+         {
+            SET_STATE_L1( RAMP_UP );
+            nextActionTime = Timestamp();
+            nextActionTime += actionParameter->rampOnTime * SystemTime::S / 10;
+         }
+         break;
+      }
+      case DELAY_ON:
+      {
+         if ( fromMainLoop )
+         {
+            SET_STATE_L1( RAMP_UP );
+            nextActionTime = Timestamp();
+            nextActionTime += actionParameter->rampOnTime * SystemTime::S / 10;
+            break;
+         }
+      }
+      case RAMP_UP:
+      {
+         if ( isValidActionTime( actionParameter->onTime ) )
+         {
+            SET_STATE_L1( TIME_ON );
+            nextActionTime = Timestamp();
+            nextActionTime += actionParameter->onTime * SystemTime::S / 10;
+         }
+         else
+         {
+            SET_STATE_L1( ON );
+            nextActionTime.reset();
+         }
+         setLevel( actionParameter->onLevel );
+         break;
+      }
+      case TIME_ON:
+      case ON:
+      {
+         if ( actionParameter->offDelayTime < MAX_NEXT_ACTION_TIME )
+         {
+            SET_STATE_L1( DELAY_OFF );
+            nextActionTime = Timestamp();
+            nextActionTime += actionParameter->offDelayTime * SystemTime::S / 10;
+         }
+         else
+         {
+            SET_STATE_L1( RAMP_DOWN );
+            nextActionTime = Timestamp();
+            nextActionTime += actionParameter->rampOffTime * SystemTime::S / 10;
+         }
+         break;
+      }
+      case DELAY_OFF:
+      {
+         if ( fromMainLoop )
+         {
+            SET_STATE_L1( RAMP_DOWN );
+            nextActionTime = Timestamp();
+            nextActionTime += actionParameter->rampOffTime * SystemTime::S / 10;
+            break;
+         }
+      }
+      case RAMP_DOWN:
+      {
+         if ( isValidActionTime( actionParameter->offTime ) )
+         {
+            SET_STATE_L1( TIME_OFF );
+            nextActionTime = Timestamp();
+            nextActionTime += actionParameter->offTime * SystemTime::S / 10;
+         }
+         else
+         {
+            SET_STATE_L1( OFF );
+            nextActionTime.reset();
+         }
+         setLevel( actionParameter->offLevel );
+         break;
+      }
+      default:
+      {
+         WARN_3( FSTR( "HmwDimmer::handleJumpToTargetCmd from state: 0x" ), (uint8_t)state, FSTR( " not implemented" ) );
+      }
+   }
+}
+
+void HmwDimmer::handleJumpToTargetCmd()
+{
+   handleStateChart( false );
 }
