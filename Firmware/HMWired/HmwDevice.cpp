@@ -378,8 +378,11 @@ bool HmwDevice::processMessage( HmwMessageBase& msg )
    else if ( msg.isCommand( HmwMessageBase::KEY_EVENT ) || msg.isCommand( HmwMessageBase::KEY_SIM ) )
    {
       DEBUG_M1( FSTR( "C: KEY_EVENT" ) );
-      HmwMsgKeyEvent* event = ( HmwMsgKeyEvent* )&msg;
-      HmwLinkReceiver::notifyKeyEvent( event->getSenderAddress(), event->getSourceChannel(), event->getDestinationChannel(), event->isLongPress() );
+      if ( !msg.isBroadcast() )
+      {
+         HmwMsgKeyEvent* event = ( HmwMsgKeyEvent* )&msg;
+         HmwLinkReceiver::notifyKeyEvent( event->getSenderAddress(), event->getSourceChannel(), event->getDestinationChannel(), event->isLongPress() );
+      }
    }
    else if ( msg.isCommand( HmwMessageBase::GET_LEVEL ) )
    {
