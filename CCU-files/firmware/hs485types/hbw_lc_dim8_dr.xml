@@ -8,7 +8,7 @@
 	</type>
 </supported_types>
 
-<paramset type="MASTER" id="HBW-LC-Dim8U-IN4-DR_dev_master">
+<paramset type="MASTER" id="HBW-LC-DIM8-DR_dev_master">
 	<parameter id="HW_REV" hidden="true">
 		<logical type="integer"/>
 		<physical size="1" type="integer" interface="eeprom">
