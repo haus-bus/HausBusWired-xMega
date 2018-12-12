@@ -24,8 +24,9 @@ class HmwDimmer : public HmwChannel
          enum OptionMask
          {
             LOGGING_MASK = 0x80,
-
+            RESERVED_MASK = 0x7C,
             DIMMING_MODE_MASK = 0x03,
+            DEFAULT_OPTIONS = 0x83,
          };
 
          uint8_tx options;
@@ -48,6 +49,18 @@ class HmwDimmer : public HmwChannel
             inline uint8_t getDimmingMode() const
             {
                return ( options & DIMMING_MODE_MASK );
+            }
+
+            inline void checkOrRestore()
+            {
+               if ( ( options & RESERVED_MASK ) != RESERVED_MASK )
+               {
+                  options.update( DEFAULT_OPTIONS | RESERVED_MASK );
+               }
+               if ( reserve != 0xFF )
+               {
+                  reserve.update( 0xFF );
+               }
             }
       };
 
@@ -101,7 +114,7 @@ class HmwDimmer : public HmwChannel
 
       static const uint8_t MAX_LEVEL = 200;
       static const uint8_t NORMALIZE_LEVEL = 205;
-      static const uint8_t LOOP_PERIOD_MS = 10;
+      static const uint8_t LOOP_PERIOD_MS = 8;
       static const uint16_t MAX_NEXT_ACTION_TIME = 0xC000;
 
    protected:
@@ -136,6 +149,10 @@ class HmwDimmer : public HmwChannel
 
       States state;
 
+      uint8_t rampStep;
+
+      uint32_t nextStepTime;
+
 
 // functions
    public:
@@ -156,6 +173,8 @@ class HmwDimmer : public HmwChannel
    private:
 
       void handleJumpToTargetCmd();
+
+      void calculateRampParameter();
 
       inline void setMainState( States _state )
       {

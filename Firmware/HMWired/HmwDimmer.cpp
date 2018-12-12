@@ -11,7 +11,7 @@
 
 #define getId() FSTR( "HmwDimmer." ) << channelId
 
-const uint8_t HmwDimmer::debugLevel( DEBUG_LEVEL_HIGH | DEBUG_STATE_L3 );
+const uint8_t HmwDimmer::debugLevel( DEBUG_LEVEL_LOW | DEBUG_STATE_L3 );
 
 HmwDimmer::HmwDimmer( PortPin _portPin, PortPin _enablePin, Config* _config ) :
    pwmOutput( _portPin.getPortNumber(), _portPin.getPinNumber() ),
@@ -23,7 +23,7 @@ HmwDimmer::HmwDimmer( PortPin _portPin, PortPin _enablePin, Config* _config ) :
 {
    type = HmwChannel::HMW_DIMMER;
    SET_STATE_L1( OFF );
-   pwmOutput.setInverted( config->getDimmingMode() == Config::DIMM_L );
+   // Todo pwmOutput.setInverted( config->getDimmingMode() == Config::DIMM_L );
 }
 
 
@@ -114,7 +114,8 @@ void HmwDimmer::loop( uint8_t channel )
 
 void HmwDimmer::checkConfig()
 {
-   pwmOutput.setInverted( config->getDimmingMode() == Config::DIMM_L );
+   config->checkOrRestore();
+   // Todo pwmOutput.setInverted( config->getDimmingMode() == Config::DIMM_L );
 }
 
 void HmwDimmer::setLevel( uint8_t level )
@@ -122,6 +123,7 @@ void HmwDimmer::setLevel( uint8_t level )
    // special function for Config::levelFactor == 0, no PWM
    if ( getLevel() != level )
    {
+      DEBUG_H2( FSTR( " setLevel 0x" ), level );
       level ? enableOutput.set() : enableOutput.clear();
       pwmOutput.set( level * NORMALIZE_LEVEL );
    }
@@ -154,7 +156,7 @@ void HmwDimmer::handleStateChart( bool fromMainLoop )
          {
             SET_STATE_L1( RAMP_UP );
             nextActionTime = Timestamp();
-            nextActionTime += actionParameter->rampOnTime * SystemTime::S / 10;
+            calculateRampParameter();
          }
          break;
       }
@@ -164,24 +166,42 @@ void HmwDimmer::handleStateChart( bool fromMainLoop )
          {
             SET_STATE_L1( RAMP_UP );
             nextActionTime = Timestamp();
-            nextActionTime += actionParameter->rampOnTime * SystemTime::S / 10;
+            calculateRampParameter();
             break;
          }
       }
       case RAMP_UP:
       {
-         if ( isValidActionTime( actionParameter->onTime ) )
+         uint8_t currentLevel = getLevel();
+         if ( !fromMainLoop || ( currentLevel >= actionParameter->onLevel ) )
          {
-            SET_STATE_L1( TIME_ON );
-            nextActionTime = Timestamp();
-            nextActionTime += actionParameter->onTime * SystemTime::S / 10;
+            if ( isValidActionTime( actionParameter->onTime ) )
+            {
+               SET_STATE_L1( TIME_ON );
+               nextActionTime = Timestamp();
+               nextActionTime += actionParameter->onTime * SystemTime::S / 10;
+            }
+            else
+            {
+               SET_STATE_L1( ON );
+               nextActionTime.reset();
+            }
+            setLevel( actionParameter->onLevel );
          }
          else
          {
-            SET_STATE_L1( ON );
-            nextActionTime.reset();
+            // do the ramp
+            if ( (uint16_t)( currentLevel + rampStep ) >= actionParameter->onLevel )
+            {
+               setLevel( actionParameter->onLevel );
+            }
+            else
+            {
+               setLevel( currentLevel + rampStep );
+               nextActionTime += ( nextStepTime );
+            }
          }
-         setLevel( actionParameter->onLevel );
+
          break;
       }
       case TIME_ON:
@@ -197,7 +217,7 @@ void HmwDimmer::handleStateChart( bool fromMainLoop )
          {
             SET_STATE_L1( RAMP_DOWN );
             nextActionTime = Timestamp();
-            nextActionTime += actionParameter->rampOffTime * SystemTime::S / 10;
+            calculateRampParameter();
          }
          break;
       }
@@ -207,24 +227,41 @@ void HmwDimmer::handleStateChart( bool fromMainLoop )
          {
             SET_STATE_L1( RAMP_DOWN );
             nextActionTime = Timestamp();
-            nextActionTime += actionParameter->rampOffTime * SystemTime::S / 10;
+            calculateRampParameter();
             break;
          }
       }
       case RAMP_DOWN:
       {
-         if ( isValidActionTime( actionParameter->offTime ) )
+         uint8_t currentLevel = getLevel();
+         if ( !fromMainLoop || ( currentLevel <= actionParameter->offLevel ) )
          {
-            SET_STATE_L1( TIME_OFF );
-            nextActionTime = Timestamp();
-            nextActionTime += actionParameter->offTime * SystemTime::S / 10;
+            if ( isValidActionTime( actionParameter->offTime ) )
+            {
+               SET_STATE_L1( TIME_OFF );
+               nextActionTime = Timestamp();
+               nextActionTime += actionParameter->offTime * SystemTime::S / 10;
+            }
+            else
+            {
+               SET_STATE_L1( OFF );
+               nextActionTime.reset();
+            }
+            setLevel( actionParameter->offLevel );
          }
          else
          {
-            SET_STATE_L1( OFF );
-            nextActionTime.reset();
+            // do the ramp
+            if ( ( currentLevel <= rampStep ) || ( ( currentLevel - rampStep ) <= actionParameter->offLevel ) )
+            {
+               setLevel( actionParameter->offLevel );
+            }
+            else
+            {
+               setLevel( currentLevel - rampStep );
+               nextActionTime += ( nextStepTime );
+            }
          }
-         setLevel( actionParameter->offLevel );
          break;
       }
       default:
@@ -232,6 +269,44 @@ void HmwDimmer::handleStateChart( bool fromMainLoop )
          WARN_3( FSTR( "HmwDimmer::handleJumpToTargetCmd from state: 0x" ), (uint8_t)state, FSTR( " not implemented" ) );
       }
    }
+}
+
+void HmwDimmer::calculateRampParameter()
+{
+   if ( ( state != RAMP_UP ) && ( state != RAMP_DOWN ) )
+   {
+      ERROR_3( FSTR( "HmwDimmer::calculateRampParameter for state: 0x" ), (uint8_t)state, FSTR( " not implemented" ) );
+      return;
+   }
+   DEBUG_H1( FSTR( " calculateRampParameter" ) );
+   rampStep = actionParameter->onLevel - actionParameter->offLevel;
+   nextStepTime = actionParameter->rampOnTime;
+
+   if ( state == RAMP_DOWN )
+   {
+      nextStepTime = actionParameter->rampOffTime;
+   }
+   nextStepTime = nextStepTime * SystemTime::S / 10;
+
+   DEBUG_M2( FSTR( "total Steps : 0x" ), rampStep );
+   DEBUG_M2( FSTR( "total Time : 0x" ), nextStepTime );
+
+   if ( nextStepTime >= ( rampStep * LOOP_PERIOD_MS ) )
+   {
+      nextStepTime /= rampStep;
+      rampStep = 1;
+   }
+   else
+   {
+      while ( ( nextStepTime >= ( 2 * LOOP_PERIOD_MS ) ) && ( rampStep >= actionParameter->dimStep ) )
+      {
+         rampStep /= 2;
+         nextStepTime /= 2;
+      }
+   }
+
+   DEBUG_M2( FSTR( "rampStep : 0x" ), rampStep );
+   DEBUG_M2( FSTR( "stepTime : 0x" ), nextStepTime );
 }
 
 void HmwDimmer::handleJumpToTargetCmd()
