@@ -15,6 +15,11 @@ class HmwMsgKeyEvent : public HmwMessageBase
 {
 // variables
    public:
+
+      static const uint8_t PRESS_MASK = 0x03;
+      static const uint8_t PRESS_LONG = 0x03;
+      static const uint8_t PRESS_SHORT = 0x02;
+
    protected:
    private:
 
@@ -25,7 +30,7 @@ class HmwMsgKeyEvent : public HmwMessageBase
          frameData[0] = KEY_EVENT;
          frameData[1] = srcChannel;
          frameData[2] = dstChannel;
-         frameData[3] = ( longPress ? 3 : 2 ) + ( keyPressNum << 2 );
+         frameData[3] = ( longPress ? PRESS_LONG : PRESS_SHORT ) + ( keyPressNum << 2 );
          controlByte = 0xF8;
          senderAddress = ownAddress;
          targetAddress = dstAddress;
@@ -44,7 +49,7 @@ class HmwMsgKeyEvent : public HmwMessageBase
 
       inline bool isLongPress()
       {
-         return frameData[3];
+         return ( frameData[3] & PRESS_MASK ) == PRESS_LONG;
       }
    protected:
    private:
