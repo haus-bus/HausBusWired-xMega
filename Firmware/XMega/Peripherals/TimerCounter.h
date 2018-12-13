@@ -288,7 +288,7 @@ class TimerCounter
 
       inline void setCompare( Channel channel, uint16_t value )
       {
-         register16_t* tmp = &reg.CCA;
+         register16_t* tmp = &reg.CCABUF;
          tmp[channel] = value;
       }
 
