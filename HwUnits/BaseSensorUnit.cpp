@@ -132,10 +132,9 @@ void BaseSensorUnit::notifyNewValue( BaseSensorUnit::Status newStatus )
          Response event( getId() );
          event.setStatus( newStatus );
          event.queue();
+         lastStatus = newStatus;
       }
    }
-
-   lastStatus = newStatus;
 }
 
 bool BaseSensorUnit::handleRequest( HACF* message )
