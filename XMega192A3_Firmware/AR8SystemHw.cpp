@@ -83,7 +83,7 @@ void AR8SystemHw::configureEthernet()
 
 void AR8SystemHw::configureTwi()
 {
-   if ( getFckE() == FCKE_V4_1 )
+   if ( getFckE() < FCKE_V4_0 )
    {
       static SoftTwi twi;
       new Gateway( &twi, Gateway::TWI );
