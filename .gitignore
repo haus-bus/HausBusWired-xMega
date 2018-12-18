@@ -6,6 +6,7 @@ Release*/
 # for testing only
 Tools/hterm.cfg
 Tools/addOnTests/
+Tools/ProductionTest/*.hex
 
 # build directories
 Firmware/HBW-SD6-v0/
