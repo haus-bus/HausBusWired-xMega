@@ -162,6 +162,16 @@ HACF::ControlFrame* BooterHw::getMessage()
 
 void BooterHw::sendMessage()
 {
+   // prepare header for RS485 or TWI
+   TwiHeader* header = reinterpret_cast<TwiHeader*>( transferBuffer.header );
+   header->address = 0;
+   header->lastDeviceId = HomeAutomationConfiguration::instance().getDeviceId();
+
+   uint16_t length = sizeof( TwiHeader ) - sizeof( header->unused ) + transferBuffer.controlFrame.getLength();
+
+   header->checksum = 0;
+   header->checksum = Checksum::get( &header->address, length );
+
    #ifdef SUPPORT_UDP
    if ( ( activeComm == COMM_UDP ) || ( activeComm == COMM_NO ) )
    {
@@ -182,15 +192,6 @@ void BooterHw::sendMessage()
    else
    #endif
    #ifdef SUPPORT_TWI
-   // prepare header for RS485 or TWI
-   TwiHeader* header = reinterpret_cast<TwiHeader*>( transferBuffer.header );
-   header->address = 0;
-   header->lastDeviceId = HomeAutomationConfiguration::instance().getDeviceId();
-
-   uint16_t length = sizeof( TwiHeader ) - sizeof( header->unused ) + transferBuffer.controlFrame.getLength();
-
-   header->checksum = 0;
-   header->checksum = Checksum::get( &header->address, length );
    #if defined( SUPPORT_RS485 ) || defined( SUPPORT_UDP )
    if ( ( activeComm == COMM_TWI ) || ( activeComm == COMM_NO ) )
    {
@@ -293,23 +294,14 @@ bool BooterHw::readMessageFromRS485()
 
 void BooterHw::writeMessageToRS485( uint8_t* pData, uint16_t length )
 {
-   uint8_t waitCount = 0;
+#ifdef WAIT_BEFORE_SEND
+   uint16_t waitCnt = 0;
    do
    {
-      // wait for 1ms and check if someone starts communication
-      if ( rx.waitForPinLevelUs( false, 250 ) )
-      {
-         // someone starts communnication
-         waitCount = 0;
-      }
-      else
-      {
-         // bus is probably free
-         waitCount++;
-      }
+      rx.isSet() ? waitCnt++ : waitCnt = 0;
    }
-   while ( waitCount < ( HACF::deviceId& 0x3F ) );
-
+   while ( waitCnt < HACF::deviceId );
+#endif
    rs485.disableReceiver();
    rs485TxEnable.set();
    rs485.write( FRAME_STARTBYTE );
