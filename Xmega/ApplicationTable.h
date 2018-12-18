@@ -35,17 +35,8 @@ class ApplicationTable
 
       inline static uint16_t write( uint16_t offset, void* pData, uint16_t length )
       {
-         uint8_t buffer[Flash::getPageSize()];
-         uint16_t index = offset % sizeof( buffer );
-         if ( ( index + length ) > sizeof( buffer ) )
-         {
-            return 0;
-         }
-
-         Flash::address_t address = APPTABLE_SECTION_ADDR + ( offset & ~index );
-         Flash::read( address, buffer, sizeof( buffer ) );
-         memcpy( &buffer[index], pData, length );
-         return Flash::write( address, buffer, sizeof( buffer ) );
+         Flash::address_t address = APPTABLE_SECTION_ADDR + offset;
+         return Flash::write( address, pData, length );
       }
 };
 

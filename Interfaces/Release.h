@@ -26,7 +26,7 @@ class Release
 
       static const uint8_t MAJOR = 1;
 
-      static const uint8_t MINOR = 7;
+      static const uint8_t MINOR = 8;
 };
 
 #endif

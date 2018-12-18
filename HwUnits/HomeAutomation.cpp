@@ -302,15 +302,17 @@ void HomeAutomation::cmdReadMemory(
    }
 }
 
-void HomeAutomation::cmdWriteRules(
-   HomeAutomationInterface::Command::WriteRules& parameter,
-   uint16_t dataLength, HomeAutomationInterface::Response& response )
+void HomeAutomation::cmdWriteRules( HomeAutomationInterface::Command::WriteRules& parameter,
+                                    uint16_t dataLength, HomeAutomationInterface::Response& response )
 {
    DEBUG_H1( FSTR( ".writeRules()" ) );
    RuleEngine::disable();
-   response.setMemoryStatus(
-      HomeAutomationHw::writeRules( parameter.offset, parameter.data,
-                                    dataLength ) );
+   Stream::Status result = Stream::SUCCESS;
+   if ( HomeAutomationHw::writeRules( parameter.offset, parameter.data, dataLength ) != dataLength )
+   {
+      result = Stream::ABORTED;
+   }
+   response.setMemoryStatus( result );
    if ( dataLength < HACF::MAX_DATA_SIZE )
    {
       checkPersistentRules();
