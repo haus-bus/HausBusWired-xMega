@@ -33,40 +33,28 @@ void HmwDimmer::set( uint8_t length, uint8_t const* const data )
    {
       setLevel( *data );
       nextActionTime.reset();
+      if( *data ) { SET_STATE_L1( ON ); }
+      else { SET_STATE_L1( OFF ); }
+   }
+   else if ( length == sizeof( ActionParameter ) )
+   {
+      actionParameter = (ActionParameter const*)data;
+      switch ( actionParameter->actionType )
+      {
+         case JUMP_TO_TARGET:
+         {
+            handleJumpToTargetCmd();
+            break;
+         }
+         default:
+         {
+            WARN_3( FSTR( "HmwDimmer::set actionType: 0x" ), (uint8_t)actionParameter->actionType, FSTR( " not implemented" ) );
+         }
+      }
    }
    else
    {
-      if ( length == sizeof( ActionParameter ) )
-      {
-         actionParameter = (ActionParameter const*)data;
-         switch ( actionParameter->actionType )
-         {
-            case JUMP_TO_TARGET:
-            {
-               handleJumpToTargetCmd();
-               break;
-            }
-            default:
-            {
-               WARN_3( FSTR( "HmwDimmer::set actionType: 0x" ), (uint8_t)actionParameter->actionType, FSTR( " not implemented" ) );
-            }
-         }
-      }
-      else if ( getLevel() )
-      {
-         setLevel( 0 );
-      }
-      else
-      {
-         setLevel( MAX_LEVEL );
-      }
-   }
-
-   // Logging
-   if ( !nextFeedbackTime.isValid() && config->isLogging() )
-   {
-      nextFeedbackTime = Timestamp();
-      nextFeedbackTime += ( HmwDevice::getLoggingTime() * 100 );
+      ERROR_2( FSTR( "HmwDimmer::set unknown command length: 0x" ), length );
    }
 }
 
@@ -86,12 +74,7 @@ void HmwDimmer::loop( uint8_t channel )
    }
 
    // feedback trigger set?
-   if ( !nextFeedbackTime.isValid() )
-   {
-      return;
-   }
-
-   if ( !nextFeedbackTime.since() )
+   if ( !nextFeedbackTime.isValid() || !nextFeedbackTime.since() )
    {
       return;
    }
@@ -126,6 +109,13 @@ void HmwDimmer::setLevel( uint8_t level )
       DEBUG_H2( FSTR( " setLevel 0x" ), level );
       level ? enableOutput.set() : enableOutput.clear();
       pwmOutput.set( level * NORMALIZE_LEVEL );
+
+      // Logging
+      if ( !nextFeedbackTime.isValid() && config->isLogging() )
+      {
+         nextFeedbackTime = Timestamp();
+         nextFeedbackTime += ( HmwDevice::getLoggingTime() * 100 );
+      }
    }
 }
 
