@@ -34,8 +34,8 @@ class HBWLcDim8BaseHw : public HBWGenericDeviceHw
 
       DigitalOutputTmpl<PortA, 5> txEnable;
       DigitalOutputTmpl<PortA, 6> rxEnable;
-      DigitalOutputTmpl<PortR, 0> greenLed;
-      DigitalOutputTmpl<PortR, 1> configLed;
+      DigitalOutputTmpl<PortR, 1> greenLed;
+      DigitalOutputTmpl<PortR, 0> configLed;
       DigitalInputTmpl<PortE, 7> configButton;
       HmwLinkDimmer linkReceiver;
 

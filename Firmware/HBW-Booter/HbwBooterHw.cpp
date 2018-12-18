@@ -63,7 +63,7 @@ static uint8_t ledData[] = { 0x00, LED_MASK };
 #elif ( DEVICE_ID == 0xB8 )  // Release::HBW_LC_DIM8_DR
 
 #define LED_PORT PORTR
-#define LED_MASK 0x02
+#define LED_MASK 0x01
 
 #if ( HARDWARE_ID == 0 )
 static DigitalOutputTmpl<PortA, 5> txEnable;
