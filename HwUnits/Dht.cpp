@@ -13,13 +13,26 @@ const uint8_t Dht::debugLevel( DEBUG_LEVEL_OFF );
 Dht::Temperature::Temperature( uint8_t instanceNumber )
 {
    setId( ( ClassId::TEMPERATURE << 8 ) | instanceNumber );
-   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
 }
 
 bool Dht::Temperature::notifyEvent( const Event& event )
 {
    if ( event.isEvWakeup() )
    {
+      if ( inStartUp() )
+      {
+         setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
+         if ( configuration )
+         {
+            SET_STATE_L1( RUNNING );
+         }
+         else
+         {
+            terminate();
+            ErrorMessage::notifyOutOfMemory( id );
+            return true;
+         }
+      }
       setSleepTime( NO_WAKE_UP );
    }
    else if ( event.isEvMessage() )
@@ -33,7 +46,6 @@ Dht::Dht( uint8_t instanceNumber, PortPin portPin ) :
    hardware( portPin ), itsTemperature( instanceNumber )
 {
    setId( ( ClassId::HUMIDITY << 8 ) | instanceNumber );
-   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
 }
 
 void Dht::handleRunning()
@@ -91,7 +103,17 @@ void Dht::run()
 {
    if ( inStartUp() )
    {
-      SET_STATE_L1( RUNNING );
+      setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
+      if ( configuration )
+      {
+         SET_STATE_L1( RUNNING );
+      }
+      else
+      {
+         terminate();
+         ErrorMessage::notifyOutOfMemory( id );
+         return;
+      }
       setSleepTime( SystemTime::S );
    }
    else if ( inIdle() )

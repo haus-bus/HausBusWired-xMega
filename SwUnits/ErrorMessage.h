@@ -22,6 +22,8 @@ class ErrorMessage : public IResponse
       };
 
       ErrorMessage( uint16_t id, uint8_t code, uint8_t* data = 0 );
+
+      static void notifyOutOfMemory( uint16_t _id );
 };
 
 #endif /* ERRORMESSAGE_H_ */

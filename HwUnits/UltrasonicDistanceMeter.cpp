@@ -15,16 +15,9 @@ UltrasonicDistanceMeter::UltrasonicDistanceMeter( DigitalOutput _triggerPin,
    triggerPin( _triggerPin ), echoPin( _measurePin )
 {
 
-   Object::setId(
-      ( ClassId::USD_METER << 8 ) | ( ( triggerPin.getPortNumber() + 1 ) << 4 )
-      | ( triggerPin.getPinNumber() + 1 ) );
-
-   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
-   if ( !configuration )
-   {
-      terminate();
-      ErrorMessage( getId(), ErrorMessage::CONFIGURATION_OUT_OF_MEMORY );
-   }
+   Object::setId( ( ClassId::USD_METER << 8 )
+                  | ( ( triggerPin.getPortNumber() + 1 ) << 4 )
+                  | ( triggerPin.getPinNumber() + 1 ) );
 }
 
 bool UltrasonicDistanceMeter::notifyEvent( const Event& event )
@@ -45,6 +38,13 @@ void UltrasonicDistanceMeter::run()
 {
    if ( inStartUp() )
    {
+      setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
+      if ( !configuration )
+      {
+         terminate();
+         ErrorMessage::notifyOutOfMemory( id );
+         return;
+      }
       SET_STATE_L1( RUNNING );
    }
 

@@ -7,14 +7,15 @@
 
 #include "Dimmer.h"
 
-const uint8_t Dimmer::debugLevel( DEBUG_LEVEL_OFF | DEBUG_STATE_L3 );
+#include <ErrorMessage.h>
+
+const uint8_t Dimmer::debugLevel( DEBUG_LEVEL_OFF );
 
 void Dimmer::Response::setBrightness( uint16_t brightness )
 {
    if ( brightness )
    {
-      controlFrame.setDataLength(
-         sizeof( getResponse() ) + sizeof( getParameter().brightness ) );
+      controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().brightness ) );
       setResponse( EVENT_ON );
       getParameter().brightness = (uint8_t) ( brightness / 10 );
    }
@@ -28,31 +29,28 @@ void Dimmer::Response::setBrightness( uint16_t brightness )
 
 Dimmer::Response::Parameter& Dimmer::Response::setConfiguration()
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().configuration ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().configuration ) );
    setResponse( CONFIGURATION );
    return getParameter();
 }
 
 void Dimmer::Response::setDirection( uint8_t direction )
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().direction ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().direction ) );
    setResponse( EVENT_START );
    getParameter().direction = direction;
 }
 
 void Dimmer::Response::setStatus( uint16_t brightness )
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().brightness ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().brightness ) );
    setResponse( STATUS );
    getParameter().brightness = (uint8_t) ( brightness / 10 );
 
 }
 
 Dimmer::Dimmer( uint8_t _id, IDimmerHw* _hardware ) :
-   brightness( 0 ), direction( TO_LIGHT ), duration( 0 ),
+   brightness( 0 ), direction( TO_DARK ), duration( 0 ),
    subState( NO_COMMAND ), targetBrightness( 0 )
 {
    hardware = NULL;
@@ -79,11 +77,18 @@ void Dimmer::run()
 {
    if ( inStartUp() )
    {
-      setDirection( TO_DARK );
-      setBrightness( 0 );
-      setTargetBrightness( 0 );
-      configureHw();
-      SET_STATE_L1( IDLE );
+      setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
+      if ( configuration )
+      {
+         configureHw();
+         SET_STATE_L1( IDLE );
+      }
+      else
+      {
+         terminate();
+         ErrorMessage::notifyOutOfMemory( id );
+         return;
+      }
    }
 
    if ( inIdle() || inFailture() )
@@ -166,11 +171,8 @@ void Dimmer::cmdStart( const Dimmer::Command::Start& parameter )
 
 void Dimmer::configureHw()
 {
-   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
-
    notifyError( hardware->setMode( configuration->mode ) );
    hardware->off();
-
 }
 
 bool Dimmer::handleRequest( HACF* message )

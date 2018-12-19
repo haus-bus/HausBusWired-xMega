@@ -13,19 +13,7 @@ const uint8_t InternalTemperatureUnit::debugLevel( DEBUG_LEVEL_OFF );
 
 InternalTemperatureUnit::InternalTemperatureUnit()
 {
-   Object::setId(
-      ( ClassId::TEMPERATURE << 8 ) | 0xFF );
-
-   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
-   if ( configuration )
-   {
-// TODO
-   }
-   else
-   {
-      terminate();
-      ErrorMessage( getId(), ErrorMessage::CONFIGURATION_OUT_OF_MEMORY );
-   }
+   Object::setId( ( ClassId::TEMPERATURE << 8 ) | 0xFF );
 }
 
 bool InternalTemperatureUnit::notifyEvent( const Event& event )
@@ -46,7 +34,17 @@ void InternalTemperatureUnit::run()
 {
    if ( inStartUp() )
    {
-      SET_STATE_L1( RUNNING );
+      setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
+      if ( configuration )
+      {
+         SET_STATE_L1( RUNNING );
+      }
+      else
+      {
+         terminate();
+         ErrorMessage::notifyOutOfMemory( id );
+         return;
+      }
    }
 
    int16_t centiCelsius = InternalTemperature::getValue();

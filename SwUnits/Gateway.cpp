@@ -11,6 +11,7 @@
 
 #include <Security/Checksum.h>
 #include <Scheduler.h>
+#include <ErrorMessage.h>
 
 static const uint8_t debugLevel( DEBUG_LEVEL_OFF );
 
@@ -22,7 +23,6 @@ Gateway* Gateway::itsGateway[MAX_GATEWAYS];
 
 void Gateway::addGateway()
 {
-
    for ( uint8_t pos = 0; pos < MAX_GATEWAYS; ++pos )
    {
       if ( !itsGateway[pos] )
@@ -118,8 +118,6 @@ void Gateway::run()
 {
    if ( inStartUp() )
    {
-      setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
-
       IoStream::CommandINIT data;
       data.deviceId = HACF::getDeviceId() & 0x7F;
       data.buffersize = HACF::MAX_BUFFER_SIZE;
@@ -132,7 +130,7 @@ void Gateway::run()
       else
       {
          Gateway::terminate();
-         ERROR_1( FSTR( "init ioStream not possible!" ) );
+         ErrorMessage::notifyOutOfMemory( id );
       }
    }
 

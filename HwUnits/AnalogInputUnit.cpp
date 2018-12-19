@@ -4,8 +4,6 @@
  *  Created on: 22.10.2015
  *      Author: Viktor Pankraz
  */
-
-#include <ErrorMessage.h>
 #include "AnalogInputUnit.h"
 
 const uint8_t AnalogInputUnit::debugLevel( DEBUG_LEVEL_OFF );
@@ -13,20 +11,7 @@ const uint8_t AnalogInputUnit::debugLevel( DEBUG_LEVEL_OFF );
 AnalogInputUnit::AnalogInputUnit( PortPin portPin ) :
    analogInput( portPin.getPortNumber(), portPin.getPinNumber() )
 {
-   Object::setId(
-      ( ClassId::ANALOG_INPUT << 8 ) | ( ( portPin.getPortNumber() + 1 ) << 4 )
-      | ( portPin.getPinNumber() + 1 ) );
-
-   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
-   if ( configuration )
-   {
-// TODO
-   }
-   else
-   {
-      terminate();
-      ErrorMessage( getId(), ErrorMessage::CONFIGURATION_OUT_OF_MEMORY );
-   }
+   Object::setId( ( ClassId::ANALOG_INPUT << 8 ) | ( ( portPin.getPortNumber() + 1 ) << 4 ) | ( portPin.getPinNumber() + 1 ) );
 }
 
 bool AnalogInputUnit::notifyEvent( const Event& event )
@@ -47,7 +32,17 @@ void AnalogInputUnit::run()
 {
    if ( inStartUp() )
    {
-      SET_STATE_L1( RUNNING );
+      setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
+      if ( configuration )
+      {
+         SET_STATE_L1( RUNNING );
+      }
+      else
+      {
+         terminate();
+         ErrorMessage::notifyOutOfMemory( id );
+         return;
+      }
    }
    uint16_t value = analogInput.getValue();
 

@@ -18,12 +18,11 @@ class ConfigurationManager
 
       class EepromConfigurationBase
       {
-
-         static const uint8_t MIN_CONFIGURATION_SIZE = 8;
-         static const uint8_t MAX_CONFIGURATION_SIZE = 32;
-         static const uint16_t FREE_CONFIGURATION_ID = 0xFFFF;
-
          public:
+
+            static const uint8_t MIN_CONFIGURATION_SIZE = 8;
+            static const uint8_t MAX_CONFIGURATION_SIZE = 32;
+            static const uint16_t FREE_CONFIGURATION_ID = 0xFFFF;
 
             static inline EepromConfigurationBase* getFirstConfiguration()
             {
@@ -32,12 +31,12 @@ class ConfigurationManager
 
             static inline EepromConfigurationBase* getLastConfiguration()
             {
-               return reinterpret_cast<EepromConfigurationBase*>( MAPPED_EEPROM_END - 24 );
+               return reinterpret_cast<EepromConfigurationBase*>( MAPPED_EEPROM_START + 0x200 );// MAPPED_EEPROM_END - MAX_CONFIGURATION_SIZE );
             }
 
             inline bool isMine( uint16_t _id, uint8_t size )
             {
-               return ( ownerId == _id ) && ( reservedSize == size );
+               return ( ownerId == _id ) && ( reservedSize >= size );
             }
 
             inline bool isFree()
@@ -63,12 +62,17 @@ class ConfigurationManager
 
             inline void setReservedSize( uint16_t _size )
             {
-               reservedSize = _size;
+               reservedSize.update( _size );
             }
 
             inline void setOwnerId( uint16_t _id )
             {
-               ownerId = _id;
+               ownerId.update( _id );
+            }
+
+            inline uint16_t getOwnerId()
+            {
+               return ownerId;
             }
 
             inline EepromConfigurationBase* getNextConfiguration()
@@ -124,7 +128,13 @@ class ConfigurationManager
             if ( conf->isFree() )
             {
                conf->setOwnerId( id );
-               conf->setReservedSize( sizeof( T ) );
+               // do not overwrite the size if it is already set to a valid value!
+               // In this case no free memory is available and we have to reuse an unused slot.
+               // Changing the size here would corrupt all other configuration slots behind this one.
+               if ( !conf->isValidSize() )
+               {
+                  conf->setReservedSize( sizeof( T ) );
+               }
                conf->restore();
             }
          }

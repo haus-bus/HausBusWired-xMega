@@ -8,6 +8,8 @@
 #include "Button.h"
 #include "Led.h"
 
+#include <ErrorMessage.h>
+
 const uint8_t Button::debugLevel( DEBUG_LEVEL_OFF );
 
 Button::Response::Parameter& Button::Response::setConfiguration()
@@ -23,12 +25,8 @@ Button::Button( uint8_t _id ) :
 {
    feedbackLed = NULL;
    configuration = NULL;
-   setMainState( RUNNING );
-   setSubState( RELEASED );
    Object::setId( ( ClassId::BUTTON << 8 ) | _id );
-   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
-   enabledEvents = configuration->getEvents();
-
+   SET_STATE_L2( RELEASED );
 }
 
 bool Button::handleRequest( HACF* message )
@@ -82,6 +80,21 @@ bool Button::notifyEvent( const Event& event )
 {
    if ( event.isEvWakeup() )
    {
+      if ( inStartUp() )
+      {
+         setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
+         if ( configuration )
+         {
+            enabledEvents = configuration->getEvents();
+            SET_STATE_L1( RUNNING );
+         }
+         else
+         {
+            terminate();
+            ErrorMessage::notifyOutOfMemory( id );
+            return true;
+         }
+      }
       tick();
    }
    else if ( event.isEvMessage() )

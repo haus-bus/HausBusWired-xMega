@@ -7,6 +7,7 @@
 
 #include "PortPinUnit.h"
 #include <PortPin.h>
+#include <ErrorMessage.h>
 
 const uint8_t PortPinUnit::debugLevel( DEBUG_LEVEL_OFF );
 
@@ -43,7 +44,8 @@ PortPinUnit::PortPinUnit( PortPin _hardware ) :
    hardware( _hardware.getPortNumber(), _hardware.getPinNumber() )
 {
    configuration = NULL;
-   Object::setId( ( ClassId::DIGITAL_OUTPUT << 8 ) | ( ( _hardware.getPortNumber() + 1 ) << 4 )
+   Object::setId( ( ClassId::DIGITAL_OUTPUT << 8 )
+                  | ( ( _hardware.getPortNumber() + 1 ) << 4 )
                   | ( _hardware.getPinNumber() + 1 ) );
 }
 
@@ -168,8 +170,16 @@ bool PortPinUnit::run()
    if ( inStartUp() )
    {
       setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
-      updateConfiguration();
-      SET_STATE_L1( RUNNING );
+      if ( configuration )
+      {
+         updateConfiguration();
+         SET_STATE_L1( RUNNING );
+      }
+      else
+      {
+         terminate();
+         ErrorMessage::notifyOutOfMemory( id );
+      }
       setSleepTime( NO_WAKE_UP );
    }
    else

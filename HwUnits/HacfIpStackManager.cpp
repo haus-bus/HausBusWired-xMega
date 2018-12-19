@@ -6,6 +6,7 @@
  */
 
 #include "HacfIpStackManager.h"
+#include "ModBusSlave.h"
 #include <Protocols/Ethernet/ArpHeader.h>
 #include <Protocols/IpStack/ArpManager.h>
 #include <Protocols/IpStack/Dhcp.h>
@@ -16,7 +17,7 @@
 #include <Protocols/IpStack/TcpConnection.h>
 #include <Protocols/IpStack/UdpConnection.h>
 #include <Protocols/Ethernet/UdpHeader.h>
-#include "ModBusSlave.h"
+#include <ErrorMessage.h>
 
 uint8_t HacfIpStackManager::Command::getCommand() const
 {
@@ -62,6 +63,17 @@ bool HacfIpStackManager::notifyEvent( const Event& event )
    }
    else if ( event.isEvWakeup() && inStartUp() )
    {
+      if ( configuration )
+      {
+         SET_STATE_L1( RUNNING );
+      }
+      else
+      {
+         terminate();
+         ErrorMessage::notifyOutOfMemory( id );
+         return true;
+      }
+
       IP::local.setAddress( configuration->ip );
       Configuration::Options options = configuration->getOptions();
 
@@ -84,7 +96,6 @@ bool HacfIpStackManager::notifyEvent( const Event& event )
             new Gateway( UdpConnection::connect( IP::broadcast(), configuration->port, configuration->port, NULL ), Gateway::UDP );
          }
       }
-
    }
 
    return IpStackManager::notifyEvent( event );

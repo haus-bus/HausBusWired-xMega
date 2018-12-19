@@ -29,6 +29,7 @@
 #include "MonitoredDigitalInput.h"
 #endif
 
+#include <ErrorMessage.h>
 
 const uint8_t DigitalPort::debugLevel( DEBUG_LEVEL_OFF );
 
@@ -58,8 +59,18 @@ void DigitalPort::run()
 {
    if ( inStartUp() )
    {
-      configureHw();
-      setMainState( RUNNING );
+      setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
+      if ( configuration )
+      {
+         configureHw();
+         SET_STATE_L1( RUNNING );
+      }
+      else
+      {
+         terminate();
+         ErrorMessage::notifyOutOfMemory( id );
+         return;
+      }
    }
    else
    {
@@ -123,8 +134,6 @@ void DigitalPort::clearPinFunction()
 
 void DigitalPort::configureHw()
 {
-   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
-
    uint8_t outputMask = 0;
    uint8_t inputMask = 0;
    uint8_t pwmMask = 0;

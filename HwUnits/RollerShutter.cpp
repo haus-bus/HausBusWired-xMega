@@ -7,9 +7,11 @@
 
 #include "RollerShutter.h"
 
+#include <ErrorMessage.h>
+
 uint8_t RollerShutter::startingChannels( 0 );
 
-const uint8_t RollerShutter::debugLevel( DEBUG_LEVEL_OFF | DEBUG_STATE_L3 );
+const uint8_t RollerShutter::debugLevel( DEBUG_LEVEL_OFF );
 
 RollerShutter::Response::Parameter& RollerShutter::Response::setConfiguration()
 {
@@ -121,10 +123,18 @@ void RollerShutter::run()
    if ( inStartUp() )
    {
       setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
-      setPosition( configuration->position );
-      setTargetPosition( getPosition() );
-      setToggleDirection( getPosition() ? TO_OPEN : TO_CLOSE );
-      SET_STATE_L1( IDLE );
+      if ( configuration )
+      {
+         setPosition( configuration->position );
+         setTargetPosition( getPosition() );
+         setToggleDirection( getPosition() ? TO_OPEN : TO_CLOSE );
+         SET_STATE_L1( IDLE );
+      }
+      else
+      {
+         terminate();
+         ErrorMessage::notifyOutOfMemory( id );
+      }
    }
    else if ( inIdle() )
    {

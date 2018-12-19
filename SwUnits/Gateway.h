@@ -238,6 +238,8 @@ class Gateway : public Reactive
          gatewayLoad.bytesPerMinute = 0;
          gatewayLoad.messagesPerMinute = 0;
          setId( ( ClassId::GATEWAY << 8 ) | iId );
+         // gateways should get their configuration at construction time, because it is important that they have always one
+         setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
       }
 
       ////    Operations    ////

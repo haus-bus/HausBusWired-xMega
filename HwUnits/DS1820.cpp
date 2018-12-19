@@ -18,7 +18,6 @@ DS1820::DS1820( const OneWire& _hardware, const OneWire::RomCode& _romCode ) :
    hardware( _hardware ), romCode( _romCode )
 {
    setId( ( ClassId::TEMPERATURE << 8 ) | ++numOfInstances );
-   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
 }
 
 bool DS1820::isSelfPowered()
@@ -74,10 +73,20 @@ void DS1820::run()
 {
    if ( inStartUp() )
    {
-      isSelfPowered();
-      startMeasurement();
-      setMainState( RUNNING );
-      setSleepTime( 1000 );
+      setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
+      if ( configuration )
+      {
+         isSelfPowered();
+         startMeasurement();
+         SET_STATE_L1( RUNNING );
+         setSleepTime( SystemTime::S );
+      }
+      else
+      {
+         terminate();
+         ErrorMessage::notifyOutOfMemory( id );
+         return;
+      }
    }
    else if ( inIdle() )
    {

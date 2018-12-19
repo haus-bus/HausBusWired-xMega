@@ -10,6 +10,7 @@
 
 #include "HwUnits.h"
 #include <ConfigurationManager.h>
+#include <ErrorMessage.h>
 
 class CriticalSection;
 

@@ -5,8 +5,9 @@
  *      Author: Viktor Pankraz
  */
 
-#include <ErrorMessage.h>
 #include "Counter.h"
+
+#include <ErrorMessage.h>
 
 const uint8_t Counter::debugLevel( DEBUG_LEVEL_OFF );
 
@@ -21,19 +22,6 @@ Counter::Response::Parameter& Counter::Response::setConfiguration()
 Counter::Counter( uint8_t _id )
 {
    Object::setId( ( ClassId::COUNTER << 8 ) | _id );
-   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
-   if ( configuration )
-   {
-      mode = configuration->getMode();
-      timeToReport = configuration->reportTime;
-      value = configuration->value;
-      lastValue = value;
-   }
-   else
-   {
-      terminate();
-      ErrorMessage( getId(), CONFIGURATION_OUT_OF_MEMORY );
-   }
 }
 
 bool Counter::handleRequest( HACF* message )
@@ -79,6 +67,24 @@ bool Counter::notifyEvent( const Event& event )
 {
    if ( event.isEvWakeup() )
    {
+      if ( inStartUp() )
+      {
+         setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
+         if ( configuration )
+         {
+            mode = configuration->getMode();
+            timeToReport = configuration->reportTime;
+            value = configuration->value;
+            lastValue = value;
+            SET_STATE_L1( RUNNING );
+         }
+         else
+         {
+            terminate();
+            ErrorMessage::notifyOutOfMemory( id );
+            return true;
+         }
+      }
       tick();
    }
    else if ( event.isEvMessage() )

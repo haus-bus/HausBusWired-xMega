@@ -14,3 +14,8 @@ ErrorMessage::ErrorMessage( uint16_t id, uint8_t code, uint8_t* data ) :
    queue();
 }
 
+void ErrorMessage::notifyOutOfMemory( uint16_t _id )
+{
+   ErrorMessage( _id, CONFIGURATION_OUT_OF_MEMORY );
+}
+

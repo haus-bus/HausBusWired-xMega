@@ -25,8 +25,7 @@ Timestamp HomeAutomation::lastMemoryReportTime;
 
 uint16_t HomeAutomation::LogicalUnitGroup::state[MAX_GROUPS];
 
-uint8_t HomeAutomation::LogicalUnitGroup::setState(
-   const HomeAutomationInterface::Command::SetUnitGroupState& params )
+uint8_t HomeAutomation::LogicalUnitGroup::setState( const HomeAutomationInterface::Command::SetUnitGroupState& params )
 {
    uint8_t idx = params.index;
    uint16_t preState = state[idx];
@@ -131,8 +130,7 @@ bool HomeAutomation::notifyEvent( const Event& event )
       DEBUG_M1( FSTR( ".routeMsg" ) );
       if ( message->controlFrame.isRelevantForComponent() )
       {
-         EventDrivenUnit* receiver = getObject(
-            message->controlFrame.receiverId.getObjectId() );
+         EventDrivenUnit* receiver = getObject( message->controlFrame.receiverId.getObjectId() );
          if ( receiver )
          {
             DEBUG_M2( FSTR( "send to receiver " ), receiver->getId() );
@@ -238,14 +236,12 @@ void HomeAutomation::checkPersistentRules()
    if ( !PersistentRules::instance().init() )
    {
       IResponse event( getId() );
-      event.setErrorCode(
-         HomeAutomationInterface::ErrorCode::INVALID_RULE_TABLE );
+      event.setErrorCode( HomeAutomationInterface::ErrorCode::INVALID_RULE_TABLE );
       event.queue( this );
    }
 }
 
-void HomeAutomation::cmdGetRemoteObjects(
-   HomeAutomationInterface::Response& response )
+void HomeAutomation::cmdGetRemoteObjects( HomeAutomationInterface::Response& response )
 {
    DEBUG_H2( getId(), FSTR( ".getRemoteObjects()" ) );
 
@@ -257,29 +253,23 @@ void HomeAutomation::cmdGetRemoteObjects(
    {
       if ( list[index]->hasRemoteAccess() )
       {
-         DEBUG_M3( (uint16_t )list[index], FSTR( " object 0x" ),
-                   list[index]->getId() );
-         response.getParameter().remoteObjects[numOfObjects++]
-            = list[index]->getId();
+         DEBUG_M3( (uint16_t )list[index], FSTR( " object 0x" ), list[index]->getId() );
+         response.getParameter().remoteObjects[numOfObjects++] = list[index]->getId();
       }
       if ( index++ >= getMaxObjectListSize() )
       {
          IResponse event( getId() );
-         event.setErrorCode(
-            HomeAutomationInterface::ErrorCode::MAX_OBJECTS_REACHED );
+         event.setErrorCode( HomeAutomationInterface::ErrorCode::MAX_OBJECTS_REACHED );
          event.queue( this );
          break;
       }
    }
-   response.controlFrame.setDataLength(
-      sizeof( response.getResponse() )
-      + sizeof( response.getParameter().remoteObjects[0] ) * numOfObjects );
+   response.controlFrame.setDataLength( sizeof( response.getResponse() ) + sizeof( response.getParameter().remoteObjects[0] ) * numOfObjects );
    response.setResponse( HomeAutomationInterface::Response::REMOTE_OBJECTS );
 }
 
-void HomeAutomation::cmdReadMemory(
-   HomeAutomationInterface::Command::ReadMemory& parameter,
-   HomeAutomationInterface::Response& response )
+void HomeAutomation::cmdReadMemory( HomeAutomationInterface::Command::ReadMemory& parameter,
+                                    HomeAutomationInterface::Response& response )
 {
    DEBUG_H2( getId(), FSTR( ".readMemory()" ) );
    uint8_t* dest = response.setReadMemory( parameter.address, parameter.length );
@@ -343,36 +333,29 @@ bool HomeAutomation::handleRequest( HACF* message )
          uint8_t idx = data->parameter.setRuleState.index;
          if ( idx < RuleEngine::getNumOfRules() )
          {
-            RuleEngine::getRules()[idx].setState(
-               data->parameter.setRuleState.state );
+            RuleEngine::getRules()[idx].setState( data->parameter.setRuleState.state );
          }
       }
-      else if ( cf.isCommand(
-                   HomeAutomationInterface::Command::TRIGGER_RULE_ELEMENT ) )
+      else if ( cf.isCommand( HomeAutomationInterface::Command::TRIGGER_RULE_ELEMENT ) )
       {
          DEBUG_H1( FSTR( ".triggerRuleElement()" ) );
          uint8_t idx = data->parameter.triggerRuleElement.idxRule;
          if ( idx < RuleEngine::getNumOfRules() )
          {
-            RuleEngine::getRules()[idx].triggerElement(
-               data->parameter.triggerRuleElement.idxElement );
+            RuleEngine::getRules()[idx].triggerElement( data->parameter.triggerRuleElement.idxElement );
          }
       }
-      else if ( cf.isCommand(
-                   HomeAutomationInterface::Command::SET_UNIT_GROUP_STATE ) )
+      else if ( cf.isCommand( HomeAutomationInterface::Command::SET_UNIT_GROUP_STATE ) )
       {
          DEBUG_H1( FSTR( ".setUnitGroupState()" ) );
-         uint8_t event = LogicalUnitGroup::setState(
-            data->parameter.setUnitGroupState );
+         uint8_t event = LogicalUnitGroup::setState( data->parameter.setUnitGroupState );
          if ( event )
          {
-            response.setUnitGroupEvent( event,
-                                        data->parameter.setUnitGroupState.index );
+            response.setUnitGroupEvent( event, data->parameter.setUnitGroupState.index );
             response.queue( this );
          }
       }
-      else if ( cf.isCommand(
-                   HomeAutomationInterface::Command::SET_DEBUG_OPTIONS ) )
+      else if ( cf.isCommand( HomeAutomationInterface::Command::SET_DEBUG_OPTIONS ) )
       {
          DEBUG_H1( FSTR( ".setDebugOptions()" ) );
          DebugOptions::set( data->parameter.debugOptions );
@@ -380,10 +363,8 @@ bool HomeAutomation::handleRequest( HACF* message )
       else if ( cf.isCommand( HomeAutomationInterface::Command::SET_SUN_TIMES ) )
       {
          DEBUG_H1( FSTR( ".setSunTimes()" ) );
-         WeekTime::sunRise.set(
-            WeekTime::WEEK_DAY_MASK | data->parameter.sunTimes.sunRise );
-         WeekTime::sunSet.set(
-            WeekTime::WEEK_DAY_MASK | data->parameter.sunTimes.sunSet );
+         WeekTime::sunRise.set( WeekTime::WEEK_DAY_MASK | data->parameter.sunTimes.sunRise );
+         WeekTime::sunSet.set( WeekTime::WEEK_DAY_MASK | data->parameter.sunTimes.sunSet );
       }
       else if ( cf.isCommand( HomeAutomationInterface::Command::SET_TIME ) )
       {
@@ -430,8 +411,7 @@ bool HomeAutomation::handleRequest( HACF* message )
             if ( !HomeAutomationHw::getModuleId( data->parameter.getModuleId.index,
                                                  response.setModuleId() ) )
             {
-               response.setErrorCode(
-                  HomeAutomationInterface::ErrorCode::MODULE_NOT_EXISTS );
+               response.setErrorCode( HomeAutomationInterface::ErrorCode::MODULE_NOT_EXISTS );
             }
          }
          else if ( cf.isCommand( HomeAutomationInterface::Command::GET_TIME ) )
@@ -439,8 +419,7 @@ bool HomeAutomation::handleRequest( HACF* message )
             DEBUG_H1( FSTR( ".getTime()" ) );
             response.setTime( Calender::getCurrentWeekTime().get() );
          }
-         else if ( cf.isCommand(
-                      HomeAutomationInterface::Command::GET_RULE_STATE ) )
+         else if ( cf.isCommand( HomeAutomationInterface::Command::GET_RULE_STATE ) )
          {
             DEBUG_H1( FSTR( ".getRuleState()" ) );
             uint8_t idx = data->parameter.index;
@@ -450,31 +429,25 @@ bool HomeAutomation::handleRequest( HACF* message )
             }
             else
             {
-               response.setErrorCode(
-                  HomeAutomationInterface::ErrorCode::SYNTAX_ERROR );
+               response.setErrorCode( HomeAutomationInterface::ErrorCode::SYNTAX_ERROR );
             }
          }
-         else if ( cf.isCommand(
-                      HomeAutomationInterface::Command::SET_CONFIGURATION ) )
+         else if ( cf.isCommand( HomeAutomationInterface::Command::SET_CONFIGURATION ) )
          {
-            if ( cf.getDataLength()
-                 == ( HomeAutomationConfiguration::SIZEOF + 1 ) )
+            if ( cf.getDataLength() == ( HomeAutomationConfiguration::SIZEOF + 1 ) )
             {
                DEBUG_H1( FSTR( ".setConfiguration()" ) );
                HomeAutomationConfiguration conf;
                HomeAutomationConfiguration::instance().get( conf );
-               memcpy( &conf, &data->parameter.setConfiguration,
-                       HomeAutomationConfiguration::SIZEOF );
+               memcpy( &conf, &data->parameter.setConfiguration, HomeAutomationConfiguration::SIZEOF );
                HomeAutomationConfiguration::instance().set( conf );
                lastMemoryReportTime = Timestamp();
                setSleepTime( WAKE_UP );
-               if ( HACF::deviceId
-                    != HomeAutomationConfiguration::instance().getDeviceId() )
+               if ( HACF::deviceId != HomeAutomationConfiguration::instance().getDeviceId() )
                {
                   // change deviceId only after reset
                   // HACF::deviceId = HomeAutomationHw::Configuration::instance().getDeviceId();
-                  response.setDeviceId(
-                     HomeAutomationConfiguration::instance().getDeviceId() );
+                  response.setDeviceId( HomeAutomationConfiguration::instance().getDeviceId() );
                }
                else
                {
@@ -483,8 +456,7 @@ bool HomeAutomation::handleRequest( HACF* message )
             }
             else
             {
-               response.setErrorCode(
-                  HomeAutomationInterface::ErrorCode::SYNTAX_ERROR );
+               response.setErrorCode( HomeAutomationInterface::ErrorCode::SYNTAX_ERROR );
             }
          }
          else if ( cf.isCommand(
@@ -498,27 +470,22 @@ bool HomeAutomation::handleRequest( HACF* message )
             }
             else
             {
-               response.setErrorCode(
-                  HomeAutomationInterface::ErrorCode::SYNTAX_ERROR );
+               response.setErrorCode( HomeAutomationInterface::ErrorCode::SYNTAX_ERROR );
             }
          }
-         else if ( cf.isCommand(
-                      HomeAutomationInterface::Command::GET_REMOTE_OBJECTS ) )
+         else if ( cf.isCommand( HomeAutomationInterface::Command::GET_REMOTE_OBJECTS ) )
          {
             cmdGetRemoteObjects( response );
          }
-         else if ( cf.isCommand(
-                      HomeAutomationInterface::Command::GET_UNUSED_MEMORY ) )
+         else if ( cf.isCommand( HomeAutomationInterface::Command::GET_UNUSED_MEMORY ) )
          {
             DEBUG_H1( FSTR( ".getUnusedMemory()" ) );
             response.setUnusedMemory();
          }
-         else if ( cf.isCommand(
-                      HomeAutomationInterface::Command::GET_CONFIGURATION ) )
+         else if ( cf.isCommand( HomeAutomationInterface::Command::GET_CONFIGURATION ) )
          {
             DEBUG_H1( FSTR( ".getConfiguration()" ) );
-            HomeAutomationConfiguration::instance().get(
-               response.setConfiguration( getFckE() ) );
+            HomeAutomationConfiguration::instance().get( response.setConfiguration( getFckE() ) );
          }
          else if ( cf.isCommand( HomeAutomationInterface::Command::READ_MEMORY ) )
          {
@@ -531,21 +498,17 @@ bool HomeAutomation::handleRequest( HACF* message )
          }
          else if ( cf.isCommand( HomeAutomationInterface::Command::WRITE_RULES ) )
          {
-            cmdWriteRules(
-               data->parameter.writeRules,
-               cf.getDataLength() - sizeof( data->command )
-               - sizeof( data->parameter.writeRules.offset ),
-               response );
+            cmdWriteRules( data->parameter.writeRules,
+                           cf.getDataLength() - sizeof( data->command ) - sizeof( data->parameter.writeRules.offset ),
+                           response );
          }
          else if ( cf.isCommand( HomeAutomationInterface::Command::READ_RULES ) )
          {
             DEBUG_H1( FSTR( ".readRules()" ) );
-            HomeAutomationInterface::Command::ReadRules* parameter
-               = &data->parameter.readRules;
-            HomeAutomationHw::readRules(
-               parameter->offset,
-               response.setReadRules( parameter->offset, parameter->length ),
-               parameter->length );
+            HomeAutomationInterface::Command::ReadRules* parameter = &data->parameter.readRules;
+            HomeAutomationHw::readRules( parameter->offset,
+                                         response.setReadRules( parameter->offset, parameter->length ),
+                                         parameter->length );
          }
          else if ( cf.isCommand( HomeAutomationInterface::Command::PING ) )
          {
@@ -577,6 +540,5 @@ HomeAutomationInterface::Response* HomeAutomation::getErrorEvent() const
 
 uint16_t HomeAutomation::getMinuteTicks() const
 {
-   return MINUTE_TICKS
-          + HomeAutomationConfiguration::instance().getTimeCorrectionValue();
+   return MINUTE_TICKS + HomeAutomationConfiguration::instance().getTimeCorrectionValue();
 }

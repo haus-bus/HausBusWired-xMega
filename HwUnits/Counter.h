@@ -15,12 +15,6 @@ class Counter : public Reactive
 {
    public:
 
-      enum ErrorCodes
-      {
-         CONFIGURATION_OUT_OF_MEMORY,
-
-      };
-
       struct Configuration
       {
          enum EMode

@@ -9,43 +9,37 @@
 #include "Button.h"
 #include "Led.h"
 
+#include <ErrorMessage.h>
+
 const uint8_t LogicalButton::debugLevel( DEBUG_LEVEL_OFF );
 
 LogicalButton::Response::Parameter& LogicalButton::Response::setConfiguration()
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().configuration ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().configuration ) );
    setResponse( CONFIGURATION );
    return getParameter();
 }
 
 void LogicalButton::Response::setStatus( uint8_t status )
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().status ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().status ) );
    setResponse( STATUS );
    getParameter().status = status;
 }
 
 LogicalButton::LogicalButton( uint8_t _id )
 {
-   {
-      for ( int pos = 0; pos < Configuration::MAX_OBJECTS;
-            ++pos )
-      {
-         led[pos] = NULL;
-      }
-   }
    configuration = NULL;
+   for ( int pos = 0; pos < Configuration::MAX_OBJECTS; ++pos )
    {
-      for ( int pos = 0; pos < Configuration::MAX_OBJECTS;
-            ++pos )
-      {
-         button[pos] = NULL;
-      }
+      led[pos] = NULL;
+   }
+
+   for ( int pos = 0; pos < Configuration::MAX_OBJECTS; ++pos )
+   {
+      button[pos] = NULL;
    }
    Object::setId( ( ClassId::LOGICAL_BUTTON << 8 ) | _id );
-   setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
 }
 
 void LogicalButton::clearObjectList()
@@ -81,7 +75,16 @@ bool LogicalButton::notifyEvent( const Event& event )
 {
    if ( event.isEvWakeup() )
    {
-      updateObjectList();
+      setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
+      if ( configuration )
+      {
+         updateObjectList();
+      }
+      else
+      {
+         terminate();
+         ErrorMessage::notifyOutOfMemory( id );
+      }
       setSleepTime( NO_WAKE_UP );
    }
    else if ( event.isEvMessage() )
@@ -135,10 +138,8 @@ void LogicalButton::updateObjectList()
 {
    for ( uint8_t i = 0; i < Configuration::MAX_OBJECTS; i++ )
    {
-      led[i] = (Led*) getObject(
-         ( ClassId::LED << 8 ) | configuration->getLedId( i ) );
-      button[i] = (Button*) getObject(
-         ( ClassId::BUTTON << 8 ) | configuration->getButtonId( i ) );
+      led[i] = (Led*) getObject( ( ClassId::LED << 8 ) | configuration->getLedId( i ) );
+      button[i] = (Button*) getObject( ( ClassId::BUTTON << 8 ) | configuration->getButtonId( i ) );
 
       if ( button[i] && led[i] )
       {
