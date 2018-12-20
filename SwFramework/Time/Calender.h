@@ -81,9 +81,11 @@ class Calender
 
       inline void setWeekTime( WeekTime wTime )
       {
+         second = 0;
          minute = wTime.getMinute();
          hour = wTime.getHour();
          dayofweek = wTime.getWeekDay();
+         evTime( minuteListener ).queue();
       }
 
       static Calender fromTimeStamp( uint32_t timestamp, uint16_t startYear

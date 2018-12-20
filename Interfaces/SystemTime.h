@@ -36,6 +36,8 @@ class SystemTime
       static const uint32_t H = 60 * MIN;
       static const uint32_t D = 24 * H;
 
+      static int8_t ticksPerSecondAdjustment;
+
       ////    Operations    ////
 
       static void init( ClockSources cs = RTCSRC_RCOSC_1024, uint16_t frequency = 1024 );

@@ -14,6 +14,7 @@
 #include <Time/Calender.h>
 
 uint16_t SystemTime::ticks( 0 );
+int8_t SystemTime::ticksPerSecondAdjustment( 0 );
 
 void SystemTime::init( ClockSources cs, uint16_t frequency )
 {
@@ -106,7 +107,7 @@ void SystemTime::set( SystemTime::time_t value )
 
 SIGNAL(RTC_COMP_vect)
 {
-   RealTimeCounter::setCompareValue(RealTimeCounter::getCompareValue() + 1024);
+   RealTimeCounter::setCompareValue(RealTimeCounter::getCompareValue() + SystemTime::S + SystemTime::ticksPerSecondAdjustment);
    Calender::now.addSecond();
 }
 
