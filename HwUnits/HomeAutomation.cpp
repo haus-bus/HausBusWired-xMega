@@ -17,9 +17,7 @@
 
 extern uint16_t getUnusedMemory();
 
-const uint8_t HomeAutomation::debugLevel( DEBUG_LEVEL_OFF );
-
-Timestamp HomeAutomation::lastMinuteTick;
+const uint8_t HomeAutomation::debugLevel( DEBUG_LEVEL_LOW );
 
 Timestamp HomeAutomation::lastMemoryReportTime;
 
@@ -76,23 +74,19 @@ bool HomeAutomation::notifyEvent( const Event& event )
    }
    else if ( event.isEvTime() )
    {
-      WeekTime cuurentWeekTime = Calender::getCurrentWeekTime();
+      WeekTime currentWeekTime = Calender::getCurrentWeekTime();
       MyEvent myEvent;
 
-      bool isSunRise = cuurentWeekTime.isSunRise();
-      if ( isSunRise || cuurentWeekTime.isSunSet() )
+      bool isSunRise = currentWeekTime.isSunRise();
+      if ( isSunRise || currentWeekTime.isSunSet() )
       {
-         myEvent.setResponse(
-            isSunRise ? MyEvent::EVENT_DAY : MyEvent::EVENT_NIGHT );
+         myEvent.setResponse( isSunRise ? MyEvent::EVENT_DAY : MyEvent::EVENT_NIGHT );
          myEvent.queue();
          DEBUG_H1( ( isSunRise ? FSTR( ".evDay" ) : FSTR( ".evNight" ) ) );
       }
       myEvent.setTimeEvent();
       myEvent.queue();
-      DEBUG_H2( FSTR( ".evTime 0x" ), cuurentWeekTime.get() );
-
-// event.setTime( cuurentWeekTime.get() );
-// event.queue();
+      DEBUG_H2( FSTR( ".evTime 0x" ), currentWeekTime.get() );
    }
    else if ( event.isEvGatewayMessage() )
    {
@@ -175,18 +169,16 @@ void HomeAutomation::run()
 
    HomeAutomationInterface::Response event( getId() );
    HomeAutomationConfiguration& conf = HomeAutomationConfiguration::instance();
+   uint8_t reportMemoryStatusTime = conf.getReportMemoryStatusTime();
 
    if ( inStartUp() )
    {
+      SystemTime::ticksPerSecondAdjustment = conf.getTimeCorrectionValue();
+
       // notify server that new module has started
       event.setStarted( ResetSystem::getSources() );
       event.queue( this );
 
-// if ( !ResetSystem::getSources() )
-// {
-// event.setErrorCode( HomeAutomationInterface::ErrorCode::NULL_POINTER );
-// event.queue( this );
-// }
       if ( ResetSystem::isBrownOutReset() )
       {
          event.setErrorCode( HomeAutomationInterface::ErrorCode::LOW_VOLTAGE );
@@ -203,31 +195,14 @@ void HomeAutomation::run()
    }
    else
    {
-      uint16_t ticksPerMinute = getMinuteTicks();
-
-      SystemTime::time_t reportTime
-         = (SystemTime::time_t) conf.getReportMemoryStatusTime() * ticksPerMinute;
-
-      if ( reportTime && lastMemoryReportTime.elapsed( reportTime ) )
+      if ( reportMemoryStatusTime && lastMemoryReportTime.since() )
       {
-         lastMemoryReportTime = Timestamp();
+         lastMemoryReportTime += ( (uint32_t)reportMemoryStatusTime * SystemTime::MIN  );
          event.setUnusedMemory();
          event.queue( this );
       }
 
       setSleepTime( SystemTime::S );
-      /*
-         HomeAutomation::Configuration conf;
-         uint8_t errorCode = HomeAutomation::Configuration::instance().get( conf );
-         if ( errorCode )
-         {
-         HACF::setDeviceId(
-         HomeAutomation::Configuration::instance().getDeviceId() );
-         event.setErrorCode(
-         HomeAutomationInterface::ErrorCode::CHECKSUM_ERROR + errorCode );
-         event.queue( this );
-         }
-       */
    }
 }
 
@@ -315,8 +290,7 @@ bool HomeAutomation::handleRequest( HACF* message )
    bool consumed = true;
 
    HACF::ControlFrame& cf = message->controlFrame;
-   HomeAutomationInterface::Command* data
-      = reinterpret_cast<HomeAutomationInterface::Command*>( cf.data );
+   HomeAutomationInterface::Command* data = reinterpret_cast<HomeAutomationInterface::Command*>( cf.data );
    HomeAutomationInterface::Response response( getId() );
 
    if ( cf.isCommand() )
@@ -371,32 +345,19 @@ bool HomeAutomation::handleRequest( HACF* message )
          DEBUG_H1( FSTR( ".setTime()" ) );
          int16_t timeDifference = WeekTime( data->parameter.time ).distanceToNow();
 
-         if ( abs( timeDifference ) > 10 )
+         if ( timeDifference )
          {
-
             Calender::now.setWeekTime( WeekTime( data->parameter.time ) );
-            lastMinuteTick = Timestamp();
-         }
-         else if ( timeDifference )
-         {
-            HomeAutomationConfiguration& conf = HomeAutomationConfiguration::instance();
-            int16_t timeCorrection = conf.getTimeCorrectionValue();
-            timeCorrection += timeDifference;
-            if ( timeCorrection > 0xFF )
-            {
-               timeCorrection = 0xFF;
-            }
-            else if ( timeCorrection < 0 )
-            {
-               timeCorrection = 0;
-            }
-            conf.setTimeCorrectionValue( timeCorrection );
 
-            lastMinuteTick = Timestamp();
-            lastMinuteTick += ( (int32_t) timeDifference * getMinuteTicks() );
-
-            if ( abs( timeDifference ) > 2 )
+            // do not adjust timeCorrection for too big deviation, it is most likely a reboot or startup
+            if ( abs( timeDifference ) < MAX_TIME_DIFFERENCE )
             {
+               HomeAutomationConfiguration& conf = HomeAutomationConfiguration::instance();
+               int8_t timeCorrection = conf.getTimeCorrectionValue() + timeDifference;
+               conf.setTimeCorrectionValue( timeCorrection );
+               SystemTime::ticksPerSecondAdjustment = timeCorrection;
+
+               // notify system that time different
                response.setTimeDifference( timeDifference );
                response.queue( this );
             }
@@ -408,8 +369,7 @@ bool HomeAutomation::handleRequest( HACF* message )
          if ( cf.isCommand( HomeAutomationInterface::Command::GET_MODULE_ID ) )
          {
             DEBUG_H1( FSTR( ".getModuleId()" ) );
-            if ( !HomeAutomationHw::getModuleId( data->parameter.getModuleId.index,
-                                                 response.setModuleId() ) )
+            if ( !HomeAutomationHw::getModuleId( data->parameter.getModuleId.index, response.setModuleId() ) )
             {
                response.setErrorCode( HomeAutomationInterface::ErrorCode::MODULE_NOT_EXISTS );
             }
@@ -459,8 +419,7 @@ bool HomeAutomation::handleRequest( HACF* message )
                response.setErrorCode( HomeAutomationInterface::ErrorCode::SYNTAX_ERROR );
             }
          }
-         else if ( cf.isCommand(
-                      HomeAutomationInterface::Command::GENERATE_RANDOM_DEVICE_ID ) )
+         else if ( cf.isCommand( HomeAutomationInterface::Command::GENERATE_RANDOM_DEVICE_ID ) )
          {
             if ( cf.getDataLength() == 1 )
             {
@@ -538,7 +497,3 @@ HomeAutomationInterface::Response* HomeAutomation::getErrorEvent() const
    return (HomeAutomationInterface::Response*) &errorEvent;
 }
 
-uint16_t HomeAutomation::getMinuteTicks() const
-{
-   return MINUTE_TICKS + HomeAutomationConfiguration::instance().getTimeCorrectionValue();
-}

@@ -235,7 +235,7 @@ class HomeAutomationInterface
                uint16_t time;
                RuleState ruleState;
                UnitGroupEvent unitGroupEvent;
-               int16_t timeDifference;
+               int8_t timeDifference;
             };
 
             ////    Constructors and destructors    ////
@@ -269,7 +269,7 @@ class HomeAutomationInterface
 
             inline void setTime( uint16_t value );
 
-            inline void setTimeDifference( int16_t value );
+            inline void setTimeDifference( int8_t value );
 
             inline void setUnitGroupEvent( uint8_t event, uint8_t index );
 
@@ -307,11 +307,9 @@ class HomeAutomationInterface
       };
 };
 
-inline HomeAutomationConfiguration& HomeAutomationInterface::Response::setConfiguration(
-   uint8_t fcke )
+inline HomeAutomationConfiguration& HomeAutomationInterface::Response::setConfiguration( uint8_t fcke )
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().configuration ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().configuration ) );
    setResponse( CONFIGURATION );
    getParameter().configuration.dataBlockSize = HACF::MAX_DATA_SIZE;
    getParameter().configuration.fcke = fcke;
@@ -320,24 +318,21 @@ inline HomeAutomationConfiguration& HomeAutomationInterface::Response::setConfig
 
 inline void HomeAutomationInterface::Response::setDeviceId( uint16_t _id )
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().deviceId ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().deviceId ) );
    setResponse( EVENT_NEW_DEVICE_ID );
    getParameter().deviceId = _id;
 }
 
 inline void HomeAutomationInterface::Response::setMemoryStatus( uint8_t status )
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().status ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().status ) );
    setResponse( MEMORY_STATUS );
    getParameter().status = status;
 }
 
 inline ModuleId* HomeAutomationInterface::Response::setModuleId()
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().moduleId ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().moduleId ) );
    setResponse( MODULE_ID );
    return &getParameter().moduleId;
 }
@@ -348,33 +343,25 @@ inline void HomeAutomationInterface::Response::setPong()
    setResponse( PONG );
 }
 
-inline uint8_t* HomeAutomationInterface::Response::setReadMemory(
-   const uint32_t& address, uint16_t size )
+inline uint8_t* HomeAutomationInterface::Response::setReadMemory( const uint32_t& address, uint16_t size )
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().memoryData.address )
-      + size );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().memoryData.address ) + size );
    setResponse( MEMORY_DATA );
    getParameter().memoryData.address = address;
    return getParameter().memoryData.data;
 }
 
-inline uint8_t* HomeAutomationInterface::Response::setReadRules(
-   uint16_t offset, uint16_t length )
+inline uint8_t* HomeAutomationInterface::Response::setReadRules( uint16_t offset, uint16_t length )
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().rulesData.offset )
-      + length );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().rulesData.offset ) + length );
    setResponse( RULES_DATA );
    getParameter().rulesData.offset = offset;
    return getParameter().rulesData.data;
 }
 
-inline void HomeAutomationInterface::Response::setRuleState( uint8_t index,
-                                                             uint8_t state )
+inline void HomeAutomationInterface::Response::setRuleState( uint8_t index, uint8_t state )
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().ruleState ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().ruleState ) );
    setResponse( RULE_STATE );
    getParameter().ruleState.index = index;
    getParameter().ruleState.state = state;
@@ -382,45 +369,37 @@ inline void HomeAutomationInterface::Response::setRuleState( uint8_t index,
 
 inline void HomeAutomationInterface::Response::setStarted( uint8_t sources )
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().status ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().status ) );
    setResponse( EVENT_STARTED );
    getParameter().status = sources;
 }
 
 inline void HomeAutomationInterface::Response::setTime( uint16_t value )
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().time ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().time ) );
    setResponse( TIME );
    getParameter().time = value;
 }
 
-inline void HomeAutomationInterface::Response::setTimeDifference(
-   int16_t value )
+inline void HomeAutomationInterface::Response::setTimeDifference( int8_t value )
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().timeDifference ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().timeDifference ) );
    setResponse( TIME_DIFFERENCE );
    getParameter().timeDifference = value;
 }
 
-inline void HomeAutomationInterface::Response::setUnitGroupEvent(
-   uint8_t event, uint8_t index )
+inline void HomeAutomationInterface::Response::setUnitGroupEvent( uint8_t event, uint8_t index )
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().unitGroupEvent ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().unitGroupEvent ) );
    setResponse( event );
    getParameter().unitGroupEvent.index = index;
 }
 
 inline void HomeAutomationInterface::Response::setUnusedMemory()
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().unusedMemory ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().unusedMemory ) );
    setResponse( UNUSED_MEMORY );
-   getUnusedMemory( getParameter().unusedMemory.freeStack,
-                    getParameter().unusedMemory.freeHeap );
+   getUnusedMemory( getParameter().unusedMemory.freeStack, getParameter().unusedMemory.freeHeap );
 }
 
 #endif

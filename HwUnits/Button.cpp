@@ -52,7 +52,7 @@ bool Button::handleRequest( HACF* message )
    {
       DEBUG_H1( FSTR( ".setConfiguration()" ) );
       configuration->set( data->parameter.setConfiguration );
-      enabledEvents = configuration->getEvents();
+      enabledEvents.mask = configuration->getEvents().mask;
    }
    else if ( cf.isCommand( Command::ENABLE_EVENTS ) )
    {
@@ -85,7 +85,7 @@ bool Button::notifyEvent( const Event& event )
          setConfiguration( ConfigurationManager::getConfiguration<EepromConfiguration>( id ) );
          if ( configuration )
          {
-            enabledEvents = configuration->getEvents();
+            enabledEvents.mask = configuration->getEvents().mask;
             SET_STATE_L1( RUNNING );
          }
          else

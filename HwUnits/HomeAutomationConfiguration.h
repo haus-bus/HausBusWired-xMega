@@ -40,7 +40,7 @@ class HomeAutomationConfiguration
 
       inline uint8_t getStartupDelay() const;
 
-      inline uint8_t getTimeCorrectionValue() const;
+      inline int8_t getTimeCorrectionValue() const;
 
       inline static HomeAutomationConfiguration& instance();
 
@@ -50,7 +50,7 @@ class HomeAutomationConfiguration
 
       inline void setDeviceId( uint16_t _deviceId );
 
-      inline void setTimeCorrectionValue( uint8_t value );
+      inline void setTimeCorrectionValue( int8_t value );
 
       ////    Attributes    ////
 
@@ -101,13 +101,12 @@ inline uint8_t HomeAutomationConfiguration::getStartupDelay() const
    return Flash::readUserSignature( reinterpret_cast<uint16_t>( &startupDelay ) );
 }
 
-inline uint8_t HomeAutomationConfiguration::getTimeCorrectionValue() const
+inline int8_t HomeAutomationConfiguration::getTimeCorrectionValue() const
 {
    return Flash::readUserSignature( reinterpret_cast<uint16_t>( &timeCorrectionValue ) );
 }
 
-inline void HomeAutomationConfiguration::setTimeCorrectionValue(
-   uint8_t value )
+inline void HomeAutomationConfiguration::setTimeCorrectionValue( int8_t value )
 {
    Flash::writeUserSignature( reinterpret_cast<uint16_t>( &timeCorrectionValue ), &value, sizeof( value ) );
 }
@@ -117,8 +116,7 @@ inline HomeAutomationConfiguration& HomeAutomationConfiguration::instance()
    return *reinterpret_cast<HomeAutomationConfiguration*>( USER_SIGNATURE_ROW_OFFSET );
 }
 
-inline void HomeAutomationConfiguration::restoreFactoryConfiguration(
-   uint8_t id, uint8_t fcke )
+inline void HomeAutomationConfiguration::restoreFactoryConfiguration( uint8_t id, uint8_t fcke )
 {
    uint8_t buffer[sizeof( HomeAutomationConfiguration ) + 2];
    memset( &buffer, 0xFF, sizeof( buffer ) );

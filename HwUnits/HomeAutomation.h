@@ -47,8 +47,7 @@ class HomeAutomation : public Reactive
       class MyEvent;
 
       static const uint16_t TIME_TO_RESET = 100;
-      static const uint16_t MINUTE_TICKS = 0xEE00;
-      static const uint16_t MAX_TIME_DIFFERENCE = 10;
+      static const uint8_t MAX_TIME_DIFFERENCE = 8;
 
       class LogicalUnitGroup
       {
@@ -157,8 +156,6 @@ class HomeAutomation : public Reactive
       static const uint8_t debugLevel;
 
    private:
-
-      static Timestamp lastMinuteTick;
 
       static Timestamp lastMemoryReportTime;
 

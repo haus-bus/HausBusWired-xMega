@@ -282,16 +282,6 @@ class Button : public Reactive
 
    private:
 
-      inline Configuration::Event getEnabledEvents() const
-      {
-         return enabledEvents;
-      }
-
-      inline void setEnabledEvents( Configuration::Event p_enabledEvents )
-      {
-         enabledEvents = p_enabledEvents;
-      }
-
       ////    Attributes    ////
 
    public:
