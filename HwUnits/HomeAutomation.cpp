@@ -197,7 +197,7 @@ void HomeAutomation::run()
    {
       if ( reportMemoryStatusTime && lastMemoryReportTime.since() )
       {
-         lastMemoryReportTime += ( (uint32_t)reportMemoryStatusTime * SystemTime::MIN  );
+         lastMemoryReportTime += ( (uint32_t)reportMemoryStatusTime * SystemTime::MIN );
          event.setUnusedMemory();
          event.queue( this );
       }

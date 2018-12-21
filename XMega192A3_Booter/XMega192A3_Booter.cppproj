@@ -88,7 +88,7 @@
   <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
   <avrgcccpp.compiler.symbols.DefSymbols>
     <ListValues>
-      <Value>F_CPU=32000000</Value>
+      <Value>F_CPU=8000000</Value>
       <Value>SUPPORT_TWI</Value>
       <Value>SUPPORT_UDP</Value>
       <Value>SUPPORT_RS485</Value>
@@ -171,7 +171,7 @@
   <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
   <avrgcccpp.compiler.symbols.DefSymbols>
     <ListValues>
-      <Value>F_CPU=32000000</Value>
+      <Value>F_CPU=8000000</Value>
       <Value>SUPPORT_TWI</Value>
       <Value>SUPPORT_UDP</Value>
       <Value>SUPPORT_RS485</Value>

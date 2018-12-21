@@ -39,8 +39,7 @@ bool HomeAutomationHw::getModuleId( uint8_t index, ModuleId* moduleId )
       return false;
    }
 
-   if ( Flash::read( modulIdPosition, moduleId, sizeof( ModuleId ) )
-        == sizeof( ModuleId ) )
+   if ( Flash::read( modulIdPosition, moduleId, sizeof( ModuleId ) ) == sizeof( ModuleId ) )
    {
       return ( getFirmwareId() == moduleId->getFirmwareId() );
    }

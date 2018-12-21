@@ -57,8 +57,7 @@ class HomeAutomation : public Reactive
 
             ////    Operations    ////
 
-            static uint8_t setState(
-               const HomeAutomationInterface::Command::SetUnitGroupState& params );
+            static uint8_t setState( const HomeAutomationInterface::Command::SetUnitGroupState& params );
 
             ////    Attributes    ////
 
@@ -86,8 +85,7 @@ class HomeAutomation : public Reactive
             inline MyEvent() :
                IResponse( HACF::SYSTEM_ID )
             {
-               controlFrame.receiverId.setId(
-                  ( (uint32_t) HACF::deviceId << 16 ) | HACF::SYSTEM_ID );
+               controlFrame.receiverId.setId( ( (uint32_t) HACF::deviceId << 16 ) | HACF::SYSTEM_ID );
                controlFrame.setDataLength( 1 );
             }
 

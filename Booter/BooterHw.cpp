@@ -90,15 +90,24 @@ void BooterHw::configure()
    {
       enc28j60.enableInterrupt();
    }
-   else
 #endif
 
 #ifdef SUPPORT_RS485
 #if ( CONTROLLER_ID != 4 )
    DigitalOutputTmpl<PortA, 6> rxEnable;
 #endif
-
-   rs485.init<135, -2, USART_CMODE_ASYNCHRONOUS_gc, USART_PMODE_EVEN_gc>();
+   if ( F_CPU == 32000000 )
+   {
+      rs485.init<1097, -5, USART_CMODE_ASYNCHRONOUS_gc, USART_PMODE_EVEN_gc>();
+   }
+   else if ( F_CPU == 8000000 )
+   {
+      rs485.init<1001, -7, USART_CMODE_ASYNCHRONOUS_gc, USART_PMODE_EVEN_gc>();
+   }
+   else
+   {
+      rs485.init<57600, USART_CMODE_ASYNCHRONOUS_gc, USART_PMODE_EVEN_gc>();
+   }
 #endif
 
 #ifdef SUPPORT_TWI

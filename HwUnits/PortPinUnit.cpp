@@ -143,8 +143,7 @@ bool PortPinUnit::notifyEvent( const Event& event )
       if ( hasNewEvent )
       {
          Response event( getId() );
-         event.setEvent(
-            ( state.sub == ON ) ? Response::EVENT_ON : Response::EVENT_OFF );
+         event.setEvent( ( state.sub == ON ) ? Response::EVENT_ON : Response::EVENT_OFF );
          event.queue();
       }
    }
