@@ -11,16 +11,14 @@ const uint8_t BaseSensorUnit::debugLevel( DEBUG_LEVEL_OFF );
 
 BaseSensorUnit::Response::Parameter& BaseSensorUnit::Response::setConfiguration()
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().configuration ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().configuration ) );
    setResponse( CONFIGURATION );
    return getParameter();
 }
 
 void BaseSensorUnit::Response::setStatus( BaseSensorUnit::Status value )
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().status ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().status ) );
    setResponse( STATUS );
    getParameter().status = value;
 }
@@ -32,6 +30,12 @@ void BaseSensorUnit::notifyNewValue( BaseSensorUnit::Status newStatus )
       lastStatus = newStatus;
       return;
    }
+
+   if ( configuration->reportTimeBase == 0 )
+   {
+      SET_STATE_L1( IDLE );
+   }
+
    uint8_t nextEvent = currentEvent;
 
    int16_t newStatusValue = newStatus.getCompleteValue();
