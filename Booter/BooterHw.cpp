@@ -166,6 +166,13 @@ HACF::ControlFrame* BooterHw::getMessage()
       {
       }
    }
+   if ( message )
+   {
+      if ( !message->isCommand() || !message->isRelevantForComponent() || !message->isRelevantForObject( HACF::BOOTLOADER_ID ) )
+      {
+         message = NULL;
+      }
+   }
    return message;
 }
 
@@ -204,7 +211,9 @@ void BooterHw::sendMessage()
    #if defined( SUPPORT_RS485 ) || defined( SUPPORT_UDP )
    if ( ( activeComm == COMM_TWI ) || ( activeComm == COMM_NO ) )
    {
+      twi.slave.disable();
       twi.master.write( header->address, &header->checksum, length - 1 );
+      twi.slave.enable();
    }
    else
    #else
@@ -225,10 +234,7 @@ bool BooterHw::readMessageFromTwi()
       TwiHeader* header = reinterpret_cast<TwiHeader*>( transferBuffer.header );
       uint16_t length = twi.slave.read( &header->address, sizeof( transferBuffer ) - sizeof( header->unused ) );
 
-      if ( !Checksum::hasError( &header->address, length )
-         && transferBuffer.controlFrame.isCommand()
-         && transferBuffer.controlFrame.isRelevantForComponent()
-         && transferBuffer.controlFrame.isRelevantForObject( HACF::BOOTLOADER_ID ) )
+      if ( !Checksum::hasError( &header->address, length ) )
       {
          message = &transferBuffer.controlFrame;
          return true;
@@ -264,10 +270,7 @@ bool BooterHw::readMessageFromRS485()
       }
       else if ( data == FRAME_STOPBYTE )
       {
-         if ( !Checksum::hasError( &header->checksum, receiveBufferPosition )
-            && transferBuffer.controlFrame.isCommand()
-            && transferBuffer.controlFrame.isRelevantForComponent()
-            && transferBuffer.controlFrame.isRelevantForObject( HACF::BOOTLOADER_ID ) )
+         if ( !Checksum::hasError( &header->checksum, receiveBufferPosition ) )
          {
             message = &transferBuffer.controlFrame;
             return true;
@@ -351,13 +354,9 @@ bool BooterHw::readMessageFromUdp()
                                           - sizeof( transferBuffer.controlFrame )
                                           + transferBuffer.controlFrame.getLength() ) ) )
             {
-               if ( transferBuffer.controlFrame.isCommand()
-                  && transferBuffer.controlFrame.isRelevantForComponent()
-                  && transferBuffer.controlFrame.isRelevantForObject( HACF::BOOTLOADER_ID ) )
-               {
-                  DEBUG_L3( endl, "data received: 0x", bytesTransferred );
-                  message = &transferBuffer.controlFrame;
-               }
+               DEBUG_L3( endl, "data received: 0x", bytesTransferred );
+               message = &transferBuffer.controlFrame;
+
                IP* sourceIp = header->udpHeader.getSourceAddress();
                if ( ( IP::local == IP::defaultIp ) && !sourceIp->isBroadcast() )
                {
