@@ -166,14 +166,11 @@ HACF::ControlFrame* BooterHw::getMessage()
       {
       }
    }
-   if ( message )
+   if ( message && message->isCommand() && message->isRelevantForComponent() && message->isRelevantForObject( HACF::BOOTLOADER_ID ) )
    {
-      if ( !message->isCommand() || !message->isRelevantForComponent() || !message->isRelevantForObject( HACF::BOOTLOADER_ID ) )
-      {
-         message = NULL;
-      }
+      return message;
    }
-   return message;
+   return NULL;
 }
 
 void BooterHw::sendMessage()
@@ -217,7 +214,9 @@ void BooterHw::sendMessage()
    }
    else
    #else
+   twi.slave.disable();
    twi.master.write( header->address, &header->checksum, length - 1 );
+   twi.slave.enable();
    if ( false )
    #endif
    #endif
