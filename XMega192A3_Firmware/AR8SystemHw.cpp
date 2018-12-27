@@ -52,8 +52,7 @@ void AR8SystemHw::configure()
 
    TRACE_PORT_INIT( AllPins );
 
-   IoPort::instance( PortR ).setPinsAsOutput( Pin0 | Pin1 );
-   IoPort::instance( PortR ).set( Pin0 | Pin1 );
+   DigitalOutputTmpl<PortR, 1> greenLed;
 
    // red LED
    new DigitalOutputUnit( PortPin( PortR, Pin0 ) );

@@ -25,6 +25,8 @@ class XEeprom
       // Access/read members.
       T operator*() const
       {
+         // Todo check if needed here
+         // NvmController::waitWhileBusy();
          return member;
       }
       operator const T() const { return **this; }
