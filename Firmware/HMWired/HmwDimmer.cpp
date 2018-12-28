@@ -13,7 +13,8 @@
 
 const uint8_t HmwDimmer::debugLevel( DEBUG_LEVEL_LOW | DEBUG_STATE_L3 );
 
-HmwDimmer::HmwDimmer( PortPin _portPin, PortPin _enablePin, Config* _config ) :
+HmwDimmer::HmwDimmer( PortPin _portPin, PortPin _enablePin, Config* _config, uint8_t _normalizeLevel ) :
+   normalizeLevel( _normalizeLevel ),
    pwmOutput( _portPin.getPortNumber(), _portPin.getPinNumber() ),
    enableOutput( _enablePin ),
    config( _config ),
@@ -33,8 +34,14 @@ void HmwDimmer::set( uint8_t length, uint8_t const* const data )
    {
       setLevel( *data );
       nextActionTime.reset();
-      if( *data ) { SET_STATE_L1( ON ); }
-      else { SET_STATE_L1( OFF ); }
+      if ( *data )
+      {
+         SET_STATE_L1( ON );
+      }
+      else
+      {
+         SET_STATE_L1( OFF );
+      }
    }
    else if ( length == sizeof( ActionParameter ) )
    {
@@ -108,7 +115,7 @@ void HmwDimmer::setLevel( uint8_t level )
    {
       DEBUG_H2( FSTR( " setLevel 0x" ), level );
       level ? enableOutput.set() : enableOutput.clear();
-      pwmOutput.set( level * NORMALIZE_LEVEL );
+      pwmOutput.set( level * normalizeLevel );
 
       // Logging
       if ( !nextFeedbackTime.isValid() && config->isLogging() )
@@ -121,8 +128,12 @@ void HmwDimmer::setLevel( uint8_t level )
 
 uint8_t HmwDimmer::getLevel() const
 {
-   // normalize to 0-200
-   return pwmOutput.isSet() / NORMALIZE_LEVEL;
+   if ( pwmOutput.isRunning() )
+   {
+      // normalize to 0-200
+      return pwmOutput.isSet() / normalizeLevel;
+   }
+   return pwmOutput.isSet() ? MAX_LEVEL : 0;
 }
 
 void HmwDimmer::handleStateChart( bool fromMainLoop )

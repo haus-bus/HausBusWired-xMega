@@ -17,7 +17,7 @@ class HmwLinkDimmer : public HmwLinkReceiver
 {
    public:
 
-      struct Config
+      struct Config  // sizeof = 54Bytes
       {
          uint32_t sensorAddress;
          uint8_t sensorChannel;

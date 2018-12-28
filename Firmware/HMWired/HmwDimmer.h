@@ -113,7 +113,7 @@ class HmwDimmer : public HmwChannel
       };
 
       static const uint8_t MAX_LEVEL = 200;
-      static const uint8_t NORMALIZE_LEVEL = 205;
+      static const uint8_t DEFAULT_NORMALIZE_LEVEL = 205;
       static const uint8_t LOOP_PERIOD_MS = 8;
       static const uint16_t MAX_NEXT_ACTION_TIME = 0xC000;
 
@@ -134,6 +134,8 @@ class HmwDimmer : public HmwChannel
    private:
 
       static const uint8_t debugLevel;
+
+      const uint8_t normalizeLevel;
 
       PwmOutput pwmOutput;
 
@@ -156,7 +158,7 @@ class HmwDimmer : public HmwChannel
 
 // functions
    public:
-      HmwDimmer( PortPin _pwmPin, PortPin _enablePin, Config* _config );
+      HmwDimmer( PortPin _pwmPin, PortPin _enablePin, Config* _config, uint8_t _normalizeLevel = DEFAULT_NORMALIZE_LEVEL );
 
       // definition of needed functions from HBWChannel class
       virtual uint8_t get( uint8_t* data );
