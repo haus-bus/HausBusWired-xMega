@@ -51,7 +51,7 @@ static uint8_t ledData[] = { 0x00, LED_MASK };
 #define LED_PORT PORTR
 #define LED_MASK 0x02
 
-#if ( HARDWARE_ID == 0 )
+#if ( HARDWARE_ID == 0 ) || ( HARDWARE_ID == 1 )
 static DigitalOutputTmpl<PortR, 0> txEnable;
 static DigitalInputTmpl<PortE, 2> rx;
 static DigitalOutputTmpl<PortE, 3> tx;

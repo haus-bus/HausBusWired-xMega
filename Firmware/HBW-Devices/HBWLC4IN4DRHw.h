@@ -12,26 +12,24 @@
 #include "HBWGenericDeviceHw.h"
 
 #include <HMWired/HmwKey.h>
-#include <HMWired/HmwLed.h>
+#include <HMWired/HmwDimmer.h>
 #include <HMWired/HmwLinkKey.h>
-#include <HMWired/HmwLinkLed.h>
+#include <HMWired/HmwLinkDimmer.h>
 
 class HBWLC4IN4DRHw : public HBWGenericDeviceHw
 {
 // variables
    public:
 
-      static const uint8_t DEFAULT_PWM_RANGE = 64;
-
    protected:
 
       HmwKey key1, key2, key3, key4;
 
-      HmwLed lightControl1, lightControl2, lightControl3, lightControl4;
+      HmwDimmer lightControl1, lightControl2, lightControl3, lightControl4;
 
       HmwLinkKey linkSender;
 
-      HmwLinkLed linkReceiver;
+      HmwLinkDimmer linkReceiver;
 
    private:
 
@@ -43,7 +41,7 @@ class HBWLC4IN4DRHw : public HBWGenericDeviceHw
 
 // functions
    public:
-      HBWLC4IN4DRHw();
+      HBWLC4IN4DRHw( uint16_t additionalPeriodValue );
 
       HmwDeviceHw::BasicConfig* getBasicConfig();
 

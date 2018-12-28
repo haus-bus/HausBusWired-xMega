@@ -47,7 +47,11 @@ HmwDeviceHw* HBWDeviceFactory::createDevice( Release::FirmwareId firmwareId )
    {
       if ( config.hwVersion == Release::REV_0 )
       {
-         return new HBWLC4IN4DRHw();
+         return new HBWLC4IN4DRHw( 1000 );
+      }
+      if ( config.hwVersion == Release::REV_1 )
+      {
+         return new HBWLC4IN4DRHw( 40 );
       }
    }
 
