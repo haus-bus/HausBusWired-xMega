@@ -193,6 +193,7 @@ void AR8SystemHw::configureZeroCrossDetection()
    dimmerD.setPeriod( ZCD_DEFAULT_PERIOD );
 
    // Select PA7 as event channel 1 multiplexer input.
+   DigitalInputTmpl<PortA, 7> pa7;
    IoPort& portA = IoPort::instance( PortA );
    portA.configure( Pin7, PORT_OPC_PULLUP_gc, false, PORT_ISC_RISING_gc );
    portA.enableInterrupt0Source( Pin7 );
@@ -200,6 +201,7 @@ void AR8SystemHw::configureZeroCrossDetection()
 
    if ( getFckE() < FCKE_V3_0 )
    {
+      DigitalInputTmpl<PortA, 5> pa5;
       portA.configure( Pin5, PORT_OPC_PULLUP_gc, false, PORT_ISC_RISING_gc );
       // if slot0-4 has dimmer
       if ( slotHw[0].isDimmerHw() || slotHw[1].isDimmerHw()
