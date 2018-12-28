@@ -144,7 +144,7 @@
         <avrgcccpp.compiler.optimization.level>Optimize for size (-Os)</avrgcccpp.compiler.optimization.level>
       </AvrGccCpp>
     </ToolchainSettings>
-    <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .data -O binary  $(OutputFileName).elf  $(OutputFileName).bin &amp;&amp;  "$(SolutionDir)tools\modid" $(OutputFileName).bin "$(SolutionDir)Binaries\$(OutputFileName)" &amp;&amp;  "$(SolutionDir)tools\bin2hex" $(SolutionDir)Binaries\$(OutputFileName)_0203.bin $(SolutionDir)Binaries\$(OutputFileName).hex</PostBuildEvent>
+    <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .data -O binary  $(OutputFileName).elf  $(OutputFileName).bin &amp;&amp;  "$(SolutionDir)tools\modid" $(OutputFileName).bin "$(SolutionDir)Binaries\$(OutputFileName)" &amp;&amp;  "$(SolutionDir)tools\bin2hex" $(SolutionDir)Binaries\$(OutputFileName)_0204.bin $(SolutionDir)Binaries\$(OutputFileName).hex</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>
@@ -366,6 +366,14 @@
     </Compile>
     <Compile Include="HMWired\HmwLed.h">
       <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HMWired\HmwLinkDimmer.cpp">
+      <SubType>compile</SubType>
+      <Link>HMWired\HmwLinkDimmer.cpp</Link>
+    </Compile>
+    <Compile Include="HMWired\HmwLinkDimmer.h">
+      <SubType>compile</SubType>
+      <Link>HMWired\HmwLinkDimmer.h</Link>
     </Compile>
     <Compile Include="HMWired\HmwLinkKey.cpp">
       <SubType>compile</SubType>
