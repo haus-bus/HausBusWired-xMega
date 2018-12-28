@@ -25,11 +25,17 @@ PwmOutput::PwmOutput( uint8_t _portNumber, uint8_t _pinNumber, uint16_t _period 
 uint16_t PwmOutput::isSet() const
 {
    TimerCounter* tc = getTC();
-   if ( tc )
+   if ( tc && tc->isRunning() )
    {
-      return tc->getCapture( tc->getChannelFromPinNumber( pinNumber ) );
+      return tc->getCaptureBuffered( tc->getChannelFromPinNumber( pinNumber ) );
    }
    return DigitalInput::isSet();
+}
+
+bool PwmOutput::isRunning() const
+{
+   TimerCounter* tc = getTC();
+   return tc && tc->isRunning();
 }
 
 void PwmOutput::set( uint16_t value )
@@ -38,7 +44,7 @@ void PwmOutput::set( uint16_t value )
    TimerCounter::Channel channel = tc->getChannelFromPinNumber( pinNumber );
    if ( tc )
    {
-      tc->setCompare( channel, value );
+      tc->setCompareBuffered( channel, value );
       if ( tc->isRunning() && value )
       {
          tc->enableChannel( channel );

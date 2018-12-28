@@ -37,6 +37,8 @@ class PwmOutput : public DigitalOutput
 
       uint16_t isSet() const;
 
+      bool isRunning() const;
+
       void set( uint16_t value );
 
       void setPeriode( uint16_t period );
