@@ -24,15 +24,7 @@ class AR8System : public HomeAutomation
 
       ////    Operations    ////
 
-      static void start();
-
       ////    Additional operations    ////
-
-      DigitalPort* getDigitalPortE() const;
-
-      DigitalPort* getDigitalPortF() const;
-
-      AR8SystemHw* getHardware() const;
 
       ////    Relations and components    ////
 

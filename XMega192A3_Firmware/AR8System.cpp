@@ -14,6 +14,20 @@
 #include <Scheduler.h>
 #include <Time/WeekTime.h>
 
+
+int main( void )
+{
+   static const uint8_t MAX_JOBS = 64;
+   static const uint8_t MAX_EVENTS = 64;
+   Scheduler::setup( MAX_JOBS, MAX_EVENTS );
+
+   SystemTime::init( SystemTime::RTCSRC_RCOSC_1024, 1024 );
+
+   static AR8System ar8;
+   Scheduler::runJobs();
+   return 0;
+}
+
 AR8System::AR8System() :
    digitalPortE( PortE ), digitalPortF( PortF )
 {
@@ -31,29 +45,3 @@ AR8System::AR8System() :
 #endif
 }
 
-void AR8System::start()
-{
-   static const uint8_t MAX_JOBS = 64;
-   static const uint8_t MAX_EVENTS = 64;
-   Scheduler::setup( MAX_JOBS, MAX_EVENTS );
-
-   SystemTime::init( SystemTime::RTCSRC_RCOSC_1024, 1024 );
-
-   static AR8System ar8;
-   Scheduler::runJobs();
-}
-
-DigitalPort* AR8System::getDigitalPortE() const
-{
-   return (DigitalPort*) &digitalPortE;
-}
-
-DigitalPort* AR8System::getDigitalPortF() const
-{
-   return (DigitalPort*) &digitalPortF;
-}
-
-AR8SystemHw* AR8System::getHardware() const
-{
-   return (AR8SystemHw*) &hardware;
-}

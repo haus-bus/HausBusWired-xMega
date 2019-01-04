@@ -88,8 +88,9 @@
   <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
   <avrgcccpp.compiler.symbols.DefSymbols>
     <ListValues>
-      <Value>CONTROLLER_ID=3</Value>
+      <Value>CONTROLLER_ID=SD6_ID</Value>
       <Value>F_CPU=32000000</Value>
+      <Value>SUPPORT_TWI</Value>
       <Value>USE_IR</Value>
       <Value>USE_DHT</Value>
       <Value>USE_OW</Value>
@@ -168,8 +169,9 @@
   <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
   <avrgcccpp.compiler.symbols.DefSymbols>
     <ListValues>
-      <Value>CONTROLLER_ID=4</Value>
+      <Value>CONTROLLER_ID=SD485_ID</Value>
       <Value>F_CPU=32000000</Value>
+      <Value>SUPPORT_RS485</Value>
       <Value>USE_IR</Value>
       <Value>USE_DHT</Value>
       <Value>USE_OW</Value>
@@ -251,8 +253,9 @@
   <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
   <avrgcccpp.compiler.symbols.DefSymbols>
     <ListValues>
-      <Value>CONTROLLER_ID=4</Value>
+      <Value>CONTROLLER_ID=SD485_ID</Value>
       <Value>F_CPU=32000000</Value>
+      <Value>SUPPORT_RS485</Value>
       <Value>USE_IR</Value>
       <Value>USE_DHT</Value>
       <Value>USE_OW</Value>
@@ -325,6 +328,14 @@
     <Compile Include="..\BoardHardware\DigitalPortHw.h">
       <SubType>compile</SubType>
       <Link>BoardHardware\DigitalPortHw.h</Link>
+    </Compile>
+    <Compile Include="..\BoardHardware\Electronics.cpp">
+      <SubType>compile</SubType>
+      <Link>BoardHardware\Electronics.cpp</Link>
+    </Compile>
+    <Compile Include="..\BoardHardware\Electronics.h">
+      <SubType>compile</SubType>
+      <Link>BoardHardware\Electronics.h</Link>
     </Compile>
     <Compile Include="..\BoardHardware\HomeAutomationHw.cpp">
       <SubType>compile</SubType>
@@ -877,14 +888,6 @@
     <Compile Include="..\Xmega\DigitalOutput.h">
       <SubType>compile</SubType>
       <Link>Xmega\DigitalOutput.h</Link>
-    </Compile>
-    <Compile Include="..\Xmega\Electronics.cpp">
-      <SubType>compile</SubType>
-      <Link>Xmega\Electronics.cpp</Link>
-    </Compile>
-    <Compile Include="..\Xmega\Electronics.h">
-      <SubType>compile</SubType>
-      <Link>Xmega\Electronics.h</Link>
     </Compile>
     <Compile Include="..\Xmega\GlobalInterrupt.h">
       <SubType>compile</SubType>

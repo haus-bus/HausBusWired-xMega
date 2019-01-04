@@ -49,6 +49,10 @@ extern SlotHw slotHw[MAX_SLOTS];
 
 extern DigitalOutput chipSelectSdCard;
 
+extern DigitalOutput redLed;
+
+extern DigitalOutput greenLed;
+
 extern Enc28j60 enc28j60;
 
 extern RS485Hw rs485Hw;

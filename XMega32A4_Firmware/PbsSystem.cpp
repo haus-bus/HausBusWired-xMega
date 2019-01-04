@@ -5,25 +5,61 @@
  *      Author: Viktor Pankraz
  */
 
-#include "DebugOptions.h"
-#include <Gateway.h>
 #include "HomeAutomation.h"
+#include "DebugOptions.h"
+#include "PbsSystem.h"
+
+#include <Gateway.h>
 #include <PersistentRules.h>
 #include <RuleEngine.h>
 #include <Scheduler.h>
 #include <Time/WeekTime.h>
 #include <Release.h>
-#include "PbsSystem.h"
+#include <PortPinUnit.h>
+#include <DS1820.h>
 
-PbsSystem::PbsSystem() :
-   digitalPortA( PortA ), digitalPortB( PortB ), digitalPortC( PortC ),
-   digitalPortD( PortD )
+PbsSystem::PbsSystem()
 {
-   digitalPortB.setNotUseablePins( Pin4 | Pin5 | Pin6 | Pin7 );
-#if ( CONTROLLER_ID == 4 )
-   digitalPortA.setNotUseablePins( Pin6 | Pin7 );
-   digitalPortD.setNotUseablePins( Pin6 | Pin7 );
-#endif
+   DigitalPort* digitalPortA = new DigitalPort( PortA );
+   DigitalPort* digitalPortC = new DigitalPort( PortC );
+
+   if ( hardware.getFirmwareId() == SD485_ID )
+   {
+      uint8_t fcke = getFckE();
+      switch ( fcke )
+      {
+         case SD485_LC4_0V:
+         case SD485_LC4_1V:
+         {
+            digitalPortA->setNotUseablePins( Pin4 | Pin5 | Pin6 | Pin7 );
+            digitalPortC->setNotUseablePins( Pin4 | Pin5 | Pin6 | Pin7 );
+            new PortPinUnit( PortPin( PortR, 1 ) );   // red led
+            break;
+         }
+         case SD485_IO12:
+         {
+            new PortPinUnit( PortPin( PortA, 6 ) );   // red led
+         }
+         default:
+         {
+            DS1820::scanAndCreateDevices( PortPin( PortR, 1 ) );
+            DigitalPort* digitalPortB = new DigitalPort( PortB );
+            DigitalPort* digitalPortD = new DigitalPort( PortD );
+            digitalPortA->setNotUseablePins( Pin6 | Pin7 );
+            digitalPortB->setNotUseablePins( Pin4 | Pin5 | Pin6 | Pin7 );
+            digitalPortD->setNotUseablePins( Pin6 | Pin7 );
+         }
+      }
+   }
+   else // SD6
+   {
+      DigitalPort* digitalPortB = new DigitalPort( PortB );
+      DigitalPort* digitalPortD = new DigitalPort( PortD );
+      digitalPortA->setNotUseablePins( Pin6 | Pin7 );
+      digitalPortB->setNotUseablePins( Pin4 | Pin5 | Pin6 | Pin7 );
+      digitalPortD->setNotUseablePins( Pin6 | Pin7 );
+   }
+   hardware.configureLogicalButtons();
 }
 
 void PbsSystem::start()

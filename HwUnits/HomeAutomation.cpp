@@ -17,7 +17,7 @@
 
 extern uint16_t getUnusedMemory();
 
-const uint8_t HomeAutomation::debugLevel( DEBUG_LEVEL_LOW );
+const uint8_t HomeAutomation::debugLevel( DEBUG_LEVEL_OFF );
 
 Timestamp HomeAutomation::lastMemoryReportTime;
 
@@ -357,9 +357,12 @@ bool HomeAutomation::handleRequest( HACF* message )
                conf.setTimeCorrectionValue( timeCorrection );
                SystemTime::ticksPerSecondAdjustment = timeCorrection;
 
-               // notify system that time different
-               response.setTimeDifference( timeDifference );
-               response.queue( this );
+               if ( abs( timeDifference ) > 1 )
+               {
+                  // notify system that the time deviation is more than 1 minute
+                  response.setTimeDifference( timeDifference );
+                  response.queue( this );
+               }
             }
          }
       }

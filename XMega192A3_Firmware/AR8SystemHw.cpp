@@ -16,9 +16,9 @@
 #include <IrReceiver.h>
 #include <Traces/Logger.h>
 #include <LogicalButton.h>
+#include <DigitalOutputUnit.h>
 #include <Security/ModuleId.h>
 #include <PersistentRules.h>
-#include <DigitalOutputUnit.h>
 #include <RollerShutter.h>
 #include <Peripherals/TimerCounter.h>
 #include <Protocols/IpStack/UdpConnection.h>
@@ -30,6 +30,11 @@
 #include <SoftTwi.h>
 #include <RS485Hw.h>
 
+void putc( char c )
+{
+   Usart::instance<DBG_PORT, DBG_CHANNEL>().write( c );
+}
+
 AR8SystemHw::AR8SystemHw()
 {
    configure();
@@ -39,23 +44,22 @@ void AR8SystemHw::configure()
 {
    // configure Logger
    Logger::instance().setStream( putc );
-   Usart::instance<PortD, 1>().init<DBG_BAUDRATE>();
+   Usart::configPortPins<DBG_PORT, DBG_CHANNEL>();
+   Usart::instance<DBG_PORT, DBG_CHANNEL>().init<DBG_BAUDRATE>();
 
-   // configure ports
-   IoPort::instance( PortC ).setPinsAsOutput( Pin4 | Pin5 | Pin7 );
-
-   IoPort::instance( PortD ).setPinsAsOutput( Pin4 | Pin7 );
-   IoPort::instance( PortD ).configure( Pin5, PORT_OPC_PULLUP_gc, false, PORT_ISC_LEVEL_gc );
-   IoPort::instance( PortE ).configure( Pin0 | Pin1 | Pin2 | Pin4, PORT_OPC_PULLUP_gc );
-   IoPort::instance( PortE ).setPinsAsOutput( Pin3 | Pin5 );
-   IoPort::instance( PortE ).setPins( Pin3 );
+   // configure SPI used by SD card and Ethernet
+   Spi::configPortPins<PortC>();
 
    TRACE_PORT_INIT( AllPins );
 
-   DigitalOutputTmpl<PortR, 1> greenLed;
+   if ( getFckE() <= FCKE_V4_0 )
+   {
+      // swap red and green LEDs
+      greenLed.setPinNumber( 0 );
+      redLed.setPinNumber( 1 );
+   }
+   new DigitalOutputUnit( redLed );
 
-   // red LED
-   new DigitalOutputUnit( PortPin( PortR, Pin0 ) );
 
    DEBUG_H1( FSTR( "configure" ) );
    configureSlots();
@@ -91,7 +95,7 @@ void AR8SystemHw::configureTwi()
 
 void AR8SystemHw::configureRs485()
 {
-   if ( getFckE() == FCKE_V4_0 )
+   if ( getFckE() >= FCKE_V4_0 )
    {
       DEBUG_M1( FSTR( "RS485" ) );
       Usart::configPortPins<PortE, 0>();

@@ -42,8 +42,7 @@ void IResponse::queue( Reactive* reactive )
 
 void IResponse::setErrorCode( uint8_t errorCode, uint8_t* errorData )
 {
-   controlFrame.setDataLength(
-      errorData ? ControlFrame::DEFAULT_DATA_LENGTH : 2 );
+   controlFrame.setDataLength( errorData ? ControlFrame::DEFAULT_DATA_LENGTH : 2 );
    uint8_t* pData = controlFrame.data;
    *pData++ = HACF::EVENT_ERROR;
    *pData++ = errorCode;

@@ -89,7 +89,19 @@ void RS485Hw::handleDataReceived()
 
 bool RS485Hw::init()
 {
-   bool hasError = usart->init<1001, -7, USART_CMODE_ASYNCHRONOUS_gc, USART_PMODE_EVEN_gc>();
+   bool hasError;
+   if ( F_CPU == 32000000 )
+   {
+      hasError = usart->init<1097, -5, USART_CMODE_ASYNCHRONOUS_gc, USART_PMODE_EVEN_gc>();
+   }
+   else if ( F_CPU == 8000000 )
+   {
+      hasError = usart->init<1001, -7, USART_CMODE_ASYNCHRONOUS_gc, USART_PMODE_EVEN_gc>();
+   }
+   else
+   {
+      hasError = usart->init<57600, USART_CMODE_ASYNCHRONOUS_gc, USART_PMODE_EVEN_gc>();
+   }
    return hasError;
 }
 

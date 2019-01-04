@@ -8,6 +8,7 @@
 #ifndef HwUnits_HomeAutomationConfiguration_H
 #define HwUnits_HomeAutomationConfiguration_H
 
+#include "Electronics.h"
 #include "HwUnits.h"
 
 #include <Peripherals/Flash.h>

@@ -118,8 +118,6 @@ bool Eeprom::write( uint16_t offset, uint8_t value )
    {
       return false;
    }
-
-   uint8_t oldCmd = NVM.CMD;
    flushBuffer();
 
    NVM.CMD = NVM_CMD_LOAD_EEPROM_BUFFER_gc;

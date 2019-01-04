@@ -30,14 +30,6 @@ class PbsSystem : public HomeAutomation
 
    protected:
 
-      DigitalPort digitalPortA;
-
-      DigitalPort digitalPortB;
-
-      DigitalPort digitalPortC;
-
-      DigitalPort digitalPortD;
-
       PbsSystemHw hardware;
 };
 

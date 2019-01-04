@@ -37,11 +37,13 @@ enum RS485ProtocolDefines
    ESCAPE_BYTE = 0xFC
 };
 
-#if ( CONTROLLER_ID == 4 )
-DigitalOutputTmpl<PortR, 0> rs485TxEnable;
-#else
-DigitalOutputTmpl<PortA, 5> rs485TxEnable;
+#ifndef RS485_TX_EN_PORT
+#define RS485_TX_EN_PORT PortR
+#define RS485_TX_EN_PIN 0
 #endif
+
+DigitalOutputTmpl<RS485_TX_EN_PORT, RS485_TX_EN_PIN> rs485TxEnable;
+
 DigitalInputTmpl<PortE, 2> rx;
 DigitalOutputTmpl<PortE, 3> tx;
 Usart& rs485( Usart::instance<PortE, 0>( ) );
@@ -93,9 +95,10 @@ void BooterHw::configure()
 #endif
 
 #ifdef SUPPORT_RS485
-#if ( CONTROLLER_ID != 4 )
-   DigitalOutputTmpl<PortA, 6> rxEnable;
-#endif
+   if ( CONTROLLER_ID == AR8_ID )
+   {
+      DigitalOutputTmpl<PortA, 6> rxEnable;
+   }
    if ( F_CPU == 32000000 )
    {
       rs485.init<1097, -5, USART_CMODE_ASYNCHRONOUS_gc, USART_PMODE_EVEN_gc>();
@@ -121,15 +124,34 @@ void BooterHw::configure()
    twi.init<true, 30000, TWI_MASTER_INTLVL_OFF_gc, TWI_SLAVE_INTLVL_OFF_gc>();
 #endif
 
-#if ( CONTROLLER_ID == 1 )
-   // configure status leds
-   DigitalOutputTmpl<PortR, 0> greenLed;
-   DigitalOutputTmpl<PortR, 1> redLed;
-   greenLed.set();
-#endif
-#if ( CONTROLLER_ID == 4 )
-   DigitalOutputTmpl<PortA, 6> redLed;
-#endif
+   if ( CONTROLLER_ID == AR8_ID )
+   {
+      // configure status leds
+      if ( BOARD_FCKE <= AR8_RS485 )
+      {
+         DigitalOutputTmpl<PortR, 0> greenLed;
+         DigitalOutputTmpl<PortR, 1> redLed;
+         greenLed.set();
+      }
+      else
+      {
+         DigitalOutputTmpl<PortR, 1> greenLed;
+         DigitalOutputTmpl<PortR, 0> redLed;
+         greenLed.set();
+      }
+
+   }
+   else if ( CONTROLLER_ID == SD485_ID )
+   {
+      if ( ( BOARD_FCKE == SD485_LC4_0V ) || ( BOARD_FCKE == SD485_LC4_1V ) )
+      {
+         DigitalOutputTmpl<PortR, 1> redLed;
+      }
+      else
+      {
+         DigitalOutputTmpl<PortA, 6> redLed;
+      }
+   }
 }
 
 HACF::ControlFrame* BooterHw::getMessage()

@@ -9,6 +9,8 @@
 #define Peripherals_Spi_H
 
 #include "Peripherals.h"
+#include <DigitalInput.h>
+#include <DigitalOutput.h>
 
 
 class Spi
@@ -54,6 +56,14 @@ class Spi
          reg.CTRL = ( SPI_ENABLE_bm | ( lsbFirst ? SPI_DORD_bm : 0 )
                       | ( master ? SPI_MASTER_bm : 0 ) | ( doubleClock ? SPI_CLK2X_bm : 0 ) | mode
                       | prescaler );
+      }
+
+      template<uint8_t portNumber>
+      static inline void configPortPins()
+      {
+         DigitalOutputTmpl<portNumber, 5> mosi;
+         DigitalInputTmpl<portNumber, 6> miso;
+         DigitalOutputTmpl<portNumber, 7> clk;
       }
 
       static Spi& instance( uint8_t portNumber );

@@ -26,17 +26,36 @@ const ModuleId moduleId = { "$MOD$ AR8      ",
                             0,
                             Release::MAJOR,
                             Release::MINOR,
-                            Release::AR8_ID,
+                            AR8_ID,
                             0 };
 
 SlotHw slotHw[MAX_SLOTS];
 
 DigitalOutput chipSelectSdCard( PortC, 4 );
 
-Enc28j60 enc28j60( Spi::instance( PortC ), DigitalOutput( PortD, 4 ),
-                   DigitalInput( PortD, 5 ) );
+DigitalOutput redLed( PortR, 0 );
+DigitalOutput greenLed( PortR, 1 );
+
+Enc28j60 enc28j60( Spi::instance( PortC ), DigitalOutput( PortD, 4 ), DigitalInput( PortD, 5 ) );
 
 RS485Hw rs485Hw( Usart::instance<PortE, 0>(), DigitalOutput( PortA, 6 ), DigitalOutput( PortA, 5 ) );
+
+void notifyBusy()
+{
+   TRACE_PORT_SET( TR_IDLE_PIN );
+   greenLed.set();
+}
+
+void notifyIdle()
+{
+   TRACE_PORT_CLEAR( TR_IDLE_PIN );
+   greenLed.clear();
+
+   #ifndef _DEBUG_
+   WatchDog::reset();
+   #endif
+}
+
 
 INTERRUPT void USARTE0_RXC_vect()
 {
@@ -89,7 +108,6 @@ INTERRUPT void TCC1_CCA_vect()
    lastStamp = stamp;
 
    TRACE_PORT_CLEAR( TR_INT_PIN );
-
 }
 
 INTERRUPT void TCD1_OVF_vect()
@@ -105,7 +123,6 @@ INTERRUPT void TCD1_OVF_vect()
    TimerCounter::instance( PortD, 0 ).configClockSource( TC_CLKSEL_OFF_gc );
 
    TRACE_PORT_CLEAR( TR_INT_PIN );
-
 }
 
 void configureInfraRedHw( PortPin portPin, IrDecoder* decoder )

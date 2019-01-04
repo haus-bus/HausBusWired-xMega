@@ -94,9 +94,11 @@
       <Value>SUPPORT_RS485</Value>
       <Value>MOD_ID=\"AR8Booter\"</Value>
       <Value>BOOTER_SIZE=8192</Value>
-      <Value>CONTROLLER_ID=1</Value>
-      <Value>BOARD_FCKE=FCKE_V4_0</Value>
+      <Value>CONTROLLER_ID=AR8_ID</Value>
+      <Value>BOARD_FCKE=AR8_RS485</Value>
       <Value>NDEBUG</Value>
+      <Value>RS485_TX_EN_PORT=PortA</Value>
+      <Value>RS485_TX_EN_PIN=5</Value>
     </ListValues>
   </avrgcccpp.compiler.symbols.DefSymbols>
   <avrgcccpp.compiler.directories.IncludePaths>
@@ -177,8 +179,8 @@
       <Value>SUPPORT_RS485</Value>
       <Value>MOD_ID=\"AR8Booter\"</Value>
       <Value>BOOTER_SIZE=8192</Value>
-      <Value>CONTROLLER_ID=1</Value>
-      <Value>BOARD_FCKE=FCKE_V4_0</Value>
+      <Value>CONTROLLER_ID=AR8_ID</Value>
+      <Value>BOARD_FCKE=AR8_RS485</Value>
       <Value>_DEBUG_</Value>
       <Value>DBG_PORT=PortD</Value>
       <Value>DBG_CHANNEL=1</Value>
