@@ -23,8 +23,8 @@ uint8_t OneWire::reset()
    _delay_us( 600 );
 
    uint8_t err;
-   CriticalSection doNotInterrupt;
    {
+      CriticalSection doNotInterrupt;
       // set Pin as input - wait for clients to pull low
       ioPort->setPinsAsInput( pin );
 

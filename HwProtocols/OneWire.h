@@ -9,7 +9,7 @@
 #define HwProtocols_OneWire_H
 
 #include "HwProtocols.h"
-#include "Peripherals/IoPort.h"
+#include "PortPin.h"
 class DS1820;
 
 class PortPin;
