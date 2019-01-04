@@ -65,6 +65,8 @@ class DS1820 : public BaseSensorUnit
 
       static bool isSensor( uint8_t familiyCode );
 
+      static void scanAndCreateDevices( PortPin _owPin );
+
       virtual bool notifyEvent( const Event& event );
 
       inline void* operator new( size_t size );

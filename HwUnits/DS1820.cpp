@@ -14,6 +14,52 @@ bool DS1820::selfPowered( true );
 
 const uint8_t DS1820::debugLevel( DEBUG_LEVEL_OFF );
 
+void DS1820::scanAndCreateDevices( PortPin _owPin )
+{
+   OneWire ow( _owPin );
+
+   // wait 1ms to stabilize the line
+   SystemTime::waitMs( 1 );
+   DEBUG_M4( FSTR( "1-Wire port: " ), portNumber, FSTR( "pin: " ), i );
+
+   // check for 1-Wire components
+   uint8_t diff = OneWire::SEARCH_FIRST;
+   OneWire::RomCode romCode;
+
+   while ( diff != OneWire::LAST_DEVICE )
+   {
+      diff = ow.searchROM( diff, (uint8_t*) &romCode );
+      if ( diff == OneWire::PRESENCE_ERROR )
+      {
+         DEBUG_M1( FSTR( "No devices found" ) );
+         break;
+      }
+      else if ( diff == OneWire::DATA_ERROR )
+      {
+         DEBUG_M1( FSTR( "Bus Error" ) );
+         break;
+      }
+      else
+      {
+         DEBUG_M1( FSTR( "0x" ) );
+         for ( uint8_t i = 0; i < OneWire::ROMCODE_SIZE; i++ )
+         {
+            DEBUG_L1( ( (uint8_t* )&romCode )[i] );
+         }
+
+         if ( DS1820::isSensor( romCode.family ) )
+         {
+            DEBUG_L1( FSTR( "->DS18X20" ) );
+            new DS1820( ow, romCode );
+         }
+         else
+         {
+            DEBUG_L1( FSTR( "->UNKNOWN" ) );
+         }
+      }
+   }
+}
+
 DS1820::DS1820( const OneWire& _hardware, const OneWire::RomCode& _romCode ) :
    hardware( _hardware ), romCode( _romCode )
 {
