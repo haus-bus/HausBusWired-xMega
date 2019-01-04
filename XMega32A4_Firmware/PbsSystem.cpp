@@ -45,7 +45,7 @@ PbsSystem::PbsSystem()
             DS1820::scanAndCreateDevices( PortPin( PortR, 1 ) );
             DigitalPort* digitalPortB = new DigitalPort( PortB );
             DigitalPort* digitalPortD = new DigitalPort( PortD );
-            digitalPortA->setNotUseablePins( Pin6 | Pin7 );
+            digitalPortA->setNotUseablePins( Pin6 );
             digitalPortB->setNotUseablePins( Pin4 | Pin5 | Pin6 | Pin7 );
             digitalPortD->setNotUseablePins( Pin6 | Pin7 );
          }
