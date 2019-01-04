@@ -67,12 +67,23 @@ class Gateway : public Reactive
          uint16_t lastDeviceId;
       };
 
-      struct ReadFailedData
+      union ErrorData
       {
-         uint8_t checksum;
-         uint16_t transferred;
-         uint16_t remaining;
+         struct ReadFailed
+         {
+            uint8_t checksum;
+            uint16_t transferred;
+            uint16_t remaining;
+         } readFailed;
+
+         struct BufferOverrun
+         {
+            uint8_t packetCounter;
+            uint16_t length;
+            uint16_t maxBufferSize;
+         } bufferOverrun;
       };
+
 
       struct Configuration
       {
@@ -319,8 +330,6 @@ class Gateway : public Reactive
       uint8_t retries;
 
       IoStream* ioStream;
-
-      ReadFailedData readFailedData;
 
       MessageQueue itsMessageQueue;
 

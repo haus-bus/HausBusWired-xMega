@@ -82,7 +82,7 @@ bool Gateway::notifyEvent( const Event& event )
    {
       Stream::TransferDescriptor* td = event.isEvData()->getTransferDescriptor();
 
-      if ( td->bytesTransferred != 0 )
+      if ( td->bytesTransferred && ( td->bytesTransferred <= HACF::MAX_BUFFER_SIZE ) )
       {
          // we received new data
          DEBUG_H1( FSTR( "->data received" ) );
@@ -105,7 +105,6 @@ bool Gateway::notifyEvent( const Event& event )
             notifyEndOfReadTransfer( td );
          }
       }
-
    }
    else
    {
@@ -149,9 +148,12 @@ void Gateway::run()
 
             if ( len > sizeof( buffer ) )
             {
+               ErrorData errorData;
+               errorData.bufferOverrun.packetCounter = itsMessageQueue.front()->getControlFrame()->getPacketCounter();
+               errorData.bufferOverrun.length = len;
+               errorData.bufferOverrun.maxBufferSize = sizeof( buffer );
+               notifyError( BUFFER_OVERRUN, (uint8_t*)&errorData );
                itsMessageQueue.pop();
-               notifyError( BUFFER_OVERRUN );
-               ERROR_2( FSTR( "BUFFER_OVERRUN: 0x" ), len );
                return;
             }
 
@@ -268,10 +270,11 @@ void Gateway::notifyEndOfReadTransfer( Stream::TransferDescriptor* td )
 
    if ( readFailed )
    {
-      readFailedData.transferred = td->bytesTransferred;
-      readFailedData.remaining = td->bytesRemaining;
-      readFailedData.checksum = checksum;
-      notifyError( Gateway::READ_FAILED, (uint8_t*) &readFailedData );
+      ErrorData errorData;
+      errorData.readFailed.checksum = checksum;
+      errorData.readFailed.transferred = td->bytesTransferred;
+      errorData.readFailed.remaining = td->bytesRemaining;
+      notifyError( Gateway::READ_FAILED, (uint8_t*) &errorData );
 
       DEBUG_H2( FSTR( "transferError CS: " ), checksum );
       DEBUG_M2( FSTR( "td->trans  " ), transferred );
