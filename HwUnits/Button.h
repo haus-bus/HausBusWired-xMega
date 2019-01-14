@@ -9,6 +9,7 @@
 #define HwUnits_Button_H
 
 #include <ConfigurationManager.h>
+#include <PortPin.h>
 
 #include "HwUnits.h"
 
@@ -51,7 +52,7 @@ class Button : public Reactive
             uint8_t notifyOnHoldStart : 1;
             uint8_t notifyOnHoldEnd : 1;
             uint8_t notifyOnFree : 1;
-            uint8_t reserved : 1;
+            uint8_t inverted : 1;
             uint8_t feedbackEnabled : 1;
          };
 
@@ -278,6 +279,12 @@ class Button : public Reactive
       inline void setDisabledDuration( uint8_t p_disabledDuration )
       {
          disabledDuration = p_disabledDuration;
+      }
+
+      inline PortPin getPortPin() const
+      {
+         uint8_t portPinId = ( id & 0xFF ) - 1;
+         return PortPin( ( portPinId >> 4 ) - 1, portPinId & 0x07 );
       }
 
    private:

@@ -14,8 +14,7 @@ const uint8_t Button::debugLevel( DEBUG_LEVEL_OFF );
 
 Button::Response::Parameter& Button::Response::setConfiguration()
 {
-   controlFrame.setDataLength(
-      sizeof( getResponse() ) + sizeof( getParameter().configuration ) );
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().configuration ) );
    setResponse( CONFIGURATION );
    return getParameter();
 }
@@ -53,6 +52,7 @@ bool Button::handleRequest( HACF* message )
       DEBUG_H1( FSTR( ".setConfiguration()" ) );
       configuration->set( data->parameter.setConfiguration );
       enabledEvents.mask = configuration->getEvents().mask;
+      getPortPin().setInverted( enabledEvents.bit.inverted );
    }
    else if ( cf.isCommand( Command::ENABLE_EVENTS ) )
    {
@@ -86,6 +86,7 @@ bool Button::notifyEvent( const Event& event )
          if ( configuration )
          {
             enabledEvents.mask = configuration->getEvents().mask;
+            getPortPin().setInverted( enabledEvents.bit.inverted );
             SET_STATE_L1( RUNNING );
          }
          else
