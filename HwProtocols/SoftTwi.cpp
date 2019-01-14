@@ -518,7 +518,7 @@ Stream::Status SoftTwi::write( void* pData, uint16_t length, EventDrivenUnit* us
 }
 
 
-INTERRUPT void PORTE_INT0_vect()
+void SoftTwi::handleInterrupt0Source()
 {
    uint8_t portStatus = TWI_PORT.IN;
 
@@ -537,7 +537,7 @@ INTERRUPT void PORTE_INT0_vect()
    }
 }
 
-INTERRUPT void PORTE_INT1_vect()
+void SoftTwi::handleInterrupt1Source()
 {
    TRACE_TWI_INT1_START;
    uint8_t portStatus = TWI_PORT.IN;

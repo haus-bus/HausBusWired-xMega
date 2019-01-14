@@ -22,6 +22,10 @@ class SoftTwi : public IoStream
 
       ////    Operations    ////
 
+      static void handleInterrupt0Source();
+
+      static void handleInterrupt1Source();
+
    public:
 
       virtual Stream::Status genericCommand( Command command, void* buffer );

@@ -103,6 +103,7 @@ class Booter
          Stream::Status result = Stream::ABORTED;
          if ( downloadAllowed )
          {
+            // data length should not be 0
             if ( Flash::write( parameter.address, parameter.data, dataLength ) )
             {
                result = Stream::SUCCESS;

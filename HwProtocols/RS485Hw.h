@@ -13,6 +13,7 @@
 #include "HwProtocols.h"
 #include "Peripherals/Usart.h"
 #include "DigitalOutput.h"
+#include <Time/Timestamp.h>
 #include <IoStream.h>
 
 class RS485Hw : public IoStream
@@ -39,8 +40,7 @@ class RS485Hw : public IoStream
          enableTx( _enableTx ),
          pendingEscape( false ),
          rxMsgComplete( false ),
-         rxBufferOverflow( false ),
-         transmissionPending( false )
+         rxBufferOverflow( false )
       {
 
       }
@@ -58,7 +58,12 @@ class RS485Hw : public IoStream
 
       void handleTransmitFinished();
 
-      void handleDataReceived();
+      bool handleDataReceivedFromISR();
+
+      inline void notifyRxStartFromISR()
+      {
+         transmissionStartTime = Timestamp();
+      }
 
    protected:
 
@@ -118,11 +123,11 @@ class RS485Hw : public IoStream
 
       bool pendingEscape;
 
+      Timestamp transmissionStartTime;
+
       volatile bool rxMsgComplete;
 
       volatile bool rxBufferOverflow;
-
-      volatile bool transmissionPending;
 
       static const uint8_t debugLevel;
 

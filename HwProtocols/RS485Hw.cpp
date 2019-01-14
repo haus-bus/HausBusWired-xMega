@@ -23,7 +23,7 @@ enum TracePins
 
 };
 
-void RS485Hw::handleDataReceived()
+bool RS485Hw::handleDataReceivedFromISR()
 {
    TRACE_PORT_SET( RX_INT );
    uint8_t data;
@@ -39,7 +39,7 @@ void RS485Hw::handleDataReceived()
          rxMsgComplete = false;
       }
       receiveBufferSize = 0;
-      transmissionPending = true;
+      transmissionStartTime.setNow();
    }
    else if ( data == FRAME_STOPBYTE )
    {
@@ -49,7 +49,7 @@ void RS485Hw::handleDataReceived()
       {
          rxMsgComplete = true;
       }
-      transmissionPending = false;
+      transmissionStartTime.reset();
    }
    else if ( data == ESCAPE_BYTE )
    {
@@ -85,6 +85,7 @@ void RS485Hw::handleDataReceived()
       }
    }
    TRACE_PORT_CLEAR( RX_INT );
+   return transmissionStartTime.isValid();
 }
 
 bool RS485Hw::init()
@@ -169,13 +170,16 @@ Stream::Status RS485Hw::write( void* pData, uint16_t length, EventDrivenUnit* us
 {
    TRACE_PORT_SET( TX_MSG );
    DEBUG_H3( FSTR( "sending 0x" ), length, FSTR( " Bytes" ) );
-
-   if ( transmissionPending || rxMsgComplete )
+   // critical section needed because accessing transmissionStartTime that can be modified in an interrupt
    {
-      // read first the incoming message because receiveBuffer will be overwritten with transmitting new message
-      return Stream::LOCKED;
+      CriticalSection doNotInterrupt;
+      if ( rxMsgComplete || ( transmissionStartTime.isValid() && ( transmissionStartTime.since() < 50 ) ) )
+      {
+         // read first the incoming message because receiveBuffer will be overwritten with transmitting new message
+         return Stream::LOCKED;
+      }
+      enableTransmitter();
    }
-   enableTransmitter();
 
    transmitBuffer = (uint8_t*) pData;
    uint16_t transmitIdx = 0;

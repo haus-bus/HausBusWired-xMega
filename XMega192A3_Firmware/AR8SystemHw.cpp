@@ -68,7 +68,7 @@ void AR8SystemHw::configure()
    configureEthernet();
    configureRs485();
    configureTwi();
-
+   IoPort::instance<PortE>().enableInterrupt0();
    enableInterrupts();
 }
 

@@ -46,6 +46,11 @@ class Timestamp
          time = 0;
       }
 
+      inline void setNow()
+      {
+         time = SystemTime::now();
+      }
+
       inline void operator +=( int32_t _time )
       {
          time += _time;

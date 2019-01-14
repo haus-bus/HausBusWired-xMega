@@ -14,6 +14,7 @@
 #include <PortPin.h>
 #include <SlotHw.h>
 #include <RS485Hw.h>
+#include <SoftTwi.h>
 #include <Peripherals/DmaChannel.h>
 #include <Peripherals/DmaController.h>
 #include <Peripherals/EventSystem.h>
@@ -56,10 +57,36 @@ void notifyIdle()
    #endif
 }
 
+PortPinTmpl<PortE, 0> twiSdaPin;
+PortPinTmpl<PortE, 1> twiSclPin;
+PortPinTmpl<PortE, 2> rs485RxPin;
 
 INTERRUPT void USARTE0_RXC_vect()
 {
-   rs485Hw.handleDataReceived();
+   if ( !rs485Hw.handleDataReceivedFromISR() )
+   {
+      // transmission competed, enable rx interrupt again
+      rs485RxPin.enableInterrupt0Source();
+   }
+}
+
+INTERRUPT void PORTE_INT0_vect()
+{
+   if ( getFckE() >= FCKE_V4_0 )
+   {
+      // notify new transmission started and disable interrupt
+      rs485Hw.notifyRxStartFromISR();
+      rs485RxPin.disableInterrupt0Source();
+   }
+   else
+   {
+      SoftTwi::handleInterrupt0Source();
+   }
+}
+
+INTERRUPT void PORTE_INT1_vect()
+{
+   SoftTwi::handleInterrupt1Source();
 }
 
 INTERRUPT void PORTA_INT0_vect()

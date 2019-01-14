@@ -66,6 +66,7 @@ void PbsSystemHw::configure()
    }
 
    // enable interrupts
+   IoPort::instance<PortE>().enableInterrupt0();
    enableInterrupts();
 }
 
@@ -88,11 +89,23 @@ void PbsSystemHw::configureLogicalButtons()
 
 #ifdef SUPPORT_RS485
 
+PortPinTmpl<PortE, 2> rs485RxPin;
 RS485Hw rs485Hw( Usart::instance<PortE, 0>(), DigitalOutput( PortDummy, 0 ), DigitalOutput( PortR, 0 ) );
 
 INTERRUPT void USARTE0_RXC_vect()
 {
-   rs485Hw.handleDataReceived();
+   if ( !rs485Hw.handleDataReceivedFromISR() )
+   {
+      // transmission competed, enable rx interrupt again
+      rs485RxPin.enableInterrupt0Source();
+   }
+}
+
+INTERRUPT void PORTE_INT0_vect()
+{
+   // notify new transmission started and disable interrupt
+   rs485Hw.notifyRxStartFromISR();
+   rs485RxPin.disableInterrupt0Source();
 }
 
 void PbsSystemHw::configureRs485()
@@ -106,6 +119,16 @@ void PbsSystemHw::configureRs485()
 #ifdef SUPPORT_TWI
 
 SoftTwi twi;
+
+INTERRUPT void PORTE_INT0_vect()
+{
+   SoftTwi::handleInterrupt0Source();
+}
+
+INTERRUPT void PORTE_INT1_vect()
+{
+   SoftTwi::handleInterrupt1Source();
+}
 
 void PbsSystemHw::configureTwi()
 {
