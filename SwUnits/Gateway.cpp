@@ -142,7 +142,22 @@ void Gateway::run()
 
       if ( !itsMessageQueue.isEmpty() )
       {
-         if ( itsMessageQueue.isFull() || lastIdleTime.elapsed( MIN_IDLE_TIME + ( HACF::deviceId& 0xF ) + ( RETRY_DELAY_TIME * retries ) ) )
+         uint16_t minWaitTime = MIN_IDLE_TIME;
+
+         if ( !itsMessageQueue.isFull() )
+         {
+            uint8_t remainingCapacity = itsMessageQueue.getCapacity() - itsMessageQueue.getSize();
+            if ( remainingCapacity < ( itsMessageQueue.getCapacity() / 4 ) )
+            {
+               minWaitTime += ( remainingCapacity / 4 );
+            }
+            else
+            {
+               minWaitTime += ( HACF::deviceId % 0x1F ) + ( RETRY_DELAY_TIME * retries ) + 4;
+            }
+         }
+
+         if ( lastIdleTime.elapsed( minWaitTime ) )
          {
             uint16_t len = itsMessageQueue.front()->getLength();
 
