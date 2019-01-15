@@ -23,9 +23,9 @@ PbsSystem::PbsSystem()
    DigitalPort* digitalPortA = new DigitalPort( PortA );
    DigitalPort* digitalPortC = new DigitalPort( PortC );
 
+   uint8_t fcke = getFckE();
    if ( hardware.getFirmwareId() == SD485_ID )
    {
-      uint8_t fcke = getFckE();
       switch ( fcke )
       {
          case SD485_LC4_0V:
@@ -55,9 +55,18 @@ PbsSystem::PbsSystem()
    {
       DigitalPort* digitalPortB = new DigitalPort( PortB );
       DigitalPort* digitalPortD = new DigitalPort( PortD );
-      digitalPortA->setNotUseablePins( Pin6 | Pin7 );
       digitalPortB->setNotUseablePins( Pin4 | Pin5 | Pin6 | Pin7 );
-      digitalPortD->setNotUseablePins( Pin6 | Pin7 );
+
+      if ( fcke >= FCKE_V4_0 )
+      {
+         // used for debugging
+         digitalPortD->setNotUseablePins( Pin6 | Pin7 ); 
+      }
+      else
+      {
+         // used for debugging
+         digitalPortC->setNotUseablePins( Pin6 | Pin7 );
+      }
    }
    hardware.configureLogicalButtons();
 }
