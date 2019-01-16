@@ -21,7 +21,7 @@ class FlashString;
 
 class IP;
 
-class Stream;
+class IStream;
 
 class TcpHeader;
 

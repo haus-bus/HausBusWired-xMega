@@ -285,9 +285,9 @@ class Gateway : public Reactive
 
       void run();
 
-      void notifyEndOfWriteTransfer( Stream::Status status );
+      void notifyEndOfWriteTransfer( IStream::Status status );
 
-      void notifyEndOfReadTransfer( Stream::TransferDescriptor* td );
+      void notifyEndOfReadTransfer( IStream::TransferDescriptor* td );
 
       void addGateway();
 
@@ -325,7 +325,7 @@ class Gateway : public Reactive
 
       Timestamp lastIdleTime;
 
-      Stream::Status writeStatus[MAX_RETRIES];
+      IStream::Status writeStatus[MAX_RETRIES];
 
       uint8_t retries;
 

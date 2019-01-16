@@ -10,11 +10,11 @@
 
 #include "SwFramework.h"
 #include "DefaultTypes.h"
-#include "Stream.h"
+#include "IStream.h"
 
 class EventDrivenUnit;
 
-class IoStream : public Stream
+class IoStream : public IStream
 {
    public:
 
@@ -36,11 +36,11 @@ class IoStream : public Stream
 
       ////    Operations    ////
 
-      virtual Stream::Status genericCommand( Command command, void* buffer );
+      virtual IStream::Status genericCommand( Command command, void* buffer );
 
-      virtual Stream::Status read( void* pData, uint16_t length, EventDrivenUnit* user = 0 );
+      virtual IStream::Status read( void* pData, uint16_t length, EventDrivenUnit* user = 0 );
 
-      virtual Stream::Status write( void* pData, uint16_t length, EventDrivenUnit* user = 0 );
+      virtual IStream::Status write( void* pData, uint16_t length, EventDrivenUnit* user = 0 );
 };
 
 #endif

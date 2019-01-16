@@ -29,7 +29,7 @@ class RollerShutter;
 
 class Scheduler;
 
-class Stream;
+class IStream;
 
 class ModBusSlave : public Gateway,
                     public ModBusTcp

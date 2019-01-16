@@ -5,7 +5,7 @@
  *      Author: Viktor Pankraz
  */
 
-#include "Security/Checksum.h"
+#include "Checksum.h"
 
 uint8_t Checksum::get( const void* pData, uint16_t length, uint8_t checksum )
 {

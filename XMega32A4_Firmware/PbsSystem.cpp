@@ -60,7 +60,7 @@ PbsSystem::PbsSystem()
       if ( fcke >= FCKE_V4_0 )
       {
          // used for debugging
-         digitalPortD->setNotUseablePins( Pin6 | Pin7 ); 
+         digitalPortD->setNotUseablePins( Pin6 | Pin7 );
       }
       else
       {

@@ -8,7 +8,7 @@
 #ifndef SwFramework_EventPkg_EventPkg_H
 #define SwFramework_EventPkg_EventPkg_H
 
-#include "Stream.h"
+#include "IStream.h"
 #include "DefaultTypes.h"
 #include <Containers/StaticQueue.h>
 
@@ -72,12 +72,12 @@ class Event
 
       union Parameters
       {
-         Stream::TransferDescriptor* td;
+         IStream::TransferDescriptor* td;
          HACF* message;
          struct EndOfTransfer
          {
-            Stream::TransferDescriptor* td;
-            Stream::Status status;
+            IStream::TransferDescriptor* td;
+            IStream::Status status;
          } endOfTransfer;
          bool status;
       };
@@ -215,7 +215,7 @@ class evData : public Event
    public:
 
       inline evData( EventDrivenUnit* p_destination = 0,
-                     Stream::TransferDescriptor* p_transferDescriptor = 0 ) :
+                     IStream::TransferDescriptor* p_transferDescriptor = 0 ) :
          Event( p_destination )
       {
          setId( idEvData );
@@ -223,12 +223,12 @@ class evData : public Event
       }
 
       inline void setTransferDescriptor(
-         Stream::TransferDescriptor* p_transferDescriptor )
+         IStream::TransferDescriptor* p_transferDescriptor )
       {
          parameters.td = p_transferDescriptor;
       }
 
-      inline Stream::TransferDescriptor* getTransferDescriptor()
+      inline IStream::TransferDescriptor* getTransferDescriptor()
       {
          return parameters.td;
       }
@@ -243,8 +243,8 @@ class evEndOfTransfer : public Event
    public:
 
       inline evEndOfTransfer( EventDrivenUnit* p_destination = 0,
-                              Stream::TransferDescriptor* p_transferDescriptor = 0,
-                              Stream::Status p_status = Stream::ABORTED )
+                              IStream::TransferDescriptor* p_transferDescriptor = 0,
+                              IStream::Status p_status = IStream::ABORTED )
       {
          setId( idEvEndOfTransfer );
          setTransferDescriptor( p_transferDescriptor );
@@ -252,22 +252,22 @@ class evEndOfTransfer : public Event
       }
 
       inline void setTransferDescriptor(
-         Stream::TransferDescriptor* p_transferDescriptor )
+         IStream::TransferDescriptor* p_transferDescriptor )
       {
          parameters.endOfTransfer.td = p_transferDescriptor;
       }
 
-      inline Stream::TransferDescriptor* getTransferDescriptor()
+      inline IStream::TransferDescriptor* getTransferDescriptor()
       {
          return parameters.endOfTransfer.td;
       }
 
-      inline void setStatus( Stream::Status status )
+      inline void setStatus( IStream::Status status )
       {
          parameters.endOfTransfer.status = status;
       }
 
-      inline Stream::Status getStatus()
+      inline IStream::Status getStatus()
       {
          return parameters.endOfTransfer.status;
       }

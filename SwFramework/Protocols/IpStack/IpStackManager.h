@@ -11,7 +11,7 @@
 #include "IpStack.h"
 #include <Protocols/Ethernet/IP.h>
 #include "Reactive.h"
-#include "Stream.h"
+#include "IStream.h"
 #include "Time/Timestamp.h"
 
 
@@ -77,7 +77,7 @@ class IpStackManager : public Reactive
 
    public:
 
-      Stream::TransferDescriptor* getTransferDescriptor() const;
+      IStream::TransferDescriptor* getTransferDescriptor() const;
 
    protected:
 
@@ -125,7 +125,7 @@ class IpStackManager : public Reactive
 
    protected:
 
-      Stream::TransferDescriptor transferDescriptor;
+      IStream::TransferDescriptor transferDescriptor;
 };
 
 #endif

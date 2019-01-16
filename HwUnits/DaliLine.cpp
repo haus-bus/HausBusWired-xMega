@@ -96,7 +96,7 @@ bool DaliLine::handleRequest( HACF* message )
          uint8_t reply;
          uint8_t status = daliHw->read( &reply );
 
-         if ( status == Stream::SUCCESS )
+         if ( status == IStream::SUCCESS )
          {
             response.setStatus( reply );
          }

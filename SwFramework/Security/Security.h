@@ -8,7 +8,8 @@
 #ifndef SwFramework_Security_Security_H
 #define SwFramework_Security_Security_H
 
-#include "SwFramework.h"
+#include <SwFramework.h>
+
 class Checksum;
 
 class Checksum16;

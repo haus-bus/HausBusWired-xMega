@@ -5,7 +5,7 @@
 #include "Object.h"
 #include "DefaultTypes.h"
 
-class Stream : public Object
+class IStream : public Object
 {
    public:
 
@@ -58,7 +58,10 @@ class Stream : public Object
             }
 
             ////    Operations    ////
-            void reset();
+            inline void reset()
+            {
+               memset( this, 0, sizeof(TransferDescriptor) );
+            }
 
             ////    Additional operations    ////
             inline uint8_t* getPData() const
@@ -105,7 +108,7 @@ class Stream : public Object
 
       ////    Constructors and destructors    ////
 
-      inline Stream() :
+      inline IStream() :
          state( DISABLED )
       {
 

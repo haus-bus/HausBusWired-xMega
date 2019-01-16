@@ -10,7 +10,7 @@
 #include <EventPkg/EventPkg.h>
 #include <Protocols/IpStack/IpConnection.h>
 #include <SwFramework.h>
-#include <Stream.h>
+#include <IStream.h>
 
 const uint8_t Snmp::debugLevel( DEBUG_LEVEL_OFF );
 
@@ -34,7 +34,7 @@ bool Snmp::notifyEvents( const Event& event )
 
    if ( event.isEvData() )
    {
-      Stream::TransferDescriptor* td = event.isEvData()->getTransferDescriptor();
+      IStream::TransferDescriptor* td = event.isEvData()->getTransferDescriptor();
 
       if ( td->bytesTransferred != 0 )
       {

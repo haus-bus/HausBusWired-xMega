@@ -8,7 +8,7 @@
 #include "ModBusTcp.h"
 #include "EventPkg/EventPkg.h"
 #include "Protocols/IpStack/IpConnection.h"
-#include "Stream.h"
+#include "IStream.h"
 
 const uint8_t ModBusTcp::debugLevel( DEBUG_LEVEL_OFF );
 
@@ -147,7 +147,7 @@ bool ModBusTcp::notifyEvent( const Event& event )
    }
    else if ( event.isEvData() )
    {
-      Stream::TransferDescriptor* td = event.isEvData()->getTransferDescriptor();
+      IStream::TransferDescriptor* td = event.isEvData()->getTransferDescriptor();
 
       if ( td->bytesTransferred != 0 )
       {
@@ -246,7 +246,7 @@ bool ModBusTcp::notifyEvent( const Event& event )
    else if ( event.isEvEndOfTransfer() )
    {
       DEBUG_M1( FSTR( "last data acked" ) );
-      Stream::TransferDescriptor* td = event.isEvEndOfTransfer()->getTransferDescriptor();
+      IStream::TransferDescriptor* td = event.isEvEndOfTransfer()->getTransferDescriptor();
       // if we want to send anything, we can do it now
       td->bytesTransferred = 0;
    }

@@ -8,8 +8,8 @@
 #ifndef SwFramework_Security_Crc7_H
 #define SwFramework_Security_Crc7_H
 
-#include "Security/Security.h"
-#include "DefaultTypes.h"
+#include "Security.h"
+#include <DefaultTypes.h>
 
 class Crc7
 {

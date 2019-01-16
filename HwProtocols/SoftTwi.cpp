@@ -118,7 +118,7 @@
 
 volatile bool isMaster = false;
 volatile bool hasTimeout = false;
-volatile Stream::State streamState = Stream::IDLE;
+volatile IStream::State streamState = IStream::IDLE;
 
 const uint8_t debugLevel( DEBUG_LEVEL_OFF );
 
@@ -155,7 +155,7 @@ uint16_t io_waitForDebouncedPinState()
          // waitloop can be shorten in this case
          return 0;
       }
-      if ( stopOnIdle && ( streamState == Stream::IDLE ) )
+      if ( stopOnIdle && ( streamState == IStream::IDLE ) )
       {
          return 0xFFFF;
       }
@@ -229,13 +229,13 @@ void enableSclInt()
 }
 
 
-Stream::Status startTx()
+IStream::Status startTx()
 {
    isMaster = false;
 
-   if ( streamState != Stream::IDLE )
+   if ( streamState != IStream::IDLE )
    {
-      return Stream::LOCKED;
+      return IStream::LOCKED;
    }
 
    if ( handleTwiPin<SCL_PIN, STATE_HIGH, true, false>() )
@@ -246,14 +246,14 @@ Stream::Status startTx()
       {
          // no error
          isMaster = true;
-         return Stream::SUCCESS;
+         return IStream::SUCCESS;
       }
    }
    // arbitration lost
-   return Stream::ABORTED;
+   return IStream::ABORTED;
 }
 
-Stream::Status sendReceiveByte( uint8_t& data )
+IStream::Status sendReceiveByte( uint8_t& data )
 {
    uint8_t mask = 0x80;
 
@@ -263,7 +263,7 @@ Stream::Status sendReceiveByte( uint8_t& data )
 
       if ( hasTimeout )
       {
-         return Stream::TIMEOUT;
+         return IStream::TIMEOUT;
       }
 
       if ( isMaster )
@@ -278,9 +278,9 @@ Stream::Status sendReceiveByte( uint8_t& data )
          TRACE_TWI_SCL_RELEASE;
       }
 
-      if ( streamState == Stream::IDLE )
+      if ( streamState == IStream::IDLE )
       {
-         return Stream::STOPPED;
+         return IStream::STOPPED;
       }
 
       if ( isMaster )
@@ -371,9 +371,9 @@ Stream::Status sendReceiveByte( uint8_t& data )
    }
    if ( nack )
    {
-      return Stream::NO_ACK;
+      return IStream::NO_ACK;
    }
-   return Stream::SUCCESS;
+   return IStream::SUCCESS;
 }
 
 void stopTx()
@@ -403,8 +403,8 @@ void init()
    ( (IoPort*)&TWI_PORT )->enableInterrupt1( PORT_INT1LVL_HI_gc );
 }
 
-Stream::Status SoftTwi::genericCommand( IoStream::Command command,
-                                        void* buffer )
+IStream::Status SoftTwi::genericCommand( IoStream::Command command,
+                                         void* buffer )
 {
    if ( command == IoStream::INIT )
    {
@@ -415,51 +415,51 @@ Stream::Status SoftTwi::genericCommand( IoStream::Command command,
    return ABORTED;
 }
 
-Stream::Status SoftTwi::read( void* pData, uint16_t length, EventDrivenUnit* user )
+IStream::Status SoftTwi::read( void* pData, uint16_t length, EventDrivenUnit* user )
 {
    uint16_t bytesTransferred = 0;
-   Stream::Status status = Stream::NO_DATA;
+   IStream::Status status = IStream::NO_DATA;
    hasTimeout = false;
 
    bool wasMaster = isMaster;
 
-   while ( streamState != Stream::IDLE )
+   while ( streamState != IStream::IDLE )
    {
       uint8_t data = 0xFF;
       status = sendReceiveByte( length ? ( (uint8_t*)pData )[bytesTransferred] : data );
 
-      if ( ( wasMaster != isMaster ) && ( streamState == Stream::WRITING ) )
+      if ( ( wasMaster != isMaster ) && ( streamState == IStream::WRITING ) )
       {
          // increase buffer while switching to slave mode
          length = HACF::MAX_BUFFER_SIZE - bytesTransferred;
-         streamState = Stream::READING;
-         status = Stream::ARB_LOST;
+         streamState = IStream::READING;
+         status = IStream::ARB_LOST;
       }
 
-      if ( status == Stream::TIMEOUT )
+      if ( status == IStream::TIMEOUT )
       {
          if ( !wasMaster )
          {
             // a timeout in slave mode should set the streamState into IDLE
             // to wait for the next real start condition
             CriticalSection doNotInterrupt;
-            streamState = Stream::IDLE;
+            streamState = IStream::IDLE;
          }
          break;
       }
 
-      if ( status == Stream::NO_ACK )
+      if ( status == IStream::NO_ACK )
       {
          if ( bytesTransferred == 0 )
          {
-            status = Stream::NO_RECEIVER;
+            status = IStream::NO_RECEIVER;
          }
          break;
       }
 
-      if ( status == Stream::STOPPED )
+      if ( status == IStream::STOPPED )
       {
-         Stream::TransferDescriptor td;
+         IStream::TransferDescriptor td;
          td.bytesTransferred = bytesTransferred;
          td.pData = (uint8_t*)pData;
          evData( user, &td ).send();
@@ -472,18 +472,18 @@ Stream::Status SoftTwi::read( void* pData, uint16_t length, EventDrivenUnit* use
          length--;
          if ( ( length == 0 ) && isMaster )
          {
-            status = Stream::SUCCESS;
+            status = IStream::SUCCESS;
             break;
          }
       }
       else
       {
-         status = Stream::INVALID_BUFFER;
+         status = IStream::INVALID_BUFFER;
       }
    }
 
    CriticalSection doNotInterrupt;
-   if ( ( status == Stream::NO_DATA ) && ( streamState != Stream::READING ) )
+   if ( ( status == IStream::NO_DATA ) && ( streamState != IStream::READING ) )
    {
       // release pins on error or in IDLE
       TWI_PORT.DIRCLR = SDA_PIN | SCL_PIN;
@@ -496,13 +496,13 @@ Stream::Status SoftTwi::read( void* pData, uint16_t length, EventDrivenUnit* use
 }
 
 
-Stream::Status SoftTwi::write( void* pData, uint16_t length, EventDrivenUnit* user )
+IStream::Status SoftTwi::write( void* pData, uint16_t length, EventDrivenUnit* user )
 {
    // allocate the bus
-   Stream::Status status = startTx();
+   IStream::Status status = startTx();
    bool started = false;
 
-   if ( status == Stream::SUCCESS )
+   if ( status == IStream::SUCCESS )
    {
       DEBUG_M1( FSTR( "start next trx " ) );
       started = true;
@@ -554,7 +554,7 @@ void SoftTwi::handleInterrupt1Source()
       if ( portStatus & SDA_PIN )
       {
          TRACE_TWI_STATE_IDLE;
-         streamState = Stream::IDLE;
+         streamState = IStream::IDLE;
          // disable Int0
          TWI_PORT.INTCTRL &= ~PORT_INT0LVL_gm;
       }
@@ -564,12 +564,12 @@ void SoftTwi::handleInterrupt1Source()
          if ( TWI_PORT.DIR & SDA_PIN )
          {
             TRACE_TWI_STATE_WRITING;
-            streamState = Stream::WRITING;
+            streamState = IStream::WRITING;
          }
          else
          {
             TRACE_TWI_STATE_READING;
-            streamState = Stream::READING;
+            streamState = IStream::READING;
          }
       }
    }

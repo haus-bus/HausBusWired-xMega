@@ -80,7 +80,7 @@ bool Gateway::notifyEvent( const Event& event )
    }
    else if ( event.isEvData() )
    {
-      Stream::TransferDescriptor* td = event.isEvData()->getTransferDescriptor();
+      IStream::TransferDescriptor* td = event.isEvData()->getTransferDescriptor();
 
       if ( td->bytesTransferred && ( td->bytesTransferred <= HACF::MAX_BUFFER_SIZE ) )
       {
@@ -121,7 +121,7 @@ void Gateway::run()
       data.deviceId = HACF::getDeviceId() & 0x7F;
       data.buffersize = HACF::MAX_BUFFER_SIZE;
       data.owner = this;
-      if ( configuration && ioStream && ( ioStream->genericCommand( IoStream::INIT, &data ) == Stream::SUCCESS ) )
+      if ( configuration && ioStream && ( ioStream->genericCommand( IoStream::INIT, &data ) == IStream::SUCCESS ) )
       {
          // configuration = HwConfiguration::getUdpStreamConfiguration( id );
          SET_STATE_L1( RUNNING );
@@ -209,14 +209,14 @@ void Gateway::run()
    }
 }
 
-void Gateway::notifyEndOfWriteTransfer( Stream::Status status )
+void Gateway::notifyEndOfWriteTransfer( IStream::Status status )
 {
    writeStatus[retries] = status;
    HACF* msg;
 
-   if ( ( status != Stream::SUCCESS ) && ( retries < MAX_RETRIES ) )
+   if ( ( status != IStream::SUCCESS ) && ( retries < MAX_RETRIES ) )
    {
-      if ( ( status == Stream::NO_RECEIVER ) && !retries )
+      if ( ( status == IStream::NO_RECEIVER ) && !retries )
       {
          if ( itsMessageQueue.pop( msg ) )
          {
@@ -233,7 +233,7 @@ void Gateway::notifyEndOfWriteTransfer( Stream::Status status )
    {
       if ( itsMessageQueue.pop( msg ) )
       {
-         if ( status != Stream::SUCCESS )
+         if ( status != IStream::SUCCESS )
          {
             notifyError( Gateway::WRITE_FAILED, (uint8_t*) writeStatus );
          }
@@ -249,7 +249,7 @@ void Gateway::notifyEndOfWriteTransfer( Stream::Status status )
    lastIdleTime = Timestamp();
 }
 
-void Gateway::notifyEndOfReadTransfer( Stream::TransferDescriptor* td )
+void Gateway::notifyEndOfReadTransfer( IStream::TransferDescriptor* td )
 {
    DEBUG_H1( FSTR( ".EoT Slave" ) );
    uint8_t checksum = -1;

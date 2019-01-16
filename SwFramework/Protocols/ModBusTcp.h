@@ -14,7 +14,7 @@ class Event;
 
 class IpConnection;
 
-class Stream;
+class IStream;
 
 class ModBusTcp
 {

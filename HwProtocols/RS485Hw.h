@@ -48,11 +48,11 @@ class RS485Hw : public IoStream
 
    public:
 
-      Stream::Status genericCommand( Command command, void* buffer );
+      IStream::Status genericCommand( Command command, void* buffer );
 
-      Stream::Status read( void* pData, uint16_t length, EventDrivenUnit* user = 0 );
+      IStream::Status read( void* pData, uint16_t length, EventDrivenUnit* user = 0 );
 
-      Stream::Status write( void* pData, uint16_t length, EventDrivenUnit* user = 0 );
+      IStream::Status write( void* pData, uint16_t length, EventDrivenUnit* user = 0 );
 
       void handleDataRegisterEmpty();
 

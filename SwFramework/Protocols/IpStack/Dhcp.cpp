@@ -76,7 +76,7 @@ bool Dhcp::notifyEvent( const Event& event )
    }
    else if ( event.isEvData() )
    {
-      Stream::TransferDescriptor* td = event.isEvData()->getTransferDescriptor();
+      IStream::TransferDescriptor* td = event.isEvData()->getTransferDescriptor();
 
       if ( td->bytesTransferred != 0 )
       {

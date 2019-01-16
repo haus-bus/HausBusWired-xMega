@@ -28,11 +28,11 @@ class SoftTwi : public IoStream
 
    public:
 
-      virtual Stream::Status genericCommand( Command command, void* buffer );
+      virtual IStream::Status genericCommand( Command command, void* buffer );
 
-      virtual Stream::Status read( void* pData, uint16_t length, EventDrivenUnit* user = 0 );
+      virtual IStream::Status read( void* pData, uint16_t length, EventDrivenUnit* user = 0 );
 
-      virtual Stream::Status write( void* pData, uint16_t length, EventDrivenUnit* user = 0 );
+      virtual IStream::Status write( void* pData, uint16_t length, EventDrivenUnit* user = 0 );
 
       ////    Attributes    ////
 

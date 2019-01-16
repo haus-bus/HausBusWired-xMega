@@ -28,7 +28,7 @@ bool Dali::isConnected()
    return false;
 }
 
-Stream::Status Dali::read( uint8_t* pData )
+IStream::Status Dali::read( uint8_t* pData )
 {
    *pData = 0;
 
@@ -39,7 +39,7 @@ Stream::Status Dali::read( uint8_t* pData )
    uint16_t remainingTime = delayBit( COUNT_DELAY_BIT_US( 9170 ), port, pin, 0 );
    if ( !remainingTime )
    {
-      return Stream::TIMEOUT;
+      return IStream::TIMEOUT;
    }
 
    // wait for rising edge of start bit
@@ -49,7 +49,7 @@ Stream::Status Dali::read( uint8_t* pData )
       || ( remainingTime == 0 ) )
    {
       // we are way out of timing spec
-      return Stream::ABORTED;
+      return IStream::ABORTED;
    }
 
    // pin is high again, second half of the start bit
@@ -64,7 +64,7 @@ Stream::Status Dali::read( uint8_t* pData )
          || ( remainingTime == 0 ) )
       {
          // we are way out of timing spec
-         return Stream::ABORTED;
+         return IStream::ABORTED;
       }
       else if ( remainingTime > COUNT_DELAY_BIT_US( DALI_HALF_BIT_USEC ) )
       {
@@ -76,7 +76,7 @@ Stream::Status Dali::read( uint8_t* pData )
             || ( remainingTime == 0 ) )
          {
             // we are way out of timing spec
-            return Stream::ABORTED;
+            return IStream::ABORTED;
          }
       }
 
@@ -88,10 +88,10 @@ Stream::Status Dali::read( uint8_t* pData )
       }
       waitfor = ( waitfor ? 0 : 1 );
    }
-   return Stream::SUCCESS;
+   return IStream::SUCCESS;
 }
 
-Stream::Status Dali::write( uint8_t* pData )
+IStream::Status Dali::write( uint8_t* pData )
 {
    // we expect an inverter in the output stage:
    // atmega output normally low, dali bus normally high
@@ -145,5 +145,5 @@ Stream::Status Dali::write( uint8_t* pData )
    DALI_HALF_BIT_WAIT;
    DALI_HALF_BIT_WAIT;
 
-   return Stream::SUCCESS;
+   return IStream::SUCCESS;
 }

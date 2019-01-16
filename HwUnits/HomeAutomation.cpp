@@ -262,7 +262,7 @@ void HomeAutomation::cmdReadMemory( HomeAutomationInterface::Command::ReadMemory
    {
       if ( Flash::read( parameter.address, dest, parameter.length ) != parameter.length )
       {
-         response.setMemoryStatus( Stream::ABORTED );
+         response.setMemoryStatus( IStream::ABORTED );
       }
    }
 }
@@ -272,10 +272,10 @@ void HomeAutomation::cmdWriteRules( HomeAutomationInterface::Command::WriteRules
 {
    DEBUG_H1( FSTR( ".writeRules()" ) );
    RuleEngine::disable();
-   Stream::Status result = Stream::SUCCESS;
+   IStream::Status result = IStream::SUCCESS;
    if ( HomeAutomationHw::writeRules( parameter.offset, parameter.data, dataLength ) != dataLength )
    {
-      result = Stream::ABORTED;
+      result = IStream::ABORTED;
    }
    response.setMemoryStatus( result );
    if ( dataLength < HACF::MAX_DATA_SIZE )
@@ -456,7 +456,7 @@ bool HomeAutomation::handleRequest( HACF* message )
          else if ( cf.isCommand( HomeAutomationInterface::Command::WRITE_MEMORY ) )
          {
             DEBUG_H1( FSTR( ".writeMemory()" ) );
-            response.setMemoryStatus( Stream::LOCKED );
+            response.setMemoryStatus( IStream::LOCKED );
          }
          else if ( cf.isCommand( HomeAutomationInterface::Command::WRITE_RULES ) )
          {

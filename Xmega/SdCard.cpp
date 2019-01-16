@@ -9,7 +9,7 @@
 
 #include <FlashString.h>
 #include <Peripherals/Spi.h>
-#include <Stream.h>
+#include <IStream.h>
 
 #define getId() FSTR( "SdCard::" )
 
@@ -375,7 +375,7 @@ IDiskIo::Results SdCard::read( uint8_t* buffer, uint32_t sector, uint8_t count )
          return NOT_READY;
       }
 
-      if ( spi->read( buffer, BLOCK_SIZE ) != Stream::SUCCESS )
+      if ( spi->read( buffer, BLOCK_SIZE ) != IStream::SUCCESS )
       {
          ERROR_1( FSTR( "read sector failed!" ) );
          return ERROR;
@@ -425,7 +425,7 @@ IDiskIo::Results SdCard::write( const uint8_t* buffer, uint32_t sector,
       spi->write( data );
 
       // write byte block
-      if ( spi->write( buffer, BLOCK_SIZE ) != Stream::SUCCESS )
+      if ( spi->write( buffer, BLOCK_SIZE ) != IStream::SUCCESS )
       {
          ERROR_1( FSTR( "write sector failed!" ) );
          return ERROR;

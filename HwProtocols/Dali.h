@@ -11,7 +11,7 @@
 #include "HwProtocols.h"
 #include "DigitalInput.h"
 #include "DigitalOutput.h"
-#include <Stream.h>
+#include <IStream.h>
 
 class Dali
 {
@@ -79,9 +79,9 @@ class Dali
 
       bool isConnected();
 
-      Stream::Status read( uint8_t* pData );
+      IStream::Status read( uint8_t* pData );
 
-      Stream::Status write( uint8_t* pData );
+      IStream::Status write( uint8_t* pData );
 
       ////    Additional operations    ////
 

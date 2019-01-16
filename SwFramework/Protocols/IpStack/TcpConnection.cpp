@@ -11,7 +11,7 @@
 #include "EventDrivenUnit.h"
 #include <FlashString.h>
 #include "Protocols/Ethernet/IP.h"
-#include "Stream.h"
+#include "IStream.h"
 #include "Protocols/Ethernet/TcpHeader.h"
 
 uint32_t TcpConnection::initialSeqNumber( 1234 );
@@ -309,7 +309,7 @@ void TcpConnection::notifyReceivedPacket( TcpHeader* packet )
       }
       maxSegmentSize = window;
 
-      Stream::TransferDescriptor td;
+      IStream::TransferDescriptor td;
       td.pData = packet->getData();
       if ( newData )
       {
@@ -322,7 +322,7 @@ void TcpConnection::notifyReceivedPacket( TcpHeader* packet )
          td.bytesTransferred = lastLength;
          td.bytesRemaining = maxSegmentSize;
          close = !itsUser->notifyEvent(
-            evEndOfTransfer( itsUser, &td, Stream::SUCCESS ) );
+            evEndOfTransfer( itsUser, &td, IStream::SUCCESS ) );
       }
 
       if ( abort || close )

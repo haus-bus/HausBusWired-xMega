@@ -12,7 +12,7 @@
 
 #include <ApplicationTable.h>
 #include <GlobalInterrupt.h>
-#include <Stream.h>
+#include <IStream.h>
 
 class Checksum;
 

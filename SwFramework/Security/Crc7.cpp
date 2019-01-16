@@ -5,7 +5,7 @@
  *      Author: Viktor Pankraz
  */
 
-#include "Security/Crc7.h"
+#include "Crc7.h"
 
 uint8_t Crc7::get( void* pData, uint16_t length, uint8_t crc )
 {

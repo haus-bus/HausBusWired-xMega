@@ -11,7 +11,7 @@
 #include "IpStack.h"
 #include "Protocols/Ethernet/IP.h"
 #include "Reactive.h"
-#include "Stream.h"
+#include "IStream.h"
 
 class Event;
 

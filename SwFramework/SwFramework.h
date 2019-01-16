@@ -22,7 +22,7 @@ class Scheduler;
 
 class StorageInterface;
 
-class Stream;
+class IStream;
 
 // Converts an ASCII character to its Unicode equivalent
 

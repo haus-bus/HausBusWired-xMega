@@ -9,7 +9,7 @@
 #define SwFramework_Traces_Logger_H
 
 #include "Traces.h"
-#include "DefaultTypes.h"
+#include <DefaultTypes.h>
 #include <FlashString.h>
 
 class Logger

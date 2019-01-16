@@ -475,8 +475,8 @@ bool IpStackManager::sendToUdp( uint16_t port, void* pData, uint16_t len, const 
    return success;
 }
 
-Stream::TransferDescriptor* IpStackManager::getTransferDescriptor() const
+IStream::TransferDescriptor* IpStackManager::getTransferDescriptor() const
 {
-   return (Stream::TransferDescriptor*) &transferDescriptor;
+   return (IStream::TransferDescriptor*) &transferDescriptor;
 }
 

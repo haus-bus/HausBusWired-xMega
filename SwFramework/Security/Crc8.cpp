@@ -5,7 +5,7 @@
  *      Author: Viktor Pankraz
  */
 
-#include "Security/Crc8.h"
+#include "Crc8.h"
 
 uint8_t Crc8::hasError( void* pData, uint16_t length, uint8_t crc )
 {

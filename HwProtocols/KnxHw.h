@@ -10,7 +10,7 @@
 
 #include "DigitalInput.h"
 #include "DigitalOutput.h"
-#include <Stream.h>
+#include <IStream.h>
 
 class KnxHw
 {
@@ -24,11 +24,11 @@ class KnxHw
 
       void readByte();
 
-      Stream::Status write( uint8_t* pData, uint16_t length );
+      IStream::Status write( uint8_t* pData, uint16_t length );
 
    private:
 
-      Stream::Status writeByte( uint8_t data );
+      IStream::Status writeByte( uint8_t data );
 
       ////    Additional operations    ////
 
