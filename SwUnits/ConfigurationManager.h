@@ -31,7 +31,7 @@ class ConfigurationManager
 
             static inline EepromConfigurationBase* getLastConfiguration()
             {
-               return reinterpret_cast<EepromConfigurationBase*>( MAPPED_EEPROM_START + 0x200 );// MAPPED_EEPROM_END - MAX_CONFIGURATION_SIZE );
+               return reinterpret_cast<EepromConfigurationBase*>( MAPPED_EEPROM_START + MAPPED_EEPROM_END - MAX_CONFIGURATION_SIZE );
             }
 
             inline bool isMine( uint16_t _id, uint8_t size )
