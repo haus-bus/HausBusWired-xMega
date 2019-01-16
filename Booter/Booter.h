@@ -61,7 +61,7 @@ class Booter
          DEBUG_H2( getId(), FSTR( ".writeMemory()" ) );
 #ifdef _DEBUG_
          WARN_1( FSTR( "writeMemory not possible in debug mode" ) );
-         getResponse()->setMemoryStatus( Stream::LOCKED );
+         getResponse()->setMemoryStatus( IStream::LOCKED );
 #else
          uint16_t dataLength = message->getDataLength() - sizeof( parameter.address ) - 1; // sizeof( command )
          if ( !downloadAllowed )
@@ -73,7 +73,7 @@ class Booter
                if ( ( parameter.address + dataLength ) < ( _VECTORS_SIZE + sizeof( ModuleId ) ) )
                {
                   // get more data into buffer to analyze ModuleId
-                  getResponse()->setMemoryStatus( Stream::SUCCESS );
+                  getResponse()->setMemoryStatus( IStream::SUCCESS );
                   return;
                }
                ModuleId* modId = (ModuleId*) &buffer[_VECTORS_SIZE];
@@ -100,13 +100,13 @@ class Booter
                }
             }
          }
-         Stream::Status result = Stream::ABORTED;
+         IStream::Status result = IStream::ABORTED;
          if ( downloadAllowed )
          {
             // data length should not be 0
-            if ( Flash::write( parameter.address, parameter.data, dataLength ) )
+            if ( ( dataLength == 0 ) || Flash::write( parameter.address, parameter.data, dataLength ) )
             {
-               result = Stream::SUCCESS;
+               result = IStream::SUCCESS;
             }
          }
          else
@@ -277,7 +277,7 @@ inline void Booter::cmdReadMemory(
    {
       if ( Flash::read( parameter.address, dest, parameter.length ) != parameter.length )
       {
-         response->setMemoryStatus( Stream::ABORTED );
+         response->setMemoryStatus( IStream::ABORTED );
       }
    }
 }
