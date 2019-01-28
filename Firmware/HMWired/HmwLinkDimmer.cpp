@@ -20,8 +20,7 @@ HmwLinkDimmer::HmwLinkDimmer( uint8_t _numLinks, Config* _links )
 
 // processKeyEvent wird aufgerufen, wenn ein Tastendruck empfangen wurde
 
-void HmwLinkDimmer::receiveKeyEvent( const uint32_t&  senderAddress, uint8_t senderChannel,
-                                     uint8_t targetChannel, bool longPress )
+void HmwLinkDimmer::receiveKeyEvent( const uint32_t&  senderAddress, uint8_t senderChannel, uint8_t targetChannel, bool longPress, bool broadcast )
 {
    // read what to do from EEPROM
    for ( uint8_t i = 0; i < numLinks; i++ )
@@ -49,14 +48,11 @@ void HmwLinkDimmer::receiveKeyEvent( const uint32_t&  senderAddress, uint8_t sen
          continue;
       }
 
-      if ( longPress )
-      {
-         HmwDevice::set( targetChannel, sizeof( links[i].longActionParameter ), (uint8_t*)&links[i].longActionParameter );    // channel, data length, data
-      }
-      else
-      {
-         HmwDevice::set( targetChannel, sizeof( links[i].shortActionParameter ), (uint8_t*)&links[i].shortActionParameter );   // channel, data length, data
-      }
+      HmwDimmer::GenericCommands data;
+      data.cmd = ( broadcast ? HmwChannel::BROADCAST_LINK_ACTION : HmwChannel::LINK_ACTION );
+      data.actionParameter = ( longPress ? &links[i].longActionParameter : &links[i].shortActionParameter );
+
+      HmwDevice::set( targetChannel, sizeof( data ), (uint8_t*)&data );    // channel, data length, data
    }
 }
 

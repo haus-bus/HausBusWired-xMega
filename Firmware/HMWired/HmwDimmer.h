@@ -37,8 +37,9 @@ class HmwDimmer : public HmwChannel
             enum Mode
             {
                SWITCH = 0,
-               DIMM_L,
-               DIMM_CR
+               DIMM_PWM,
+               DIMM_LEADING,
+               DIMM_TRAILING
             };
 
             inline bool isLogging() const
@@ -49,6 +50,26 @@ class HmwDimmer : public HmwChannel
             inline uint8_t getDimmingMode() const
             {
                return ( options & DIMMING_MODE_MASK );
+            }
+
+            inline bool isDimmingModeSwitch() const
+            {
+               return ( getDimmingMode() == SWITCH );
+            }
+
+            inline bool isDimmingModeLeading() const
+            {
+               return ( getDimmingMode() == DIMM_LEADING );
+            }
+
+            inline bool isDimmingModeTrailing() const
+            {
+               return ( getDimmingMode() == DIMM_TRAILING );
+            }
+
+            inline bool isDimmingModePwm() const
+            {
+               return ( getDimmingMode() == DIMM_PWM );
             }
 
             inline void checkOrRestore()
@@ -112,6 +133,16 @@ class HmwDimmer : public HmwChannel
          uint8_t jtRampOff  : 4;
       };
 
+      struct GenericCommands
+      {
+         uint8_t cmd;
+         union
+         {
+            ActionParameter* actionParameter;
+         };
+
+      };
+
       static const uint8_t MAX_LEVEL = 200;
       static const uint8_t DEFAULT_NORMALIZE_LEVEL = 205;
       static const uint8_t LOOP_PERIOD_MS = 8;
@@ -121,13 +152,16 @@ class HmwDimmer : public HmwChannel
 
       enum States
       {
+         START_UP,
          OFF,
          DELAY_ON,
          RAMP_UP,
+         DIM_UP,
          TIME_ON,
          ON,
          DELAY_OFF,
          RAMP_DOWN,
+         DIM_DOWN,
          TIME_OFF
       };
 

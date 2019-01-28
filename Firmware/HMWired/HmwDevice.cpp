@@ -378,10 +378,13 @@ bool HmwDevice::processMessage( HmwMessageBase& msg )
    else if ( msg.isCommand( HmwMessageBase::KEY_EVENT ) || msg.isCommand( HmwMessageBase::KEY_SIM ) )
    {
       DEBUG_M1( FSTR( "C: KEY_EVENT" ) );
-      if ( !msg.isBroadcast() )
+      HmwMsgKeyEvent* event = ( HmwMsgKeyEvent* )&msg;
+
+      // forward all key events to LinkReceiver except the short pressed broadcasts
+      if ( !( !event->isLongPress() && msg.isBroadcast() ) )
       {
-         HmwMsgKeyEvent* event = ( HmwMsgKeyEvent* )&msg;
-         HmwLinkReceiver::notifyKeyEvent( event->getSenderAddress(), event->getSourceChannel(), event->getDestinationChannel(), event->isLongPress() );
+         DEBUG_L1( FSTR( "->LinkReceiver" ) )
+         HmwLinkReceiver::notifyKeyEvent( event->getSenderAddress(), event->getSourceChannel(), event->getDestinationChannel(), event->isLongPress(), msg.isBroadcast() );
       }
    }
    else if ( msg.isCommand( HmwMessageBase::GET_LEVEL ) )

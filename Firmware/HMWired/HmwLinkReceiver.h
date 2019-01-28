@@ -27,13 +27,13 @@ class HmwLinkReceiver
 
       // functions
    public:
-      virtual void receiveKeyEvent( const uint32_t& senderAddress, uint8_t senderChannel, uint8_t targetChannel, bool longPress ) = 0;
+      virtual void receiveKeyEvent( const uint32_t& senderAddress, uint8_t senderChannel, uint8_t targetChannel, bool longPress, bool broadcast = false ) = 0;
 
-      static inline void notifyKeyEvent( const uint32_t& senderAddress, uint8_t senderChannel, uint8_t targetChannel, bool longPress )
+      static inline void notifyKeyEvent( const uint32_t& senderAddress, uint8_t senderChannel, uint8_t targetChannel, bool longPress, bool broadcast = false )
       {
          if ( instance )
          {
-            instance->receiveKeyEvent( senderAddress, senderChannel, targetChannel, longPress );
+            instance->receiveKeyEvent( senderAddress, senderChannel, targetChannel, longPress, broadcast );
          }
       }
 }; // HmwLinkReceiver

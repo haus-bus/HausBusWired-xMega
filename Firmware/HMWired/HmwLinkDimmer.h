@@ -27,9 +27,7 @@ class HmwLinkDimmer : public HmwLinkReceiver
       };
 
       HmwLinkDimmer( uint8_t _numLinks, Config* _links );
-      void receiveKeyEvent( const uint32_t&  senderAddress, uint8_t senderChannel,
-                            uint8_t targetChannel, bool longPress );
-
+      void receiveKeyEvent( const uint32_t&  senderAddress, uint8_t senderChannel, uint8_t targetChannel, bool longPress, bool broadcast );
 
    private:
       uint8_t numLinks;         // number of links of this type

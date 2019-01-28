@@ -31,6 +31,13 @@ class HmwChannel
          KEY_FEEDBACK_OFF,
       };
 
+      enum GenericChannelCommands
+      {
+
+         LINK_ACTION = 254,
+         BROADCAST_LINK_ACTION = 255,
+      };
+
       enum Type
       {
          UNKNOWN,

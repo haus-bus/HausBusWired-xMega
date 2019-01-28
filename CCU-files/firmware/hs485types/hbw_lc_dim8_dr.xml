@@ -105,13 +105,24 @@
 		<target name="SWITCH"/>
 	</link_roles>
 	<paramset type="MASTER" id="hmw_dimmer_ch_master" address_start="0x10" address_step="2">
+		<parameter id="MODE">
+			<logical type="option">
+				<option id="SWITCH"/>
+				<option id="PWM"/>
+				<option id="LEADING"/>
+				<option id="TRAILING" default="true"/>
+			</logical>
+			<physical size="0.2" type="integer" interface="eeprom">
+				<address index="+0.0"/>
+			</physical>
+		</parameter>	
 		<parameter id="LOGGING">
 			<logical type="option">
 				<option id="OFF"/>
 				<option id="ON" default="true"/>
 			</logical>
 			<physical type="integer" size="0.1" interface="eeprom">
-				<address index="+0"/>
+				<address index="+0.7"/>
 			</physical>
 		</parameter>
 	</paramset>

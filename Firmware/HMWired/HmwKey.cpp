@@ -36,7 +36,6 @@ void HmwKey::handleSwitchSignal( uint8_t channel )
    {
       if ( lastSentLong.isValid() )
       {
-
          // if return value is 1, bus is not idle, retry next time
          if ( HmwDevice::sendKeyEvent( channel, keyPressNum, false ) == Stream::SUCCESS )
          {
@@ -77,7 +76,7 @@ void HmwKey::handleSwitchSignal( uint8_t channel )
 
 void HmwKey::handlePushButtonSignal( uint8_t channel )
 {
-   if ( digitalIn.isSet() )
+   if ( !isPressed() )
    {
       // d.h. Taste nicht gedrueckt
       // "Taste war auch vorher nicht gedrueckt" kann ignoriert werden
@@ -85,11 +84,15 @@ void HmwKey::handlePushButtonSignal( uint8_t channel )
       if ( keyPressedTimestamp.isValid() )
       {
          // entprellen, nur senden, wenn laenger als 50ms gedrueckt
-         // aber noch kein "long" gesendet
-         if ( ( keyPressedTimestamp.since() >= 50 ) && !lastSentLong.isValid() )
+         if ( ( keyPressedTimestamp.since() >= 50 ) )
          {
-            keyPressNum++;
-            HmwDevice::sendKeyEvent( channel, keyPressNum, false );
+            if ( !lastSentLong.isValid() )
+            {
+               // noch kein "long" gesendet, für kurzes drücken keyPressNum erhöhen
+               keyPressNum++;
+            }
+            // auch beim loslassen nach einem langen Tastendruck ein weiteres Event senden
+            HmwDevice::sendKeyEvent( channel, keyPressNum, lastSentLong.isValid() );
          }
          keyPressedTimestamp.reset();
          if ( feedbackChannel && config->isFeedbackEnabled() )
@@ -114,7 +117,7 @@ void HmwKey::handlePushButtonSignal( uint8_t channel )
                // alle 300ms wiederholen
                // keyPressNum nicht erhoehen
                lastSentLong = Timestamp();
-               HmwDevice::sendKeyEvent( channel, keyPressNum, true );                  // long press
+               HmwDevice::sendKeyEvent( channel, keyPressNum, true, true );                  // long press
             }
          }
          else if ( keyPressedTimestamp.since() >= long(config->getLongPressTime() ) * 100 )
@@ -122,7 +125,7 @@ void HmwKey::handlePushButtonSignal( uint8_t channel )
             // erstes LONG
             keyPressNum++;
             lastSentLong = Timestamp();
-            HmwDevice::sendKeyEvent( channel, keyPressNum, true );                    // long press
+            HmwDevice::sendKeyEvent( channel, keyPressNum, true, true );                    // long press
          }
       }
       else

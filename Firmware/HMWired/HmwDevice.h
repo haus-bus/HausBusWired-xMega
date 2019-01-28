@@ -155,12 +155,23 @@ class HmwDevice
          HmwLinkReceiver::notifyKeyEvent( senderAddress, srcChan, dstChan, longPress );
       }
 
-      static inline Stream::Status sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress )
+      static inline Stream::Status sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress, bool keyPressed = false )
       {
-         Stream::Status status = sendKeyEvent( srcChan, keyPressNum, longPress, 0xFFFFFFFF, 0 );
-         if ( HmwLinkSender::notifyKeyEvent( srcChan, keyPressNum, longPress ) != Stream::SUCCESS )
+         Stream::Status status;
+         if ( keyPressed )
          {
-            status = announce( srcChan );
+            // normally only long press events
+            status = sendKeyEvent( srcChan, keyPressNum, longPress, 0xFFFFFFFF, 0 );
+         }
+         else
+         {
+            // short pressed or a released long press
+            status = sendKeyEvent( srcChan, keyPressNum, longPress, 0xFFFFFFFF, 0 );
+            if ( status == Stream::SUCCESS )
+            {
+               HmwLinkSender::notifyKeyEvent( srcChan, keyPressNum, longPress );
+               pendingActions.announce = true;
+            }
          }
          return status;
       }
