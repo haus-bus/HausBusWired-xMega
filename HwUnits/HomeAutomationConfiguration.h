@@ -11,7 +11,7 @@
 #include "Electronics.h"
 #include "HwUnits.h"
 
-#include <Peripherals/Flash.h>
+#include <UserSignature.h>
 
 class Checksum;
 
@@ -77,13 +77,12 @@ class HomeAutomationConfiguration
 
 inline uint8_t HomeAutomationConfiguration::getLogicalButtonMask() const
 {
-   return Flash::readUserSignature( reinterpret_cast<uint16_t>( &logicalButtonMask ) );
+   return UserSignature::read( reinterpret_cast<uintptr_t>( &logicalButtonMask ) );
 }
 
 inline uint8_t HomeAutomationConfiguration::getReportMemoryStatusTime()
 {
-   uint8_t value = Flash::readUserSignature(
-      reinterpret_cast<uint16_t>( &reportMemoryStatusTime ) );
+   uint8_t value = UserSignature::read( reinterpret_cast<uintptr_t>( &reportMemoryStatusTime ) );
 
    if ( value > MAX_REPORT_TIME )
    {
@@ -94,22 +93,22 @@ inline uint8_t HomeAutomationConfiguration::getReportMemoryStatusTime()
 
 inline uint8_t HomeAutomationConfiguration::getSlotType( uint8_t idx ) const
 {
-   return Flash::readUserSignature( reinterpret_cast<uint16_t>( &slotTypes[idx] ) );
+   return UserSignature::read( reinterpret_cast<uintptr_t>( &slotTypes[idx] ) );
 }
 
 inline uint8_t HomeAutomationConfiguration::getStartupDelay() const
 {
-   return Flash::readUserSignature( reinterpret_cast<uint16_t>( &startupDelay ) );
+   return UserSignature::read( reinterpret_cast<uintptr_t>( &startupDelay ) );
 }
 
 inline int8_t HomeAutomationConfiguration::getTimeCorrectionValue() const
 {
-   return Flash::readUserSignature( reinterpret_cast<uint16_t>( &timeCorrectionValue ) );
+   return UserSignature::read( reinterpret_cast<uintptr_t>( &timeCorrectionValue ) );
 }
 
 inline void HomeAutomationConfiguration::setTimeCorrectionValue( int8_t value )
 {
-   Flash::writeUserSignature( reinterpret_cast<uint16_t>( &timeCorrectionValue ), &value, sizeof( value ) );
+   UserSignature::write( reinterpret_cast<uintptr_t>( &timeCorrectionValue ), &value, sizeof( value ) );
 }
 
 inline HomeAutomationConfiguration& HomeAutomationConfiguration::instance()
@@ -127,7 +126,7 @@ inline void HomeAutomationConfiguration::restoreFactoryConfiguration( uint8_t id
    buffer[3] = 0;
    buffer[4] = LBYTE( 0xFFFF >> CONTROLLER_ID );
    buffer[5] = HBYTE( 0xFFFF >> CONTROLLER_ID );
-   Flash::writeUserSignature( 0, &buffer, sizeof( buffer ) );
+   UserSignature::write( 0, &buffer, sizeof( buffer ) );
 }
 
 inline void HomeAutomationConfiguration::setDeviceId( uint16_t _deviceId )

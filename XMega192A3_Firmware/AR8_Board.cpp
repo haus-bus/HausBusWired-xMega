@@ -72,7 +72,7 @@ INTERRUPT void USARTE0_RXC_vect()
 
 INTERRUPT void PORTE_INT0_vect()
 {
-   if ( getFckE() >= FCKE_V4_0 )
+   if ( HomeAutomationHw::getFckE() >= FCKE_V4_0 )
    {
       // notify new transmission started and disable interrupt
       rs485Hw.notifyRxStartFromISR();

@@ -246,10 +246,6 @@
       <SubType>compile</SubType>
       <Link>BoardHardware\DigitalPortHw.h</Link>
     </Compile>
-    <Compile Include="..\BoardHardware\Electronics.cpp">
-      <SubType>compile</SubType>
-      <Link>BoardHardware\Electronics.cpp</Link>
-    </Compile>
     <Compile Include="..\BoardHardware\Electronics.h">
       <SubType>compile</SubType>
       <Link>BoardHardware\Electronics.h</Link>
@@ -989,10 +985,6 @@
     <Compile Include="..\Xmega\CriticalSection.h">
       <SubType>compile</SubType>
       <Link>Xmega\CriticalSection.h</Link>
-    </Compile>
-    <Compile Include="..\Xmega\DigitalInput.cpp">
-      <SubType>compile</SubType>
-      <Link>Xmega\DigitalInput.cpp</Link>
     </Compile>
     <Compile Include="..\Xmega\DigitalInput.h">
       <SubType>compile</SubType>

@@ -60,7 +60,7 @@ class IStream : public Object
             ////    Operations    ////
             inline void reset()
             {
-               memset( this, 0, sizeof(TransferDescriptor) );
+               memset( this, 0, sizeof( TransferDescriptor ) );
             }
 
             ////    Additional operations    ////

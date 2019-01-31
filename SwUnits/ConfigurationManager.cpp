@@ -10,6 +10,10 @@
 
 const uint8_t ConfigurationManager::debugLevel( DEBUG_LEVEL_OFF );
 
+ConfigurationManager::EepromConfigurationBase* ConfigurationManager::firstConfiguration( NULL );
+
+ConfigurationManager::EepromConfigurationBase* ConfigurationManager::lastConfiguration( NULL );
+
 ConfigurationManager::EepromConfigurationBase* ConfigurationManager::findConfiguration( uint16_t id, uint8_t size )
 {
    EepromConfigurationBase* conf = EepromConfigurationBase::getFirstConfiguration();
@@ -20,17 +24,17 @@ ConfigurationManager::EepromConfigurationBase* ConfigurationManager::findConfigu
    {
       if ( conf->isMine( id, size ) )
       {
-         DEBUG_M4( FSTR( "existing Conf in own slot " ), id, FSTR( "->" ), (uint16_t)conf );
+         DEBUG_M4( FSTR( "existing Conf in own slot " ), id, FSTR( "->" ), (uintptr_t)conf );
          return conf;
       }
       else if ( conf->isFree() )
       {
-         DEBUG_M4( FSTR( "new Conf in free slot " ), id, FSTR( "->" ), (uint16_t)conf );
+         DEBUG_M4( FSTR( "new Conf in free slot " ), id, FSTR( "->" ), (uintptr_t)conf );
          return conf;
       }
       else if ( !conf->isValidSize() )
       {
-         DEBUG_M4( FSTR( "new Conf in invalid slot " ), id, FSTR( "->" ), (uint16_t)conf );
+         DEBUG_M4( FSTR( "new Conf in invalid slot " ), id, FSTR( "->" ), (uintptr_t)conf );
          conf->setOwnerId( EepromConfigurationBase::FREE_CONFIGURATION_ID );
          return conf;
       }
@@ -42,7 +46,7 @@ ConfigurationManager::EepromConfigurationBase* ConfigurationManager::findConfigu
    }
    if ( unusedConf )
    {
-      DEBUG_M4( FSTR( "new Conf in unused slot " ), id, FSTR( "->" ), (uint16_t)unusedConf );
+      DEBUG_M4( FSTR( "new Conf in unused slot " ), id, FSTR( "->" ), (uintptr_t)unusedConf );
       unusedConf->setOwnerId( EepromConfigurationBase::FREE_CONFIGURATION_ID );
    }
    return unusedConf;

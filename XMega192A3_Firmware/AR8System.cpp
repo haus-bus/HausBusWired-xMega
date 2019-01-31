@@ -20,7 +20,7 @@ int main( void )
    static const uint8_t MAX_JOBS = 64;
    static const uint8_t MAX_EVENTS = 64;
    Scheduler::setup( MAX_JOBS, MAX_EVENTS );
-
+   ConfigurationManager::setup( (void*)MAPPED_EEPROM_START, MAPPED_EEPROM_SIZE );
    SystemTime::init( SystemTime::RTCSRC_RCOSC_1024, 1024 );
 
    static AR8System ar8;
@@ -31,7 +31,7 @@ int main( void )
 AR8System::AR8System() :
    digitalPortE( PortE ), digitalPortF( PortF )
 {
-   if ( getFckE() < FCKE_V4_0 )
+   if ( hardware.getFckE() < FCKE_V4_0 )
    {
       digitalPortE.setNotUseablePins( Pin0 | Pin1 | Pin4 | Pin5 );
    }

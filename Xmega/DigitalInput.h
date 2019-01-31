@@ -17,7 +17,7 @@ class DigitalInput : public PortPin
    public:
 
       inline DigitalInput( PortPin _portPin ) :
-         PortPin( _portPin.getPortNumber(), _portPin.getPinNumber() )
+         PortPin( _portPin )
       {
          if ( isValid() )
          {
@@ -36,7 +36,6 @@ class DigitalInput : public PortPin
 
       ////    Operations    ////
 
-      uint16_t getPulseWidth( bool level, uint16_t timeout ) const;
 };
 
 template<uint8_t portNumber, uint8_t pinNumber>
@@ -55,19 +54,7 @@ class DigitalInputTmpl : public PortPinTmpl<portNumber, pinNumber>
       }
 
       ////    Operations    ////
-      inline uint8_t isSet() const
-      {
-         return this->getIoPort().get() & this->getPin();
-      }
 
-      inline uint16_t waitForPinLevelUs( bool level, uint16_t timeout ) const
-      {
-         uint8_t* port = ( (uint8_t*) &this->getIoPort() ) + 8;
-         timeout *= COUNT_DELAY_BIT_US( 1 );
-         uint16_t remainingTime = delayBit( timeout, port, this->getPin(), level );
-
-         return remainingTime;
-      }
 };
 
 #endif

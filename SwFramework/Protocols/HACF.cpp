@@ -35,12 +35,12 @@ void HACF::operator delete( void* obj, size_t size )
    {
       if ( me->header.decrementReferenceCount() == 0 )
       {
+         DEBUG_M4( FSTR( "del " ), (uintptr_t ) me, FSTR( " ref " ), me->header.getReferenceCount() );
          delete (uint8_t*) obj;
          if ( messagesInUse )
          {
             messagesInUse--;
          }
-         DEBUG_M4( FSTR( "del " ), (uintptr_t ) me, FSTR( " ref " ), me->header.getReferenceCount() );
          DEBUG_L2( FSTR( " use " ), messagesInUse );
       }
    }

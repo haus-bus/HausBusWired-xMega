@@ -11,6 +11,7 @@
 #include "SystemBoards.h"
 
 #include <ApplicationTable.h>
+#include <UserSignature.h>
 #include <GlobalInterrupt.h>
 #include <IStream.h>
 
@@ -42,7 +43,10 @@ class HomeAutomationHw
 
       inline static Flash::address_t findModuleIdPosition( bool loaderModId );
 
-      inline static uint8_t getFirmwareId();
+      inline static uint8_t getFirmwareId()
+      {
+         return UserSignature::read( 0 );
+      }
 
 #ifdef _DEBUG_
 
@@ -52,11 +56,19 @@ class HomeAutomationHw
 
       static bool getModuleId( uint8_t index, ModuleId* moduleId );
 
-      inline static uint16_t readRules( uint16_t offset, void* pData,
-                                        uint16_t length );
+      inline static uint8_t getFckE()
+      {
+         uint8_t fcke = Flash::readUserSignature( 1 );
+         if ( fcke == 0xFF )
+         {
+            return OLD_BOARDS;
+         }
+         return fcke;
+      }
 
-      inline static uint16_t writeRules( uint16_t offset, void* pData,
-                                         uint16_t length );
+      inline static uint16_t readRules( uint16_t offset, void* pData, uint16_t length );
+
+      inline static uint16_t writeRules( uint16_t offset, void* pData, uint16_t length );
 
       ////    Additional operations    ////
 
@@ -98,21 +110,12 @@ inline Flash::address_t HomeAutomationHw::findModuleIdPosition(
    return -1;
 }
 
-inline uint8_t HomeAutomationHw::getFirmwareId()
-{
-   return Flash::readUserSignature( 0 );
-}
-
-inline uint16_t HomeAutomationHw::readRules( uint16_t offset,
-                                             void* pData,
-                                             uint16_t length )
+inline uint16_t HomeAutomationHw::readRules( uint16_t offset, void* pData, uint16_t length )
 {
    return ApplicationTable::read( offset, pData, length );
 }
 
-inline uint16_t HomeAutomationHw::writeRules( uint16_t offset,
-                                              void* pData,
-                                              uint16_t length )
+inline uint16_t HomeAutomationHw::writeRules( uint16_t offset, void* pData, uint16_t length )
 {
    if ( length )
    {

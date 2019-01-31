@@ -91,10 +91,6 @@ class RollerShutter : public Reactive
                .openTime = DEFAULT_OPEN_TIME,
                .option = { DEFAULT_OPTIONS }
             };
-            if ( getFckE() >= FCKE_V4_0 )
-            {
-               defaultConfiguration.option.bit.independent = true;
-            }
             return defaultConfiguration;
          }
 

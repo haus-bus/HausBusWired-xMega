@@ -196,7 +196,7 @@ class HomeAutomationInterface
             struct MemoryData
             {
                uint32_t address;
-               uint8_t data[APP_SECTION_PAGE_SIZE];
+               uint8_t data[HACF::MAX_DATA_SIZE];
             };
 
             struct RuleData

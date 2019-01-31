@@ -9,7 +9,6 @@
 #define Gateway_H
 
 #include "SwUnits.h"
-#include "Basics.h"
 
 #include <IoStream.h>
 #include <Reactive.h>

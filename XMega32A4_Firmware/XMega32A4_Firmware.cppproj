@@ -329,10 +329,6 @@
       <SubType>compile</SubType>
       <Link>BoardHardware\DigitalPortHw.h</Link>
     </Compile>
-    <Compile Include="..\BoardHardware\Electronics.cpp">
-      <SubType>compile</SubType>
-      <Link>BoardHardware\Electronics.cpp</Link>
-    </Compile>
     <Compile Include="..\BoardHardware\Electronics.h">
       <SubType>compile</SubType>
       <Link>BoardHardware\Electronics.h</Link>
@@ -869,10 +865,6 @@
       <SubType>compile</SubType>
       <Link>Xmega\CriticalSection.h</Link>
     </Compile>
-    <Compile Include="..\Xmega\DigitalInput.cpp">
-      <SubType>compile</SubType>
-      <Link>Xmega\DigitalInput.cpp</Link>
-    </Compile>
     <Compile Include="..\Xmega\DigitalInput.h">
       <SubType>compile</SubType>
       <Link>Xmega\DigitalInput.h</Link>
@@ -1076,6 +1068,10 @@
     <Compile Include="..\Xmega\SystemTime.cpp">
       <SubType>compile</SubType>
       <Link>Xmega\SystemTime.cpp</Link>
+    </Compile>
+    <Compile Include="..\Xmega\UserSignature.h">
+      <SubType>compile</SubType>
+      <Link>Xmega\UserSignature.h</Link>
     </Compile>
     <Compile Include="IrSupport.cpp">
       <SubType>compile</SubType>

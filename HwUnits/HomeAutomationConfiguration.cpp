@@ -11,8 +11,8 @@
 
 uint16_t HomeAutomationConfiguration::getDeviceId()
 {
-   uint16_t id = Flash::readUserSignature( reinterpret_cast<uint16_t>( &deviceId ) );
-   id |= ( Flash::readUserSignature( reinterpret_cast<uint16_t>( &deviceId ) + 1 ) << 8 );
+   uint16_t id = UserSignature::read( reinterpret_cast<uintptr_t>( &deviceId ) );
+   id |= ( UserSignature::read( reinterpret_cast<uintptr_t>( &deviceId ) + 1 ) << 8 );
    if ( ( id == 0 ) || ( id > 0x7FFF ) )
    {
       id = ( 0xFFFF >> CONTROLLER_ID );
@@ -23,8 +23,7 @@ uint16_t HomeAutomationConfiguration::getDeviceId()
 uint8_t HomeAutomationConfiguration::get( HomeAutomationConfiguration& configuration )
 {
 
-   Flash::readUserSignature( reinterpret_cast<uint16_t>( this ), &configuration,
-                             sizeof( configuration ) );
+   UserSignature::read( reinterpret_cast<uintptr_t>( this ), &configuration, sizeof( configuration ) );
    return Checksum::hasError( &configuration, sizeof( configuration ) );
 
    /*
@@ -58,5 +57,5 @@ void HomeAutomationConfiguration::set( HomeAutomationConfiguration& configuratio
    configuration.checksum = 0;
    configuration.checksum = Checksum::get( &configuration, sizeof( configuration ) );
 
-   Flash::writeUserSignature( reinterpret_cast<uint16_t>( this ), &configuration, sizeof( configuration ) );
+   UserSignature::write( reinterpret_cast<uintptr_t>( this ), &configuration, sizeof( configuration ) );
 }

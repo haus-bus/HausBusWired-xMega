@@ -20,18 +20,19 @@ class ConfigurationManager
       {
          public:
 
+            static const uint8_t RESERVED_CONFIGURATION_SIZE = 32;
             static const uint8_t MIN_CONFIGURATION_SIZE = 8;
-            static const uint8_t MAX_CONFIGURATION_SIZE = 32;
+            static const uint8_t MAX_CONFIGURATION_SIZE = 64;
             static const uint16_t FREE_CONFIGURATION_ID = 0xFFFF;
 
             static inline EepromConfigurationBase* getFirstConfiguration()
             {
-               return reinterpret_cast<EepromConfigurationBase*>( MAPPED_EEPROM_START + 32 );
+               return ConfigurationManager::firstConfiguration;
             }
 
             static inline EepromConfigurationBase* getLastConfiguration()
             {
-               return reinterpret_cast<EepromConfigurationBase*>( MAPPED_EEPROM_START + MAPPED_EEPROM_END - MAX_CONFIGURATION_SIZE );
+               return ConfigurationManager::lastConfiguration;
             }
 
             inline bool isMine( uint16_t _id, uint8_t size )
@@ -77,7 +78,7 @@ class ConfigurationManager
 
             inline EepromConfigurationBase* getNextConfiguration()
             {
-               return (EepromConfigurationBase*)( ( (uint16_t)this ) + reservedSize );
+               return (EepromConfigurationBase*)( ( (uintptr_t)this ) + reservedSize );
             }
 
 
@@ -86,7 +87,7 @@ class ConfigurationManager
             uint16_tx ownerId;
 
             uint8_tx reservedSize;
-      };
+      } __attribute__( ( packed ) );
 
       template<typename T>
       class EepromConfigurationTmpl : public EepromConfigurationBase
@@ -94,13 +95,13 @@ class ConfigurationManager
          public:
             inline void get( T& conf )
             {
-               Eeprom::read( ( (uint16_t)this ) + sizeof( EepromConfigurationBase ), &conf, sizeof( conf ) );
+               Eeprom::read( ( (uintptr_t)this ) + sizeof( EepromConfigurationBase ), &conf, sizeof( conf ) );
             }
 
             inline void set( T& conf )
             {
                conf.checkAndCorrect();
-               Eeprom::write( ( (uint16_t)this ) + sizeof( EepromConfigurationBase ), &conf, sizeof( conf ) );
+               Eeprom::write( ( (uintptr_t)this ) + sizeof( EepromConfigurationBase ), &conf, sizeof( conf ) );
             }
 
             inline void restore()
@@ -118,6 +119,12 @@ class ConfigurationManager
 
 // functions
    public:
+
+      static inline void setup( void* _firstConfiguration, uint16_t _size )
+      {
+         firstConfiguration = (EepromConfigurationBase*)( ( (uintptr_t)_firstConfiguration ) + EepromConfigurationBase::RESERVED_CONFIGURATION_SIZE );
+         lastConfiguration = (EepromConfigurationBase*)( ( (uintptr_t)_firstConfiguration ) + _size - EepromConfigurationBase::MAX_CONFIGURATION_SIZE );
+      }
 
       template<class T>
       static inline T* getConfiguration( uint16_t id )
@@ -143,9 +150,14 @@ class ConfigurationManager
 
    protected:
 
+      static EepromConfigurationBase* firstConfiguration;
+
+      static EepromConfigurationBase* lastConfiguration;
+
       static EepromConfigurationBase* findConfiguration( uint16_t id, uint8_t size );
 
    private:
+
 
 }; // ConfigurationManager
 

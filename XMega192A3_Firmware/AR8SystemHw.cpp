@@ -203,7 +203,7 @@ void AR8SystemHw::configureZeroCrossDetection()
    portA.enableInterrupt0Source( Pin7 );
    EventSystem::setEventSource( 1, EVSYS_CHMUX_PORTA_PIN7_gc );
 
-   if ( getFckE() < FCKE_V3_0 )
+   if ( HomeAutomationHw::getFckE() < AR8_I2C )
    {
       DigitalInputTmpl<PortA, 5> pa5;
       portA.configure( Pin5, PORT_OPC_PULLUP_gc, false, PORT_ISC_RISING_gc );

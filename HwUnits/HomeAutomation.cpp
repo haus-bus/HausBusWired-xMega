@@ -228,7 +228,7 @@ void HomeAutomation::cmdGetRemoteObjects( HomeAutomationInterface::Response& res
    {
       if ( list[index]->hasRemoteAccess() )
       {
-         DEBUG_M3( (uint16_t )list[index], FSTR( " object 0x" ), list[index]->getId() );
+         DEBUG_M3( (uintptr_t )list[index], FSTR( " object 0x" ), list[index]->getId() );
          response.getParameter().remoteObjects[numOfObjects++] = list[index]->getId();
       }
       if ( index++ >= getMaxObjectListSize() )
@@ -447,7 +447,7 @@ bool HomeAutomation::handleRequest( HACF* message )
          else if ( cf.isCommand( HomeAutomationInterface::Command::GET_CONFIGURATION ) )
          {
             DEBUG_H1( FSTR( ".getConfiguration()" ) );
-            HomeAutomationConfiguration::instance().get( response.setConfiguration( getFckE() ) );
+            HomeAutomationConfiguration::instance().get( response.setConfiguration( HomeAutomationHw::getFckE() ) );
          }
          else if ( cf.isCommand( HomeAutomationInterface::Command::READ_MEMORY ) )
          {

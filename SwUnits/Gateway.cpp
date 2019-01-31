@@ -27,7 +27,7 @@ void Gateway::addGateway()
    {
       if ( !itsGateway[pos] )
       {
-         DEBUG_M4( "Gateway: 0x", (uint16_t )this, " added :", numOfGateways );
+         DEBUG_M4( "Gateway: 0x", (uintptr_t )this, " added :", numOfGateways );
          itsGateway[pos] = this;
          numOfGateways++;
          break;

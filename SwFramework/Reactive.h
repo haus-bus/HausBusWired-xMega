@@ -19,11 +19,9 @@ class Reactive : public EventDrivenUnit
 {
    public:
 
-      enum SleepTimes
-      {
-         NO_WAKE_UP = 0xFFFF,
-         WAKE_UP = 0
-      };
+      static const uint16_t WAKE_UP = 0;
+
+      static const uint16_t NO_WAKE_UP = 0xFFFF;
 
       enum MainStates
       {

@@ -106,7 +106,7 @@ class NvmController
 
       static uint16_t readUserSignature( uint16_t index, void* pData, uint16_t length );
 
-      static void writeUserSignature( uint16_t index, void* pData, uint16_t length );
+      static uint16_t writeUserSignature( uint16_t index, void* pData, uint16_t length );
 
    protected:
 

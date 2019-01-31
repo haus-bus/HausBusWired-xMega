@@ -38,9 +38,8 @@ class XEeprom
       }
       XEeprom<T>& operator=( T in )
       {
-         return Eeprom::write( (uint16_t) &member, &in, sizeof( member ) ), *this;
+         return Eeprom::write( (uintptr_t) &member, &in, sizeof( member ) ), *this;
       }
-
 
       XEeprom<T>& operator +=( T in )
       {

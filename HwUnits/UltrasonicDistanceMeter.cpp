@@ -59,7 +59,7 @@ void UltrasonicDistanceMeter::run()
    // The same pin is used to read the signal from the PING: a HIGH
    // pulse whose duration is the time (in microseconds) from the sending
    // of the ping to the reception of its echo off of an object.
-   uint16_t duration = echoPin.getPulseWidth( PortPin::HIGH, 10000 );
+   uint16_t duration = 100; // todo echoPin.getPulseWidth( PortPin::HIGH, 10000 );
 
    // convert the time into a distance
    uint8_t cm = microsecondsToCentimeters( duration );

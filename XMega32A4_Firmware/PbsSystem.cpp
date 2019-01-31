@@ -23,7 +23,7 @@ PbsSystem::PbsSystem()
    DigitalPort* digitalPortA = new DigitalPort( PortA );
    DigitalPort* digitalPortC = new DigitalPort( PortC );
 
-   uint8_t fcke = getFckE();
+   uint8_t fcke = hardware.getFckE();
    if ( hardware.getFirmwareId() == SD485_ID )
    {
       switch ( fcke )
@@ -75,7 +75,7 @@ void PbsSystem::start()
 {
    static const uint8_t MAX_JOBS = 40;
    Scheduler::setup( MAX_JOBS );
-
+   ConfigurationManager::setup( (void*)MAPPED_EEPROM_START, MAPPED_EEPROM_SIZE );
    SystemTime::init( SystemTime::RTCSRC_RCOSC_1024, 1024 );
 
    static PbsSystem ms6;

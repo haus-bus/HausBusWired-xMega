@@ -33,12 +33,11 @@ uint16_t NvmController::readUserSignature( uint16_t index, void* pData, uint16_t
    return length;
 }
 
-void NvmController::writeUserSignature( uint16_t index, void* pData, uint16_t length )
+uint16_t NvmController::writeUserSignature( uint16_t index, void* pData, uint16_t length )
 {
-   // #[ operation writeUserSignature(uint16_t,void *,uint16_t)
    if ( ( index + length ) > getPageSize() )
    {
-      return;
+      return 0;
    }
 
    uint8_t buffer[getPageSize()];
@@ -48,12 +47,11 @@ void NvmController::writeUserSignature( uint16_t index, void* pData, uint16_t le
    eraseUserSignature();
    waitWhileBusy();
    NVM_commonSPM( 0, NVM_CMD_WRITE_USER_SIG_ROW_gc );
-   // #]
+   return length;
 }
 
 void NvmController::loadFlashPageBuffer( uint8_t* data )
 {
-   // #[ operation loadFlashPageBuffer(uint8_t)
    flushBuffer();
    for ( uint16_t i = 0; i < getPageSize(); i += 2 )
    {
@@ -62,9 +60,6 @@ void NvmController::loadFlashPageBuffer( uint8_t* data )
       w += ( *data++ ) << 8;
       NVM_loadWordToFlashBuffer( i, w );
    }
-   // #]
+
 }
 
-/*********************************************************************
-        File Path	: Xmega192A3/debug/Peripherals/NvmController.cpp
-*********************************************************************/

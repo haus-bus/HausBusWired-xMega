@@ -10,7 +10,7 @@
 
 #include "SwFramework.h"
 #include "Object.h"
-class Event;
+#include "EventPkg/EventPkg.h"
 
 
 class EventDrivenUnit : public Object
