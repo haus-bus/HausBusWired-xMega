@@ -66,7 +66,7 @@ class Booter
          uint16_t dataLength = message->getDataLength() - sizeof( parameter.address ) - 1; // sizeof( command )
          if ( !downloadAllowed )
          {
-            static uint8_t buffer[3 * APP_SECTION_PAGE_SIZE];
+            static uint8_t buffer[2 * APP_SECTION_PAGE_SIZE];
             if ( ( parameter.address + dataLength ) <= sizeof( buffer ) )
             {
                memcpy( &buffer[parameter.address], parameter.data, dataLength );
@@ -85,15 +85,7 @@ class Booter
                      {
                         if ( modId->minorRelease >= Release::MINOR )
                         {
-                           if ( Flash::write( 0, buffer, Flash::getPageSize() ) )
-                           {
-                              downloadAllowed = true;
-                              if ( parameter.address >= ( 2 * APP_SECTION_PAGE_SIZE ) )
-                              {
-                                 downloadAllowed = Flash::write( APP_SECTION_PAGE_SIZE, &buffer[APP_SECTION_PAGE_SIZE], Flash::getPageSize() );
-                              }
-
-                           }
+                           downloadAllowed = Flash::write( 0, buffer, Flash::getPageSize() );
                         }
                      }
                   }
@@ -226,6 +218,9 @@ inline void Booter::checkFirmware()
       }
 
    }
+   // FW is anyway not valid, allow download
+   downloadAllowed = true;
+
    DEBUG_M1( FSTR( "invalid" ) );
 }
 
@@ -233,7 +228,7 @@ inline void Booter::cmdGetConfiguration()
 {
    DEBUG_H2( getId(), FSTR( ".getConfiguration()" ) );
    HomeAutomationConfiguration::instance().get(
-      getResponse()->setConfiguration( getFckE() ) );
+      getResponse()->setConfiguration( hardware.getFckE() ) );
 }
 
 inline void Booter::cmdGetModuleId( uint8_t index )
