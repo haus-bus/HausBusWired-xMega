@@ -175,6 +175,8 @@ class HmwDimmer : public HmwChannel
 
       DigitalOutput enableOutput;
 
+      uint8_t currentLevel;
+
       Config* config;
 
       ActionParameter const* actionParameter;
@@ -203,8 +205,6 @@ class HmwDimmer : public HmwChannel
    protected:
 
       void setLevel( uint8_t );
-
-      uint8_t getLevel() const;
 
    private:
 

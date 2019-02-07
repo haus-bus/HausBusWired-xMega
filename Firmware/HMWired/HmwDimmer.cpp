@@ -17,6 +17,7 @@ HmwDimmer::HmwDimmer( PortPin _portPin, PortPin _enablePin, Config* _config, uin
    normalizeLevel( _normalizeLevel ),
    pwmOutput( _portPin.getPortNumber(), _portPin.getPinNumber() ),
    enableOutput( _enablePin ),
+   currentLevel( 0 ),
    config( _config ),
    actionParameter( NULL ),
    nextFeedbackTime( 0 ),
@@ -60,7 +61,7 @@ void HmwDimmer::set( uint8_t length, uint8_t const* const data )
             if ( state < ON )
             {
                SET_STATE_L1( DIM_UP );
-               if ( getLevel() < actionParameter->dimMinLevel )
+               if ( currentLevel < actionParameter->dimMinLevel )
                {
                   setLevel( actionParameter->dimMinLevel );
                }
@@ -68,7 +69,7 @@ void HmwDimmer::set( uint8_t length, uint8_t const* const data )
             else
             {
                SET_STATE_L1( DIM_DOWN );
-               if ( getLevel() > actionParameter->dimMaxLevel )
+               if ( currentLevel > actionParameter->dimMaxLevel )
                {
                   setLevel( actionParameter->dimMaxLevel );
                }
@@ -131,7 +132,7 @@ void HmwDimmer::set( uint8_t length, uint8_t const* const data )
 uint8_t HmwDimmer::get( uint8_t* data )
 {
    // map 0-100% to 0-200
-   ( *data ) = getLevel();
+   ( *data ) = currentLevel;
    return 1;
 }
 
@@ -148,8 +149,7 @@ void HmwDimmer::loop( uint8_t channel )
       return;
    }
 
-   uint8_t level;
-   uint8_t errcode = HmwDevice::sendInfoMessage( channel, get( &level ), &level );
+   uint8_t errcode = HmwDevice::sendInfoMessage( channel, sizeof( currentLevel ), &currentLevel );
 
    // sendInfoMessage returns 0 on success, 1 if bus busy, 2 if failed
    if ( errcode )
@@ -172,21 +172,29 @@ void HmwDimmer::checkConfig()
 
 void HmwDimmer::setLevel( uint8_t level )
 {
-   if ( ( getLevel() != level ) || ( state == START_UP ) )
+   if ( ( currentLevel != level ) || ( state == START_UP ) )
    {
       DEBUG_H2( FSTR( " setLevel 0x" ), level );
       level ? enableOutput.set() : enableOutput.clear();
+      currentLevel = level;
 
-      // PWM mode is currently not supported and will be handled like SWITCH mode
+      // handle first all the special cases, where PWM is not needed
+      // dimming mode PWM is currently not supported and will be handled like SWITCH mode
       if ( config->isDimmingModeSwitch() || config->isDimmingModePwm() )
       {
-         level = ( level ? MAX_LEVEL : 0 );
+         // disable PWM in this mode, set only digital pin
+         pwmOutput.set( 0 );
+         level ? pwmOutput.DigitalOutput::set() : pwmOutput.DigitalOutput::clear();
       }
-      if ( pwmOutput.isInverted() )
+      else
       {
-         level = MAX_LEVEL - level;
+         if ( config->isDimmingModeLeading() )
+         {
+            level = MAX_LEVEL - level;
+         }
+         // PWM stays active even for level 0 ( no lightning )
+         pwmOutput.set( level * normalizeLevel + 1 );
       }
-      pwmOutput.set( level * normalizeLevel );
 
       // Logging
       if ( !nextFeedbackTime.isValid() && config->isLogging() )
@@ -195,21 +203,6 @@ void HmwDimmer::setLevel( uint8_t level )
          nextFeedbackTime += ( HmwDevice::getLoggingTime() * 100 );
       }
    }
-}
-
-uint8_t HmwDimmer::getLevel() const
-{
-   if ( pwmOutput.isRunning() )
-   {
-      // normalize to 0-200
-      uint8_t level = pwmOutput.isSet() / normalizeLevel;
-      if ( pwmOutput.isInverted() )
-      {
-         level = MAX_LEVEL - level;
-      }
-      return level;
-   }
-   return pwmOutput.isSet() ? MAX_LEVEL : 0;
 }
 
 void HmwDimmer::handleStateChart( bool fromMainLoop )
@@ -254,7 +247,6 @@ void HmwDimmer::handleStateChart( bool fromMainLoop )
       }
       case RAMP_UP:
       {
-         uint8_t currentLevel = getLevel();
          if ( !fromMainLoop || ( currentLevel >= actionParameter->onLevel ) || config->isDimmingModeSwitch() )
          {
             if ( isValidActionTime( actionParameter->onTime ) )
@@ -288,7 +280,6 @@ void HmwDimmer::handleStateChart( bool fromMainLoop )
       }
       case DIM_UP:
       {
-         uint8_t currentLevel = getLevel();
          if ( !fromMainLoop || ( currentLevel >= actionParameter->dimMaxLevel ) )
          {
             if ( isValidActionTime( actionParameter->onTime ) )
@@ -348,7 +339,6 @@ void HmwDimmer::handleStateChart( bool fromMainLoop )
       }
       case RAMP_DOWN:
       {
-         uint8_t currentLevel = getLevel();
          if ( !fromMainLoop || ( currentLevel <= actionParameter->offLevel ) || config->isDimmingModeSwitch() )
          {
             if ( isValidActionTime( actionParameter->offTime ) )
@@ -381,7 +371,6 @@ void HmwDimmer::handleStateChart( bool fromMainLoop )
       }
       case DIM_DOWN:
       {
-         uint8_t currentLevel = getLevel();
          if ( !fromMainLoop || ( currentLevel <= actionParameter->dimMinLevel ) )
          {
             if ( isValidActionTime( actionParameter->offTime ) )

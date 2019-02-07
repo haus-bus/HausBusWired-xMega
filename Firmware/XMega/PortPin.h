@@ -134,7 +134,7 @@ inline uint8_t PortPin::isInverted() const
    return getIoPort().isPinInverted( pinNumber );
 }
 
-inline void PortPin::setInverted( bool inverted )
+inline void PortPin::setInverted( bool inverted = true )
 {
    getIoPort().setPinInverted( pinNumber, inverted );
 }
