@@ -51,6 +51,12 @@ class HmwMsgKeyEvent : public HmwMessageBase
       {
          return ( frameData[3] & PRESS_MASK ) == PRESS_LONG;
       }
+
+      inline uint8_t getKeyPressNum()
+      {
+         return ( frameData[3] >> 2 );
+      }
+
    protected:
    private:
 

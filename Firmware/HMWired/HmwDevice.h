@@ -150,9 +150,9 @@ class HmwDevice
 
       static void set( uint8_t channel, uint8_t length, uint8_t const* const data );
 
-      static inline void receiveKeyEvent( const uint32_t& senderAddress, uint8_t srcChan, uint8_t dstChan, bool longPress )
+      static inline void receiveKeyEvent( const uint32_t& senderAddress, uint8_t srcChan, uint8_t dstChan, bool longPress, uint8_t keyPressNum )
       {
-         HmwLinkReceiver::notifyKeyEvent( senderAddress, srcChan, dstChan, longPress );
+         HmwLinkReceiver::notifyKeyEvent( senderAddress, srcChan, dstChan, longPress, keyPressNum );
       }
 
       static inline Stream::Status sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress, bool keyPressed = false )

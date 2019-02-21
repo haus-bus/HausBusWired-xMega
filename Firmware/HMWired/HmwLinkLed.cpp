@@ -20,13 +20,17 @@ HmwLinkLed::HmwLinkLed( uint8_t _numLinks, Config* _links )
 
 // processKeyEvent wird aufgerufen, wenn ein Tastendruck empfangen wurde
 
-void HmwLinkLed::receiveKeyEvent( const uint32_t&  senderAddress, uint8_t senderChannel, uint8_t targetChannel, bool longPress, bool broadcast )
+void HmwLinkLed::receiveKeyEvent( const uint32_t&  senderAddress, uint8_t senderChannel, uint8_t targetChannel, bool longPress, uint8_t keyPressNum )
 {
+   static uint8_t lastKeyPressNum = -1;
+
    // broadcast events are sent repeated for long press
-   if ( broadcast )
+   if ( lastKeyPressNum == keyPressNum )
    {
       return;
    }
+
+   lastKeyPressNum = keyPressNum;
 
    // read what to do from EEPROM
    for ( uint8_t i = 0; i < numLinks; i++ )

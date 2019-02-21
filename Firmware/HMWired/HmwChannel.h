@@ -75,6 +75,8 @@ class HmwChannel
          return type == _type;
       }
 
+      uint32_t convertToTime( uint16_t value );
+
       virtual void set( uint8_t length, uint8_t const* const data );
       virtual uint8_t get( uint8_t* data );  // returns length, data must be big enough
       virtual void loop( uint8_t channel );  // channel for feedbacks etc.

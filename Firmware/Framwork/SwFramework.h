@@ -158,9 +158,9 @@ class Stream;
 #define DEBUG_STATE_L3       0x0C
 
 #ifdef DEBUG
-#define STATE_L1( a1 )    if ( ( debugLevel & DEBUG_STATE_MASK ) > DEBUG_LEVEL_OFF ) { Logger::instance() << newTraceLine << getId() << " enters -> " #a1; }
-#define STATE_L2( a1 )    if ( ( debugLevel & DEBUG_STATE_MASK ) > DEBUG_STATE_L1 ) { Logger::instance() << newTraceLine << getId() << " enters -> " #a1; }
-#define STATE_L3( a1 )    if ( ( debugLevel & DEBUG_STATE_MASK ) > DEBUG_STATE_L2 ) { Logger::instance() << newTraceLine << getId() << " enters -> " #a1; }
+#define STATE_L1( a1 )    if ( ( debugLevel & DEBUG_STATE_MASK ) > DEBUG_LEVEL_OFF ) { Logger::instance() << newTraceLine << getId() << " enters -> " #a1 "(" << (uint8_t)a1 << ')'; }
+#define STATE_L2( a1 )    if ( ( debugLevel & DEBUG_STATE_MASK ) > DEBUG_STATE_L1 ) { Logger::instance() << newTraceLine << getId() << " enters -> " #a1 "(" << (uint8_t)a1 << ')'; }
+#define STATE_L3( a1 )    if ( ( debugLevel & DEBUG_STATE_MASK ) > DEBUG_STATE_L2 ) { Logger::instance() << newTraceLine << getId() << " enters -> " #a1 "(" << (uint8_t)a1 << ')'; }
 #else
 #define STATE_L1( a1 )
 #define STATE_L2( a1 )
@@ -188,7 +188,7 @@ union Converter
 
 #define CONST_IP( a, b, c, d ) ( (uint32_t)( d ) << 24 ) + ( (uint32_t)( c ) << 16 ) + ( (uint32_t)( b ) << 8 ) + a
 
-#define SET_STATE_L1( stateL1 ) setMainState( stateL1 ); STATE_L1( stateL1 );
+#define SET_STATE_L1( stateL1 ) setMainState( (States)stateL1 ); STATE_L1( stateL1 );
 
 #define SET_STATE_L2( stateL2 ) setSubState( stateL2 ); STATE_L2( stateL2 );
 

@@ -47,7 +47,7 @@ Stream::Status HmwLinkKey::sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, b
       // own address? -> internal peering
       if ( actorAddress == HmwDevice::ownAddress )
       {
-         HmwDevice::receiveKeyEvent( actorAddress, srcChan, links[i].actorChannel, longPress );
+         HmwDevice::receiveKeyEvent( actorAddress, srcChan, links[i].actorChannel, longPress, keyPressNum );
       }
       else
       {

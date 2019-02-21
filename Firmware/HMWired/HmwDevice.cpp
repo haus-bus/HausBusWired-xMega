@@ -384,7 +384,7 @@ bool HmwDevice::processMessage( HmwMessageBase& msg )
       if ( !( !event->isLongPress() && msg.isBroadcast() ) )
       {
          DEBUG_L1( FSTR( "->LinkReceiver" ) )
-         HmwLinkReceiver::notifyKeyEvent( event->getSenderAddress(), event->getSourceChannel(), event->getDestinationChannel(), event->isLongPress(), msg.isBroadcast() );
+         HmwLinkReceiver::notifyKeyEvent( event->getSenderAddress(), event->getSourceChannel(), event->getDestinationChannel(), event->isLongPress(), event->getKeyPressNum() );
       }
    }
    else if ( msg.isCommand( HmwMessageBase::GET_LEVEL ) )

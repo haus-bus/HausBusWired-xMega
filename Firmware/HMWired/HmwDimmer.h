@@ -106,11 +106,11 @@ class HmwDimmer : public HmwChannel
 
       struct ActionParameter
       {
-         uint8_t onTimeMode    : 1;
-         uint8_t offTimeMode   : 1;
-         uint8_t onDelayMode   : 1;
-         uint8_t multiExecute  : 1;
          uint8_t actionType    : 4;
+         uint8_t multiExecute  : 1;
+         uint8_t onDelayMode   : 1;
+         uint8_t offTimeMode   : 1;
+         uint8_t onTimeMode    : 1;
          uint8_t offLevel;
          uint8_t onMinLevel;
          uint8_t onLevel;
@@ -125,22 +125,18 @@ class HmwDimmer : public HmwChannel
          uint8_t dimMinLevel;
          uint8_t dimMaxLevel;
          uint8_t dimStep;
-         uint8_t jtRampOn   : 4;
          uint8_t jtOnDelay  : 4;
-         uint8_t jtOffDelay : 4;
+         uint8_t jtRampOn   : 4;
          uint8_t jtOn       : 4;
-         uint8_t jtOff      : 4;
+         uint8_t jtOffDelay : 4;
          uint8_t jtRampOff  : 4;
+         uint8_t jtOff      : 4;
       };
 
-      struct GenericCommands
+      struct LinkCommand
       {
-         uint8_t cmd;
-         union
-         {
-            ActionParameter* actionParameter;
-         };
-
+         uint8_t keyNum;
+         ActionParameter* actionParameter;
       };
 
       static const uint8_t MAX_LEVEL = 200;
@@ -152,17 +148,14 @@ class HmwDimmer : public HmwChannel
 
       enum States
       {
-         START_UP,
-         OFF,
-         DELAY_ON,
-         RAMP_UP,
-         DIM_UP,
-         TIME_ON,
-         ON,
-         DELAY_OFF,
-         RAMP_DOWN,
-         DIM_DOWN,
-         TIME_OFF
+         JT_ONDELAY = 0x00,
+         JT_RAMP_ON = 0x01,
+         JT_ON = 0x02,
+         JT_OFFDELAY = 0x03,
+         JT_RAMP_OFF = 0x04,
+         JT_OFF = 0x05,
+         JT_NO_JUMP_IGNORE_COMMAND = 0x06,
+         START_UP
       };
 
    private:
@@ -189,6 +182,8 @@ class HmwDimmer : public HmwChannel
 
       uint8_t rampStep;
 
+      uint8_t lastKeyNum;
+
       uint32_t nextStepTime;
 
 
@@ -208,12 +203,19 @@ class HmwDimmer : public HmwChannel
 
    private:
 
-      void handleJumpToTargetCmd();
-
       void calculateRampParameter();
+
+      void jumpToNextState( uint8_t nextState );
+
+      uint8_t getNextDimLevel( bool dimUp );
 
       inline void setMainState( States _state )
       {
+         if ( state == _state )
+         {
+            // we stay in the same state, stop loop
+            nextActionTime.reset();
+         }
          state = _state;
       }
 

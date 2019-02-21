@@ -56,7 +56,14 @@ void PwmOutput::set( uint16_t value )
    }
    if ( !tc || !tc->isRunning() )
    {
-      value ? DigitalOutput::set() : DigitalOutput::clear();
+      if ( value ^ isInverted() )
+      {
+         DigitalOutput::set();
+      }
+      else
+      {
+         DigitalOutput::clear();
+      }
    }
 }
 
