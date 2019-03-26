@@ -6,7 +6,8 @@
  */
 
 #include "HomeAutomation.h"
-#include "DebugOptions.h"
+#include <SystemConditions.h>
+#include <DebugOptions.h>
 #include <EventPkg/EventPkg.h>
 #include <Gateway.h>
 #include <Protocols/HACF.h>
@@ -310,6 +311,34 @@ bool HomeAutomation::handleRequest( HACF* message )
             RuleEngine::getRules()[idx].setState( data->parameter.setRuleState.state );
          }
       }
+      else if ( cf.isCommand( HomeAutomationInterface::Command::SET_SYSTEM_VARIABLE ) )
+      {
+         DEBUG_H1( FSTR( ".setSystemVariable()" ) );
+         HomeAutomationInterface::Command::SetSystemVariable& ssv = data->parameter.setSystemVariable;
+         bool success = false;
+
+         if ( ssv.type == SystemConditions::BIT )
+         {
+            success = SystemConditions::bitField.set( ssv.index, ssv.value & 1 );
+         }
+         else if ( ssv.type == SystemConditions::BYTE )
+         {
+            success = SystemConditions::byteArray.set( ssv.index, LBYTE( ssv.value ) );
+         }
+         else if ( ssv.type == SystemConditions::WORD )
+         {
+            success = SystemConditions::wordArray.set( ssv.index, ssv.value );
+         }
+         else
+         {
+            ERROR_2( FSTR( "setSystemVariable called with invalid type: 0x" ), ssv.type );
+         }
+         if ( !success )
+         {
+            ERROR_2( FSTR( "setSystemVariable called with invalid index: 0x" ), ssv.index );
+         }
+
+      }
       else if ( cf.isCommand( HomeAutomationInterface::Command::TRIGGER_RULE_ELEMENT ) )
       {
          DEBUG_H1( FSTR( ".triggerRuleElement()" ) );
@@ -389,6 +418,41 @@ bool HomeAutomation::handleRequest( HACF* message )
             if ( idx < RuleEngine::getNumOfRules() )
             {
                response.setRuleState( idx, RuleEngine::getRules()[idx].getState() );
+            }
+            else
+            {
+               response.setErrorCode( HomeAutomationInterface::ErrorCode::SYNTAX_ERROR );
+            }
+         }
+         else if ( cf.isCommand( HomeAutomationInterface::Command::GET_SYSTEM_VARIABLE ) )
+         {
+            DEBUG_H1( FSTR( ".getSystemVariable()" ) );
+            HomeAutomationInterface::Command::GetSystemVariable& gsv = data->parameter.getSystemVariable;
+            uint16_t value = 0;
+            bool valid = true;
+            if ( gsv.type == SystemConditions::BIT )
+            {
+               valid = SystemConditions::bitField.size() > gsv.index;
+               value = SystemConditions::bitField.isSet( gsv.index );
+            }
+            else if ( gsv.type == SystemConditions::BYTE )
+            {
+               valid = SystemConditions::byteArray.size() > gsv.index;
+               value = SystemConditions::byteArray.get( gsv.index );
+            }
+            else if ( gsv.type == SystemConditions::WORD )
+            {
+               valid = SystemConditions::wordArray.size() > gsv.index;
+               value = SystemConditions::wordArray.get( gsv.index );
+            }
+            else
+            {
+               valid = false;
+            }
+
+            if ( valid )
+            {
+               response.setSystemVariable( gsv.type, gsv.index, value );
             }
             else
             {

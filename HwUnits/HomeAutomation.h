@@ -82,8 +82,7 @@ class HomeAutomation : public Reactive
 
             ////    Constructors and destructors    ////
 
-            inline MyEvent() :
-               IResponse( HACF::SYSTEM_ID )
+            inline MyEvent() : IResponse( HACF::SYSTEM_ID )
             {
                controlFrame.receiverId.setId( ( (uint32_t) HACF::deviceId << 16 ) | HACF::SYSTEM_ID );
                controlFrame.setDataLength( 1 );
@@ -96,8 +95,7 @@ class HomeAutomation : public Reactive
 
       ////    Constructors and destructors    ////
 
-      inline HomeAutomation() :
-         errorEvent( HACF::SYSTEM_ID )
+      inline HomeAutomation() : errorEvent( HACF::SYSTEM_ID )
       {
          setId( ( ClassId::SYSTEM << 8 ) | HACF::SYSTEM_ID );
          HomeAutomationConfiguration& conf = HomeAutomationConfiguration::instance();

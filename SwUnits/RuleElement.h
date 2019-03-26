@@ -9,9 +9,11 @@
 #define RuleElement_H
 
 #include "SwUnits.h"
+#include "SystemConditions.h"
 
 #include <ApplicationTable.h>
 #include <Protocols/HACF.h>
+
 
 class Logger;
 
@@ -23,8 +25,36 @@ class RuleElement
 
       struct Condition
       {
+         enum Operators
+         {
+            AND,
+         };
+
          uint32_t senderId;
          uint8_t data[6];
+
+         bool isOperatorAND()
+         {
+            return LBYTE( HWORD( senderId ) ) == AND;
+         }
+
+         bool isLocalSystemCondition() const
+         {
+            return HBYTE( LWORD( senderId ) ) == Object::ClassId::LOCAL_CONDITION;
+         }
+
+         SystemConditions::Types getType() const
+         {
+            if ( isLocalSystemCondition() )
+            {
+               return ( SystemConditions::Types)LBYTE( senderId );
+            }
+            return SystemConditions::EVENT;
+         }
+
+         bool isActiveForLocal() const;
+
+         bool isActiveForEvent( const HACF::ControlFrame& message ) const;
       };
 
       struct Action

@@ -581,6 +581,10 @@
       <SubType>compile</SubType>
       <Link>Interfaces\SystemTime.h</Link>
     </Compile>
+    <Compile Include="..\SwFramework\Containers\Array.h">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Container\Array.h</Link>
+    </Compile>
     <Compile Include="..\SwFramework\Containers\ArrayVector.h">
       <SubType>compile</SubType>
       <Link>SwFramework\Container\ArrayVector.h</Link>
@@ -588,6 +592,10 @@
     <Compile Include="..\SwFramework\Containers\BasicQueue.h">
       <SubType>compile</SubType>
       <Link>SwFramework\Container\BasicQueue.h</Link>
+    </Compile>
+    <Compile Include="..\SwFramework\Containers\BitField.h">
+      <SubType>compile</SubType>
+      <Link>SwFramework\Container\BitField.h</Link>
     </Compile>
     <Compile Include="..\SwFramework\Containers\Containers.h">
       <SubType>compile</SubType>
@@ -840,6 +848,14 @@
     <Compile Include="..\SwUnits\SwUnits.h">
       <SubType>compile</SubType>
       <Link>SwUnits\SwUnits.h</Link>
+    </Compile>
+    <Compile Include="..\SwUnits\SystemConditions.cpp">
+      <SubType>compile</SubType>
+      <Link>SwUnits\SystemConditions.cpp</Link>
+    </Compile>
+    <Compile Include="..\SwUnits\SystemConditions.h">
+      <SubType>compile</SubType>
+      <Link>SwUnits\SystemConditions.h</Link>
     </Compile>
     <Compile Include="..\Xmega\AnalogInput.h">
       <SubType>compile</SubType>

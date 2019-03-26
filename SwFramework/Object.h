@@ -48,7 +48,9 @@ class Object
                SMTP_AGENT,
                GATEWAY = 0xB0,
                DHCP = 0xE0,
-               IP_STACK_MANAGER
+               IP_STACK_MANAGER,
+
+               LOCAL_CONDITION = 0xFE
             };
       };
 

@@ -14,13 +14,11 @@ const uint8_t RuleElement::debugLevel( DEBUG_LEVEL_OFF );
 
 void RuleElement::getAction( RuleElement::Action* _action, uint8_t index ) const
 {
-   uintptr_t address = reinterpret_cast<uintptr_t>( &condition )
-                       + getNumOfConditions() * sizeof( Condition ) + index * sizeof( Action );
+   uintptr_t address = reinterpret_cast<uintptr_t>( &condition ) + getNumOfConditions() * sizeof( Condition ) + index * sizeof( Action );
    ApplicationTable::read( address, _action, sizeof( Action ) );
 }
 
-void RuleElement::getCondition( RuleElement::Condition* _condition,
-                                uint8_t index ) const
+void RuleElement::getCondition( RuleElement::Condition* _condition, uint8_t index ) const
 {
    ApplicationTable::read( reinterpret_cast<uintptr_t>( &condition[index] ),
                            _condition, sizeof( Condition ) );
@@ -32,8 +30,7 @@ uint16_t RuleElement::getLength() const
 
    if ( length )
    {
-      length = length * sizeof( Condition ) + getNumOfActions() * sizeof( Action )
-               + 8;
+      length = length * sizeof( Condition ) + getNumOfActions() * sizeof( Action ) + 8;
    }
    return length;
 }
@@ -50,8 +47,7 @@ uint8_t RuleElement::getNumOfActions() const
 
 uint8_t RuleElement::getNumOfConditions() const
 {
-   uint8_t value = ApplicationTable::read(
-      reinterpret_cast<uintptr_t>( &numOfConditions ) );
+   uint8_t value = ApplicationTable::read( reinterpret_cast<uintptr_t>( &numOfConditions ) );
    if ( value == 0xFF )
    {
       return 0;
@@ -67,8 +63,7 @@ uint8_t RuleElement::getState() const
 void RuleElement::getTimeCondition(
    RuleElement::TimeCondition* _condition ) const
 {
-   ApplicationTable::read( reinterpret_cast<uintptr_t>( &startTime ), _condition,
-                           sizeof( TimeCondition ) );
+   ApplicationTable::read( reinterpret_cast<uintptr_t>( &startTime ), _condition, sizeof( TimeCondition ) );
 }
 
 bool RuleElement::isActiveForState( uint8_t _state ) const
@@ -139,30 +134,79 @@ bool RuleElement::isActiveForState( uint8_t _state ) const
    return false;
 }
 
-bool RuleElement::isAnyConditionActive(
-   const HACF::ControlFrame& message ) const
+bool RuleElement::isAnyConditionActive( const HACF::ControlFrame& message ) const
 {
    Condition condition;
 
-   uint32_t senderId = message.senderId.getId();
-   uint8_t index = getNumOfConditions();
-   while ( index-- )
+   uint8_t maxConditions = getNumOfConditions();
+   uint8_t index = 0;
+   bool foundAtiveCondition = false;
+
+   while ( index < maxConditions )
    {
       getCondition( &condition, index );
-      if ( senderId == condition.senderId )
+
+      if ( condition.isLocalSystemCondition() )
       {
-         DEBUG_M2( FSTR( "sender " ), senderId ); DEBUG_M2( FSTR( "c:" ), index );
-         uint8_t length = message.getDataLength() - 1;
-         while ( ( message.data[length] == condition.data[length] )
-               || ( condition.data[length] == WILDCARD ) )
+         if ( !condition.isActiveForLocal() )
          {
-            DEBUG_L2( ' ', condition.data[length] );
-            if ( length == 0 )
-            {
-               return true;
-            }
-            length--;
+            // if first conditions are local, they must be true to continue looking for events
+            return false;
          }
+      }
+      else
+      {
+         if ( foundAtiveCondition )
+         {
+            return true;
+         }
+         foundAtiveCondition = condition.isActiveForEvent( message );
+      }
+      index++;
+   }
+   return foundAtiveCondition;
+}
+
+bool RuleElement::Condition::isActiveForLocal() const
+{
+   // these are local conditions, check type and result
+   switch ( getType() )
+   {
+      case SystemConditions::BIT:
+      {
+         return SystemConditions::bitField.isSet( data[0] );
+      }
+      case SystemConditions::BYTE:
+      {
+         return SystemConditions::byteArray.get( data[0] ) == data[1];
+      }
+      case SystemConditions::WORD:
+      {
+         return SystemConditions::wordArray.get( data[0] ) == WORDB( ( &data[1] ) );
+      }
+
+      default:
+         return false;
+   }
+}
+
+bool RuleElement::Condition::isActiveForEvent( const HACF::ControlFrame& message ) const
+{
+   // these are event conditions, check senderId and data
+
+   uint32_t msgSenderId = message.senderId.getId();
+   if ( senderId == msgSenderId )
+   {
+      DEBUG_M2( FSTR( "sender " ), msgSenderId ); DEBUG_M2( FSTR( "c:" ), index );
+      uint8_t length = message.getDataLength() - 1;
+      while ( ( message.data[length] == data[length] ) || ( data[length] == WILDCARD ) )
+      {
+         DEBUG_L2( ' ', data[length] );
+         if ( length == 0 )
+         {
+            return true;
+         }
+         length--;
       }
    }
    return false;
@@ -173,8 +217,7 @@ RuleElement* RuleElement::next() const
    uint16_t length = getLength();
    if ( length != 0 )
    {
-      return reinterpret_cast<RuleElement*>( reinterpret_cast<uintptr_t>( this )
-                                             + length );
+      return reinterpret_cast<RuleElement*>( reinterpret_cast<uintptr_t>( this ) + length );
    }
    return 0;
 }

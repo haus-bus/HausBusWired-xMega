@@ -49,6 +49,8 @@ class HomeAutomationInterface
                TRIGGER_RULE_ELEMENT,
                SET_UNIT_GROUP_STATE,
                SET_SUN_TIMES,
+               SET_SYSTEM_VARIABLE,
+               GET_SYSTEM_VARIABLE,
 
                SET_DEBUG_OPTIONS = HACF::COMMANDS_END - 3,
                SET_TIME = HACF::COMMANDS_END - 2,
@@ -106,6 +108,19 @@ class HomeAutomationInterface
                uint8_t triggerBits;
             };
 
+            struct SetSystemVariable
+            {
+               uint8_t type;
+               uint8_t index;
+               uint16_t value;
+            };
+
+            struct GetSystemVariable
+            {
+               uint8_t type;
+               uint8_t index;
+            };
+
             struct SunTimes
             {
                uint16_t sunRise;
@@ -125,6 +140,8 @@ class HomeAutomationInterface
                SetRuleState setRuleState;
                TriggerRuleElement triggerRuleElement;
                SetUnitGroupState setUnitGroupState;
+               SetSystemVariable setSystemVariable;
+               GetSystemVariable getSystemVariable;
                uint8_t debugOptions;
                SunTimes sunTimes;
             };
@@ -174,6 +191,8 @@ class HomeAutomationInterface
                MEMORY_STATUS,
                RULES_DATA,
                RULE_STATE,
+               RULE_TRIGGERED,
+               SYSTEM_VARIABLE,
 
                TIME_DIFFERENCE = HACF::RESULTS_END - 2,
                TIME,
@@ -211,6 +230,13 @@ class HomeAutomationInterface
                uint8_t state;
             };
 
+            struct SystemVariable
+            {
+               uint8_t type;
+               uint8_t index;
+               uint16_t value;
+            };
+
             struct UnusedMemory
             {
                uint16_t freeStack;
@@ -235,6 +261,7 @@ class HomeAutomationInterface
                uint16_t time;
                RuleState ruleState;
                UnitGroupEvent unitGroupEvent;
+               SystemVariable systemVariable;
                int8_t timeDifference;
             };
 
@@ -272,6 +299,8 @@ class HomeAutomationInterface
             inline void setTimeDifference( int8_t value );
 
             inline void setUnitGroupEvent( uint8_t event, uint8_t index );
+
+            inline void setSystemVariable( uint8_t type, uint8_t index, uint16_t value );
 
             inline void setUnusedMemory();
 
@@ -393,6 +422,15 @@ inline void HomeAutomationInterface::Response::setUnitGroupEvent( uint8_t event,
    controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().unitGroupEvent ) );
    setResponse( event );
    getParameter().unitGroupEvent.index = index;
+}
+
+inline void HomeAutomationInterface::Response::setSystemVariable( uint8_t type, uint8_t index, uint16_t value )
+{
+   controlFrame.setDataLength( sizeof( getResponse() ) + sizeof( getParameter().systemVariable ) );
+   setResponse( SYSTEM_VARIABLE );
+   getParameter().systemVariable.type = type;
+   getParameter().systemVariable.index = index;
+   getParameter().systemVariable.value = value;
 }
 
 inline void HomeAutomationInterface::Response::setUnusedMemory()
