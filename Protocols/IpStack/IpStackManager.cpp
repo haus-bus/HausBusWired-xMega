@@ -224,7 +224,7 @@ uint16_t IpStackManager::handleTcpPacket( TcpHeader* packet )
       TcpConnection* connection = TcpConnection::getConnection( packet );
       if ( connection )
       {
-         DEBUG_L2( FSTR( " connection: " ), (uint16_t )connection );
+         DEBUG_L2( FSTR( " connection: " ), (uintptr_t)connection );
          if ( packet->isRST() )
          {
             DEBUG_M1( FSTR( "got reset, aborting connection" ) );
