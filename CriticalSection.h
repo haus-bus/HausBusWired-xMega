@@ -18,20 +18,19 @@ class CriticalSection : public GlobalInterrupt
 
       inline CriticalSection()
       {
-         sreg = SREG;
-         disable();
+         sreg = lock();
       }
 
       inline ~CriticalSection()
       {
-         SREG = sreg;
+         restore( sreg );
       }
 
       ////    Attributes    ////
 
    private:
 
-      unsigned char sreg;
+      sreg_t sreg;
 };
 
 #endif

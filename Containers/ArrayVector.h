@@ -9,7 +9,7 @@
 #define SwFramework_Containers_ArrayVector_H
 
 #include <DefaultTypes.h>
-#include <Traces/Logger.h>
+#include <Tracing/Logger.h>
 
 template<typename T, uint8_t MAX_SIZE>
 class ArrayVector
