@@ -57,6 +57,11 @@ class Scheduler
          maxJobs = p_maxJobs;
       }
 
+      inline static const char* getId()
+      {
+         return "Scheduler ";
+      }
+
       ////    Attributes    ////
 
       static Reactive** itsReactive;
@@ -64,6 +69,8 @@ class Scheduler
       static uint8_t maxJobs;
 
       static uint16_t globalSleepDelay;
+
+      static const uint8_t debugLevel;
 };
 
 #endif

@@ -10,6 +10,8 @@
 #include "EventPkg/EventPkg.h"
 #include "Time/SystemTime.h"
 
+const uint8_t Scheduler::debugLevel( DEBUG_LEVEL_OFF );
+
 Reactive** Scheduler::itsReactive = 0;
 
 uint8_t Scheduler::maxJobs( 0 );
@@ -84,42 +86,41 @@ void Scheduler::removeJob( const Reactive& job )
 
 void Scheduler::runJobs()
 {
-   SystemTime::time_t elapsedTime, time = SystemTime::now();
-
-   while ( isRunning() )
+   static SystemTime::time_t time = SystemTime::now();
+   SystemTime::time_t elapsedTime = SystemTime::since( time );
+   time = SystemTime::now();
+   if ( elapsedTime > 100 )
    {
-      elapsedTime = SystemTime::since( time );
-      time = SystemTime::now();
-      if ( elapsedTime > 500 )
-      {
-         WARN_2( "mainLoopTooLong: ", elapsedTime )
-      }
+      WARN_2( "mainLoopTooLong: ", elapsedTime )
+   }
 
-      for ( uint8_t i = 0; i < maxJobs; i++ )
+   for ( uint8_t i = 0; i < maxJobs; i++ )
+   {
+      DEBUG_H2( "loop ", i );
+      notifyIdle();
+      if ( itsReactive[i] )
       {
-         notifyIdle();
-         if ( itsReactive[i] )
+         uint16_t sleepTime = itsReactive[i]->getSleepTime();
+         if ( sleepTime == Reactive::NO_WAKE_UP )
          {
-            uint16_t sleepTime = itsReactive[i]->getSleepTime();
-            if ( sleepTime == Reactive::NO_WAKE_UP )
-            {
-               continue;
-            }
+            continue;
+         }
 
-            if ( sleepTime > elapsedTime )
+         if ( sleepTime > elapsedTime )
+         {
+            itsReactive[i]->setSleepTime( sleepTime - elapsedTime );
+         }
+         else
+         {
+            itsReactive[i]->setSleepTime( 0 );
+            notifyBusy();
+            SystemTime::time_t jobStart = SystemTime::now();
+            DEBUG_H2( "run job ", (uintptr_t)itsReactive[i] );
+            evWakeup( itsReactive[i] ).send();
+            DEBUG_H4( "job ", (uintptr_t)itsReactive[i], " returns after 0x", SystemTime::since( jobStart ) );
+            if ( SystemTime::since( jobStart ) > 20 )
             {
-               itsReactive[i]->setSleepTime( sleepTime - elapsedTime );
-            }
-            else
-            {
-               itsReactive[i]->setSleepTime( 0 );
-               notifyBusy();
-               SystemTime::time_t jobStart = SystemTime::now();
-               evWakeup( itsReactive[i] ).send();
-               if ( SystemTime::since( jobStart ) > 50 )
-               {
-                  WARN_4( "job: 0x", itsReactive[i]->getId(), " needs too long: 0x", SystemTime::since( jobStart ) );
-               }
+               WARN_4( "job: 0x", itsReactive[i]->getId(), " needs too long: 0x", SystemTime::since( jobStart ) );
             }
          }
       }
@@ -127,7 +128,9 @@ void Scheduler::runJobs()
       Event ev;
       while ( Event::messageQueue.pop( ev ) )
       {
+         DEBUG_H4( "send event id:", ev.getId(), " dest: ", (uintptr_t) ev.getDestination() );
          ev.send();
+         DEBUG_H3( "event id:", ev.getId(), " processed" );
       }
    }
 }

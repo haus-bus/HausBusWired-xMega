@@ -42,43 +42,37 @@ class StaticQueue : public BasicQueue<
 };
 
 template<typename DataType, typename SizeType, SizeType capacity>
-StaticQueue<
-   DataType, SizeType, capacity>::StaticQueue()
+StaticQueue<DataType, SizeType, capacity>::StaticQueue()
 {
    BasicQueue<DataType, SizeType, DataType[capacity]>();
 }
 
 template<typename DataType, typename SizeType, SizeType capacity>
-inline SizeType StaticQueue<
-   DataType, SizeType, capacity>::getCapacity()
+inline SizeType StaticQueue<DataType, SizeType, capacity>::getCapacity()
 {
    return capacity;
 }
 
 template<typename DataType, typename SizeType, SizeType capacity>
-inline SizeType StaticQueue<
-   DataType, SizeType, capacity>::getSize()
+inline SizeType StaticQueue<DataType, SizeType, capacity>::getSize()
 {
    return this->full;
 }
 
 template<typename DataType, typename SizeType, SizeType capacity>
-bool StaticQueue<
-   DataType, SizeType, capacity>::isEmpty()
+bool StaticQueue<DataType, SizeType, capacity>::isEmpty()
 {
    return !this->full;
 }
 
 template<typename DataType, typename SizeType, SizeType capacity>
-bool StaticQueue<
-   DataType, SizeType, capacity>::isFull()
+bool StaticQueue<DataType, SizeType, capacity>::isFull()
 {
    return ( this->full == capacity );
 }
 
 template<typename DataType, typename SizeType, SizeType capacity>
-bool StaticQueue<
-   DataType, SizeType, capacity>::pop( DataType& value )
+bool StaticQueue<DataType, SizeType, capacity>::pop( DataType& value )
 {
    if ( isEmpty() )
    {
@@ -95,16 +89,14 @@ bool StaticQueue<
 }
 
 template<typename DataType, typename SizeType, SizeType capacity>
-bool StaticQueue<
-   DataType, SizeType, capacity>::pop()
+bool StaticQueue<DataType, SizeType, capacity>::pop()
 {
    DataType value;
    return pop( value );
 }
 
 template<typename DataType, typename SizeType, SizeType capacity>
-bool StaticQueue<
-   DataType, SizeType, capacity>::popBack( DataType& value )
+bool StaticQueue<DataType, SizeType, capacity>::popBack( DataType& value )
 {
    if ( isEmpty() )
    {
@@ -119,8 +111,7 @@ bool StaticQueue<
 }
 
 template<typename DataType, typename SizeType, SizeType capacity>
-bool StaticQueue<
-   DataType, SizeType, capacity>::push( const DataType& value )
+bool StaticQueue<DataType, SizeType, capacity>::push( const DataType& value )
 {
    if ( isFull() )
    {

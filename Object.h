@@ -46,6 +46,7 @@ class Object
                KNX_LINE,
                ETHERNET,
                SMTP_AGENT,
+               WIFI,
                GATEWAY = 0xB0,
                DHCP = 0xE0,
                IP_STACK_MANAGER,

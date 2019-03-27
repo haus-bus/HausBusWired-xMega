@@ -111,7 +111,7 @@ class HACF
             uint8_t address;
 
             uint8_t networkId;
-      };
+      } __attribute__( ( packed ) );
 
       class Header
       {
@@ -192,7 +192,7 @@ class HACF
             uint8_t referenceCount;
 
             uint16_t senderId;
-      };
+      } __attribute__( ( packed ) );
 
       class ControlFrame
       {
@@ -313,7 +313,7 @@ class HACF
             uint16_t dataLength;
 
             uint8_t data[DEFAULT_DATA_LENGTH];
-      };
+      } __attribute__( ( packed ) );
 
       ////    Constructors and destructors    ////
 
@@ -413,7 +413,7 @@ class HACF
 
       ControlFrame controlFrame;
 
-};
+} __attribute__( ( packed ) );
 
 inline uint16_t HACF::getLength() const
 {
