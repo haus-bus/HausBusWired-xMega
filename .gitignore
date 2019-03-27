@@ -1,7 +1,6 @@
 /.vs
 # genereated files
 Makefile
-BooterFw.h
 *.mk
 
 # Compiled Object files
