@@ -1,7 +1,7 @@
 /*
  * AnalogInput.h
  *
- * Created: 18.06.2014 14:12:56
+ * Created: 18.06.2014 14:12:57
  * Author: viktor.pankraz
  */
 
