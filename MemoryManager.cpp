@@ -6,7 +6,7 @@
  */
 
 #include "MemoryManager.h"
-#include "SwFramework.h"
+#include <Tracing/Logger.h>
 #include <CriticalSection.h>
 
 // From linker script
