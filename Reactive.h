@@ -20,7 +20,6 @@ class Reactive : public EventDrivenUnit
    public:
 
       static const uint16_t WAKE_UP = 0;
-
       static const uint16_t NO_WAKE_UP = 0xFFFF;
 
       enum MainStates
