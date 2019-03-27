@@ -9,7 +9,7 @@
 #define SwFramework_MemoryManager_MemoryManager_H
 
 #ifdef _DEBUG_
-  #include "Traces/Logger.h"
+  #include "Tracing/Logger.h"
 #endif
 #include "SwFramework.h"
 class CriticalSection;
