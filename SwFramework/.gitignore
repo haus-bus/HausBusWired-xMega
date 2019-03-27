@@ -1,0 +1,21 @@
+/.vs
+# genereated files
+Makefile
+*.mk
+
+# Compiled Object files
+*.o
+*.d
+
+# List files and maps
+*.lss
+*.map
+
+# Compiled Static libraries
+*.a
+*.lib
+
+# Executables
+*.elf
+*.bin
+*.hex
