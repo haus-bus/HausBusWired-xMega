@@ -37,7 +37,9 @@ class GlobalInterrupt
 
       inline static sreg_t lock()
       {
-         return SREG; disable();
+         sreg_t tmp = SREG;
+         disable();
+         return tmp;
       }
 
       inline static void restore( sreg_t context )
