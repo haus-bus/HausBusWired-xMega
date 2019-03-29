@@ -1,0 +1,438 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="14.0">
+  <PropertyGroup>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>7.0</ProjectVersion>
+    <ToolchainName>com.Atmel.AVRGCC8.CPP</ToolchainName>
+    <ProjectGuid>{4ae2a175-446c-4662-9c66-f6291b86e0c6}</ProjectGuid>
+    <avrdevice>ATxmega192A3U</avrdevice>
+    <avrdeviceseries>none</avrdeviceseries>
+    <OutputType>StaticLibrary</OutputType>
+    <Language>CPP</Language>
+    <OutputFileName>lib$(MSBuildProjectName)</OutputFileName>
+    <OutputFileExtension>.a</OutputFileExtension>
+    <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
+    <AvrGccProjectExtensions>
+    </AvrGccProjectExtensions>
+    <AssemblyName>SwFrameworkLib</AssemblyName>
+    <Name>SwFrameworkLib</Name>
+    <RootNamespace>SwFrameworkLib</RootNamespace>
+    <ToolchainFlavour>Native</ToolchainFlavour>
+    <KeepTimersRunning>true</KeepTimersRunning>
+    <OverrideVtor>false</OverrideVtor>
+    <CacheFlash>true</CacheFlash>
+    <ProgFlashFromRam>true</ProgFlashFromRam>
+    <RamSnippetAddress>0x20000000</RamSnippetAddress>
+    <UncachedRange />
+    <preserveEEPROM>true</preserveEEPROM>
+    <OverrideVtorValue>exception_table</OverrideVtorValue>
+    <BootSegment>2</BootSegment>
+    <ResetRule>0</ResetRule>
+    <eraseonlaunchrule>0</eraseonlaunchrule>
+    <EraseKey />
+    <avrtool>com.atmel.avrdbg.tool.simulator</avrtool>
+    <avrtoolserialnumber />
+    <avrdeviceexpectedsignature>0x1E9744</avrdeviceexpectedsignature>
+    <com_atmel_avrdbg_tool_simulator>
+      <ToolOptions xmlns="">
+        <InterfaceProperties>
+        </InterfaceProperties>
+      </ToolOptions>
+      <ToolType xmlns="">com.atmel.avrdbg.tool.simulator</ToolType>
+      <ToolNumber xmlns="">
+      </ToolNumber>
+      <ToolName xmlns="">Simulator</ToolName>
+    </com_atmel_avrdbg_tool_simulator>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'x192A3U' ">
+    <ToolchainSettings>
+      <AvrGccCpp>
+  <avrgcc.common.Device>-mmcu=atxmega192a3u -B "%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\gcc\dev\atxmega192a3u"</avrgcc.common.Device>
+  <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
+  <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
+  <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
+  <avrgcc.common.outputfiles.srec>True</avrgcc.common.outputfiles.srec>
+  <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
+  <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
+  <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
+  <avrgcc.compiler.symbols.DefSymbols>
+    <ListValues>
+      <Value>NDEBUG</Value>
+    </ListValues>
+  </avrgcc.compiler.symbols.DefSymbols>
+  <avrgcc.compiler.directories.IncludePaths>
+    <ListValues>
+      <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\include</Value>
+    </ListValues>
+  </avrgcc.compiler.directories.IncludePaths>
+  <avrgcc.compiler.optimization.level>Optimize for size (-Os)</avrgcc.compiler.optimization.level>
+  <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
+  <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
+  <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
+  <avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>
+  <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
+  <avrgcccpp.compiler.symbols.DefSymbols>
+    <ListValues>
+      <Value>NDEBUG</Value>
+      <Value>__DUMMY__</Value>
+    </ListValues>
+  </avrgcccpp.compiler.symbols.DefSymbols>
+  <avrgcccpp.compiler.preprocessor.UndefSymbols>
+    <ListValues>
+      <Value>__AVR__</Value>
+    </ListValues>
+  </avrgcccpp.compiler.preprocessor.UndefSymbols>
+  <avrgcccpp.compiler.directories.IncludePaths>
+    <ListValues>
+      <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\include</Value>
+      <Value>..</Value>
+    </ListValues>
+  </avrgcccpp.compiler.directories.IncludePaths>
+  <avrgcccpp.compiler.optimization.level>Optimize for size (-Os)</avrgcccpp.compiler.optimization.level>
+  <avrgcccpp.compiler.optimization.PackStructureMembers>True</avrgcccpp.compiler.optimization.PackStructureMembers>
+  <avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>
+  <avrgcccpp.compiler.warnings.AllWarnings>True</avrgcccpp.compiler.warnings.AllWarnings>
+  <avrgcccpp.linker.libraries.Libraries>
+    <ListValues>
+      <Value>libm</Value>
+    </ListValues>
+  </avrgcccpp.linker.libraries.Libraries>
+  <avrgcccpp.assembler.general.IncludePaths>
+    <ListValues>
+      <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\include</Value>
+    </ListValues>
+  </avrgcccpp.assembler.general.IncludePaths>
+</AvrGccCpp>
+    </ToolchainSettings>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'x32A4U' ">
+    <ToolchainSettings>
+      <AvrGccCpp xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+        <avrgcc.common.Device>-mmcu=atxmega192a3u -B "%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\gcc\dev\atxmega192a3u"</avrgcc.common.Device>
+        <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
+        <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
+        <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
+        <avrgcc.common.outputfiles.srec>True</avrgcc.common.outputfiles.srec>
+        <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
+        <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcc.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>NDEBUG</Value>
+          </ListValues>
+        </avrgcc.compiler.symbols.DefSymbols>
+        <avrgcc.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\include</Value>
+          </ListValues>
+        </avrgcc.compiler.directories.IncludePaths>
+        <avrgcc.compiler.optimization.level>Optimize for size (-Os)</avrgcc.compiler.optimization.level>
+        <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
+        <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
+        <avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcccpp.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>NDEBUG</Value>
+          </ListValues>
+        </avrgcccpp.compiler.symbols.DefSymbols>
+        <avrgcccpp.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\include</Value>
+          </ListValues>
+        </avrgcccpp.compiler.directories.IncludePaths>
+        <avrgcccpp.compiler.optimization.level>Optimize for size (-Os)</avrgcccpp.compiler.optimization.level>
+        <avrgcccpp.compiler.optimization.PackStructureMembers>True</avrgcccpp.compiler.optimization.PackStructureMembers>
+        <avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcccpp.compiler.warnings.AllWarnings>True</avrgcccpp.compiler.warnings.AllWarnings>
+        <avrgcccpp.linker.libraries.Libraries>
+          <ListValues>
+            <Value>libm</Value>
+          </ListValues>
+        </avrgcccpp.linker.libraries.Libraries>
+        <avrgcccpp.assembler.general.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.1.68\include</Value>
+          </ListValues>
+        </avrgcccpp.assembler.general.IncludePaths>
+      </AvrGccCpp>
+    </ToolchainSettings>
+    <OutputPath>bin\x32A4U\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Containers\Array.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Containers\ArrayVector.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Containers\BasicQueue.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Containers\BitField.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Containers\Containers.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Containers\StaticQueue.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="CriticalSection.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="DefaultTypes.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Enc28j60.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="EventDrivenUnit.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="EventPkg\EventBase.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="EventPkg\EventBase.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="EventPkg\EventPkg.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="EventPkg\EventPkg.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="FileSystems\FatSystem.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="FileSystems\FatSystem.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="FlashString.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="GlobalInterrupt.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="IDiskIo.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="IoStream.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="IoStream.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="IStream.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="MemoryManager.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="NonCriticalSection.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Object.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\Ethernet\ArpHeader.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\Ethernet\Ethernet.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\Ethernet\EthernetHeader.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\Ethernet\IcmpHeader.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\Ethernet\IP.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\Ethernet\IP.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\Ethernet\IpHeader.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\Ethernet\IpHeader.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\Ethernet\MAC.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\Ethernet\MAC.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\Ethernet\TcpHeader.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\Ethernet\TcpHeader.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\Ethernet\UdpHeader.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\Ethernet\UdpHeader.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\HACF.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\HACF.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\IpStack\ArpManager.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\IpStack\ArpManager.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\IpStack\Dhcp.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\IpStack\Dhcp.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\IpStack\IpConnection.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\IpStack\IpConnection.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\IpStack\IpStack.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\IpStack\IpStackManager.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\IpStack\IpStackManager.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\IpStack\TcpConnection.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\IpStack\TcpConnection.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\IpStack\UdpConnection.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\IpStack\UdpConnection.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\ModBusTcp.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\ModBusTcp.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\Protocols.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\Snmp.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\Snmp.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Reactive.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Reactive.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Scheduler.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Scheduler.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Security\Checksum.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Security\Checksum.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Security\Checksum16.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Security\Checksum16.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Security\Crc7.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Security\Crc7.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Security\Crc8.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Security\Crc8.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Security\ModuleId.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Security\Security.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="StorageInterface.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="SwFramework.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="SwFramework.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Time\Calender.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Time\Calender.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Time\SystemTime.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Time\Time.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Time\Timestamp.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Time\WeekTime.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Time\WeekTime.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Tracing\Logger.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Tracing\Logger.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Tracing\Traces.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Tracing\Traces.h">
+      <SubType>compile</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Containers" />
+    <Folder Include="EventPkg" />
+    <Folder Include="FileSystems" />
+    <Folder Include="Protocols\Ethernet" />
+    <Folder Include="Protocols\IpStack" />
+    <Folder Include="Tracing" />
+    <Folder Include="Time" />
+    <Folder Include="Security" />
+    <Folder Include="Protocols" />
+  </ItemGroup>
+  <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
+</Project>
