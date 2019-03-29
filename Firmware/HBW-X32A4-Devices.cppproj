@@ -118,7 +118,7 @@
         <avrgcccpp.compiler.directories.IncludePaths>
           <ListValues>
             <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\include</Value>
-            <Value>../Framwork</Value>
+            <Value>../Framework</Value>
             <Value>../XMega</Value>
             <Value>..</Value>
           </ListValues>
@@ -186,7 +186,7 @@
         <avrgcccpp.compiler.directories.IncludePaths>
           <ListValues>
             <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\include</Value>
-            <Value>../Framwork</Value>
+            <Value>../Framework</Value>
             <Value>../XMega</Value>
             <Value>..</Value>
           </ListValues>
@@ -214,11 +214,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Elements\" />
-    <Folder Include="Framwork\" />
-    <Folder Include="Framwork\Containers\" />
-    <Folder Include="Framwork\Containers\" />
-    <Folder Include="Framwork\Time\" />
-    <Folder Include="Framwork\Tracing\" />
+    <Folder Include="Framework\" />
+    <Folder Include="Framework\Containers\" />
+    <Folder Include="Framework\Containers\" />
+    <Folder Include="Framework\Time\" />
+    <Folder Include="Framework\Tracing\" />
     <Folder Include="HBW-Devices" />
     <Folder Include="HMWired" />
     <Folder Include="Protocols\" />
@@ -233,64 +233,64 @@
     <Compile Include="Elements\SerialStream.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Framwork\Containers\ArrayVector.h">
+    <Compile Include="Framework\Containers\ArrayVector.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Framwork\Containers\BasicQueue.h">
+    <Compile Include="Framework\Containers\BasicQueue.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Framwork\Containers\StaticQueue.h">
+    <Compile Include="Framework\Containers\StaticQueue.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Framwork\FlashString.h">
+    <Compile Include="Framework\FlashString.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Framwork\GlobalInterrupt.h">
+    <Compile Include="Framework\GlobalInterrupt.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Framwork\IoStream.cpp">
+    <Compile Include="Framework\IoStream.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Framwork\IoStream.h">
+    <Compile Include="Framework\IoStream.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Framwork\StorageInterface.h">
+    <Compile Include="Framework\StorageInterface.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Framwork\IStream.h">
+    <Compile Include="Framework\IStream.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Framwork\SwFramework.cpp">
+    <Compile Include="Framework\SwFramework.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Framwork\SwFramework.h">
+    <Compile Include="Framework\SwFramework.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Framwork\Time\Calender.cpp">
+    <Compile Include="Framework\Time\Calender.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Framwork\Time\Calender.h">
+    <Compile Include="Framework\Time\Calender.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Framwork\Time\SystemTime.h">
+    <Compile Include="Framework\Time\SystemTime.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Framwork\Time\Time.h">
+    <Compile Include="Framework\Time\Time.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Framwork\Time\Timestamp.h">
+    <Compile Include="Framework\Time\Timestamp.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Framwork\Time\WeekTime.cpp">
+    <Compile Include="Framework\Time\WeekTime.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Framwork\Time\WeekTime.h">
+    <Compile Include="Framework\Time\WeekTime.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Framwork\Tracing\Logger.cpp">
+    <Compile Include="Framework\Tracing\Logger.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Framwork\Tracing\Logger.h">
+    <Compile Include="Framework\Tracing\Logger.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="HBW-Devices\HBWDeviceFactory.h">
@@ -513,9 +513,6 @@
     <Compile Include="XMega\Basics.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="XMega\CriticalSection.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="XMega\DigitalInput.cpp">
       <SubType>compile</SubType>
     </Compile>
@@ -526,9 +523,6 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="XMega\DigitalOutput.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="XMega\GlobalInterrupt.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="XMega\InternalEeprom.cpp">
@@ -553,9 +547,6 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="XMega\MemoryManager.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="XMega\NonCriticalSection.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="XMega\Peripherals\Adc.cpp">

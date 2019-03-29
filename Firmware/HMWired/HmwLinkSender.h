@@ -9,7 +9,7 @@
 #ifndef __HMWLINKSENDER_H__
 #define __HMWLINKSENDER_H__
 
-#include <Stream.h>
+#include <IStream.h>
 
 class HmwLinkSender
 {
