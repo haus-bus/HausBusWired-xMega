@@ -24,19 +24,24 @@ class Timestamp
       {
       }
 
+      inline Timestamp( const SystemTime::time_t& value ) :
+         time( value )
+      {
+      }
+
       ////    Operations    ////
 
-      inline bool elapsed( const SystemTime::time_t& value )
+      inline bool elapsed( const SystemTime::time_t& value ) const
       {
          return ( value < SystemTime::since( time ) );
       }
 
-      inline SystemTime::time_t since()
+      inline SystemTime::time_t since() const
       {
          return SystemTime::since( time );
       }
 
-      inline bool isValid()
+      inline bool isValid() const
       {
          return time != 0;
       }
