@@ -6,24 +6,22 @@
  */
 
 #include "IoStream.h"
+#include "EventDrivenUnit.h"
 
-Stream::Status IoStream::genericCommand( Command command, void* buffer )
+IStream::Status IoStream::genericCommand( Command command, void* buffer )
 {
    return STOPPED;
 }
 
-Stream::Status IoStream::read( uint8_t& data )
+IStream::Status IoStream::read( void* pData, uint16_t length,
+                                EventDrivenUnit* user )
 {
    return STOPPED;
 }
 
-Stream::Status IoStream::write( uint8_t data )
+IStream::Status IoStream::write( void* pData, uint16_t length,
+                                 EventDrivenUnit* user )
 {
    return STOPPED;
-}
-
-bool IoStream::available()
-{
-   return false;
 }
 

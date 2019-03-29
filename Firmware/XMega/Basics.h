@@ -1,15 +1,17 @@
 /*
  * Basics.h
  *
- *  Created on: 17.07.2017
+ *  Created on: 28.08.2014
  *      Author: Viktor Pankraz
  */
 
 #ifndef Basics_Basics_H
 #define Basics_Basics_H
 
+#include <DefaultTypes.h>
 #include <avr/interrupt.h>
 #include <avr/io.h>
+
 
 // ----------------------------------------------------------
 // Macros to access strings defined in PROGMEM above 64kB
@@ -40,8 +42,6 @@
 #endif
 
 #define NO_RETURN       __attribute__( ( __noreturn__ ) )
-
-#define MOD_ID_SECTION __attribute__( ( section( ".vectors" ) ) )
 
 #define STACK_POINTER() ( (char*)AVR_STACK_POINTER_REG )
 

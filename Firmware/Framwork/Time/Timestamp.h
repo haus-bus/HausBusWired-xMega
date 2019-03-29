@@ -9,6 +9,8 @@
 #define SwFramework_Time_Timestamp_H
 
 
+#include "Time.h"
+#include "DefaultTypes.h"
 #include "SystemTime.h"
 
 class Timestamp
@@ -49,6 +51,11 @@ class Timestamp
          time = 0;
       }
 
+      inline void setNow()
+      {
+         time = SystemTime::now();
+      }
+
       inline void operator +=( int32_t _time )
       {
          time += _time;
@@ -63,7 +70,7 @@ class Timestamp
 
    private:
 
-      SystemTime::time_t time;          // ## attribute time
+      SystemTime::time_t time;
 };
 
 

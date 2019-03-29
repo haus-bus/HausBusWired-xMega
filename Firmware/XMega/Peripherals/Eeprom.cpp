@@ -59,6 +59,7 @@ void Eeprom::executeCommand( NVM_CMD_t command )
    NVM.INTCTRL = eepromintStore;
 
    NVM.CMD = oldCmd;
+   NvmController::waitWhileBusy();
 }
 
 uint8_t Eeprom::read( uint16_t offset )
@@ -85,6 +86,7 @@ uint8_t Eeprom::read( uint16_t offset )
 uint16_t Eeprom::read( uint16_t offset, void* pData, uint16_t length )
 {
    DEBUG_M4( FSTR( "ee.r " ), offset, ' ', length );
+   NvmController::waitWhileBusy();
    if ( MemoryMapped::isEnabled() )
    {
       if ( offset < MAPPED_EEPROM_START )
@@ -93,8 +95,6 @@ uint16_t Eeprom::read( uint16_t offset, void* pData, uint16_t length )
       }
       return MemoryMapped::read( offset, pData, length );
    }
-
-   NvmController::waitWhileBusy();
    {
       MemoryMapped map;
       memcpy( pData, (void*)( MAPPED_EEPROM_START + offset ), length );
@@ -118,10 +118,7 @@ bool Eeprom::write( uint16_t offset, uint8_t value )
    {
       return false;
    }
-
-   uint8_t oldCmd = NVM.CMD;
    flushBuffer();
-   NvmController::waitWhileBusy();
 
    NVM.CMD = NVM_CMD_LOAD_EEPROM_BUFFER_gc;
 
@@ -133,7 +130,6 @@ bool Eeprom::write( uint16_t offset, uint8_t value )
    // Load data to write, which triggers the loading of EEPROM page buffer
    NVM.DATA0 = value;
    executeCommand( NVM_CMD_ERASE_WRITE_EEPROM_PAGE_gc );
-   NVM.CMD = oldCmd;
 
    return true;
 }
@@ -157,7 +153,6 @@ uint16_t Eeprom::write( uint16_t offset, const void* pData, uint16_t length )
       }
       length--;
    }
-
    return length;
 }
 
@@ -166,7 +161,6 @@ void Eeprom::fillBufferWithValue( uint8_t value )
    uint8_t oldCmd = NVM.CMD;
 
    flushBuffer();
-   NvmController::waitWhileBusy();
 
    NVM.CMD = NVM_CMD_LOAD_EEPROM_BUFFER_gc;
 
@@ -183,6 +177,7 @@ void Eeprom::fillBufferWithValue( uint8_t value )
       NVM.DATA0 = value;
    }
    NVM.CMD = oldCmd;
+   NvmController::waitWhileBusy();
 }
 
 bool Eeprom::isAddressInRange( uint16_t address )
@@ -238,7 +233,6 @@ uint16_t Eeprom::MemoryMapped::write( uint16_t offset, const void* pData, uint16
       writtenLength += pageLength;
       offset += pageLength;
    }
-
    return writtenLength;
 }
 
@@ -248,6 +242,7 @@ uint16_t Eeprom::MemoryMapped::read( uint16_t offset, void* pData, uint16_t leng
    {
       return 0;
    }
+   NvmController::waitWhileBusy();
    memcpy( pData, (void*)( offset ), length );
 
    return length;

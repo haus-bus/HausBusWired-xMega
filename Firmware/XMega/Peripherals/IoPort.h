@@ -84,6 +84,11 @@ class IoPort
          reg.INT0MASK |= pins;
       }
 
+      inline uint8_t isInterrupt0SourceEnabled( uint8_t pins )
+      {
+         return reg.INT0MASK & pins;
+      }
+
       inline void enableInterrupt1( PORT_INT1LVL_t level = PORT_INT1LVL_LO_gc )
       {
          reg.INTCTRL = ( reg.INTCTRL & ~PORT_INT1LVL_gm ) | level;
@@ -92,6 +97,11 @@ class IoPort
       inline void enableInterrupt1Source( uint8_t pins )
       {
          reg.INT1MASK |= pins;
+      }
+
+      inline uint8_t isInterrupt1SourceEnabled( uint8_t pins )
+      {
+         return reg.INT1MASK & pins;
       }
 
       inline uint8_t get() const
@@ -239,7 +249,7 @@ class IoPort
 
       static IoPort dummyPort;
 
-      PORT_t reg;       // ## attribute reg
+      PORT_t reg;
 };
 
 #endif

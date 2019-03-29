@@ -1,30 +1,19 @@
 /*
  * MemoryManager.cpp
  *
- *  Created on: 07.12.2017
+ *  Created on: 28.08.2014
  *      Author: Viktor Pankraz
  */
 
 #include "MemoryManager.h"
+#include <Tracing/Logger.h>
+#include <CriticalSection.h>
 
-#include <SwFramework.h>
-#include <stdlib.h>
-
-// #[ type HEAP_DEFINES
-static const uint8_t STACK_MASK = 'S';
-static const uint8_t HEAP_MASK = 'H';
+// From linker script
+extern "C" char __heap_start;
 
 #ifndef _HEAP_SIZE_
 #define _HEAP_SIZE_ 0
-#endif
-
-#ifdef __AVR__
-// From linker script
-extern "C" char __heap_start;
-// extern "C" char __heap_end;
-#else
-class Heap;
-extern Heap __heap_start;
 #endif
 
 #ifndef HEAP_BLOCK_SIZE
@@ -56,14 +45,22 @@ static bool isInHeap( uintptr_t address );
 
 void* allocOnce( size_t size )
 {
+
+   if ( (uintptr_t)( pHeapEnd - size ) < (uintptr_t)&__heap_start )
+   {
+      ERROR_2( "Heap is to small, actual size: 0x", (uintptr_t)pHeapEnd - (uintptr_t)&__heap_start );
+      while ( 1 )
+      {
+      }
+   }
    pHeapEnd -= size;
    DEBUG_M4( FSTR( "mo " ), (uintptr_t)pHeapEnd, ' ', size );
    return pHeapEnd;
 }
 
-void getUnusedMemory( uint16_t& freeStack, uint16_t& freeHeap )
+void getUnusedMemory( uint16_t* freeStack, uint16_t* freeHeap )
 {
-   freeHeap = freeStack = 0;
+   freeHeap[0] = freeStack[0] = 0;
    char* p = (char*)pHeapEnd - 1;
    while ( p >= (char*)&__heap_start )
    {
@@ -72,7 +69,7 @@ void getUnusedMemory( uint16_t& freeStack, uint16_t& freeHeap )
          break;
       }
 
-      freeHeap++;
+      freeHeap[0]++;
    }
    p = (char*)&__heap_start + _HEAP_SIZE_;
    while ( p <= (char*) RAMEND )
@@ -82,7 +79,7 @@ void getUnusedMemory( uint16_t& freeStack, uint16_t& freeHeap )
          break;
       }
 
-      freeStack++;
+      freeStack[0]++;
    }
 }
 
@@ -123,7 +120,6 @@ void operator delete[]( void* ptr )
 
 void* operator new( size_t size )
 {
-   // #[ operation operator new(size_t)
    void* ptr = malloc( size );
    DEBUG_M4( FSTR( "m " ), (uintptr_t)ptr, ' ', size );
    while ( !isInHeap( (uintptr_t)ptr ) )
@@ -149,7 +145,6 @@ void* operator new[]( size_t size )
 }
 
 // !!! Never call this function, it is part of .init-Code
-#ifdef __AVR__
 void __attribute__ ( ( naked, used, section( ".init5" ) ) ) initMemory( void );
 static void initMemory()
 {
@@ -196,19 +191,13 @@ static void initMemory()
       );
     #endif
 }
-#endif
 
 static bool isInHeap( uintptr_t address )
 {
-    #ifdef WIN32
-   return true;
-    #else
    if ( ( address >= (uintptr_t)&__heap_start ) && ( address < (uintptr_t)pHeapEnd ) )
    {
       return true;
    }
    ERROR_2( address, " isOutOfRange" );
    return false;
-    #endif
-
 }

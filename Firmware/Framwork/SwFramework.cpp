@@ -11,7 +11,7 @@
 uint32_t changeEndianness( const uint32_t& value )
 {
 
-   Converter con;
+   convert_u con;
    con.byte[0] = ( (uint8_t const*)&value )[3];
    con.byte[1] = ( (uint8_t const*)&value )[2];
    con.byte[2] = ( (uint8_t const*)&value )[1];
@@ -23,7 +23,7 @@ uint32_t changeEndianness( const uint32_t& value )
 uint16_t changeEndianness( const uint16_t& value )
 {
 
-   Converter con;
+   convert_u con;
    con.byte[0] = ( (uint8_t const*)&value )[1];
    con.byte[1] = ( (uint8_t const*)&value )[0];
    return con.word[0];

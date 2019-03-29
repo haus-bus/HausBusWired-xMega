@@ -34,7 +34,6 @@ class ResetSystem
       // *  External Oscillator Failure Detections (XOSCFD) feature detects a failure
       // *  and switches to internal 2MHz RC oscillator.
       // */
-      // ## operation getSources()
       inline static uint8_t getSources()
       {
          return RST.STATUS;

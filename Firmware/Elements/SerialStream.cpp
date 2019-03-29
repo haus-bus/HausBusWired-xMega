@@ -15,25 +15,25 @@ SerialStream::SerialStream( Usart* _serial, PortPin _rx, PortPin _tx )
    _rx.configInput();
 }
 
-Stream::Status SerialStream::genericCommand( IoStream::Command command, void* buffer )
+IStream::Status SerialStream::genericCommand( IoStream::Command command, void* buffer )
 {
    if ( command == IoStream::FLUSH )
    {
       serial->waitUntilTransferCompleted();
-      return Stream::SUCCESS;
+      return IStream::SUCCESS;
    }
-   return Stream::ABORTED;
+   return IStream::ABORTED;
 }
 
-Stream::Status SerialStream::read( uint8_t& data )
+IStream::Status SerialStream::read( uint8_t& data )
 {
 
-   return serial->read( data ) ? Stream::SUCCESS : Stream::STOPPED;
+   return serial->read( data ) ? IStream::SUCCESS : IStream::STOPPED;
 }
 
-Stream::Status SerialStream::write( uint8_t data )
+IStream::Status SerialStream::write( uint8_t data )
 {
-   return serial->write( data ) ? Stream::SUCCESS : Stream::ABORTED;
+   return serial->write( data ) ? IStream::SUCCESS : IStream::ABORTED;
 }
 
 bool SerialStream::available()

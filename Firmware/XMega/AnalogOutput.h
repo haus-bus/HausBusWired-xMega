@@ -1,13 +1,14 @@
 /*
  * AnalogOutput.h
  *
- *  Created on: 17.07.2017
- *      Author: Viktor Pankraz
+ * Created: 18.06.2014 14:12:56
+ * Author: viktor.pankraz
  */
 
 #ifndef Basics_AnalogOutput_H
 #define Basics_AnalogOutput_H
 
+#include "Basics.h"
 #include "AnalogInput.h"
 
 class AnalogOutput : public AnalogInput
@@ -41,4 +42,3 @@ class AnalogOutput : public AnalogInput
 };
 
 #endif
-

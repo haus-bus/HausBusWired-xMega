@@ -29,11 +29,11 @@ const uint8_t HmwStreamBase::debugLevel( DEBUG_LEVEL_OFF );
 #define RX_ERROR_TRACE_PIN      Pin1
 
 
-Stream::Status HmwStreamBase::sendMessage( HmwMessageBase& msg )
+IStream::Status HmwStreamBase::sendMessage( HmwMessageBase& msg )
 {
    if ( !hardware )
    {
-      return Stream::LOCKED;
+      return IStream::LOCKED;
    }
 
    // wait for bus to be idle, only ACKs are sent immediately
@@ -42,7 +42,7 @@ Stream::Status HmwStreamBase::sendMessage( HmwMessageBase& msg )
    }
 
    uint8_t data;
-   Stream::Status status = Stream::SUCCESS;
+   IStream::Status status = IStream::SUCCESS;
 
    statusSending.msg = &msg;
    statusSending.dataIdx = 0;
@@ -58,13 +58,13 @@ Stream::Status HmwStreamBase::sendMessage( HmwMessageBase& msg )
    {
       if ( !hardware->serial->write( data ) )
       {
-         status = Stream::ABORTED;
+         status = IStream::ABORTED;
       }
    }
    hardware->serial->waitUntilTransferCompleted();
    hardware->enableTranceiver( false );
 
-   if ( ( status == Stream::SUCCESS ) && msg.isInfo() )
+   if ( ( status == IStream::SUCCESS ) && msg.isInfo() )
    {
       senderNum++;
    }

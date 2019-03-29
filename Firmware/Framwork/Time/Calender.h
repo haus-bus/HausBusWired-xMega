@@ -1,7 +1,7 @@
 /*
  * Calender.h
  *
- *  Created on: 17.07.2017
+ *  Created on: 25.04.2016
  *      Author: viktor.pankraz
  */
 
@@ -9,6 +9,10 @@
 #define TIME_CALENDER_H_
 
 #include "WeekTime.h"
+#include "EventDrivenUnit.h"
+#include "EventPkg/EventPkg.h"
+
+class EventDrivenUnit;
 
 class Calender
 {
@@ -77,9 +81,11 @@ class Calender
 
       inline void setWeekTime( WeekTime wTime )
       {
+         second = 0;
          minute = wTime.getMinute();
          hour = wTime.getHour();
          dayofweek = wTime.getWeekDay();
+         evTime( minuteListener ).queue();
       }
 
       static Calender fromTimeStamp( uint32_t timestamp, uint16_t startYear
@@ -136,6 +142,7 @@ class Calender
             minute = 0;
             addHour();
          }
+         evTime( minuteListener ).queue();
       }
 
       uint8_t second;    // !< 0-59

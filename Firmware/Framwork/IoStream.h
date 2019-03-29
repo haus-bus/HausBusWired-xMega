@@ -1,17 +1,20 @@
 /*
  * IoStream.h
  *
- *  Created on: 28.08.2014
- *      Author: Viktor Pankraz
+ *  Created on: 24.06.2014
+ *      Author: viktor.pankraz
  */
 
 #ifndef SwFramework_IoStream_H
 #define SwFramework_IoStream_H
 
-#include "Stream.h"
+#include "SwFramework.h"
+#include "DefaultTypes.h"
+#include "IStream.h"
 
+class EventDrivenUnit;
 
-class IoStream : public Stream
+class IoStream : public IStream
 {
    public:
 
@@ -20,20 +23,25 @@ class IoStream : public Stream
          INIT,
          IS_BUSY,
          STOP,
-         RESTART,
          FLUSH,
+         RESTART
+      };
+
+      class CommandINIT
+      {
+         public:
+            uint8_t deviceId;
+            uint16_t buffersize;
+            EventDrivenUnit* owner;
       };
 
       ////    Operations    ////
 
-      virtual Stream::Status genericCommand( Command command, void* data = NULL );
+      virtual IStream::Status genericCommand( Command command, void* buffer );
 
-      virtual Stream::Status read( uint8_t& data );
+      virtual IStream::Status read( void* pData, uint16_t length, EventDrivenUnit* user = 0 );
 
-      virtual Stream::Status write( uint8_t data );
-
-      virtual bool available();
-
+      virtual IStream::Status write( void* pData, uint16_t length, EventDrivenUnit* user = 0 );
 };
 
 #endif

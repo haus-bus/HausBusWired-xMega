@@ -33,7 +33,6 @@ class EventSystem
       // *  \param channel  The event channel number, range 0-7.
       // *  \param filter   Filter coefficient for the digital input filter.
       // */
-      // ## operation setEventChannelFilter(uint8_t,EVSYS_DIGFILT_t)
       inline static void setEventChannelFilter( uint8_t channel, EVSYS_DIGFILT_t filter )
       {
          // Check if channel is valid and set the pointer offset for the selected
@@ -78,7 +77,6 @@ class EventSystem
       // */
       inline static void setEventSource( uint8_t channel, EVSYS_CHMUX_t source )
       {
-         // #[ operation setEventSource(uint8_t,EVSYS_CHMUX_t)
          // Check if channel is valid and set the pointer offset for the selected
          // channel and assign the eventSource value.
          if ( channel < MAX_CHANNELS )
@@ -102,7 +100,6 @@ class EventSystem
       // */
       inline static void triggerManual( uint8_t dataMask, uint8_t strobeMask )
       {
-         // #[ operation triggerManual(uint8_t,uint8_t)
          // The datamask register must be set before the strobe register.
          EVSYS.DATA = dataMask;
          EVSYS.STROBE = strobeMask;

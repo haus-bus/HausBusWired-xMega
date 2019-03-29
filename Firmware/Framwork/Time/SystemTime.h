@@ -1,7 +1,7 @@
 /*
  * SystemTime.h
  *
- *  Created on: 17.07.2017
+ *  Created on: 28.08.2014
  *      Author: Viktor Pankraz
  */
 
@@ -9,7 +9,6 @@
 #define SystemTime_H
 
 #include <stdint.h>
-#include "Time.h"
 
 class SystemTime
 {
@@ -36,6 +35,8 @@ class SystemTime
       static const uint16_t MIN = 60 * S;
       static const uint32_t H = 60 * MIN;
       static const uint32_t D = 24 * H;
+
+      static int8_t ticksPerSecondAdjustment;
 
       ////    Operations    ////
 

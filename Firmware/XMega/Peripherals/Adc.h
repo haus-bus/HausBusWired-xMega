@@ -163,7 +163,7 @@ class Adc
 
          protected:
 
-            ADC_CH_t reg;       // ## attribute reg
+            ADC_CH_t reg;
       };
 
       ////    Constructors and destructors    ////

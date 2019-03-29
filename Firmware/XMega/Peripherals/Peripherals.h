@@ -11,6 +11,7 @@
 
 #include <avr/io.h>
 #include <CriticalSection.h>
+#include <Tracing/Logger.h>
 
 class Adc;
 
@@ -42,9 +43,7 @@ class ResetSystem;
 
 class Spi;
 
-class TimerCounter0;
-
-class TimerCounter1;
+class TimerCounter;
 
 class TimerCounterBase;
 
@@ -117,7 +116,6 @@ enum Port
   #define TRACE_PORT_CLEAR( pins )
   #define TRACE_PORT_TOGGLE( pins )
 #endif
-// #]
 
 ///*! \brief CCP write helper function written in assembly.
 // *
@@ -127,10 +125,8 @@ enum Port
 // *  \param address A pointer to the address to write to.
 // *  \param value   The value to put in to the register.
 // */
-// ## operation CCPWrite(register8_t,uint8_t)
 inline static void CCPWrite( register8_t* address, uint8_t value )
 {
-   // #[ operation CCPWrite(register8_t,uint8_t)
    CriticalSection doNotInterrupt;
     #ifdef RAMPZ
    RAMPZ = 0;
@@ -138,7 +134,6 @@ inline static void CCPWrite( register8_t* address, uint8_t value )
    CCP = CCP_IOREG_gc;
    *address = value;
 
-   // #]
 }
 
 /* as long as compiler.h from asf is included

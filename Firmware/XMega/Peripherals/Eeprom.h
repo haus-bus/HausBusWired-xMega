@@ -94,7 +94,7 @@ class Eeprom
 
    protected:
 
-      static const uint8_t debugLevel;          // ## attribute debugLevel
+      static const uint8_t debugLevel;
 };
 
 inline void Eeprom::erase()

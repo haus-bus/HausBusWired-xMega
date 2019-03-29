@@ -7,7 +7,7 @@
 
 #include "Stream.h"
 
-void Stream::TransferDescriptor::reset()
+void IStream::TransferDescriptor::reset()
 {
    setPData( 0 );
    setBytesTransferred( 0 );

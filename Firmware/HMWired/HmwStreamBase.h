@@ -43,7 +43,7 @@ class HmwStreamBase
          hardware->serial->init<19200, USART_CMODE_ASYNCHRONOUS_gc, USART_PMODE_EVEN_gc, USART_CHSIZE_8BIT_gc, false, false>();
       }
 
-      static Stream::Status sendMessage( HmwMessageBase& msg );
+      static IStream::Status sendMessage( HmwMessageBase& msg );
 
       static HmwMessageBase* pollMessageReceived();
 

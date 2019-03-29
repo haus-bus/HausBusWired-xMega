@@ -1,16 +1,16 @@
 /*
  * Logger.h
  *
- *  Created on: 28.08.2014
- *      Author: Viktor Pankraz
+ * Created: 18.06.2014 14:12:56
+ * Author: viktor.pankraz
  */
 
-#ifndef SwFramework_Tracing_Logger_H
-#define SwFramework_Tracing_Logger_H
+#ifndef SwFramework_Traces_Logger_H
+#define SwFramework_Traces_Logger_H
 
+#include "Traces.h"
+#include <DefaultTypes.h>
 #include <FlashString.h>
-
-class FlashString;
 
 class Logger
 {
@@ -21,9 +21,9 @@ class Logger
       typedef void (* Stream)( char );
 
       ////    Constructors and destructors    ////
+
       inline Logger()
       {
-
       }
 
       ////    Operations    ////
@@ -60,12 +60,20 @@ class Logger
 
    private:
 
+      inline static Logger* getTheInstance()
+      {
+         return (Logger*) &theInstance;
+      }
+
       ////    Attributes    ////
 
    public:
 
       static Stream stream;
 
+   private:
+
+      static Logger theInstance;
 };
 
 inline Logger& Logger::operator<<( char c )
@@ -78,10 +86,6 @@ inline Logger& Logger::operator<<( const Logger::Manipulator& manipulator )
 {
    return manipulator( *this );
 }
-
-Logger& endl( Logger& me );
-
-Logger& newTraceLine( Logger& me );
 
 #endif
 

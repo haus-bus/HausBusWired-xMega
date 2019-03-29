@@ -239,7 +239,7 @@ uint8_t Twi::Slave::handleStatus( uint8_t& data, bool finish )
 
 uint16_t Twi::Slave::read( void* pData, uint16_t length )
 {
-   Stream::TransferDescriptor transferDescriptor;
+   IStream::TransferDescriptor transferDescriptor;
 
    // Set the transfer descriptor
    transferDescriptor.pData = static_cast<uint8_t*>( pData );

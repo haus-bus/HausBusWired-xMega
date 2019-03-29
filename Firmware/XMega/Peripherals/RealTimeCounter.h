@@ -103,7 +103,6 @@ class RealTimeCounter
 
          // Add the timeout value to get the absolute time of the alarm.
          setCompareValue( compareValue );
-         // #]
       }
 
       inline static void setCompareIntLevel( RTC_COMPINTLVL_t intLevel )

@@ -1,24 +1,22 @@
-/*********************************************************************
-        Rhapsody	: 8.0.3
-        Login		: viktor.pankraz
-        Component	: SwFrameworkAvr
-        Configuration   : debug
-        Model Element	: Time
-   //!	Generated Date	: Wed, 18, Jun 2014
-        File Path	: SwFrameworkAvr/debug/Time/Time.h
-*********************************************************************/
+/*
+ * Time.h
+ *
+ * Created: 18.06.2014 14:12:56
+ * Author: viktor.pankraz
+ */
 
 #ifndef SwFramework_Time_Time_H
 #define SwFramework_Time_Time_H
 
-#include <CriticalSection.h>
-#include <SwFramework.h>
 
+#include "SwFramework.h"
 class SystemTime;
 
 class Timestamp;
 
 class WeekTime;
 
-#endif
 
+
+
+#endif

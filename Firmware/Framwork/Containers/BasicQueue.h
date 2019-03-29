@@ -1,14 +1,13 @@
 /*
  * BasicQueue.h
  *
- *  Created on: 06.12.2017
+ *  Created on: 18.06.2014
  *      Author: Viktor Pankraz
  */
 
-#ifndef Framework_Containers_BasicQueue_H
-#define Framework_Containers_BasicQueue_H
-
 #include <stdint.h>
+#ifndef SwFramework_Containers_BasicQueue_H
+#define SwFramework_Containers_BasicQueue_H
 
 
 template<typename DataType, typename SizeType, typename ListType>

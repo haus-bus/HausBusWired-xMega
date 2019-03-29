@@ -20,7 +20,6 @@ class InternalEeprom : public StorageInterface
 
    public:
 
-      // ## operation InternalEeprom()
       inline InternalEeprom()
       {
       }

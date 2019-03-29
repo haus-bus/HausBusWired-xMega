@@ -98,7 +98,7 @@ void HmwBrightness::loop( uint8_t channel )
       if ( doSend )
       {
          uint8_t data[2];
-         if ( HmwDevice::sendInfoMessage( channel, get( data ), data ) == Stream::SUCCESS )
+         if ( HmwDevice::sendInfoMessage( channel, get( data ), data ) == IStream::SUCCESS )
          {
             lastSentValue = currentValue;
             lastSentTime = Timestamp();

@@ -4,6 +4,7 @@
  *  Created on: 18.07.2017
  *      Author: Viktor Pankraz
  */
+
 #ifndef Peripherals_DmaChannel_H
 #define Peripherals_DmaChannel_H
 

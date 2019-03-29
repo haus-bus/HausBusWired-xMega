@@ -1,13 +1,14 @@
 /*
  * ArrayVector.h
  *
- *  Created on: 06.12.2017
+ *  Created on: 18.06.2014
  *      Author: Viktor Pankraz
  */
 
-#ifndef Framework_Containers_ArrayVector_H
-#define Framework_Containers_ArrayVector_H
+#ifndef SwFramework_Containers_ArrayVector_H
+#define SwFramework_Containers_ArrayVector_H
 
+#include <DefaultTypes.h>
 #include <Tracing/Logger.h>
 
 template<typename T, uint8_t MAX_SIZE>

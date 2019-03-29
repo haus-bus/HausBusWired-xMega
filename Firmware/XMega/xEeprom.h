@@ -25,6 +25,8 @@ class XEeprom
       // Access/read members.
       T operator*() const
       {
+         // Todo check if needed here
+         // NvmController::waitWhileBusy();
          return member;
       }
       operator const T() const { return **this; }
@@ -36,9 +38,8 @@ class XEeprom
       }
       XEeprom<T>& operator=( T in )
       {
-         return Eeprom::write( (uint16_t) &member, &in, sizeof( member ) ), *this;
+         return Eeprom::write( (uintptr_t) &member, &in, sizeof( member ) ), *this;
       }
-
 
       XEeprom<T>& operator +=( T in )
       {

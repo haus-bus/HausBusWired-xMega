@@ -7,6 +7,7 @@
 
 #include "WeekTime.h"
 #include "Calender.h"
+#include <CriticalSection.h>
 
 WeekTime WeekTime::sunRise( WEEK_DAY_MASK | 0x800 );
 

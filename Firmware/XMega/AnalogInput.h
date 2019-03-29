@@ -1,13 +1,14 @@
 /*
  * AnalogInput.h
  *
- *  Created on: 28.08.2014
- *      Author: Viktor Pankraz
+ * Created: 18.06.2014 14:12:57
+ * Author: viktor.pankraz
  */
 
 #ifndef Basics_AnalogInput_H
 #define Basics_AnalogInput_H
 
+#include "Basics.h"
 #include "DigitalInput.h"
 #include "Peripherals/Adc.h"
 

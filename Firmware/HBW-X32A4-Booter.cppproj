@@ -168,7 +168,7 @@
         <avrgcc.compiler.symbols.DefSymbols>
           <ListValues>
             <Value>F_CPU=32000000UL</Value>
-            <Value>DEBUG</Value>
+            <Value>_DEBUG_</Value>
           </ListValues>
         </avrgcc.compiler.symbols.DefSymbols>
         <avrgcc.compiler.directories.IncludePaths>
@@ -193,7 +193,7 @@
             <Value>MOD_ID=\"HmwBooter\"</Value>
             <Value>CONTROLLER_ID=Release::HMW_SD6</Value>
             <Value>HARDWARE_ID=1</Value>
-            <Value>DEBUG</Value>
+            <Value>_DEBUG_</Value>
           </ListValues>
         </avrgcccpp.compiler.symbols.DefSymbols>
         <avrgcccpp.compiler.directories.IncludePaths>
@@ -242,7 +242,6 @@
         <avrgcc.compiler.symbols.DefSymbols>
           <ListValues>
             <Value>F_CPU=32000000UL</Value>
-            <Value>NDEBUG</Value>
           </ListValues>
         </avrgcc.compiler.symbols.DefSymbols>
         <avrgcc.compiler.directories.IncludePaths>
@@ -267,7 +266,6 @@
             <Value>SYSTEM_TIME_TYPE=uint16_t</Value>
             <Value>DEVICE_ID=0xB1</Value>
             <Value>HARDWARE_ID=1</Value>
-            <Value>NDEBUG</Value>
           </ListValues>
         </avrgcccpp.compiler.symbols.DefSymbols>
         <avrgcccpp.compiler.directories.IncludePaths>
@@ -476,7 +474,7 @@
     <Compile Include="Framwork\StorageInterface.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Framwork\Stream.h">
+    <Compile Include="Framwork\IStream.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Framwork\SwFramework.cpp">

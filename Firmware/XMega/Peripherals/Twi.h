@@ -10,7 +10,7 @@
 
 #include "Peripherals/Peripherals.h"
 #include <Basics.h>
-#include <Stream.h>
+#include <IStream.h>
 
 class Twi
 {
@@ -278,7 +278,7 @@ class Twi
                }
             }
 
-            inline void waitTransferCompleted( Stream::TransferDescriptor& transferDescriptor )
+            inline void waitTransferCompleted( IStream::TransferDescriptor& transferDescriptor )
             {
                // wait for address match
                waitNewStatusAvailable();

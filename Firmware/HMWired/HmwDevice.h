@@ -91,7 +91,7 @@ class HmwDevice
          }
       }
 
-      static inline Stream::Status announce( uint8_t channel = 0 )
+      static inline IStream::Status announce( uint8_t channel = 0 )
       {
          HmwMsgAnnounce msg( channel, ownAddress, deviceType, basicConfig->hwVersion, ( Release::MAJOR << 8 ) | Release::MINOR );
       #ifdef _BOOTER_
@@ -155,9 +155,9 @@ class HmwDevice
          HmwLinkReceiver::notifyKeyEvent( senderAddress, srcChan, dstChan, longPress, keyPressNum );
       }
 
-      static inline Stream::Status sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress, bool keyPressed = false )
+      static inline IStream::Status sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress, bool keyPressed = false )
       {
-         Stream::Status status;
+         IStream::Status status;
          if ( keyPressed )
          {
             // normally only long press events
@@ -167,7 +167,7 @@ class HmwDevice
          {
             // short pressed or a released long press
             status = sendKeyEvent( srcChan, keyPressNum, longPress, 0xFFFFFFFF, 0 );
-            if ( status == Stream::SUCCESS )
+            if ( status == IStream::SUCCESS )
             {
                HmwLinkSender::notifyKeyEvent( srcChan, keyPressNum, longPress );
                pendingActions.announce = true;
@@ -176,7 +176,7 @@ class HmwDevice
          return status;
       }
 
-      static inline Stream::Status sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress, uint32_t targetAddr, uint8_t targetChan )
+      static inline IStream::Status sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress, uint32_t targetAddr, uint8_t targetChan )
       {
          HmwMsgKeyEvent msg( ownAddress, targetAddr, srcChan, targetChan, keyPressNum, longPress );
          return HmwStream::sendMessage( msg );

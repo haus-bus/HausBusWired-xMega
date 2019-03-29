@@ -1,13 +1,12 @@
 /*
  * Calender.cpp
  *
- *  Created on: 17.07.2017
+ *  Created on: 25.04.2016
  *      Author: viktor.pankraz
  */
 
 #include "Calender.h"
-
-#include <stdlib.h>
+#include <CriticalSection.h>
 
 // ! Number of seconds in a day
 #define SECS_PER_DAY 86400UL

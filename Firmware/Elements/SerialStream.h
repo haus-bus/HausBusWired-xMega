@@ -33,11 +33,11 @@ class SerialStream : public IoStream
          return serial->init<baudrate, mode, parity, characterSize, twoStopBits, doubleClock>();
       }
 
-      virtual Stream::Status genericCommand( IoStream::Command command, void* data );
+      virtual IStream::Status genericCommand( IoStream::Command command, void* data );
 
-      virtual Stream::Status read( uint8_t& data );
+      virtual IStream::Status read( uint8_t& data );
 
-      virtual Stream::Status write( uint8_t data );
+      virtual IStream::Status write( uint8_t data );
 
       virtual bool available();
 

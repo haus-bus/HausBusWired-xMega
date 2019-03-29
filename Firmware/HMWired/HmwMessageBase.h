@@ -10,7 +10,7 @@
 #define __HMWMESSAGEBASE_H__
 
 #include <Time/Timestamp.h>
-#include <Stream.h>
+#include <IStream.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

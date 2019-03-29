@@ -1,15 +1,14 @@
 /*
  * InternalTemperature.cpp
  *
- *  Created on: 17.07.2017
- *      Author: Viktor Pankraz
+ * Created: 18.06.2014 14:12:55
+ * Author: viktor.pankraz
  */
 
 #include "InternalTemperature.h"
 #include "Peripherals/Adc.h"
 
 #include <util/delay.h>
-#include <SwFramework.h>
 
 const uint8_t InternalTemperature::debugLevel( DEBUG_LEVEL_OFF );
 

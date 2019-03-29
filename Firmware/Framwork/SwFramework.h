@@ -8,8 +8,7 @@
 #ifndef SwFramework_SwFramework_H
 #define SwFramework_SwFramework_H
 
-#include <stdint.h>
-#include "Tracing/Logger.h"
+#include "DefaultTypes.h"
 
 class EventDrivenUnit;
 
@@ -23,7 +22,7 @@ class Scheduler;
 
 class StorageInterface;
 
-class Stream;
+class IStream;
 
 // Converts an ASCII character to its Unicode equivalent
 
@@ -88,7 +87,7 @@ class Stream;
 #define DEBUG_LEVEL_MIDDLE   0x02
 #define DEBUG_LEVEL_LOW      0x03
 
-#ifdef DEBUG
+#ifdef _DEBUG_
 #define DEBUG_H1( a1 )                  if ( ( debugLevel & DEBUG_LEVEL_MASK ) > DEBUG_LEVEL_OFF ) { Logger::instance() << newTraceLine << getId() << a1; }
 #define DEBUG_H2( a1, a2 )              if ( ( debugLevel & DEBUG_LEVEL_MASK ) > DEBUG_LEVEL_OFF ) { Logger::instance() << newTraceLine << getId() << a1 << a2; }
 #define DEBUG_H3( a1, a2, a3 )          if ( ( debugLevel & DEBUG_LEVEL_MASK ) > DEBUG_LEVEL_OFF ) { Logger::instance() << newTraceLine << getId() << a1 << a2 << a3; }
@@ -123,12 +122,12 @@ class Stream;
 #endif
 
 
-#ifdef DEBUG
-#define ASSERT( expr )                                        \
+#ifdef _DEBUG_
+#define ASSERT( expr )                                      \
    {                                                           \
       if ( !( expr ) )                                            \
       {                                                         \
-         Logger::instance() << endl << "ASSERT(" << #expr << ')'; \
+         /*Logger::instance()<< endl << "ASSERT(" << #expr << ')';*/ \
          while ( 1 ) {; }                                              \
       }                                                         \
    }
@@ -157,17 +156,17 @@ class Stream;
 #define DEBUG_STATE_L2       0x08
 #define DEBUG_STATE_L3       0x0C
 
-#ifdef DEBUG
 #define STATE_L1( a1 )    if ( ( debugLevel & DEBUG_STATE_MASK ) > DEBUG_LEVEL_OFF ) { Logger::instance() << newTraceLine << getId() << " enters -> " #a1 "(" << (uint8_t)a1 << ')'; }
 #define STATE_L2( a1 )    if ( ( debugLevel & DEBUG_STATE_MASK ) > DEBUG_STATE_L1 ) { Logger::instance() << newTraceLine << getId() << " enters -> " #a1 "(" << (uint8_t)a1 << ')'; }
 #define STATE_L3( a1 )    if ( ( debugLevel & DEBUG_STATE_MASK ) > DEBUG_STATE_L2 ) { Logger::instance() << newTraceLine << getId() << " enters -> " #a1 "(" << (uint8_t)a1 << ')'; }
+#ifdef _DEBUG_
 #else
 #define STATE_L1( a1 )
 #define STATE_L2( a1 )
 #define STATE_L3( a1 )
 #endif
 
-#ifdef DEBUG
+#ifdef _DEBUG_
 #define WARN_1( a1 )              Logger::instance() << newTraceLine << "WARNING> " << a1;
 #define WARN_2( a1, a2 )          Logger::instance() << newTraceLine << "WARNING> " << a1 << a2;
 #define WARN_3( a1, a2, a3 )      Logger::instance() << newTraceLine << "WARNING> " << a1 << a2 << a3;
@@ -179,7 +178,7 @@ class Stream;
 #define WARN_4( a1, a2, a3, a4 )
 #endif
 
-union Converter
+union convert_u
 {
    uint32_t dword;
    uint16_t word[2];
@@ -201,7 +200,7 @@ uint16_t changeEndianness( const uint16_t& value );
 // ! \brief  Converts a byte array to a dword value using the little endian format
 static inline uint32_t getDwordLittle( uint8_t* byte )
 {
-   Converter tmp;
+   convert_u tmp;
    tmp.byte[0] = byte[0];
    tmp.byte[1] = byte[1];
    tmp.byte[2] = byte[2];
@@ -212,7 +211,7 @@ static inline uint32_t getDwordLittle( uint8_t* byte )
 // ! \brief  Converts a byte array to a word value using the little endian format
 static inline uint16_t getWordLittle( uint8_t* byte )
 {
-   Converter tmp;
+   convert_u tmp;
    tmp.byte[0] = byte[0];
    tmp.byte[1] = byte[1];
    return tmp.word[0];
@@ -221,7 +220,7 @@ static inline uint16_t getWordLittle( uint8_t* byte )
 // ! \brief  Converts a byte array to a dword value using the little endian format
 static inline void storeDwordLittle( uint32_t data, uint8_t* byte )
 {
-   Converter* tmp = (Converter*)&data;
+   convert_u* tmp = (convert_u*)&data;
    byte[0] = tmp->byte[0];
    byte[1] = tmp->byte[1];
    byte[2] = tmp->byte[2];
@@ -231,7 +230,7 @@ static inline void storeDwordLittle( uint32_t data, uint8_t* byte )
 // ! \brief  Converts a byte array to a dword value using the little endian format
 static inline void storeWordLittle( uint16_t data, uint8_t* byte )
 {
-   Converter* tmp = (Converter*)&data;
+   convert_u* tmp = (convert_u*)&data;
    byte[0] = tmp->byte[0];
    byte[1] = tmp->byte[1];
 }

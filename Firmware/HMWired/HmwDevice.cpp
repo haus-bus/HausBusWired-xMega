@@ -111,7 +111,7 @@ void HmwDevice::handleAnnouncement()
 {
    if ( isAnnouncementPending() && HmwStream::isIdle() )
    {
-      if ( announce() == Stream::SUCCESS )
+      if ( announce() == IStream::SUCCESS )
       {
          clearPendingAnnouncement();
       }

@@ -12,9 +12,9 @@ HmwStream::MessageQueue HmwStream::inMessageQueue;
 
 HmwStream::MessageVector HmwStream::outMessageVector;
 
-Stream::Status HmwStream::sendMessage( HmwMessageBase& msg )
+IStream::Status HmwStream::sendMessage( HmwMessageBase& msg )
 {
-   Stream::Status status = HmwStreamBase::sendMessage( msg );
+   IStream::Status status = HmwStreamBase::sendMessage( msg );
    // make sure the message is back in LittleEndian format after sending
    msg.convertToLittleEndian();
    msg.notifySending();

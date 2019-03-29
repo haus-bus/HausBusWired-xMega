@@ -4,20 +4,23 @@
  *  Created on: 28.08.2014
  *      Author: Viktor Pankraz
  */
+
 #include "Logger.h"
-
-#include <Time/SystemTime.h>
-
-void streamDummy( char c )
-{
-}
 
 Logger::Stream Logger::stream( streamDummy );
 
+Logger Logger::theInstance;
+
 Logger& Logger::instance()
 {
-   static Logger theInstance;
    return theInstance;
+   /*
+      static Logger* theInstance = 0;
+      if( !theInstance )
+      theInstance = new Logger;
+
+      return *theInstance;
+    */
 }
 
 Logger& Logger::operator<<( const char* val )
@@ -83,14 +86,3 @@ void Logger::printHex( const uint32_t& val, uint8_t size )
    }
    while ( size );
 }
-
-Logger& endl( Logger& me )
-{
-   return me << '\n';
-}
-
-Logger& newTraceLine( Logger& me )
-{
-   return me << '\n' << '>' << SystemTime::now() << ' ';
-}
-

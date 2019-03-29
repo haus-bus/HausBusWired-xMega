@@ -1,7 +1,7 @@
 /*
  * DigitalInput.h
  *
- *  Created on: 17.07.2017
+ *  Created on: 28.08.2014
  *      Author: Viktor Pankraz
  */
 
@@ -17,7 +17,7 @@ class DigitalInput : public PortPin
    public:
 
       inline DigitalInput( PortPin _portPin ) :
-         PortPin( _portPin.getPortNumber(), _portPin.getPinNumber() )
+         PortPin( _portPin )
       {
          if ( isValid() )
          {
@@ -36,7 +36,6 @@ class DigitalInput : public PortPin
 
       ////    Operations    ////
 
-      uint16_t getPulseWidth( bool level, uint16_t timeout ) const;
 };
 
 template<uint8_t portNumber, uint8_t pinNumber>
@@ -55,10 +54,7 @@ class DigitalInputTmpl : public PortPinTmpl<portNumber, pinNumber>
       }
 
       ////    Operations    ////
-      inline uint8_t isSet() const
-      {
-         return this->getIoPort().get() & this->getPin();
-      }
+
 };
 
 #endif

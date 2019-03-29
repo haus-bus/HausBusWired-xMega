@@ -1,8 +1,8 @@
 /*
- * DigitalOutput.cpp
+ * DigitalOutput.h
  *
- *  Created on: 17.07.2017
- *      Author: Viktor Pankraz
+ * Created: 18.06.2014 14:12:56
+ * Author: viktor.pankraz
  */
 
 #ifndef Basics_DigitalOutput_H

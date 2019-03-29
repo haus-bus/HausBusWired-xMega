@@ -39,7 +39,7 @@ class HmwStream : public HmwStreamBase
          hardware->serial->enableReceiveCompleteInterrupt();
       }
 
-      static Stream::Status sendMessage( HmwMessageBase& msg );
+      static IStream::Status sendMessage( HmwMessageBase& msg );
 
       static inline HmwMessageBase* getMessage()
       {

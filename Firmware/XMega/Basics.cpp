@@ -1,8 +1,8 @@
 /*
  * Basics.cpp
  *
- *  Created on: 17.07.2017
- *      Author: Viktor Pankraz
+ * Created: 18.06.2014 14:12:55
+ * Author: viktor.pankraz
  */
 
 #include "Basics.h"
@@ -15,4 +15,3 @@ bool isRunning()
 {
    return true;
 }
-

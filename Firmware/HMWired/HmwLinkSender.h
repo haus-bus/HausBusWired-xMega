@@ -26,15 +26,15 @@ class HmwLinkSender
 
       // functions
    public:
-      virtual Stream::Status sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress ) = 0;
+      virtual IStream::Status sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress ) = 0;
 
-      static inline Stream::Status notifyKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress )
+      static inline IStream::Status notifyKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress )
       {
          if ( instance )
          {
             return instance->sendKeyEvent( srcChan, keyPressNum, longPress );
          }
-         return Stream::NOT_SUPPORTED;
+         return IStream::NOT_SUPPORTED;
       }
 }; // HmwLinkSender
 

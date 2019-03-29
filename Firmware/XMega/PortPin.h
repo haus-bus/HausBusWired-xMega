@@ -97,6 +97,11 @@ class PortPin
          getIoPort().disableInterrupt0Source( getPinMask() );
       }
 
+      inline bool isInterrupt0SourceEnabled()
+      {
+         return getIoPort().isInterrupt0SourceEnabled( getPinMask() );
+      }
+
       inline void enableInterrupt1Source()
       {
          getIoPort().enableInterrupt1Source( getPinMask() );
@@ -105,6 +110,11 @@ class PortPin
       inline void disableInterrupt1Source()
       {
          getIoPort().disableInterrupt1Source( getPinMask() );
+      }
+
+      inline bool isInterrupt1SourceEnabled()
+      {
+         return getIoPort().isInterrupt1SourceEnabled( getPinMask() );
       }
 
       inline void enableInterrupt0()
@@ -185,6 +195,11 @@ class PortPinTmpl
          return portNumber < PortMax;
       }
 
+      inline uint8_t isSet() const
+      {
+         return getIoPort().get() & getPin();
+      }
+
       inline uint8_t isInverted()
       {
          return getIoPort().isPinInverted( pinNumber );
@@ -215,6 +230,11 @@ class PortPinTmpl
          getIoPort().disableInterrupt0Source( getPinMask() );
       }
 
+      inline uint8_t isInterrupt0SourceEnabled()
+      {
+         return getIoPort().isInterrupt0SourceEnabled( getPinMask() );
+      }
+
       inline void enableInterrupt1Source()
       {
          getIoPort().enableInterrupt1Source( getPinMask() );
@@ -223,6 +243,11 @@ class PortPinTmpl
       inline void disableInterrupt1Source()
       {
          getIoPort().disableInterrupt1Source( getPinMask() );
+      }
+
+      inline uint8_t isInterrupt1SourceEnabled()
+      {
+         return getIoPort().isInterrupt1SourceEnabled( getPinMask() );
       }
 
       inline void enableInterrupt0()

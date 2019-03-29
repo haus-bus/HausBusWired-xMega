@@ -21,9 +21,9 @@ HmwLinkKey::HmwLinkKey( uint8_t _numLinks, Config* _links )
 
 
 // keyPressed wird aufgerufen, wenn ein Tastendruck erkannt wurde
-Stream::Status HmwLinkKey::sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress )
+IStream::Status HmwLinkKey::sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, bool longPress )
 {
-   Stream::Status status = Stream::NO_DATA;
+   IStream::Status status = IStream::NO_DATA;
 
    // care for peerings
    for ( int i = 0; i < numLinks; i++ )
@@ -41,7 +41,7 @@ Stream::Status HmwLinkKey::sendKeyEvent( uint8_t srcChan, uint8_t keyPressNum, b
       }
 
       // at least one peering fired
-      status = Stream::SUCCESS;
+      status = IStream::SUCCESS;
       uint32_t actorAddress = changeEndianness( links[i].actorAddress );
 
       // own address? -> internal peering
