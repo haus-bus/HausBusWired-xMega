@@ -278,7 +278,7 @@ class Twi
                }
             }
 
-            inline void waitTransferCompleted( Stream::TransferDescriptor& transferDescriptor )
+            inline void waitTransferCompleted( IStream::TransferDescriptor& transferDescriptor )
             {
                // wait for address match
                waitNewStatusAvailable();
