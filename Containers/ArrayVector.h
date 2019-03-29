@@ -56,11 +56,16 @@ class ArrayVector
          return m_size;
       }
 
+      inline bool isFull()
+      {
+         return m_size >= MAX_SIZE;
+      }
+
       // adds an element if it does not already exist in the vector
-      void add( const T& val );
+      bool add( const T& val );
 
       // adds an element to the end of the vector
-      void pushBack( const T& val );
+      bool pushBack( const T& val );
 
       // removes the element from the vector and closes the gap
       void remove( const T& val );
@@ -71,47 +76,51 @@ class ArrayVector
 
    protected:
 
+      static const uint8_t debugLevel = DEBUG_LEVEL_OFF;
+
       T elems[MAX_SIZE];
 
       uint8_t m_size;
 };
 
 template<typename T, uint8_t MAX_SIZE>
-void ArrayVector<T, MAX_SIZE>::add(
-   const T& val )
+bool ArrayVector<T, MAX_SIZE>::add( const T& val )
 {
    for ( uint8_t i = 0; i < size(); i++ )
    {
       if ( val == elems[i] )
       {
-         return;
+         DEBUG_M3( (uintptr_t)this, ": add ", (uintptr_t)val );
+         DEBUG_L2( " already exists at idx:", i );
+         return true;
       }
    }
-   pushBack( val );
+   return pushBack( val );
 }
 
 template<typename T, uint8_t MAX_SIZE>
-void ArrayVector<T, MAX_SIZE>::pushBack(
-   const T& val )
+bool ArrayVector<T, MAX_SIZE>::pushBack( const T& val )
 {
-   if ( m_size < MAX_SIZE )
+   if ( !isFull() )
    {
+      DEBUG_M5( (uintptr_t)this, ": add ", (uintptr_t)val, " at idx ", m_size );
       elems[m_size++] = val;
+      return true;
    }
-   else
-   {
-      WARN_1( "ArrayVector<>: index out of range" );
-   }
+   WARN_1( "ArrayVector<>: index out of range" );
+   return false;
 }
 
 template<typename T, uint8_t MAX_SIZE>
-void ArrayVector<T, MAX_SIZE>::remove(
-   const T& val )
+void ArrayVector<T, MAX_SIZE>::remove( const T& val )
 {
+   DEBUG_M2( (uintptr_t)this, ": remove " );
    for ( uint8_t i = 0; i < size(); i++ )
    {
       if ( val == elems[i] )
       {
+         DEBUG_L3( (uintptr_t)val, " at idx ", i );
+
          // copy all elements behind the found element
          // one position in frontside direction
          for ( uint8_t j = i; j < size() - 1; j++ )
@@ -125,8 +134,7 @@ void ArrayVector<T, MAX_SIZE>::remove(
 }
 
 template<typename T, uint8_t MAX_SIZE>
-bool ArrayVector<T, MAX_SIZE>::hasElement(
-   const T& val )
+bool ArrayVector<T, MAX_SIZE>::hasElement( const T& val )
 {
    for ( uint8_t i = 0; i < size(); i++ )
    {

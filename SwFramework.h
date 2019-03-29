@@ -125,16 +125,24 @@ class IStream;
          while ( 1 ) {; }                                              \
       }                                                         \
    }
-#define ERROR_1( a1 )              Logger::instance() << newTraceLine << "ERROR> " << a1;
-#define ERROR_2( a1, a2 )          Logger::instance() << newTraceLine << "ERROR> " << a1 << a2;
-#define ERROR_3( a1, a2, a3 )      Logger::instance() << newTraceLine << "ERROR> " << a1 << a2 << a3;
-#define ERROR_4( a1, a2, a3, a4 )  Logger::instance() << newTraceLine << "ERROR> " << a1 << a2 << a3 << a4;
+#define ERROR_1( a1 )                   Logger::instance() << newTraceLine << "ERROR> " << a1;
+#define ERROR_2( a1, a2 )               Logger::instance() << newTraceLine << "ERROR> " << a1 << a2;
+#define ERROR_3( a1, a2, a3 )           Logger::instance() << newTraceLine << "ERROR> " << a1 << a2 << a3;
+#define ERROR_4( a1, a2, a3, a4 )       Logger::instance() << newTraceLine << "ERROR> " << a1 << a2 << a3 << a4;
+#define ERROR_DATA_1( a1 )              Logger::instance() << a1;
+#define ERROR_DATA_2( a1, a2 )          Logger::instance() << a1 << a2;
+#define ERROR_DATA_3( a1, a2, a3 )      Logger::instance() << a1 << a2 << a3;
+#define ERROR_DATA_4( a1, a2, a3, a4 )  Logger::instance() << a1 << a2 << a3 << a4;
 #else
 #define ASSERT( expr )
 #define ERROR_1( a1 )
 #define ERROR_2( a1, a2 )
 #define ERROR_3( a1, a2, a3 )
 #define ERROR_4( a1, a2, a3, a4 )
+#define ERROR_DATA_1( a1 )
+#define ERROR_DATA_2( a1, a2 )
+#define ERROR_DATA_3( a1, a2, a3 )
+#define ERROR_DATA_4( a1, a2, a3, a4 )
 #endif
 
 #define DEBUG_STATE_MASK     0x0C
@@ -143,9 +151,9 @@ class IStream;
 #define DEBUG_STATE_L3       0x0C
 
 #ifdef _DEBUG_
-#define STATE_L1( a1 )    if ( ( debugLevel & DEBUG_STATE_MASK ) > DEBUG_LEVEL_OFF ) { Logger::instance() << newTraceLine << getId() << " enters -> " #a1; }
-#define STATE_L2( a1 )    if ( ( debugLevel & DEBUG_STATE_MASK ) > DEBUG_STATE_L1 ) { Logger::instance() << newTraceLine << getId() << " enters -> " #a1; }
-#define STATE_L3( a1 )    if ( ( debugLevel & DEBUG_STATE_MASK ) > DEBUG_STATE_L2 ) { Logger::instance() << newTraceLine << getId() << " enters -> " #a1; }
+#define STATE_L1( a1 )    if ( ( debugLevel & DEBUG_STATE_MASK ) > DEBUG_LEVEL_OFF ) { Logger::instance() << newTraceLine << getId() << " enters -> " #a1 "(" << (uint8_t)a1 << ')'; }
+#define STATE_L2( a1 )    if ( ( debugLevel & DEBUG_STATE_MASK ) > DEBUG_STATE_L1 ) { Logger::instance() << newTraceLine << getId() << " enters -> " #a1 "(" << (uint8_t)a1 << ')'; }
+#define STATE_L3( a1 )    if ( ( debugLevel & DEBUG_STATE_MASK ) > DEBUG_STATE_L2 ) { Logger::instance() << newTraceLine << getId() << " enters -> " #a1 "(" << (uint8_t)a1 << ')'; }
 #else
 #define STATE_L1( a1 )
 #define STATE_L2( a1 )
@@ -173,7 +181,7 @@ union convert_u
 
 #define CONST_IP( a, b, c, d ) ( (uint32_t)( d ) << 24 ) + ( (uint32_t)( c ) << 16 ) + ( (uint32_t)( b ) << 8 ) + a
 
-#define SET_STATE_L1( stateL1 ) setMainState( stateL1 ); STATE_L1( stateL1 );
+#define SET_STATE_L1( stateL1 ) setMainState( (States)stateL1 ); STATE_L1( stateL1 );
 
 #define SET_STATE_L2( stateL2 ) setSubState( stateL2 ); STATE_L2( stateL2 );
 
@@ -260,6 +268,19 @@ inline T minimum( const T val1, const T val2 )
 {
    return ( val1 < val2 ) ? val1 : val2;
 }
+
+template<int base, unsigned int exp>
+class Pow
+{
+   enum { value = base * Pow<base, exp - 1>::value };
+};
+
+// stopping condition
+template<int base>
+class Pow<base, 0>
+{
+   enum { value = 1 };
+};
 
 extern void notifyBusy();
 
