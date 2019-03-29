@@ -16,11 +16,12 @@ struct hbw_config
    HmwDeviceHw::BasicConfig basicConfig;  // 0x0000 - 0x0009
    uint8_tx reserved[6];                  // 0x000A - 0x000F
    HmwKey::Config keycfg[12];             // 0x0010 - 0x0027
-   HmwLed::Config ledcfg[12];          // 0x0028 - 0x003F
+   HmwLed::Config ledcfg[12];             // 0x0028 - 0x003F
    HmwDS1820::Config ds1820cfg[6];        // 0x0040 - 0x0063
-   HmwBrightness::Config brightnessCfg[2];// 0x0064 - 0x006F
+   HmwBrightness::Config brightnessCfg;   // 0x0064 - 0x0069
+   HmwSHTC3::Config shtc3Config;          // 0x006A - 0x006F
    HmwLinkKey::Config keyLinks[40];       // 0x0070 - 0x015F
-   HmwLinkLed::Config ledLinks[40];    // 0x0160 - 0x03DF
+   HmwLinkLed::Config ledLinks[40];       // 0x0160 - 0x03DF
 };
 
 static hbw_config& config = *reinterpret_cast<hbw_config*>( MAPPED_EEPROM_START );
@@ -48,7 +49,14 @@ HBWMultiKeySD6BaseHw::HBWMultiKeySD6BaseHw( PortPin txEnablePin, PortPin owPin, 
    hbwLed5( PortPin( PortC, 4 ), &config.ledcfg[4], invertLed1To6 ),
    hbwLed6( PortPin( PortC, 5 ), &config.ledcfg[5], invertLed1To6 ),
 
-#ifndef DEBUG  // use the IOs for debugging
+#ifdef DEBUG  // use the IOs PORTD0-PORTD7 for debugging
+   extHbwLed1( PortPin( PortDummy, 0 ), &config.ledcfg[6] ),
+   extHbwLed2( PortPin( PortDummy, 1 ), &config.ledcfg[7] ),
+   extHbwLed3( PortPin( PortDummy, 2 ), &config.ledcfg[8] ),
+   extHbwLed4( PortPin( PortDummy, 3 ), &config.ledcfg[9] ),
+   extHbwLed5( PortPin( PortDummy, 4 ), &config.ledcfg[10] ),
+   extHbwLed6( PortPin( PortDummy, 5 ), &config.ledcfg[11] ),
+#else
    extHbwLed1( PortPin( PortD, 0 ), &config.ledcfg[6] ),
    extHbwLed2( PortPin( PortD, 1 ), &config.ledcfg[7] ),
    extHbwLed3( PortPin( PortD, 2 ), &config.ledcfg[8] ),
@@ -65,8 +73,8 @@ HBWMultiKeySD6BaseHw::HBWMultiKeySD6BaseHw( PortPin txEnablePin, PortPin owPin, 
    hbwTmp5( ow, &config.ds1820cfg[4] ),
    hbwTmp6( ow, &config.ds1820cfg[5] ),
 
-   hbwOnboardBrightness( PortPin( PortA, 6 ), TimerCounterChannel( &TimerCounter::instance( PortE, 0 ), TimerCounter::A ), &config.brightnessCfg[0] ),
-   hbwExtBrightness( PortPin( PortA, 7 ), TimerCounterChannel( &TimerCounter::instance( PortE, 0 ), TimerCounter::B ), &config.brightnessCfg[1] ),
+   hbwOnboardBrightness( PortPin( PortA, 6 ), TimerCounterChannel( &TimerCounter::instance( PortE, 0 ), TimerCounter::A ), &config.brightnessCfg ),
+   shtc3( Twi::instance<PortE>(), &config.shtc3Config ),
 
    linkSender( sizeof( config.keyLinks ) / sizeof( config.keyLinks[0] ), config.keyLinks ),
    linkReceiver( sizeof( config.ledLinks ) / sizeof( config.ledLinks[0] ), config.ledLinks ),
@@ -83,6 +91,13 @@ HBWMultiKeySD6BaseHw::HBWMultiKeySD6BaseHw( PortPin txEnablePin, PortPin owPin, 
    t.setPeriod( 0xFFFF );
    t.configClockSource( TC_CLKSEL_DIV1024_gc );
    t.configInputCapture( TC_EVSEL_CH0_gc );
+
+   // setup TWI needed by SHTC3 sensor
+
+   // enable pullup for TWI
+   PORTCFG.MPCMASK = Pin0 | Pin1;
+   PORTE.PIN0CTRL = PORT_OPC_PULLUP_gc;
+   Twi::instance<PortE>().init<true, 100000, TWI_MASTER_INTLVL_OFF_gc, TWI_SLAVE_INTLVL_OFF_gc>();
 
 } // HmwMultiKeySD6BaseHw
 

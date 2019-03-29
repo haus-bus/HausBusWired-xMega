@@ -22,7 +22,6 @@ HmwBrightness::HmwBrightness( PortPin _portPin, TimerCounterChannel _tcChannel, 
    tcChannel( _tcChannel ),
    state( START_MEASUREMENT ),
    config( _config ),
-   nextActionDelay( 2000 ),
    startCount( 0 ),
    currentValue( 0 ),
    lastSentValue( 0 )

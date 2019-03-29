@@ -26,6 +26,11 @@ class HBWIo12OneWireUpHw : public HBWMultiKeySD6BaseHw
    public:
       inline HBWIo12OneWireUpHw() : HBWMultiKeySD6BaseHw( PortPin( PortR, 0 ), PortPin( PortR, 1 ), false )
       {
+         // disable not available channels on this hardware
+         hbwOnboardBrightness.disable();
+         shtc3.disable();
+
+         // config specific IOs
          configLed.setInverted( true );
          configbutton.enablePullup();
       }

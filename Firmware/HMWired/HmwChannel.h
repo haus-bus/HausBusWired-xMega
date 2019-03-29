@@ -44,7 +44,8 @@ class HmwChannel
          HMW_KEY,
          HMW_LED,
          HMW_DIMMER,
-         HMW_DS18X20
+         HMW_DS18X20,
+         HMW_SHTC3
       };
 
    protected:
@@ -75,6 +76,16 @@ class HmwChannel
          return type == _type;
       }
 
+      inline void disable()
+      {
+         nextActionDelay = 0;
+      }
+
+      inline void enable()
+      {
+         nextActionDelay = 1;
+      }
+
       uint32_t convertToTime( uint16_t value );
 
       virtual void set( uint8_t length, uint8_t const* const data );
@@ -83,6 +94,8 @@ class HmwChannel
       virtual void checkConfig();
 
    protected:
+
+      uint16_t nextActionDelay;
 
    private:
 

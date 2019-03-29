@@ -148,8 +148,6 @@ class HmwDS1820 : public HmwChannel
 
       OneWire::RomCode romCode;
 
-      uint16_t nextActionDelay;
-
       int16_t currentCentiCelsius;
 
       int16_t lastSentCentiCelsius;

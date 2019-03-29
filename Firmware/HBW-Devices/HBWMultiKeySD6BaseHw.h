@@ -14,6 +14,7 @@
 #include <HMWired/HmwKey.h>
 #include <HMWired/HmwLed.h>
 #include <HMWired/HmwDS1820.h>
+#include <HMWired/HmwSHTC3.h>
 #include <HMWired/HmwLinkKey.h>
 #include <HMWired/HmwLinkLed.h>
 #include <HMWired/HmwBrightness.h>
@@ -31,13 +32,14 @@ class HBWMultiKeySD6BaseHw : public HBWGenericDeviceHw
 
       HmwLed hbwLed1, hbwLed2, hbwLed3, hbwLed4, hbwLed5, hbwLed6;
 
-   #ifndef DEBUG // use the IOs for debugging
       HmwLed extHbwLed1, extHbwLed2, extHbwLed3, extHbwLed4, extHbwLed5, extHbwLed6;
-   #endif
+
       OneWire ow;
       HmwDS1820 hbwTmp1, hbwTmp2, hbwTmp3, hbwTmp4, hbwTmp5, hbwTmp6;
 
-      HmwBrightness hbwOnboardBrightness, hbwExtBrightness;
+      HmwBrightness hbwOnboardBrightness;
+
+      HmwSHTC3 shtc3;
 
       HmwLinkKey linkSender;
 

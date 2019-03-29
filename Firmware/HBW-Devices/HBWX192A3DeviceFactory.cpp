@@ -9,6 +9,8 @@
 #include "HBWDeviceFactory.h"
 #include "HBWLcDim8BaseHw.h"
 
+#include <Peripherals/Flash.h>
+
 HmwDeviceHw* HBWDeviceFactory::createDevice( Release::FirmwareId firmwareId )
 {
    HmwDeviceHw::BasicConfig& config = *reinterpret_cast<HmwDeviceHw::BasicConfig*>( MAPPED_EEPROM_START );
@@ -27,6 +29,9 @@ HmwDeviceHw* HBWDeviceFactory::createDevice( Release::FirmwareId firmwareId )
          return new HBWLcDim8BaseHw();
       }
    }
+
+   // if we get here, the FW does not support this device -> erase it and return to booter FW
+   Flash::eraseApplication();
 
    while ( 1 )
    {

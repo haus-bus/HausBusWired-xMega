@@ -25,7 +25,6 @@ HmwDS1820::HmwDS1820( OneWire& _hardware, Config* _config ) :
 {
    type = HmwChannel::HMW_DS18X20;
    config = _config;
-   nextActionDelay = 2000;
    lastActionTime = 0;
 }
 

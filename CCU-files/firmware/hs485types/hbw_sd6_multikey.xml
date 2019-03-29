@@ -67,9 +67,13 @@
 	<frame id="TEMP_EVENT" direction="from_device" event="true" type="#i" channel_field="10">
 		<parameter type="integer" signed="true" index="11.0" size="2.0" param="TEMPERATURE"/>
 	</frame>
-	<frame id="BRIGHTNESS_EVENT" direction="from_device" event="true" type="#i" channel_field="10">
-		<parameter type="integer" index="11.0" size="2.0" param="BRIGHTNESSVALUE"/>
-	</frame>
+	<frame id="LUX_EVENT" direction="from_device" event="true" type="#i" channel_field="10">
+		<parameter type="integer" index="11.0" size="4.0" param="LUX"/>
+	</frame>	
+	<frame id="WEATHER_EVENT" direction="from_device" event="true" type="#i" channel_field="10">
+		<parameter type="integer" signed="true" index="11.0" size="2.0" param="TEMPERATURE"/>
+		<parameter type="integer" index="13.0" size="1.0" param="HUMIDITY"/>
+	</frame>	
 </frames>
 
 <channels>
@@ -315,7 +319,10 @@
 		</paramset>		
 	</channel>	
 
-	<channel index="25" count="6" physical_index_offset="-1" type="TEMPSENSOR">
+	<channel index="25" count="6" physical_index_offset="-1" type="WEATHER">
+		<link_roles>
+			<source name="WEATHER_T"/>
+		</link_roles>	
 	    <paramset type="MASTER" id="hmw_temp_ch_master" address_step="6" address_start="0x40">
 			<parameter id="SENSOR_ID">
 			   <logical type="integer" default="255" max="254" min="1">
@@ -374,53 +381,69 @@
 			</parameter>
 		</paramset>		
 	</channel>
-
-	<channel index="31" count="2" physical_index_offset="-1" type="BRIGHTNESS">
-	    <paramset type="MASTER" id="hmw_brightness_ch_master" address_step="6" address_start="0x64">
-			<parameter id="SEND_DELTA_BRIGHTNESS">
-			   <logical type="integer" default="50" min="1" max="250">
-			       <special_value id="NOT_USED" value="0"/>
-			   </logical>	   
-               <physical size="1.0" type="integer" interface="eeprom">
-                  <address index="+1.0"/>
-               </physical>	
-               <conversion type="integer_integer_map">
-                 <value_map to_device="false" from_device="true" parameter_value="50" device_value="0xff"/>
-               </conversion>			   
-			</parameter>
-			<parameter id="SEND_MIN_INTERVAL">
+	
+	<channel index="31" type="LUXMETER" count="1" physical_index_offset="-1">
+		<paramset type="MASTER" id="lux_ch_master" address_step="6" address_start="0x64">
+			<parameter id="TX_MINDELAY" operations="read,write">
 			   <logical type="integer" unit="s" default="10" min="5" max="3600">
 			     <special_value id="NOT_USED" value="0"/>
 			   </logical>	   
                <physical size="2.0" type="integer" interface="eeprom" endian="little">
-                  <address index="+2.0"/>
+                  <address index="+0.0"/>
                </physical>	  
                <conversion type="integer_integer_map">
                  <value_map to_device="false" from_device="true" parameter_value="10" device_value="0xffff"/>
-               </conversion>				   
+               </conversion>
 			</parameter>
-			<parameter id="SEND_MAX_INTERVAL">
-			   <logical type="integer" unit="s" default="150" min="5" max="3600">
-			     <special_value id="NOT_USED" value="0"/>
-			   </logical>	   
-               <physical size="2.0" type="integer" interface="eeprom" endian="little">
-                  <address index="+4.0"/>
-               </physical>	
-               <conversion type="integer_integer_map">
-                 <value_map to_device="false" from_device="true" parameter_value="150" device_value="0xffff"/>
-               </conversion>				   
+			<parameter id="TX_THRESHOLD_PERCENT" operations="read,write">
+				<logical type="integer" min="10" max="100" unit="%" default="0.0">
+					<special_value id="NOT_USED" value="0.0"/>
+				</logical>
+				<physical size="1.0" type="integer" interface="eeprom">
+					<address index="+2.0"/>
+				</physical>	
 			</parameter>
 		</paramset>
-		<paramset type="VALUES" id="hmw_brightness_input_values">
-			<parameter id="VALUE" operations="read,event">
-				<logical type="integer" min="0" max="4096"/>
-				<physical type="integer" interface="command" value_id="BRIGHTNESSVALUE">
-					<get request="LEVEL_GET" response="BRIGHTNESS_EVENT"/>
-					<event frame="BRIGHTNESS_EVENT"/>
+		<paramset type="VALUES" id="lux_ch_values">
+			<parameter id="LUX" operations="read,event" control="LUXMETER.LUX">
+				<logical type="float" min="0.00" max="200000.00" unit="Lux"/>
+				<physical type="integer" interface="command" value_id="LUX" no_init="true">
+					<get request="LEVEL_GET" response="LUX_EVENT"/>
+					<event frame="LUX_EVENT"/>
 				</physical>
+				<conversion type="float_integer_scale" factor="100"/>
 			</parameter>
-		</paramset>		
-	</channel>
+		</paramset>
+	</channel>	
+
+	<channel index="32" count="1" physical_index_offset="-1" type="WEATHER">
+		<link_roles>
+			<source name="WEATHER_TH"/>
+		</link_roles>
+		<paramset type="MASTER" id="shtc3_ch_master"/>
+		<paramset type="VALUES" id="shtc3_ch_values">
+			<parameter id="TEMPERATURE" operations="read,event">
+				<logical type="float" min="-40.0" max="80.0" unit="&#x2103"/>
+				<physical type="integer" interface="command" value_id="TEMPERATURE">
+					<event frame="WEATHER_EVENT"/>
+				</physical>
+				<conversion type="float_integer_scale" factor="100"/>
+				<description>
+					<field id="AutoconfRoles" value="WEATHER"/>
+				</description>
+			</parameter>
+			<parameter id="HUMIDITY" operations="read,event">
+				<logical type="integer" min="0" max="99" unit="%"/>
+				<physical type="integer" interface="command" value_id="HUMIDITY">
+					<event frame="WEATHER_EVENT"/>
+				</physical>
+				<description>
+					<field id="AutoconfRoles" value="WEATHER"/>
+				</description>
+			</parameter>
+		</paramset>
+		<paramset type="LINK" id="shtc3_ch_link"/>
+	</channel>	
 	
 </channels>
 

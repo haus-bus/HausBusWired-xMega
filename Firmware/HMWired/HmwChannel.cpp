@@ -12,7 +12,7 @@
 uint8_t HmwChannel::numChannels = 0;
 HmwChannel* HmwChannel::instances[];
 
-HmwChannel::HmwChannel() : type( UNKNOWN ), channelId( numChannels )
+HmwChannel::HmwChannel() : type( UNKNOWN ), channelId( numChannels ), nextActionDelay( 1000 )
 {
    instances[numChannels++] = this;
 }

@@ -87,8 +87,6 @@ class HmwBrightness : public HmwChannel
 
       Config* config;
 
-      uint16_t nextActionDelay;
-
       uint16_t startCount;
 
       uint16_t currentValue;

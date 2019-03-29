@@ -462,6 +462,14 @@
     <Compile Include="HMWired\HmwMsgWriteFlash.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="HMWired\HmwSHTC3.cpp">
+      <SubType>compile</SubType>
+      <Link>HMWired\HmwSHTC3.cpp</Link>
+    </Compile>
+    <Compile Include="HMWired\HmwSHTC3.h">
+      <SubType>compile</SubType>
+      <Link>HMWired\HmwSHTC3.h</Link>
+    </Compile>
     <Compile Include="HMWired\HmwStream.cpp">
       <SubType>compile</SubType>
     </Compile>
@@ -635,6 +643,14 @@
     </Compile>
     <Compile Include="XMega\Peripherals\TimerCounterChannel.h">
       <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="XMega\Peripherals\Twi.cpp">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\Twi.cpp</Link>
+    </Compile>
+    <Compile Include="XMega\Peripherals\Twi.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\Twi.h</Link>
     </Compile>
     <Compile Include="XMega\Peripherals\Usart.cpp">
       <SubType>compile</SubType>
