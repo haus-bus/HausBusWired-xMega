@@ -23,6 +23,7 @@ class IoStream : public IStream
          INIT,
          IS_BUSY,
          STOP,
+		 FLUSH,
          RESTART
       };
 
