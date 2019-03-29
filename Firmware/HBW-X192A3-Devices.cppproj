@@ -254,6 +254,10 @@
     <Compile Include="Framework\IoStream.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="Framework\MemoryManager.h">
+      <SubType>compile</SubType>
+      <Link>Framework\MemoryManager.h</Link>
+    </Compile>
     <Compile Include="Framework\StorageInterface.h">
       <SubType>compile</SubType>
     </Compile>
@@ -292,6 +296,14 @@
     </Compile>
     <Compile Include="Framework\Tracing\Logger.h">
       <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Framework\Tracing\Traces.cpp">
+      <SubType>compile</SubType>
+      <Link>Framework\Tracing\Traces.cpp</Link>
+    </Compile>
+    <Compile Include="Framework\Tracing\Traces.h">
+      <SubType>compile</SubType>
+      <Link>Framework\Tracing\Traces.h</Link>
     </Compile>
     <Compile Include="HBW-Devices\HBWDeviceFactory.h">
       <SubType>compile</SubType>
@@ -452,9 +464,6 @@
     <Compile Include="XMega\Basics.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="XMega\DigitalInput.cpp">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="XMega\DigitalInput.h">
       <SubType>compile</SubType>
     </Compile>
@@ -483,9 +492,6 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="XMega\MemoryManager.cpp">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="XMega\MemoryManager.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="XMega\Peripherals\Adc.cpp">

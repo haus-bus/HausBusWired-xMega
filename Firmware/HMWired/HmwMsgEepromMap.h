@@ -50,7 +50,7 @@ class HmwMsgEepromMap : public HmwMessageBase
             {
                if ( blockAddr[byteIdx] != 0xFF )
                {
-                  bitSet( frameData[4 + block / 8], block % 8 );
+                  frameData[4 + block / 8] |= ( 1 << ( block % 8 ) );
                   break;
                }
             }
