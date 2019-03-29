@@ -276,6 +276,12 @@ class TimerCounter
          return tmp[channel];
       }
 
+      inline uint16_t getCaptureBuffered( Channel channel )
+      {
+         register16_t* tmp = &reg.CCABUF;
+         return tmp[channel];
+      }
+
       inline void disableChannel( Channel channel )
       {
          reg.CTRLB &= ~( TC0_CCAEN_bm << channel );
@@ -289,6 +295,12 @@ class TimerCounter
       inline void setCompare( Channel channel, uint16_t value )
       {
          register16_t* tmp = &reg.CCA;
+         tmp[channel] = value;
+      }
+
+      inline void setCompareBuffered( Channel channel, uint16_t value )
+      {
+         register16_t* tmp = &reg.CCABUF;
          tmp[channel] = value;
       }
 

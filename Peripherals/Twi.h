@@ -91,6 +91,26 @@ class Twi
                return ( reg.STATUS & TWI_MASTER_CLKHOLD_bm );
             }
 
+            inline uint8_t isBusBusy()
+            {
+               return ( getBusState() == TWI_MASTER_BUSSTATE_BUSY_gc );
+            }
+
+            inline uint8_t isBusIdle()
+            {
+               return ( getBusState() == TWI_MASTER_BUSSTATE_IDLE_gc );
+            }
+
+            inline uint8_t isBusOwner()
+            {
+               return ( getBusState() == TWI_MASTER_BUSSTATE_OWNER_gc );
+            }
+
+            inline uint8_t isBusUnknown()
+            {
+               return ( getBusState() == TWI_MASTER_BUSSTATE_UNKNOWN_gc );
+            }
+
             inline void setTimeout( TWI_MASTER_TIMEOUT_t timeout )
             {
                uint8_t temp = reg.CTRLB & ~TWI_MASTER_TIMEOUT_gm;
@@ -258,8 +278,7 @@ class Twi
                }
             }
 
-            inline void waitTransferCompleted(
-               IStream::TransferDescriptor& transferDescriptor )
+            inline void waitTransferCompleted( Stream::TransferDescriptor& transferDescriptor )
             {
                // wait for address match
                waitNewStatusAvailable();
@@ -346,22 +365,22 @@ class Twi
 
       inline uint8_t isBusBusy()
       {
-         return ( master.getBusState() == TWI_MASTER_BUSSTATE_BUSY_gc );
+         return master.isBusBusy();
       }
 
       inline uint8_t isBusIdle()
       {
-         return ( master.getBusState() == TWI_MASTER_BUSSTATE_IDLE_gc );
+         return master.isBusIdle();
       }
 
       inline uint8_t isBusOwner()
       {
-         return ( master.getBusState() == TWI_MASTER_BUSSTATE_OWNER_gc );
+         return master.isBusOwner();
       }
 
       inline uint8_t isBusUnknown()
       {
-         return ( master.getBusState() == TWI_MASTER_BUSSTATE_UNKNOWN_gc );
+         return master.isBusUnknown();
       }
 
       ////    Attributes    ////

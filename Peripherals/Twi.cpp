@@ -101,7 +101,7 @@ uint16_t Twi::Master::write( uint8_t address, void* pData, uint16_t length, bool
 
 uint16_t Twi::Master::read( uint8_t address, void* pData, uint16_t length, bool stop )
 {
-   if ( getBusState() != TWI_MASTER_BUSSTATE_IDLE_gc )
+   if ( !isBusIdle() && !isBusOwner() )
    {
       return 0;
    }
@@ -111,6 +111,7 @@ uint16_t Twi::Master::read( uint8_t address, void* pData, uint16_t length, bool 
 
    startTransfer( ( address << 1 ) | 1 );
    waitNewStatusAvailable();
+   data[bytesTransferred++] = readByte();
 
    while ( !hasError() && bytesTransferred < length )
    {

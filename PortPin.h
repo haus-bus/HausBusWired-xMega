@@ -44,7 +44,7 @@ class PortPin
 
       uint8_t getPin() const;
 
-      inline uint8_t isInverted();
+      inline uint8_t isInverted() const;
 
       inline void enablePullup()
       {
@@ -139,12 +139,12 @@ class PortPin
       uint8_t portNumber : 4;
 };
 
-inline uint8_t PortPin::isInverted()
+inline uint8_t PortPin::isInverted() const
 {
    return getIoPort().isPinInverted( pinNumber );
 }
 
-inline void PortPin::setInverted( bool inverted )
+inline void PortPin::setInverted( bool inverted = true )
 {
    getIoPort().setPinInverted( pinNumber, inverted );
 }

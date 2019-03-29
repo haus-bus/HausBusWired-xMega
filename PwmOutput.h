@@ -18,6 +18,13 @@ class PwmOutput : public DigitalOutput
    ////    Constructors and destructors    ////
 
    public:
+      inline PwmOutput( PortPin _portPin ) : DigitalOutput( _portPin )
+      {
+      }
+
+      inline PwmOutput( uint8_t _portNumber, uint8_t _pinNumber ) : DigitalOutput( _portNumber, _pinNumber )
+      {
+      }
 
       PwmOutput( uint8_t _portNumber, uint8_t _pinNumber, uint16_t _period );
 
@@ -29,6 +36,8 @@ class PwmOutput : public DigitalOutput
       }
 
       uint16_t isSet() const;
+
+      bool isRunning() const;
 
       void set( uint16_t value );
 
