@@ -278,10 +278,10 @@
     <Compile Include="Protocols\Ethernet\UdpHeader.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Protocols\HACF.cpp">
+    <Compile Include="Protocols\HBCP.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Protocols\HACF.h">
+    <Compile Include="Protocols\HBCP.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Protocols\IpStack\ArpManager.cpp">
