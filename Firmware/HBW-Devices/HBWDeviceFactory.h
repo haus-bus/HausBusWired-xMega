@@ -9,7 +9,7 @@
 #ifndef __HMWDEVICEFACTORY_H__
 #define __HMWDEVICEFACTORY_H__
 
-#include <HMWired/HmwDevice.h>
+#include <HmwUnits/HmwDevice.h>
 
 class HBWDeviceFactory
 {

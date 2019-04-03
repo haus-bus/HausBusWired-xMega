@@ -11,13 +11,13 @@
 
 #include "HBWGenericDeviceHw.h"
 
-#include <HMWired/HmwKey.h>
-#include <HMWired/HmwLed.h>
-#include <HMWired/HmwDS1820.h>
-#include <HMWired/HmwSHTC3.h>
-#include <HMWired/HmwLinkKey.h>
-#include <HMWired/HmwLinkLed.h>
-#include <HMWired/HmwBrightness.h>
+#include <HmwUnits/HmwKey.h>
+#include <HmwUnits/HmwLed.h>
+#include <HmwUnits/HmwDS1820.h>
+#include <HmwUnits/HmwSHTC3.h>
+#include <HmwUnits/HmwLinkKey.h>
+#include <HmwUnits/HmwLinkLed.h>
+#include <HmwUnits/HmwBrightness.h>
 #include <PortPin.h>
 
 

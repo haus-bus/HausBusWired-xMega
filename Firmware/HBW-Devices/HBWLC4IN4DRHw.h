@@ -11,10 +11,10 @@
 
 #include "HBWGenericDeviceHw.h"
 
-#include <HMWired/HmwKey.h>
-#include <HMWired/HmwDimmer.h>
-#include <HMWired/HmwLinkKey.h>
-#include <HMWired/HmwLinkDimmer.h>
+#include <HmwUnits/HmwKey.h>
+#include <HmwUnits/HmwDimmer.h>
+#include <HmwUnits/HmwLinkKey.h>
+#include <HmwUnits/HmwLinkDimmer.h>
 
 class HBWLC4IN4DRHw : public HBWGenericDeviceHw
 {

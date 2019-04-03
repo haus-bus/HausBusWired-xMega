@@ -11,9 +11,9 @@
 
 #include "HBWGenericDeviceHw.h"
 
-#include <HMWired/HmwDimmer.h>
-#include <HMWired/HmwLinkDimmer.h>
-#include <HMWired/HmwDS1820.h>
+#include <HmwUnits/HmwDimmer.h>
+#include <HmwUnits/HmwLinkDimmer.h>
+#include <HmwUnits/HmwDS1820.h>
 #include <PortPin.h>
 
 

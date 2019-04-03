@@ -9,8 +9,8 @@
 #ifndef __HBWGENERICDEVICEHW_H__
 #define __HBWGENERICDEVICEHW_H__
 
-#include <HMWired/HmwDevice.h>
-#include <HMWired/HmwDeviceHw.h>
+#include <HmwUnits/HmwDevice.h>
+#include <HmwUnits/HmwDeviceHw.h>
 
 class HBWGenericDeviceHw : public HmwDeviceHw
 {

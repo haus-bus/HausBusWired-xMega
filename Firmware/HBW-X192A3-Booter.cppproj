@@ -229,7 +229,7 @@
     <Folder Include="Framework\Time\" />
     <Folder Include="Framework\Tracing\" />
     <Folder Include="HBW-Booter" />
-    <Folder Include="HMWired" />
+    <Folder Include="HmwUnits" />
     <Folder Include="Security\" />
     <Folder Include="XMega\" />
     <Folder Include="XMega\Peripherals\" />
@@ -301,46 +301,46 @@
     <Compile Include="HBW-Booter\HBWBooterHw.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwChannel.h">
+    <Compile Include="HmwUnits\HmwChannel.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwDevice.cpp">
+    <Compile Include="HmwUnits\HmwDevice.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwDevice.h">
+    <Compile Include="HmwUnits\HmwDevice.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwMessageBase.cpp">
+    <Compile Include="HmwUnits\HmwMessageBase.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwMessageBase.h">
+    <Compile Include="HmwUnits\HmwMessageBase.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwMsgAnnounce.h">
+    <Compile Include="HmwUnits\HmwMsgAnnounce.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwMsgGetFwVersion.h">
+    <Compile Include="HmwUnits\HmwMsgGetFwVersion.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwMsgGetHwVersion.h">
+    <Compile Include="HmwUnits\HmwMsgGetHwVersion.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwMsgReadEeprom.h">
+    <Compile Include="HmwUnits\HmwMsgReadEeprom.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwMsgWriteFlash.h">
+    <Compile Include="HmwUnits\HmwMsgWriteFlash.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwStreamBase.cpp">
+    <Compile Include="HmwUnits\HmwStreamBase.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwStreamBase.h">
+    <Compile Include="HmwUnits\HmwStreamBase.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwStreamHw.h">
+    <Compile Include="HmwUnits\HmwStreamHw.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwStream.h">
+    <Compile Include="HmwUnits\HmwStream.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Release.h">

@@ -220,7 +220,7 @@
     <Folder Include="Framework\Time\" />
     <Folder Include="Framework\Tracing\" />
     <Folder Include="HBW-Devices" />
-    <Folder Include="HMWired" />
+    <Folder Include="HmwUnits" />
     <Folder Include="Protocols\" />
     <Folder Include="Security\" />
     <Folder Include="XMega\" />
@@ -337,155 +337,155 @@
     <Compile Include="HBW-Devices\HBWX32A4DeviceFactory.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwBrightness.cpp">
+    <Compile Include="HmwUnits\HmwBrightness.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwBrightness.h">
+    <Compile Include="HmwUnits\HmwBrightness.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwDeviceHw.h">
+    <Compile Include="HmwUnits\HmwDeviceHw.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwDimmer.cpp">
+    <Compile Include="HmwUnits\HmwDimmer.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwDimmer.h">
+    <Compile Include="HmwUnits\HmwDimmer.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwDS1820.cpp">
+    <Compile Include="HmwUnits\HmwDS1820.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwDS1820.h">
+    <Compile Include="HmwUnits\HmwDS1820.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwKey.cpp">
+    <Compile Include="HmwUnits\HmwKey.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwKey.h">
+    <Compile Include="HmwUnits\HmwKey.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwLed.cpp">
+    <Compile Include="HmwUnits\HmwLed.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwLed.h">
+    <Compile Include="HmwUnits\HmwLed.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwLinkDimmer.cpp">
+    <Compile Include="HmwUnits\HmwLinkDimmer.cpp">
       <SubType>compile</SubType>
-      <Link>HMWired\HmwLinkDimmer.cpp</Link>
+      <Link>HmwUnits\HmwLinkDimmer.cpp</Link>
     </Compile>
-    <Compile Include="HMWired\HmwLinkDimmer.h">
+    <Compile Include="HmwUnits\HmwLinkDimmer.h">
       <SubType>compile</SubType>
-      <Link>HMWired\HmwLinkDimmer.h</Link>
+      <Link>HmwUnits\HmwLinkDimmer.h</Link>
     </Compile>
-    <Compile Include="HMWired\HmwLinkKey.cpp">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="HMWired\HmwLinkKey.h">
+    <Compile Include="HmwUnits\HmwLinkKey.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwChannel.cpp">
+    <Compile Include="HmwUnits\HmwLinkKey.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwChannel.h">
+    <Compile Include="HmwUnits\HmwChannel.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwDevice.cpp">
+    <Compile Include="HmwUnits\HmwChannel.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwDevice.h">
+    <Compile Include="HmwUnits\HmwDevice.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwLinkLed.cpp">
+    <Compile Include="HmwUnits\HmwDevice.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwLinkLed.h">
+    <Compile Include="HmwUnits\HmwLinkLed.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwLinkReceiver.cpp">
+    <Compile Include="HmwUnits\HmwLinkLed.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwLinkReceiver.h">
+    <Compile Include="HmwUnits\HmwLinkReceiver.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwLinkSender.cpp">
+    <Compile Include="HmwUnits\HmwLinkReceiver.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwLinkSender.h">
+    <Compile Include="HmwUnits\HmwLinkSender.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwMessageBase.cpp">
+    <Compile Include="HmwUnits\HmwLinkSender.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwMessageBase.h">
+    <Compile Include="HmwUnits\HmwMessageBase.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwMsgAnnounce.h">
+    <Compile Include="HmwUnits\HmwMessageBase.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwMsgEepromMap.h">
+    <Compile Include="HmwUnits\HmwMsgAnnounce.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwMsgGetFwVersion.h">
+    <Compile Include="HmwUnits\HmwMsgEepromMap.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwMsgGetHwVersion.h">
+    <Compile Include="HmwUnits\HmwMsgGetFwVersion.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwMsgGetLevel.h">
+    <Compile Include="HmwUnits\HmwMsgGetHwVersion.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwMsgGetPacketSize.h">
+    <Compile Include="HmwUnits\HmwMsgGetLevel.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwMsgGetSerial.h">
+    <Compile Include="HmwUnits\HmwMsgGetPacketSize.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwMsgInfo.h">
+    <Compile Include="HmwUnits\HmwMsgGetSerial.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwMsgKeyEvent.h">
+    <Compile Include="HmwUnits\HmwMsgInfo.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwMsgReadEeprom.h">
+    <Compile Include="HmwUnits\HmwMsgKeyEvent.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwMsgReadFlash.h">
+    <Compile Include="HmwUnits\HmwMsgReadEeprom.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwMsgResetWifi.h">
+    <Compile Include="HmwUnits\HmwMsgReadFlash.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwMsgSetLevel.h">
+    <Compile Include="HmwUnits\HmwMsgResetWifi.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwMsgWriteEeprom.h">
+    <Compile Include="HmwUnits\HmwMsgSetLevel.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwMsgWriteFlash.h">
+    <Compile Include="HmwUnits\HmwMsgWriteEeprom.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwSHTC3.cpp">
-      <SubType>compile</SubType>
-      <Link>HMWired\HmwSHTC3.cpp</Link>
-    </Compile>
-    <Compile Include="HMWired\HmwSHTC3.h">
-      <SubType>compile</SubType>
-      <Link>HMWired\HmwSHTC3.h</Link>
-    </Compile>
-    <Compile Include="HMWired\HmwStream.cpp">
+    <Compile Include="HmwUnits\HmwMsgWriteFlash.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwStream.h">
+    <Compile Include="HmwUnits\HmwSHTC3.cpp">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwSHTC3.cpp</Link>
+    </Compile>
+    <Compile Include="HmwUnits\HmwSHTC3.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwSHTC3.h</Link>
+    </Compile>
+    <Compile Include="HmwUnits\HmwStream.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwStreamBase.cpp">
+    <Compile Include="HmwUnits\HmwStream.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwStreamBase.h">
+    <Compile Include="HmwUnits\HmwStreamBase.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="HMWired\HmwStreamHw.h">
+    <Compile Include="HmwUnits\HmwStreamBase.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="HmwUnits\HmwStreamHw.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Protocols\OneWire.cpp">
