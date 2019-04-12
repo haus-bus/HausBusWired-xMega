@@ -77,6 +77,17 @@ void PwmOutput::setPeriode( uint16_t period )
    }
 }
 
+uint16_t PwmOutput::getPeriode() const
+{
+   TimerCounter* tc = getTC();
+
+   if ( tc )
+   {
+      return tc->getPeriod();
+   }
+   return 0xFFFF;
+}
+
 TimerCounter* PwmOutput::getTC() const
 {
    if ( pinNumber < 4 )

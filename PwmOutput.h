@@ -43,6 +43,8 @@ class PwmOutput : public DigitalOutput
 
       void setPeriode( uint16_t period );
 
+      uint16_t getPeriode() const;
+
    protected:
 
       TimerCounter* getTC() const;
