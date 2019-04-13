@@ -12,6 +12,10 @@
 #include <DefaultTypes.h>
 #include <FlashString.h>
 
+class IP;
+
+class MAC;
+
 class Logger
 {
    public:
@@ -43,6 +47,10 @@ class Logger
       Logger& operator<<( uint8_t val );
 
       Logger& operator<<( FlashString* fString );
+
+      Logger& operator<<( const IP& ip );
+
+      Logger& operator<<( const MAC& mac );
 
       void printHex( const uint32_t& val, uint8_t size );
 

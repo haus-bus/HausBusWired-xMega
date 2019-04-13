@@ -8,8 +8,8 @@
 #ifndef PROTOCOLS_SNMP_SNMP_H_
 #define PROTOCOLS_SNMP_SNMP_H_
 
-#include <Protocols/Protocols.h>
-#include <Protocols/IpStack/IpStackManager.h>
+#include "Protocols.h"
+#include "IpStack/IpStackManager.h"
 
 #ifndef SNMP_COMMUNITY_STRING
 #define SNMP_COMMUNITY_STRING "public"

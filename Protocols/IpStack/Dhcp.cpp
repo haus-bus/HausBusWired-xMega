@@ -293,13 +293,7 @@ void Dhcp::sendRequest()
 void Dhcp::dumpOfferedSettings()
 {
    DEBUG_H1( FSTR( "offered settings" ) );
-   uint8_t const* ptr = (uint8_t*) &offeredLocalIp;
-   DEBUG_M4( FSTR( "local  IP : " ), ptr[0], '.', ptr[1] );
-   DEBUG_L4( '.', ptr[2], '.', ptr[3] );
-   ptr = (uint8_t*) &offeredRouterIp;
-   DEBUG_M4( FSTR( "router IP : " ), ptr[0], '.', ptr[1] );
-   DEBUG_L4( '.', ptr[2], '.', ptr[3] );
-   ptr = (uint8_t*) &offeredNetmask;
-   DEBUG_M4( FSTR( "Netmask   : " ), ptr[0], '.', ptr[1] );
-   DEBUG_L4( '.', ptr[2], '.', ptr[3] );
+   DEBUG_M2( FSTR( "local  IP : " ), offeredLocalIp );
+   DEBUG_M2( FSTR( "router IP : " ), offeredRouterIp );
+   DEBUG_M2( FSTR( "Netmask   : " ), offeredNetmask );
 }
