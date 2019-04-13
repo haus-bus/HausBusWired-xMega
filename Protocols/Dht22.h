@@ -10,6 +10,7 @@
 
 #include "Protocols.h"
 
+#include <Time/SystemTime.h>
 #include <PortPin.h>
 
 class Dht22

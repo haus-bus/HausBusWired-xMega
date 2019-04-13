@@ -356,11 +356,19 @@
     <Compile Include="Protocols\Protocols.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="Protocols\RS485Hw.h">
+      <SubType>compile</SubType>
+      <Link>Protocols\RS485Hw.h</Link>
+    </Compile>
     <Compile Include="Protocols\Snmp.cpp">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Protocols\Snmp.h">
       <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\SoftTwi.h">
+      <SubType>compile</SubType>
+      <Link>Protocols\SoftTwi.h</Link>
     </Compile>
     <Compile Include="Reactive.cpp">
       <SubType>compile</SubType>
