@@ -321,15 +321,8 @@ uint16_t IpStackManager::handleUdpPacket( UdpHeader* header )
 
    if ( user )
    {
-      uint8_t const* ptr = (uint8_t*) &header->sourceAddress;
-      DEBUG_M4( FSTR( "Udp-Datagramm from : " ), ptr[0], '.', ptr[1] );
-      DEBUG_L4( '.', ptr[2], '.', ptr[3] );
-      DEBUG_L2( ':', header->getSourcePort() );
-
-      ptr = (uint8_t*) &header->destinationAddress;
-      DEBUG_M4( FSTR( "Destination : " ), ptr[0], '.', ptr[1] );
-      DEBUG_L4( '.', ptr[2], '.', ptr[3] );
-      DEBUG_L2( ':', header->getDestinationPort() );
+      DEBUG_M4( FSTR( "Udp-Datagramm from : " ), header->sourceAddress, ':', header->getSourcePort() );
+      DEBUG_M4( FSTR( "Destination : " ), header->destinationAddress, ':', header->getDestinationPort() );
 
       transferDescriptor.pData = &buffer[sizeof( UdpHeader )];
       transferDescriptor.bytesTransferred = header->getPacketSize()

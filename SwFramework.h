@@ -258,6 +258,15 @@ static inline const uint8_t getBitPosition( uint32_t value )
 extern bool isRunning();
 
 template<typename T>
+inline T invertBits(T value, T bits)
+{
+   T masked = value & bits;
+   value |= bits;
+   value &= ~masked;
+   return value;
+}
+
+template<typename T>
 inline T maximum( const T val1, const T val2 )
 {
    return ( val1 > val2 ) ? val1 : val2;
