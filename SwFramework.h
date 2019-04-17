@@ -258,7 +258,7 @@ static inline const uint8_t getBitPosition( uint32_t value )
 extern bool isRunning();
 
 template<typename T>
-inline T invertBits(T value, T bits)
+inline T invertBits( T value, T bits )
 {
    T masked = value & bits;
    value |= bits;

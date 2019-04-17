@@ -11,7 +11,7 @@
 #include "IpStack.h"
 #include "EventDrivenUnit.h"
 #include "Protocols/Ethernet/IP.h"
-#include <Enc28j60.h>
+#include <IoStream.h>
 
 class Checksum16;
 
@@ -214,7 +214,7 @@ class IpConnection
 
       ////    Attributes    ////
 
-      static Enc28j60* stream;
+      static IoStream* stream;
 
    protected:
 
