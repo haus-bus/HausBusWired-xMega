@@ -123,6 +123,35 @@ Enc28j60::Enc28j60( Spi& _spi, DigitalOutput _chipSelectPin,
 
 }
 
+IStream::Status Enc28j60::genericCommand( IoStream::Command command, void* buffer )
+{
+   #ifdef _BOOTER_
+   return IStream::NOT_SUPPORTED;
+   #else
+
+   if ( command == IoStream::IS_LINKED_UP )
+   {
+      CommandIS_LINKED_UP* data = (CommandIS_LINKED_UP*)buffer;
+      data->linkedUp = isLinkedUp();
+   }
+   else if ( command == IoStream::SET_FILTER )
+   {
+      CommandSET_FILTER* data = (CommandSET_FILTER*)buffer;
+      if ( strcmp( data->filter, "udp port 9" ) != 0 )
+      {
+         return IStream::NOT_SUPPORTED;
+      }
+      setUdpPort9Filter();
+   }
+   else
+   {
+      return IStream::NOT_SUPPORTED;
+   }
+   return IStream::SUCCESS;
+   #endif
+
+}
+
 uint8_t Enc28j60::init()
 {
    spi->init<true, SPI_MODE_0_gc, true, SPI_PRESCALER_DIV4_gc, false>();
@@ -224,12 +253,12 @@ uint8_t Enc28j60::isNewPacketReceived()
    return packetcounter;
 }
 
-uint16_t Enc28j60::read( void* pData, uint16_t length )
+IStream::Status Enc28j60::read( void* pData, uint16_t length, EventDrivenUnit* user )
 {
    if ( !isInterruptPending() || !isNewPacketReceived() )
    {
       // no interrupt or packetcounter is 0, there is nothing to receive, go back
-      return 0;
+      return IStream::NO_DATA;
    }
 
    // set read pointer to next packet
@@ -254,7 +283,7 @@ uint16_t Enc28j60::read( void* pData, uint16_t length )
    {
       DEBUG_M2( FSTR( "status=0x" ), status );
       init();
-      return 0;
+      return IStream::RESET;
    }
 
    // skip the checksum (4 bytes) at the end of the buffer
@@ -293,7 +322,7 @@ uint16_t Enc28j60::read( void* pData, uint16_t length )
 
    // return number of bytes written to the buffer
    DEBUG_M2( FSTR( "received bytes: 0x" ), len );
-   return len;
+   return IStream::SUCCESS;
 }
 
 void Enc28j60::reset()
@@ -318,7 +347,7 @@ void Enc28j60::setUdpPort9Filter()
    writeRegister( ENC_REG_ERXFCON, 0x51 );
 }
 
-uint16_t Enc28j60::write( void* pData, uint16_t length )
+IStream::Status Enc28j60::write( void* pData, uint16_t length, EventDrivenUnit* user )
 {
    // setup write pointer
    writeRegister( ENC_REG_EWRPTL, LBYTE( ENC_TX_BUFFER_START ) );
@@ -396,9 +425,14 @@ uint16_t Enc28j60::write( void* pData, uint16_t length )
    if ( ( length < 60 ) && tsv.bytesTransferred == 64 )
    {
       // all packets are automatically padded to 60 Bytes + 4Bytes CRC
-      return length;
+      return IStream::SUCCESS;
    }
-   return tsv.bytesTransferred - 4; // 4 Byte CRC were added automatically, remove them from return value
+   if ( ( tsv.bytesTransferred - 4 ) == length )
+   {
+      // 4 Byte CRC were added automatically, remove them from return value
+      return IStream::SUCCESS;
+   }
+   return IStream::ABORTED;
 }
 
 void Enc28j60::powerDown()

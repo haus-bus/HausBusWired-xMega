@@ -210,11 +210,175 @@
     <Compile Include="MemoryManager.cpp">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="Peripherals\Adc.cpp">
+      <SubType>compile</SubType>
+      <Link>Peripherals\Adc.cpp</Link>
+    </Compile>
+    <Compile Include="Peripherals\Adc.h">
+      <SubType>compile</SubType>
+      <Link>Peripherals\Adc.h</Link>
+    </Compile>
+    <Compile Include="Peripherals\Clock.h">
+      <SubType>compile</SubType>
+      <Link>Peripherals\Clock.h</Link>
+    </Compile>
+    <Compile Include="Peripherals\DigitalFrequencyLockedLoops.h">
+      <SubType>compile</SubType>
+      <Link>Peripherals\DigitalFrequencyLockedLoops.h</Link>
+    </Compile>
+    <Compile Include="Peripherals\DmaChannel.cpp">
+      <SubType>compile</SubType>
+      <Link>Peripherals\DmaChannel.cpp</Link>
+    </Compile>
+    <Compile Include="Peripherals\DmaChannel.h">
+      <SubType>compile</SubType>
+      <Link>Peripherals\DmaChannel.h</Link>
+    </Compile>
+    <Compile Include="Peripherals\DmaController.h">
+      <SubType>compile</SubType>
+      <Link>Peripherals\DmaController.h</Link>
+    </Compile>
+    <Compile Include="Peripherals\Eeprom.cpp">
+      <SubType>compile</SubType>
+      <Link>Peripherals\Eeprom.cpp</Link>
+    </Compile>
+    <Compile Include="Peripherals\Eeprom.h">
+      <SubType>compile</SubType>
+      <Link>Peripherals\Eeprom.h</Link>
+    </Compile>
+    <Compile Include="Peripherals\EventSystem.h">
+      <SubType>compile</SubType>
+      <Link>Peripherals\EventSystem.h</Link>
+    </Compile>
+    <Compile Include="Peripherals\Flash.cpp">
+      <SubType>compile</SubType>
+      <Link>Peripherals\Flash.cpp</Link>
+    </Compile>
+    <Compile Include="Peripherals\Flash.h">
+      <SubType>compile</SubType>
+      <Link>Peripherals\Flash.h</Link>
+    </Compile>
+    <Compile Include="Peripherals\InterruptController.h">
+      <SubType>compile</SubType>
+      <Link>Peripherals\InterruptController.h</Link>
+    </Compile>
+    <Compile Include="Peripherals\IoPort.cpp">
+      <SubType>compile</SubType>
+      <Link>Peripherals\IoPort.cpp</Link>
+    </Compile>
+    <Compile Include="Peripherals\IoPort.h">
+      <SubType>compile</SubType>
+      <Link>Peripherals\IoPort.h</Link>
+    </Compile>
+    <Compile Include="Peripherals\NvmController.cpp">
+      <SubType>compile</SubType>
+      <Link>Peripherals\NvmController.cpp</Link>
+    </Compile>
+    <Compile Include="Peripherals\NvmController.h">
+      <SubType>compile</SubType>
+      <Link>Peripherals\NvmController.h</Link>
+    </Compile>
+    <Compile Include="Peripherals\NvmLowLevel.S">
+      <SubType>compile</SubType>
+      <Link>Peripherals\NvmLowLevel.S</Link>
+    </Compile>
+    <Compile Include="Peripherals\Oscillator.h">
+      <SubType>compile</SubType>
+      <Link>Peripherals\Oscillator.h</Link>
+    </Compile>
+    <Compile Include="Peripherals\Peripherals.h">
+      <SubType>compile</SubType>
+      <Link>Peripherals\Peripherals.h</Link>
+    </Compile>
+    <Compile Include="Peripherals\RealTimeCounter.h">
+      <SubType>compile</SubType>
+      <Link>Peripherals\RealTimeCounter.h</Link>
+    </Compile>
+    <Compile Include="Peripherals\ResetSystem.h">
+      <SubType>compile</SubType>
+      <Link>Peripherals\ResetSystem.h</Link>
+    </Compile>
+    <Compile Include="Peripherals\Spi.cpp">
+      <SubType>compile</SubType>
+      <Link>Peripherals\Spi.cpp</Link>
+    </Compile>
+    <Compile Include="Peripherals\Spi.h">
+      <SubType>compile</SubType>
+      <Link>Peripherals\Spi.h</Link>
+    </Compile>
+    <Compile Include="Peripherals\TimerCounter.cpp">
+      <SubType>compile</SubType>
+      <Link>Peripherals\TimerCounter.cpp</Link>
+    </Compile>
+    <Compile Include="Peripherals\TimerCounter.h">
+      <SubType>compile</SubType>
+      <Link>Peripherals\TimerCounter.h</Link>
+    </Compile>
+    <Compile Include="Peripherals\TimerCounterBase.h">
+      <SubType>compile</SubType>
+      <Link>Peripherals\TimerCounterBase.h</Link>
+    </Compile>
+    <Compile Include="Peripherals\TimerCounterChannel.h">
+      <SubType>compile</SubType>
+      <Link>Peripherals\TimerCounterChannel.h</Link>
+    </Compile>
+    <Compile Include="Peripherals\Twi.cpp">
+      <SubType>compile</SubType>
+      <Link>Peripherals\Twi.cpp</Link>
+    </Compile>
+    <Compile Include="Peripherals\Twi.h">
+      <SubType>compile</SubType>
+      <Link>Peripherals\Twi.h</Link>
+    </Compile>
+    <Compile Include="Peripherals\Usart.cpp">
+      <SubType>compile</SubType>
+      <Link>Peripherals\Usart.cpp</Link>
+    </Compile>
+    <Compile Include="Peripherals\Usart.h">
+      <SubType>compile</SubType>
+      <Link>Peripherals\Usart.h</Link>
+    </Compile>
+    <Compile Include="Peripherals\WatchDog.h">
+      <SubType>compile</SubType>
+      <Link>Peripherals\WatchDog.h</Link>
+    </Compile>
     <Compile Include="PortPin.cpp">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="PortPin.h">
       <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Protocols\Dali.cpp">
+      <SubType>compile</SubType>
+      <Link>Protocols\Dali.cpp</Link>
+    </Compile>
+    <Compile Include="Protocols\Dht22.cpp">
+      <SubType>compile</SubType>
+      <Link>Protocols\Dht22.cpp</Link>
+    </Compile>
+    <Compile Include="Protocols\IrDecoder.cpp">
+      <SubType>compile</SubType>
+      <Link>Protocols\IrDecoder.cpp</Link>
+    </Compile>
+    <Compile Include="Protocols\KnxHw.cpp">
+      <SubType>compile</SubType>
+      <Link>Protocols\KnxHw.cpp</Link>
+    </Compile>
+    <Compile Include="Protocols\MonitoredInputHw.cpp">
+      <SubType>compile</SubType>
+      <Link>Protocols\MonitoredInputHw.cpp</Link>
+    </Compile>
+    <Compile Include="Protocols\OneWire.cpp">
+      <SubType>compile</SubType>
+      <Link>Protocols\OneWire.cpp</Link>
+    </Compile>
+    <Compile Include="Protocols\RS485Hw.cpp">
+      <SubType>compile</SubType>
+      <Link>Protocols\RS485Hw.cpp</Link>
+    </Compile>
+    <Compile Include="Protocols\SoftTwi.cpp">
+      <SubType>compile</SubType>
+      <Link>Protocols\SoftTwi.cpp</Link>
     </Compile>
     <Compile Include="PwmOutput.cpp">
       <SubType>compile</SubType>
@@ -243,6 +407,20 @@
     <Compile Include="xEeprom.h">
       <SubType>compile</SubType>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Peripherals" />
+    <Folder Include="Protocols" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Peripherals\Assembler.inc">
+      <SubType>compile</SubType>
+      <Link>Peripherals\Assembler.inc</Link>
+    </None>
+    <None Include="Peripherals\NvmLowLevel.inc">
+      <SubType>compile</SubType>
+      <Link>Peripherals\NvmLowLevel.inc</Link>
+    </None>
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>

@@ -10,6 +10,7 @@
 
 #include <DigitalInput.h>
 #include <DigitalOutput.h>
+#include <IoStream.h>
 #include <Peripherals/Flash.h>
 #include <Peripherals/Spi.h>
 
@@ -17,7 +18,7 @@ class DigitalOutput;
 
 class MAC;
 
-class Enc28j60
+class Enc28j60 : public IoStream
 {
    public:
 
@@ -349,13 +350,15 @@ class Enc28j60
 
       uint8_t isNewPacketReceived();
 
-      uint16_t read( void* pData, uint16_t length );
+      IStream::Status read( void* pData, uint16_t length, EventDrivenUnit* user = 0 );
+
+      IStream::Status genericCommand( Command command, void* buffer );
 
       void reset();
 
       void setUdpPort9Filter();
 
-      uint16_t write( void* pData, uint16_t length );
+      IStream::Status write( void* pData, uint16_t length, EventDrivenUnit* user = 0 );
 
       void powerDown();
 

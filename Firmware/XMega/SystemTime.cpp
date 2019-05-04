@@ -89,12 +89,12 @@ SIGNAL(RTC_COMP_vect)
 
 #endif
 
-void SystemTime::init( ClockSources cs, uint16_t frequency )
+void SystemTime::init(ClockSources cs,uint16_t frequency)
 {
    CLK_RTCSRC_t rtcSource;
    RTC_PRESCALER_t prescaler;
 
-   RealTimeCounter::setPrescaler( RTC_PRESCALER_OFF_gc );
+   RealTimeCounter::setPrescaler(RTC_PRESCALER_OFF_gc);
    Clock::disableRTCClockSource();
 
    if ( ( cs == RTCSRC_EXTCLK ) && ( frequency == 8192 ) )
@@ -109,11 +109,11 @@ void SystemTime::init( ClockSources cs, uint16_t frequency )
       prescaler = RTC_PRESCALER_DIV1_gc;
    }
 
-   Clock::enableRTCClockSource( rtcSource );
-   RealTimeCounter::init( 0xFFFF, RealTimeCounter::getCount(), RealTimeCounter::getCount() + 1024, prescaler );
+   Clock::enableRTCClockSource(rtcSource);
+   RealTimeCounter::init(0xFFFF,RealTimeCounter::getCount(),RealTimeCounter::getCount() + 1024,prescaler);
 #ifdef SUPPORT_CALENDAR
    RealTimeCounter::clearCompareFlag();
-   RealTimeCounter::setCompareIntLevel( RTC_COMPINTLVL_HI_gc );
+   RealTimeCounter::setCompareIntLevel(RTC_COMPINTLVL_HI_gc);
 
 #endif
 }
