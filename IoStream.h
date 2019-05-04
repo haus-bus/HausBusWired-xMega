@@ -23,16 +23,27 @@ class IoStream : public IStream
          INIT,
          IS_BUSY,
          STOP,
-		 FLUSH,
-         RESTART
+         FLUSH,
+         RESTART,
+         IS_LINKED_UP,
+         SET_FILTER,
       };
 
-      class CommandINIT
+      struct CommandINIT
       {
-         public:
-            uint8_t deviceId;
-            uint16_t buffersize;
-            EventDrivenUnit* owner;
+         uint8_t deviceId;
+         uint16_t buffersize;
+         EventDrivenUnit* owner;
+      };
+
+      struct CommandIS_LINKED_UP
+      {
+         bool linkedUp;
+      };
+
+      struct CommandSET_FILTER
+      {
+         char filter[];
       };
 
       ////    Operations    ////

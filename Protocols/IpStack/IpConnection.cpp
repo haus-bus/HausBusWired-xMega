@@ -17,7 +17,7 @@ uint16_t IpConnection::lastPort( FIRST_FREE_PORT );
 
 uint16_t IpConnection::idCounter( 0 );
 
-Enc28j60* IpConnection::stream( NULL );
+IoStream* IpConnection::stream( NULL );
 
 void IpConnection::fillNoConnectionHeader( IpHeader* pHdr, uint16_t dataLength,
                                            uint8_t protocol,

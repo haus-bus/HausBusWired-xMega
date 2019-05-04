@@ -11,6 +11,12 @@
 #include <Tracing/Logger.h>
 #include <SwFramework.h>
 
+class Dali;
 
+class Dht22;
+
+class IrDecoder;
+
+class OneWire;
 
 #endif

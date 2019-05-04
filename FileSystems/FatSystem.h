@@ -68,11 +68,11 @@ class FatSystem
 
             ~FileSystem();
 
-            Result mount( uint8_t driveNumber );
+            FatSystem::Result mount( uint8_t driveNumber );
 
-            Result removeChain( uint32_t cluster );
+            FatSystem::Result removeChain( uint32_t cluster );
 
-            Result putFat( uint32_t cluster, uint32_t value );
+            FatSystem::Result putFat( uint32_t cluster, uint32_t value );
 
             uint32_t getFat( uint32_t cluster );
 
@@ -82,9 +82,9 @@ class FatSystem
 
             uint8_t check( uint32_t sect );
 
-            Result validate( uint16_t id );
+            FatSystem::Result validate( uint16_t id );
 
-            Result sync();
+            FatSystem::Result sync();
 
             inline uint32_t convertToSector( uint32_t cluster )
             {
@@ -111,7 +111,7 @@ class FatSystem
 
             void clearLockEntries();
 
-            Result moveWindow( uint32_t sector );
+            FatSystem::Result moveWindow( uint32_t sector );
 
             uint8_t fs_type; // FAT sub-type (0:Not mounted)
             uint8_t csize; // Sectors per cluster (1,2,4...128)
@@ -199,15 +199,15 @@ class FatSystem
                memset( this, 0, sizeof( File ) );
             }
 
-            Result sync();
+            FatSystem::Result sync();
 
-            Result close();
+            FatSystem::Result close();
 
-            Result open( const char* filename, uint8_t mode );
+            FatSystem::Result open( const char* filename, uint8_t mode );
 
-            Result write( const void* buffer, uint16_t len, uint16_t& bytesWritten );
+            FatSystem::Result write( const void* buffer, uint16_t len, uint16_t& bytesWritten );
 
-            Result seek( uint32_t offset );
+            FatSystem::Result seek( uint32_t offset );
 
             inline uint32_t getSize()
             {
@@ -267,27 +267,27 @@ class FatSystem
                memset( this, 0, sizeof( Directory ) );
             }
 
-            static Result create( const char* path );
+            static FatSystem::Result create( const char* path );
 
-            Result open( const char* path );
+            FatSystem::Result open( const char* path );
 
             // TODO private:
 
-            Result followPath( const char* path );
+            FatSystem::Result followPath( const char* path );
 
-            Result checkLock( uint8_t acc );
+            FatSystem::Result checkLock( uint8_t acc );
 
             uint8_t lock( uint8_t acc );
 
-            Result registerObject();
+            FatSystem::Result registerObject();
 
-            Result find();
+            FatSystem::Result find();
 
-            Result createName( const char** path );
+            FatSystem::Result createName( const char** path );
 
-            Result setIndex( uint16_t idx );
+            FatSystem::Result setIndex( uint16_t idx );
 
-            Result next( bool stretch );
+            FatSystem::Result next( bool stretch );
 
             FileSystem* fs; // Pointer to the owner file system object
             uint16_t id;  // Owner file system mount ID
@@ -331,8 +331,7 @@ class FatSystem
 
    public:
 
-      static Result isMounted( const char** pPath, FileSystem** pFileSystem,
-                               bool checkWriteProtection );
+      static FatSystem::Result isMounted( const char** pPath, FileSystem** pFileSystem, bool checkWriteProtection );
 };
 
 #endif /* FILESYSTEMS_FATSYSTEM_H_ */

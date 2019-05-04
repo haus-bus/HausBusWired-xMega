@@ -479,7 +479,7 @@ uint32_t FatSystem::FileSystem::clust2sect( uint32_t clst )
 
 FatSystem::Result FatSystem::FileSystem::validate( uint16_t id )
 {
-   if ( !this || !fs_type || this->id != id )
+   if ( ( this == NULL ) || !fs_type || this->id != id )
    {
       return INVALID_OBJECT;
    }

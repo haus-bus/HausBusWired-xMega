@@ -1,5 +1,5 @@
 /*
- * HACF.h
+ * HBCP.h
  *
  *  Created on: 18.06.2014
  *      Author: Viktor Pankraz
@@ -10,7 +10,7 @@
 
 #include <Tracing/Logger.h>
 
-class HACF
+class HBCP
 {
    public:
 
@@ -282,12 +282,12 @@ class HACF
 
             inline Object* getSenderId() const
             {
-               return (HACF::Object*) &senderId;
+               return (HBCP::Object*) &senderId;
             }
 
             inline Object* getReceiverId() const
             {
-               return (HACF::Object*) &receiverId;
+               return (HBCP::Object*) &receiverId;
             }
 
             inline uint16_t getDataLength() const
@@ -319,7 +319,7 @@ class HACF
 
    protected:
 
-      inline HACF()
+      inline HBCP()
       {
       }
 
@@ -346,7 +346,7 @@ class HACF
 
       void operator delete( void* obj, size_t size );
 
-      HACF* copy( void );
+      HBCP* copy( void );
 
       ////    Additional operations    ////
 
@@ -372,12 +372,12 @@ class HACF
 
       inline Header* getHeader() const
       {
-         return (HACF::Header*) &header;
+         return (HBCP::Header*) &header;
       }
 
       inline ControlFrame* getControlFrame() const
       {
-         return (HACF::ControlFrame*) &controlFrame;
+         return (HBCP::ControlFrame*) &controlFrame;
       }
 
       inline static uint16_t getMessagesInUse()
@@ -415,17 +415,17 @@ class HACF
 
 } __attribute__( ( packed ) );
 
-inline uint16_t HACF::getLength() const
+inline uint16_t HBCP::getLength() const
 {
    return ( controlFrame.getLength() + sizeof( header ) );
 }
 
-inline uint16_t HACF::Object::getDeviceId() const
+inline uint16_t HBCP::Object::getDeviceId() const
 {
    return ( networkId << 8 ) | address;
 }
 
-inline uint32_t HACF::Object::getId() const
+inline uint32_t HBCP::Object::getId() const
 {
    convert_u convert;
    convert.byte[0] = instanceId;
@@ -436,60 +436,60 @@ inline uint32_t HACF::Object::getId() const
    return convert.dword;
 }
 
-inline uint16_t HACF::Object::getObjectId() const
+inline uint16_t HBCP::Object::getObjectId() const
 {
    return (uint16_t) ( ( classId << 8 ) | instanceId );
 }
 
-inline void HACF::Object::setDeviceId( uint16_t deviceId )
+inline void HBCP::Object::setDeviceId( uint16_t deviceId )
 {
    networkId = HBYTE( deviceId );
    address = LBYTE( deviceId );
 }
 
-inline void HACF::Object::setId( uint32_t id )
+inline void HBCP::Object::setId( uint32_t id )
 {
    setDeviceId( HWORD( id ) );
    setObjectId( LWORD( id ) );
 }
 
-inline void HACF::Object::setObjectId( uint16_t id )
+inline void HBCP::Object::setObjectId( uint16_t id )
 {
    classId = HBYTE( id );
    instanceId = LBYTE( id );
 }
 
-inline uint8_t HACF::ControlFrame::isCommand() const
+inline uint8_t HBCP::ControlFrame::isCommand() const
 {
    return ( data[0] <= COMMANDS_END );
 }
 
-inline uint8_t HACF::ControlFrame::isCommand( uint8_t command ) const
+inline uint8_t HBCP::ControlFrame::isCommand( uint8_t command ) const
 {
    return ( data[0] == command );
 }
 
-inline uint8_t HACF::ControlFrame::isCommandWithResponse() const
+inline uint8_t HBCP::ControlFrame::isCommandWithResponse() const
 {
    return isCommand() && ( data[0] & COMMAND_WITH_RESPONSE_START );
 }
 
-inline uint8_t HACF::ControlFrame::isEvent() const
+inline uint8_t HBCP::ControlFrame::isEvent() const
 {
    return ( data[0] >= EVENTS_START );
 }
 
-inline bool HACF::ControlFrame::isForBootloader() const
+inline bool HBCP::ControlFrame::isForBootloader() const
 {
    return ( receiverId.getObjectId() == BOOTLOADER_ID );
 }
 
-inline bool HACF::ControlFrame::isFromBootloader() const
+inline bool HBCP::ControlFrame::isFromBootloader() const
 {
    return ( senderId.getObjectId() == BOOTLOADER_ID );
 }
 
-inline bool HACF::ControlFrame::isRelevantForObject( uint16_t id ) const
+inline bool HBCP::ControlFrame::isRelevantForObject( uint16_t id ) const
 {
    if ( receiverId.classId == HBYTE( id ) )
    {
@@ -499,12 +499,12 @@ inline bool HACF::ControlFrame::isRelevantForObject( uint16_t id ) const
    return false;
 }
 
-inline uint8_t HACF::ControlFrame::isResult() const
+inline uint8_t HBCP::ControlFrame::isResult() const
 {
    return !isEvent() && !isCommand();
 }
 
-inline uint8_t HACF::ControlFrame::isResult( uint8_t result ) const
+inline uint8_t HBCP::ControlFrame::isResult( uint8_t result ) const
 {
    return isResult() && ( data[0] == result );
 }

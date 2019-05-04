@@ -23,7 +23,7 @@ class BitField
 
       inline bool isSet( uint8_t idx )
       {
-         if ( idx < sizeof( bitField ) )
+         if ( idx < size() )
          {
             return ( bitField >> idx ) & 1;
          }
@@ -41,7 +41,7 @@ class BitField
 
       inline bool set( uint8_t idx )
       {
-         if ( idx < sizeof( bitField ) )
+         if ( idx < size() )
          {
             bitField |= ( 1 << idx );
             return true;
@@ -51,7 +51,7 @@ class BitField
 
       inline bool clear( uint8_t idx )
       {
-         if ( idx < sizeof( bitField ) )
+         if ( idx < size() )
          {
             bitField &= ~( 1 << idx );
             return true;
@@ -61,7 +61,8 @@ class BitField
 
       inline uint8_t size()
       {
-         return sizeof( bitField );
+         // sizeof(T) gives Bytes, factor 8 gives number of bits
+         return sizeof( bitField * 8 );
       }
 
       ////    Additional operations    ////

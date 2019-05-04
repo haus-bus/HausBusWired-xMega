@@ -321,15 +321,8 @@ uint16_t IpStackManager::handleUdpPacket( UdpHeader* header )
 
    if ( user )
    {
-      uint8_t const* ptr = (uint8_t*) &header->sourceAddress;
-      DEBUG_M4( FSTR( "Udp-Datagramm from : " ), ptr[0], '.', ptr[1] );
-      DEBUG_L4( '.', ptr[2], '.', ptr[3] );
-      DEBUG_L2( ':', header->getSourcePort() );
-
-      ptr = (uint8_t*) &header->destinationAddress;
-      DEBUG_M4( FSTR( "Destination : " ), ptr[0], '.', ptr[1] );
-      DEBUG_L4( '.', ptr[2], '.', ptr[3] );
-      DEBUG_L2( ':', header->getDestinationPort() );
+      DEBUG_M4( FSTR( "Udp-Datagramm from : " ), header->sourceAddress, ':', header->getSourcePort() );
+      DEBUG_M4( FSTR( "Destination : " ), header->destinationAddress, ':', header->getDestinationPort() );
 
       transferDescriptor.pData = &buffer[sizeof( UdpHeader )];
       transferDescriptor.bytesTransferred = header->getPacketSize()
@@ -363,7 +356,9 @@ void IpStackManager::run()
       Reactive* dhcp = Scheduler::getJob( ( ClassId::DHCP << 8 ) | 1 );
       if ( dhcp )
       {
-         bool linkedUp = IpConnection::stream->isLinkedUp();
+         IoStream::CommandIS_LINKED_UP data;
+         IpConnection::stream->genericCommand( IoStream::IS_LINKED_UP, &data );
+         bool linkedUp = data.linkedUp;
          if ( linkStatus != linkedUp )
          {
             evConnect( dhcp, linkedUp ).send();
@@ -377,12 +372,12 @@ void IpStackManager::run()
 
    pollTcpConnections();
 
-   uint16_t dataLength = IpConnection::stream->read( buffer, sizeof( buffer ) );
-   if ( dataLength < sizeof( IpHeader ) )
+   IStream::Status status = IpConnection::stream->read( buffer, sizeof( buffer ) );
+   if ( status != IStream::SUCCESS )
    {
-      if ( dataLength != 0 )
+      if ( status != IStream::NO_DATA )
       {
-         ERROR_1( "packet too small" );
+         ERROR_3( FSTR( "IpConnection::stream->read() failed (" ), (uint8_t)status, ')' );
       }
       return;
    }
@@ -390,17 +385,12 @@ void IpStackManager::run()
    EthernetHeader* eth = (EthernetHeader*) buffer;
    if ( eth->isIpDatagramm() )
    {
-      DEBUG_H3( FSTR( ".packet received: 0x" ), dataLength, FSTR( " Bytes" ) );
-
       IpHeader* ipHdr = (IpHeader*) buffer;
+      DEBUG_H3( FSTR( ".packet received: 0x" ), ipHdr->getPacketSize() + sizeof( EthernetHeader ), FSTR( " Bytes" ) );
+
       if ( !ipHdr->isValid() || ipHdr->isFragmented() )
       {
          WARN_1( "packet invalid or fragmented" );
-         return;
-      }
-      if ( !ipHdr->isPacketSizeValid( dataLength ) )
-      {
-         ERROR_1( "packet has invalid size" );
          return;
       }
       if ( ipHdr->getChecksum() && !ipHdr->isChecksumCorrect() )
@@ -451,8 +441,7 @@ void IpStackManager::run()
    }
    else if ( eth->isArp() )
    {
-      uint16_t responseLength = ArpManager::notifyArpPacket(
-         (ArpHeader*) buffer );
+      uint16_t responseLength = ArpManager::notifyArpPacket( (ArpHeader*) buffer );
       if ( responseLength )
       {
          IpConnection::stream->write( buffer, responseLength );
@@ -467,7 +456,7 @@ bool IpStackManager::sendToUdp( uint16_t port, void* pData, uint16_t len, const 
 
    // ArpManager might change the packet into an arp-request, in this case the return value will be false
    bool success = ArpManager::prepareOutPacket( (IpHeader*) buffer, len );
-   if ( !IpConnection::stream || ( IpConnection::stream->write( buffer, len ) != len ) )
+   if ( !IpConnection::stream || ( IpConnection::stream->write( buffer, len ) != IStream::SUCCESS ) )
    {
       return false;
    }
