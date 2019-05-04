@@ -108,7 +108,7 @@ IStream::Status UdpConnection::write( void* pData, uint16_t length, EventDrivenU
 
    // ArpManager might change the packet into an arp-request, in this case the return value will be false
    bool success = ArpManager::prepareOutPacket( (IpHeader*) buffer, length );
-   if ( ( stream->write( buffer, length ) != length ) || !success )
+   if ( ( stream->write( buffer, length ) != IStream::SUCCESS ) || !success )
    {
       return ABORTED;
    }

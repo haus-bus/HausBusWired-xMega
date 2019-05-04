@@ -14,7 +14,7 @@
 
 class EventDrivenUnit;
 
-class HACF;
+class HBCP;
 
 class evConnect;
 
@@ -73,7 +73,7 @@ class Event
       union Parameters
       {
          IStream::TransferDescriptor* td;
-         HACF* message;
+         HBCP* message;
          struct EndOfTransfer
          {
             IStream::TransferDescriptor* td;
@@ -337,19 +337,19 @@ class evMessage : public Event
 
    public:
 
-      inline evMessage( EventDrivenUnit* p_destination = 0, HACF* p_message = 0 ) :
+      inline evMessage( EventDrivenUnit* p_destination = 0, HBCP* p_message = 0 ) :
          Event( p_destination )
       {
          setId( idEvMessage );
          setMessage( p_message );
       }
 
-      inline void setMessage( HACF* message )
+      inline void setMessage( HBCP* message )
       {
          parameters.message = message;
       }
 
-      inline HACF* getMessage()
+      inline HBCP* getMessage()
       {
          return parameters.message;
       }
@@ -362,7 +362,7 @@ class evGatewayMessage : public evMessage
 
    public:
 
-      inline evGatewayMessage( EventDrivenUnit* p_destination = 0, HACF* p_message
+      inline evGatewayMessage( EventDrivenUnit* p_destination = 0, HBCP* p_message
                                   = 0 ) :
          evMessage( p_destination, p_message )
       {

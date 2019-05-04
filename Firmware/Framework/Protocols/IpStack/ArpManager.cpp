@@ -181,11 +181,7 @@ void ArpManager::update( const IP& ip, const MAC& mac )
    table[i].time = time;
 
    DEBUG_M2( FSTR( "ArpManager::update() -> new entry at idx: " ), i );
-   uint8_t const* ptr = (uint8_t*) &ip;
-   DEBUG_M4( FSTR( "IP : " ), ptr[0], '.', ptr[1] );
-   DEBUG_L4( '.', ptr[2], '.', ptr[3] );
-   ptr = (uint8_t*) &mac;
-   DEBUG_M4( FSTR( "MAC: " ), ptr[0], ':', ptr[1] );
-   DEBUG_L4( '.', ptr[2], '.', ptr[3] );
-   DEBUG_L4( '.', ptr[4], '.', ptr[5] );
+   DEBUG_M2( FSTR( "IP : " ), ip );
+   DEBUG_M2( FSTR( "MAC: " ), mac );
+
 }

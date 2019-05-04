@@ -96,7 +96,6 @@ void Scheduler::runJobs()
 
    for ( uint8_t i = 0; i < maxJobs; i++ )
    {
-      DEBUG_H2( "loop ", i );
       notifyIdle();
       if ( itsReactive[i] )
       {

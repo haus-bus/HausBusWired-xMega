@@ -1,35 +1,35 @@
 /*
- * HACF.cpp
+ * HBCP.cpp
  *
  *  Created on: 28.08.2014
  *      Author: Viktor Pankraz
  */
 
-#include "HACF.h"
+#include "HBCP.h"
 #include <CriticalSection.h>
 #include <Security/Checksum.h>
 
 
-const uint8_t HACF::debugLevel( DEBUG_LEVEL_OFF );
+const uint8_t HBCP::debugLevel( DEBUG_LEVEL_OFF );
 
-uint16_t HACF::deviceId;
+uint16_t HBCP::deviceId;
 
-uint16_t HACF::receiverIdForErrors( 0 );
+uint16_t HBCP::receiverIdForErrors( 0 );
 
-uint16_t HACF::messagesInUse( 0 );
+uint16_t HBCP::messagesInUse( 0 );
 
 
 
-uint16_t HACF::ControlFrame::getLength() const
+uint16_t HBCP::ControlFrame::getLength() const
 {
    return ( sizeof( *this ) - sizeof( data ) + dataLength );
 }
 
-void HACF::operator delete( void* obj, size_t size )
+void HBCP::operator delete( void* obj, size_t size )
 {
    CriticalSection cs;
 
-   HACF* me = ( (HACF*) obj );
+   HBCP* me = ( (HBCP*) obj );
 
    if ( me->header.getReferenceCount() )
    {
@@ -46,10 +46,10 @@ void HACF::operator delete( void* obj, size_t size )
    }
 }
 
-HACF* HACF::copy()
+HBCP* HBCP::copy()
 {
    CriticalSection doNotInterrupt;
-   HACF* newMsg = (HACF*) new uint8_t[( getLength() + 7 ) & 0xFFF8];
+   HBCP* newMsg = (HBCP*) new uint8_t[( getLength() + 7 ) & 0xFFF8];
    if ( newMsg )
    {
       memcpy( (uint8_t*) newMsg, this, getLength() );
@@ -62,14 +62,14 @@ HACF* HACF::copy()
 }
 
 
-void HACF::ControlFrame::encrypt()
+void HBCP::ControlFrame::encrypt()
 {
    control = 0;
    control = Checksum::get( this, getLength() );
 }
 
 
-bool HACF::ControlFrame::isValid()
+bool HBCP::ControlFrame::isValid()
 {
    return !Checksum::hasError( this, getLength() );
 }
