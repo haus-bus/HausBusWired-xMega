@@ -54,16 +54,9 @@ void PwmOutput::set( uint16_t value )
          tc->disableChannel( channel );
       }
    }
-   if ( !tc || !tc->isRunning() )
+   if ( !tc || !tc->isChannelEnabled( channel ) )
    {
-      if ( value )
-      {
-         isInverted() ? DigitalOutput::clear() : DigitalOutput::set();
-      }
-      else
-      {
-         isInverted() ? DigitalOutput::set() : DigitalOutput::clear();
-      }
+      value ? DigitalOutput::set() : DigitalOutput::clear();
    }
 }
 

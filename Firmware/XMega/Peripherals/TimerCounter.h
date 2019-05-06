@@ -292,6 +292,11 @@ class TimerCounter
          reg.CTRLB |= ( TC0_CCAEN_bm << channel );
       }
 
+      inline bool isChannelEnabled( Channel channel )
+      {
+         return ( reg.CTRLB & ( TC0_CCAEN_bm << channel ) );
+      }
+
       inline void setCompare( Channel channel, uint16_t value )
       {
          register16_t* tmp = &reg.CCA;
