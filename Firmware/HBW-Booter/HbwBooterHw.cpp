@@ -79,7 +79,7 @@ static uint8_t ledData[] = { 0x00, LED_MASK };
 #error "HBW-Device not supported!!!"
 #endif
 
-static uint8_t ledIdx = 0;
+static uint8_t ledIdx = 1;
 static Timestamp lastTime;
 
 HBWBooterHw::HBWBooterHw()
@@ -124,6 +124,12 @@ void HBWBooterHw::handleLeds( bool isDownloadRunning )
    }
    else
    {
+      if ( ledIdx )
+      {
+         // reset LEDs here so that IDLE is different from Downloading
+         LED_PORT.OUTCLR = LED_MASK;
+         ledIdx = 0;
+      }
       if ( lastTime.since() > 500 )
       {
          LED_PORT.OUTTGL = LED_MASK;
