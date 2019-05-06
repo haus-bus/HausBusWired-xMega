@@ -16,6 +16,7 @@ HmwLed::HmwLed( PortPin _portPin, Config* _config, bool _inverted, uint8_t _defa
    type = HmwChannel::HMW_LED;
    config = _config;
    pwmOutput.setInverted( _inverted );
+   pwmOutput.set( 0 );
    feedbackCmdActive = false;
    logicalState = OFF;
    currentLevel = 0;

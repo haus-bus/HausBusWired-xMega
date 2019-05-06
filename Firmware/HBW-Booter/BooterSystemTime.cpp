@@ -5,10 +5,10 @@
  *      Author: Viktor Pankraz
  */
 
-#include "Basics.h"
-#include "Peripherals/Clock.h"
-#include "Peripherals/Oscillator.h"
-#include "Peripherals/RealTimeCounter.h"
+#include <Basics.h>
+#include <Peripherals/Clock.h>
+#include <Peripherals/Oscillator.h>
+#include <Peripherals/RealTimeCounter.h>
 
 #include <Time/SystemTime.h>
 

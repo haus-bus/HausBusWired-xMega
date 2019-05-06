@@ -1,17 +1,7 @@
 # Generated Code
-Debug*/
-Release*/
 .vs/
 
 # for testing only
 Tools/hterm.cfg
 Tools/addOnTests/
 Tools/ProductionTest/*.hex
-
-# build directories
-Firmware/HBW-SD6-v0/
-Firmware/HBW-SD6-v1/
-Firmware/HBW-LC4-IN4-DR/
-Firmware/HBW-IO12-1W-UP/
-Firmware/HBW-LC-DIM8-DR/
-

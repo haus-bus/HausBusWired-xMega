@@ -1,0 +1,735 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="14.0">
+  <PropertyGroup>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>7.0</ProjectVersion>
+    <ToolchainName>com.Atmel.AVRGCC8.CPP</ToolchainName>
+    <ProjectGuid>{55d5c0d7-b68b-4014-9923-5331d4f24429}</ProjectGuid>
+    <avrdevice>ATxmega32A4U</avrdevice>
+    <avrdeviceseries>xmegaau</avrdeviceseries>
+    <OutputType>Executable</OutputType>
+    <Language>CPP</Language>
+    <OutputFileName>$(MSBuildProjectName)</OutputFileName>
+    <OutputFileExtension>.elf</OutputFileExtension>
+    <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
+    <RootNamespace>GccApplication1</RootNamespace>
+    <ToolchainFlavour>Native</ToolchainFlavour>
+    <KeepTimersRunning>true</KeepTimersRunning>
+    <OverrideVtor>false</OverrideVtor>
+    <CacheFlash>true</CacheFlash>
+    <ProgFlashFromRam>true</ProgFlashFromRam>
+    <RamSnippetAddress>0x20000000</RamSnippetAddress>
+    <UncachedRange />
+    <preserveEEPROM>true</preserveEEPROM>
+    <OverrideVtorValue>exception_table</OverrideVtorValue>
+    <BootSegment>2</BootSegment>
+    <eraseonlaunchrule>1</eraseonlaunchrule>
+    <ExternalProgrammingToolCommand />
+    <avrtool>com.atmel.avrdbg.tool.atmelice</avrtool>
+    <avrtoolserialnumber>J41800037616</avrtoolserialnumber>
+    <avrdeviceexpectedsignature>0x1E9541</avrdeviceexpectedsignature>
+    <com_atmel_avrdbg_tool_simulator>
+      <ToolOptions>
+        <InterfaceProperties>
+        </InterfaceProperties>
+        <InterfaceName>PDI</InterfaceName>
+      </ToolOptions>
+      <ToolType>com.atmel.avrdbg.tool.simulator</ToolType>
+      <ToolNumber>
+      </ToolNumber>
+      <ToolName>Simulator</ToolName>
+    </com_atmel_avrdbg_tool_simulator>
+    <avrtoolinterface>PDI</avrtoolinterface>
+    <com_atmel_avrdbg_tool_flip>
+      <ToolOptions xmlns="">
+        <InterfaceProperties>
+        </InterfaceProperties>
+        <InterfaceName>
+        </InterfaceName>
+      </ToolOptions>
+      <ToolType xmlns="">com.atmel.avrdbg.tool.flip</ToolType>
+      <ToolNumber xmlns="">
+      </ToolNumber>
+      <ToolName xmlns="">Atmel FLIP</ToolName>
+    </com_atmel_avrdbg_tool_flip>
+    <ExternalProgrammingToolCommandDisabledValue />
+    <com_atmel_avrdbg_tool_atmelice>
+      <ToolOptions>
+        <InterfaceProperties>
+          <PdiClock>4000000</PdiClock>
+        </InterfaceProperties>
+        <InterfaceName>PDI</InterfaceName>
+      </ToolOptions>
+      <ToolType>com.atmel.avrdbg.tool.atmelice</ToolType>
+      <ToolNumber>J41800037616</ToolNumber>
+      <ToolName>Atmel-ICE</ToolName>
+    </com_atmel_avrdbg_tool_atmelice>
+    <avrtoolinterfaceclock>4000000</avrtoolinterfaceclock>
+    <AsfFrameworkConfig>
+      <framework-data xmlns="">
+        <options />
+        <configurations />
+        <files />
+        <documentation help="" />
+        <offline-documentation help="" />
+        <dependencies>
+          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.34.1" />
+        </dependencies>
+      </framework-data>
+    </AsfFrameworkConfig>
+    <Name>HBW-X32A4-Booter</Name>
+    <ResetRule>0</ResetRule>
+    <EraseKey />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'HBW-SD6-v0' ">
+    <ToolchainSettings>
+      <AvrGccCpp>
+        <avrgcc.common.Device>-mmcu=atxmega32a4u -B "%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\gcc\dev\atxmega32a4u"</avrgcc.common.Device>
+        <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
+        <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
+        <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
+        <avrgcc.common.outputfiles.srec>True</avrgcc.common.outputfiles.srec>
+        <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
+        <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcc.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>F_CPU=32000000UL</Value>
+            <Value>NDEBUG</Value>
+          </ListValues>
+        </avrgcc.compiler.symbols.DefSymbols>
+        <avrgcc.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\include</Value>
+            <Value>../src</Value>
+          </ListValues>
+        </avrgcc.compiler.directories.IncludePaths>
+        <avrgcc.compiler.optimization.OtherFlags>-fdata-sections</avrgcc.compiler.optimization.OtherFlags>
+        <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
+        <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
+        <avrgcc.compiler.miscellaneous.OtherFlags>-std=gnu99 -fno-strict-aliasing -Wstrict-prototypes -Wmissing-prototypes -Werror-implicit-function-declaration -Wpointer-arith -mrelax</avrgcc.compiler.miscellaneous.OtherFlags>
+        <avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcccpp.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>_BOOTER_</Value>
+            <Value>F_CPU=32000000UL</Value>
+            <Value>MOD_ID=\"HBWBooter\"</Value>
+            <Value>BOOTER_SIZE=4096</Value>
+            <Value>SYSTEM_TIME_TYPE=uint16_t</Value>
+            <Value>DEVICE_ID=0xB1</Value>
+            <Value>HARDWARE_ID=0</Value>
+            <Value>NDEBUG</Value>
+          </ListValues>
+        </avrgcccpp.compiler.symbols.DefSymbols>
+        <avrgcccpp.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\include</Value>
+            <Value>../..</Value>
+            <Value>../../Framework</Value>
+            <Value>../../XMega</Value>
+          </ListValues>
+        </avrgcccpp.compiler.directories.IncludePaths>
+        <avrgcccpp.compiler.optimization.PackStructureMembers>True</avrgcccpp.compiler.optimization.PackStructureMembers>
+        <avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcccpp.compiler.optimization.DebugLevel>Maximum (-g3)</avrgcccpp.compiler.optimization.DebugLevel>
+        <avrgcccpp.compiler.warnings.AllWarnings>True</avrgcccpp.compiler.warnings.AllWarnings>
+        <avrgcccpp.compiler.miscellaneous.OtherFlags>-fno-jump-tables -fno-threadsafe-statics -std=gnu++11</avrgcccpp.compiler.miscellaneous.OtherFlags>
+        <avrgcccpp.linker.libraries.Libraries>
+          <ListValues>
+            <Value>libm</Value>
+          </ListValues>
+        </avrgcccpp.linker.libraries.Libraries>
+        <avrgcccpp.linker.memorysettings.Flash>
+          <ListValues>
+            <Value>.BOOT=0x47DC</Value>
+            <Value>.text=0x4000</Value>
+          </ListValues>
+        </avrgcccpp.linker.memorysettings.Flash>
+        <avrgcccpp.linker.miscellaneous.LinkerFlags>-Wl,--script=../../HBW-Booter/X32A4-Booter.ld</avrgcccpp.linker.miscellaneous.LinkerFlags>
+        <avrgcc.compiler.optimization.level>Optimize for size (-Os)</avrgcc.compiler.optimization.level>
+        <avrgcccpp.compiler.optimization.level>Optimize for size (-Os)</avrgcccpp.compiler.optimization.level>
+      </AvrGccCpp>
+    </ToolchainSettings>
+    <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .boot -j .data -O binary  $(OutputFileName).elf  $(OutputFileName).bin  &amp;&amp;  "$(SolutionDir)..\tools\bin2hex" $(OutputFileName).bin $(SolutionDir)..\Binaries\$(Configuration)-Booter.hex</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <ToolchainSettings>
+      <AvrGccCpp>
+        <avrgcc.common.Device>-mmcu=atxmega32a4u -B "%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\gcc\dev\atxmega32a4u"</avrgcc.common.Device>
+        <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
+        <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
+        <avrgcc.common.outputfiles.eep>False</avrgcc.common.outputfiles.eep>
+        <avrgcc.common.outputfiles.srec>False</avrgcc.common.outputfiles.srec>
+        <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
+        <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcc.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>F_CPU=32000000UL</Value>
+            <Value>_DEBUG_</Value>
+          </ListValues>
+        </avrgcc.compiler.symbols.DefSymbols>
+        <avrgcc.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\include</Value>
+          </ListValues>
+        </avrgcc.compiler.directories.IncludePaths>
+        <avrgcc.compiler.optimization.OtherFlags>-fdata-sections</avrgcc.compiler.optimization.OtherFlags>
+        <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
+        <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
+        <avrgcc.compiler.miscellaneous.OtherFlags>-fno-jump-tables -std=gnu99 -fno-strict-aliasing -Wstrict-prototypes -Wmissing-prototypes -Werror-implicit-function-declaration -Wpointer-arith -mrelax</avrgcc.compiler.miscellaneous.OtherFlags>
+        <avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcccpp.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>_BOOTER_</Value>
+            <Value>F_CPU=32000000UL</Value>
+            <Value>MOD_ID=\"HBWBooter\"</Value>
+            <Value>BOOTER_SIZE=4096</Value>
+            <Value>SYSTEM_TIME_TYPE=uint16_t</Value>
+            <Value>DEVICE_ID=0xB1</Value>
+            <Value>HARDWARE_ID=1</Value>
+            <Value>_DEBUG_</Value>
+          </ListValues>
+        </avrgcccpp.compiler.symbols.DefSymbols>
+        <avrgcccpp.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\include</Value>
+            <Value>../..</Value>
+            <Value>../../Framework</Value>
+            <Value>../../XMega</Value>
+          </ListValues>
+        </avrgcccpp.compiler.directories.IncludePaths>
+        <avrgcccpp.compiler.optimization.PackStructureMembers>True</avrgcccpp.compiler.optimization.PackStructureMembers>
+        <avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcccpp.compiler.optimization.DebugLevel>Maximum (-g3)</avrgcccpp.compiler.optimization.DebugLevel>
+        <avrgcccpp.compiler.warnings.AllWarnings>True</avrgcccpp.compiler.warnings.AllWarnings>
+        <avrgcccpp.compiler.miscellaneous.OtherFlags>-fno-jump-tables -fno-threadsafe-statics -std=gnu++11</avrgcccpp.compiler.miscellaneous.OtherFlags>
+        <avrgcccpp.linker.libraries.Libraries>
+          <ListValues>
+            <Value>libm</Value>
+          </ListValues>
+        </avrgcccpp.linker.libraries.Libraries>
+        <avrgcccpp.linker.memorysettings.Flash>
+          <ListValues>
+            <Value>.BOOT=0x47DC</Value>
+          </ListValues>
+        </avrgcccpp.linker.memorysettings.Flash>
+        <avrgcccpp.linker.miscellaneous.LinkerFlags>-Wl,--script=../../HBW-Booter/X32A4-Booter.ld</avrgcccpp.linker.miscellaneous.LinkerFlags>
+        <avrgcc.compiler.optimization.level>Optimize (-O1)</avrgcc.compiler.optimization.level>
+        <avrgcc.compiler.optimization.DebugLevel>Maximum (-g3)</avrgcc.compiler.optimization.DebugLevel>
+        <avrgcccpp.compiler.optimization.level>Optimize (-O1)</avrgcccpp.compiler.optimization.level>
+        <avrgcccpp.assembler.debugging.DebugLevel>Default (-Wa,-g)</avrgcccpp.assembler.debugging.DebugLevel>
+      </AvrGccCpp>
+    </ToolchainSettings>
+    <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .boot -j .data -O binary  $(OutputFileName).elf  $(OutputFileName).bin</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'HBW-SD6-v1' ">
+    <ToolchainSettings>
+      <AvrGccCpp>
+        <avrgcc.common.Device>-mmcu=atxmega32a4u -B "%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\gcc\dev\atxmega32a4u"</avrgcc.common.Device>
+        <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
+        <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
+        <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
+        <avrgcc.common.outputfiles.srec>True</avrgcc.common.outputfiles.srec>
+        <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
+        <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcc.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>F_CPU=32000000UL</Value>
+          </ListValues>
+        </avrgcc.compiler.symbols.DefSymbols>
+        <avrgcc.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\include</Value>
+            <Value>../src</Value>
+          </ListValues>
+        </avrgcc.compiler.directories.IncludePaths>
+        <avrgcc.compiler.optimization.OtherFlags>-fdata-sections</avrgcc.compiler.optimization.OtherFlags>
+        <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
+        <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
+        <avrgcc.compiler.miscellaneous.OtherFlags>-std=gnu99 -fno-strict-aliasing -Wstrict-prototypes -Wmissing-prototypes -Werror-implicit-function-declaration -Wpointer-arith -mrelax</avrgcc.compiler.miscellaneous.OtherFlags>
+        <avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcccpp.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>_BOOTER_</Value>
+            <Value>F_CPU=32000000UL</Value>
+            <Value>MOD_ID=\"HBWBooter\"</Value>
+            <Value>BOOTER_SIZE=4096</Value>
+            <Value>SYSTEM_TIME_TYPE=uint16_t</Value>
+            <Value>DEVICE_ID=0xB1</Value>
+            <Value>HARDWARE_ID=1</Value>
+          </ListValues>
+        </avrgcccpp.compiler.symbols.DefSymbols>
+        <avrgcccpp.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\include</Value>
+            <Value>../..</Value>
+            <Value>../../Framework</Value>
+            <Value>../../XMega</Value>
+          </ListValues>
+        </avrgcccpp.compiler.directories.IncludePaths>
+        <avrgcccpp.compiler.optimization.PackStructureMembers>True</avrgcccpp.compiler.optimization.PackStructureMembers>
+        <avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcccpp.compiler.optimization.DebugLevel>Maximum (-g3)</avrgcccpp.compiler.optimization.DebugLevel>
+        <avrgcccpp.compiler.warnings.AllWarnings>True</avrgcccpp.compiler.warnings.AllWarnings>
+        <avrgcccpp.compiler.miscellaneous.OtherFlags>-fno-jump-tables -fno-threadsafe-statics -std=gnu++11</avrgcccpp.compiler.miscellaneous.OtherFlags>
+        <avrgcccpp.linker.libraries.Libraries>
+          <ListValues>
+            <Value>libm</Value>
+          </ListValues>
+        </avrgcccpp.linker.libraries.Libraries>
+        <avrgcccpp.linker.memorysettings.Flash>
+          <ListValues>
+            <Value>.BOOT=0x47DC</Value>
+            <Value>.text=0x4000</Value>
+          </ListValues>
+        </avrgcccpp.linker.memorysettings.Flash>
+        <avrgcccpp.linker.miscellaneous.LinkerFlags>-Wl,--script=../../HBW-Booter/X32A4-Booter.ld</avrgcccpp.linker.miscellaneous.LinkerFlags>
+        <avrgcc.compiler.optimization.level>Optimize for size (-Os)</avrgcc.compiler.optimization.level>
+        <avrgcccpp.compiler.optimization.level>Optimize for size (-Os)</avrgcccpp.compiler.optimization.level>
+      </AvrGccCpp>
+    </ToolchainSettings>
+    <OutputPath>bin\ReleaseRev0\</OutputPath>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .boot -j .data -O binary  $(OutputFileName).elf  $(OutputFileName).bin  &amp;&amp;  "$(SolutionDir)..\tools\bin2hex" $(OutputFileName).bin $(SolutionDir)..\Binaries\$(Configuration)-Booter.hex</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'HBW-IO12-1W-UP' ">
+    <ToolchainSettings>
+      <AvrGccCpp>
+        <avrgcc.common.Device>-mmcu=atxmega32a4u -B "%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\gcc\dev\atxmega32a4u"</avrgcc.common.Device>
+        <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
+        <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
+        <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
+        <avrgcc.common.outputfiles.srec>True</avrgcc.common.outputfiles.srec>
+        <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
+        <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcc.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>F_CPU=32000000UL</Value>
+            <Value>NDEBUG</Value>
+          </ListValues>
+        </avrgcc.compiler.symbols.DefSymbols>
+        <avrgcc.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\include</Value>
+            <Value>../src</Value>
+          </ListValues>
+        </avrgcc.compiler.directories.IncludePaths>
+        <avrgcc.compiler.optimization.OtherFlags>-fdata-sections</avrgcc.compiler.optimization.OtherFlags>
+        <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
+        <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
+        <avrgcc.compiler.miscellaneous.OtherFlags>-std=gnu99 -fno-strict-aliasing -Wstrict-prototypes -Wmissing-prototypes -Werror-implicit-function-declaration -Wpointer-arith -mrelax</avrgcc.compiler.miscellaneous.OtherFlags>
+        <avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcccpp.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>_BOOTER_</Value>
+            <Value>F_CPU=32000000UL</Value>
+            <Value>MOD_ID=\"HBWBooter\"</Value>
+            <Value>BOOTER_SIZE=4096</Value>
+            <Value>SYSTEM_TIME_TYPE=uint16_t</Value>
+            <Value>DEVICE_ID=0xB2</Value>
+            <Value>HARDWARE_ID=1</Value>
+            <Value>NDEBUG</Value>
+          </ListValues>
+        </avrgcccpp.compiler.symbols.DefSymbols>
+        <avrgcccpp.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\include</Value>
+            <Value>../..</Value>
+            <Value>../../Framework</Value>
+            <Value>../../XMega</Value>
+          </ListValues>
+        </avrgcccpp.compiler.directories.IncludePaths>
+        <avrgcccpp.compiler.optimization.PackStructureMembers>True</avrgcccpp.compiler.optimization.PackStructureMembers>
+        <avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcccpp.compiler.optimization.DebugLevel>Maximum (-g3)</avrgcccpp.compiler.optimization.DebugLevel>
+        <avrgcccpp.compiler.warnings.AllWarnings>True</avrgcccpp.compiler.warnings.AllWarnings>
+        <avrgcccpp.compiler.miscellaneous.OtherFlags>-fno-jump-tables -fno-threadsafe-statics -std=gnu++11</avrgcccpp.compiler.miscellaneous.OtherFlags>
+        <avrgcccpp.linker.libraries.Libraries>
+          <ListValues>
+            <Value>libm</Value>
+          </ListValues>
+        </avrgcccpp.linker.libraries.Libraries>
+        <avrgcccpp.linker.memorysettings.Flash>
+          <ListValues>
+            <Value>.BOOT=0x47DC</Value>
+            <Value>.text=0x4000</Value>
+          </ListValues>
+        </avrgcccpp.linker.memorysettings.Flash>
+        <avrgcccpp.linker.miscellaneous.LinkerFlags>-Wl,--script=../../HBW-Booter/X32A4-Booter.ld</avrgcccpp.linker.miscellaneous.LinkerFlags>
+        <avrgcc.compiler.optimization.level>Optimize for size (-Os)</avrgcc.compiler.optimization.level>
+        <avrgcccpp.compiler.optimization.level>Optimize for size (-Os)</avrgcccpp.compiler.optimization.level>
+      </AvrGccCpp>
+    </ToolchainSettings>
+    <OutputPath>bin\ReleaseRev2\</OutputPath>
+    <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .boot -j .data -O binary  $(OutputFileName).elf  $(OutputFileName).bin  &amp;&amp;  "$(SolutionDir)..\tools\bin2hex" $(OutputFileName).bin $(SolutionDir)..\Binaries\$(Configuration)-Booter.hex</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'HBW-LC4-IN4-DR' ">
+    <ToolchainSettings>
+      <AvrGccCpp>
+        <avrgcc.common.Device>-mmcu=atxmega32a4u -B "%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\gcc\dev\atxmega32a4u"</avrgcc.common.Device>
+        <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
+        <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
+        <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
+        <avrgcc.common.outputfiles.srec>True</avrgcc.common.outputfiles.srec>
+        <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
+        <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcc.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>F_CPU=32000000UL</Value>
+            <Value>NDEBUG</Value>
+          </ListValues>
+        </avrgcc.compiler.symbols.DefSymbols>
+        <avrgcc.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\include</Value>
+            <Value>../src</Value>
+          </ListValues>
+        </avrgcc.compiler.directories.IncludePaths>
+        <avrgcc.compiler.optimization.OtherFlags>-fdata-sections</avrgcc.compiler.optimization.OtherFlags>
+        <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
+        <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
+        <avrgcc.compiler.miscellaneous.OtherFlags>-std=gnu99 -fno-strict-aliasing -Wstrict-prototypes -Wmissing-prototypes -Werror-implicit-function-declaration -Wpointer-arith -mrelax</avrgcc.compiler.miscellaneous.OtherFlags>
+        <avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcccpp.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>_BOOTER_</Value>
+            <Value>F_CPU=32000000UL</Value>
+            <Value>MOD_ID=\"HBWBooter\"</Value>
+            <Value>BOOTER_SIZE=4096</Value>
+            <Value>SYSTEM_TIME_TYPE=uint16_t</Value>
+            <Value>DEVICE_ID=0xB3</Value>
+            <Value>HARDWARE_ID=1</Value>
+            <Value>NDEBUG</Value>
+          </ListValues>
+        </avrgcccpp.compiler.symbols.DefSymbols>
+        <avrgcccpp.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\include</Value>
+            <Value>../..</Value>
+            <Value>../../Framework</Value>
+            <Value>../../XMega</Value>
+          </ListValues>
+        </avrgcccpp.compiler.directories.IncludePaths>
+        <avrgcccpp.compiler.optimization.PackStructureMembers>True</avrgcccpp.compiler.optimization.PackStructureMembers>
+        <avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcccpp.compiler.optimization.DebugLevel>Maximum (-g3)</avrgcccpp.compiler.optimization.DebugLevel>
+        <avrgcccpp.compiler.warnings.AllWarnings>True</avrgcccpp.compiler.warnings.AllWarnings>
+        <avrgcccpp.compiler.miscellaneous.OtherFlags>-fno-jump-tables -fno-threadsafe-statics -std=gnu++11</avrgcccpp.compiler.miscellaneous.OtherFlags>
+        <avrgcccpp.linker.libraries.Libraries>
+          <ListValues>
+            <Value>libm</Value>
+          </ListValues>
+        </avrgcccpp.linker.libraries.Libraries>
+        <avrgcccpp.linker.memorysettings.Flash>
+          <ListValues>
+            <Value>.BOOT=0x47DC</Value>
+            <Value>.text=0x4000</Value>
+          </ListValues>
+        </avrgcccpp.linker.memorysettings.Flash>
+        <avrgcccpp.linker.miscellaneous.LinkerFlags>-Wl,--script=../../HBW-Booter/X32A4-Booter.ld</avrgcccpp.linker.miscellaneous.LinkerFlags>
+        <avrgcc.compiler.optimization.level>Optimize for size (-Os)</avrgcc.compiler.optimization.level>
+        <avrgcccpp.compiler.optimization.level>Optimize for size (-Os)</avrgcccpp.compiler.optimization.level>
+      </AvrGccCpp>
+    </ToolchainSettings>
+    <OutputPath>bin\HBW-LC4-IN4-DR\</OutputPath>
+    <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .boot -j .data -O binary  $(OutputFileName).elf  $(OutputFileName).bin  &amp;&amp;  "$(SolutionDir)..\tools\bin2hex" $(OutputFileName).bin $(SolutionDir)..\Binaries\$(Configuration)-Booter.hex</PostBuildEvent>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Framework\" />
+    <Folder Include="Framework\Security\" />
+    <Folder Include="Framework\Time\" />
+    <Folder Include="Framework\Tracing\" />
+    <Folder Include="HBW-Booter" />
+    <Folder Include="HmwUnits" />
+    <Folder Include="XMega\" />
+    <Folder Include="XMega\Peripherals\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Framework\FlashString.h">
+      <SubType>compile</SubType>
+      <Link>Framework\FlashString.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\GlobalInterrupt.h">
+      <SubType>compile</SubType>
+      <Link>Framework\GlobalInterrupt.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\IoStream.cpp">
+      <SubType>compile</SubType>
+      <Link>Framework\IoStream.cpp</Link>
+    </Compile>
+    <Compile Include="..\Framework\IoStream.h">
+      <SubType>compile</SubType>
+      <Link>Framework\IoStream.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\MemoryManager.h">
+      <SubType>compile</SubType>
+      <Link>Framework\MemoryManager.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\StorageInterface.h">
+      <SubType>compile</SubType>
+      <Link>Framework\StorageInterface.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\IStream.h">
+      <SubType>compile</SubType>
+      <Link>Framework\IStream.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\SwFramework.cpp">
+      <SubType>compile</SubType>
+      <Link>Framework\SwFramework.cpp</Link>
+    </Compile>
+    <Compile Include="..\Framework\SwFramework.h">
+      <SubType>compile</SubType>
+      <Link>Framework\SwFramework.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\Time\SystemTime.h">
+      <SubType>compile</SubType>
+      <Link>Framework\Time\SystemTime.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\Time\Time.h">
+      <SubType>compile</SubType>
+      <Link>Framework\Time\Time.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\Time\Timestamp.h">
+      <SubType>compile</SubType>
+      <Link>Framework\Time\Timestamp.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\Tracing\Logger.cpp">
+      <SubType>compile</SubType>
+      <Link>Framework\Tracing\Logger.cpp</Link>
+    </Compile>
+    <Compile Include="..\Framework\Tracing\Logger.h">
+      <SubType>compile</SubType>
+      <Link>Framework\Tracing\Logger.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\Tracing\Traces.cpp">
+      <SubType>compile</SubType>
+      <Link>Framework\Tracing\Traces.cpp</Link>
+    </Compile>
+    <Compile Include="..\Framework\Tracing\Traces.h">
+      <SubType>compile</SubType>
+      <Link>Framework\Tracing\Traces.h</Link>
+    </Compile>
+    <Compile Include="..\HBW-Booter\HBWBooter.cpp">
+      <SubType>compile</SubType>
+      <Link>HBW-Booter\HBWBooter.cpp</Link>
+    </Compile>
+    <Compile Include="..\HBW-Booter\HBWBooter.h">
+      <SubType>compile</SubType>
+      <Link>HBW-Booter\HBWBooter.h</Link>
+    </Compile>
+    <Compile Include="..\HBW-Booter\BooterSystemTime.cpp">
+      <SubType>compile</SubType>
+      <Link>HBW-Booter\BooterSystemTime.cpp</Link>
+    </Compile>
+    <Compile Include="..\HBW-Booter\HBWBooterHw.cpp">
+      <SubType>compile</SubType>
+      <Link>HBW-Booter\HBWBooterHw.cpp</Link>
+    </Compile>
+    <Compile Include="..\HBW-Booter\HBWBooterHw.h">
+      <SubType>compile</SubType>
+      <Link>HBW-Booter\HBWBooterHw.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwChannel.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwChannel.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwDevice.cpp">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwDevice.cpp</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwDevice.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwDevice.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwMessageBase.cpp">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMessageBase.cpp</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwMessageBase.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMessageBase.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwMsgAnnounce.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMsgAnnounce.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwMsgGetFwVersion.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMsgGetFwVersion.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwMsgGetHwVersion.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMsgGetHwVersion.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwMsgReadEeprom.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMsgReadEeprom.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwMsgWriteFlash.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMsgWriteFlash.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwStreamBase.cpp">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwStreamBase.cpp</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwStreamBase.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwStreamBase.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwStreamHw.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwStreamHw.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwStream.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwStream.h</Link>
+    </Compile>
+    <Compile Include="..\Release.h">
+      <SubType>compile</SubType>
+      <Link>Release.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\Security\Checksum.cpp">
+      <SubType>compile</SubType>
+      <Link>Framework\Security\Checksum.cpp</Link>
+    </Compile>
+    <Compile Include="..\Framework\Security\Checksum.h">
+      <SubType>compile</SubType>
+      <Link>Framework\Security\Checksum.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\Security\Crc8.cpp">
+      <SubType>compile</SubType>
+      <Link>Framework\Security\Crc8.cpp</Link>
+    </Compile>
+    <Compile Include="..\Framework\Security\Crc8.h">
+      <SubType>compile</SubType>
+      <Link>Framework\Security\Crc8.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\Security\ModuleId.h">
+      <SubType>compile</SubType>
+      <Link>Framework\Security\ModuleId.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Basics.cpp">
+      <SubType>compile</SubType>
+      <Link>XMega\Basics.cpp</Link>
+    </Compile>
+    <Compile Include="..\XMega\Basics.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Basics.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\DigitalInput.h">
+      <SubType>compile</SubType>
+      <Link>XMega\DigitalInput.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\DigitalOutput.cpp">
+      <SubType>compile</SubType>
+      <Link>XMega\DigitalOutput.cpp</Link>
+    </Compile>
+    <Compile Include="..\XMega\DigitalOutput.h">
+      <SubType>compile</SubType>
+      <Link>XMega\DigitalOutput.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\Clock.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\Clock.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\DigitalFrequencyLockedLoops.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\DigitalFrequencyLockedLoops.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\Flash.cpp">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\Flash.cpp</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\Flash.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\Flash.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\IoPort.cpp">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\IoPort.cpp</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\IoPort.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\IoPort.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\NvmController.cpp">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\NvmController.cpp</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\NvmController.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\NvmController.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\NvmLowLevel.S">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\NvmLowLevel.S</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\Oscillator.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\Oscillator.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\Peripherals.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\Peripherals.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\RealTimeCounter.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\RealTimeCounter.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\ResetSystem.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\ResetSystem.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\Usart.cpp">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\Usart.cpp</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\Usart.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\Usart.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\WatchDog.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\WatchDog.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\PortPin.cpp">
+      <SubType>compile</SubType>
+      <Link>XMega\PortPin.cpp</Link>
+    </Compile>
+    <Compile Include="..\XMega\PortPin.h">
+      <SubType>compile</SubType>
+      <Link>XMega\PortPin.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\xEeprom.h">
+      <SubType>compile</SubType>
+      <Link>XMega\xEeprom.h</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\XMega\Peripherals\Assembler.inc">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\Assembler.inc</Link>
+    </None>
+    <None Include="..\XMega\Peripherals\NvmLowLevel.inc">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\NvmLowLevel.inc</Link>
+    </None>
+  </ItemGroup>
+  <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
+</Project>

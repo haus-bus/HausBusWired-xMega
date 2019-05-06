@@ -1,0 +1,729 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="14.0">
+  <PropertyGroup>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>7.0</ProjectVersion>
+    <ToolchainName>com.Atmel.AVRGCC8.CPP</ToolchainName>
+    <ProjectGuid>{7e56588c-2bf7-4a72-b22f-644128e77efe}</ProjectGuid>
+    <avrdevice>ATxmega192A3U</avrdevice>
+    <avrdeviceseries>xmegaau</avrdeviceseries>
+    <OutputType>Executable</OutputType>
+    <Language>CPP</Language>
+    <OutputFileName>$(MSBuildProjectName)</OutputFileName>
+    <OutputFileExtension>.elf</OutputFileExtension>
+    <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
+    <ToolchainFlavour>Native</ToolchainFlavour>
+    <KeepTimersRunning>true</KeepTimersRunning>
+    <OverrideVtor>false</OverrideVtor>
+    <CacheFlash>true</CacheFlash>
+    <ProgFlashFromRam>true</ProgFlashFromRam>
+    <RamSnippetAddress>0x20000000</RamSnippetAddress>
+    <UncachedRange />
+    <preserveEEPROM>true</preserveEEPROM>
+    <OverrideVtorValue>exception_table</OverrideVtorValue>
+    <BootSegment>2</BootSegment>
+    <eraseonlaunchrule>1</eraseonlaunchrule>
+    <ExternalProgrammingToolCommand />
+    <avrtool>com.atmel.avrdbg.tool.atmelice</avrtool>
+    <avrtoolserialnumber>J41800037616</avrtoolserialnumber>
+    <avrdeviceexpectedsignature>0x1E9744</avrdeviceexpectedsignature>
+    <com_atmel_avrdbg_tool_simulator>
+      <ToolOptions>
+        <InterfaceProperties>
+        </InterfaceProperties>
+        <InterfaceName>PDI</InterfaceName>
+      </ToolOptions>
+      <ToolType>com.atmel.avrdbg.tool.simulator</ToolType>
+      <ToolNumber>
+      </ToolNumber>
+      <ToolName>Simulator</ToolName>
+    </com_atmel_avrdbg_tool_simulator>
+    <avrtoolinterface>PDI</avrtoolinterface>
+    <com_atmel_avrdbg_tool_flip>
+      <ToolOptions xmlns="">
+        <InterfaceProperties>
+        </InterfaceProperties>
+        <InterfaceName>
+        </InterfaceName>
+      </ToolOptions>
+      <ToolType xmlns="">com.atmel.avrdbg.tool.flip</ToolType>
+      <ToolNumber xmlns="">
+      </ToolNumber>
+      <ToolName xmlns="">Atmel FLIP</ToolName>
+    </com_atmel_avrdbg_tool_flip>
+    <ExternalProgrammingToolCommandDisabledValue />
+    <com_atmel_avrdbg_tool_atmelice>
+      <ToolOptions>
+        <InterfaceProperties>
+          <PdiClock>4000000</PdiClock>
+        </InterfaceProperties>
+        <InterfaceName>PDI</InterfaceName>
+      </ToolOptions>
+      <ToolType>com.atmel.avrdbg.tool.atmelice</ToolType>
+      <ToolNumber>J41800037616</ToolNumber>
+      <ToolName>Atmel-ICE</ToolName>
+    </com_atmel_avrdbg_tool_atmelice>
+    <avrtoolinterfaceclock>4000000</avrtoolinterfaceclock>
+    <AsfFrameworkConfig>
+      <framework-data xmlns="">
+        <options />
+        <configurations />
+        <files />
+        <documentation help="" />
+        <offline-documentation help="" />
+        <dependencies>
+          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.34.1" />
+        </dependencies>
+      </framework-data>
+    </AsfFrameworkConfig>
+    <Name>HBW-X32A4-Devices</Name>
+    <ResetRule>0</ResetRule>
+    <EraseKey />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <ToolchainSettings>
+      <AvrGccCpp>
+        <avrgcc.common.Device>-mmcu=atxmega192a3u -B "%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\gcc\dev\atxmega192a3u"</avrgcc.common.Device>
+        <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
+        <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
+        <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
+        <avrgcc.common.outputfiles.srec>True</avrgcc.common.outputfiles.srec>
+        <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
+        <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcc.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>F_CPU=32000000UL</Value>
+          </ListValues>
+        </avrgcc.compiler.symbols.DefSymbols>
+        <avrgcc.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\include</Value>
+            <Value>../src</Value>
+          </ListValues>
+        </avrgcc.compiler.directories.IncludePaths>
+        <avrgcc.compiler.optimization.OtherFlags>-fdata-sections</avrgcc.compiler.optimization.OtherFlags>
+        <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
+        <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
+        <avrgcc.compiler.miscellaneous.OtherFlags>-std=gnu99 -fno-strict-aliasing -Wstrict-prototypes -Wmissing-prototypes -Werror-implicit-function-declaration -Wpointer-arith -mrelax</avrgcc.compiler.miscellaneous.OtherFlags>
+        <avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcccpp.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>F_CPU=32000000UL</Value>
+            <Value>_HEAP_SIZE_=4096</Value>
+          </ListValues>
+        </avrgcccpp.compiler.symbols.DefSymbols>
+        <avrgcccpp.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\include</Value>
+            <Value>../..</Value>
+            <Value>../../Framework</Value>
+            <Value>../../XMega</Value>
+          </ListValues>
+        </avrgcccpp.compiler.directories.IncludePaths>
+        <avrgcccpp.compiler.optimization.PackStructureMembers>True</avrgcccpp.compiler.optimization.PackStructureMembers>
+        <avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcccpp.compiler.optimization.DebugLevel>Maximum (-g3)</avrgcccpp.compiler.optimization.DebugLevel>
+        <avrgcccpp.compiler.warnings.AllWarnings>True</avrgcccpp.compiler.warnings.AllWarnings>
+        <avrgcccpp.compiler.miscellaneous.OtherFlags>-fno-jump-tables -fno-threadsafe-statics -std=gnu++11</avrgcccpp.compiler.miscellaneous.OtherFlags>
+        <avrgcccpp.linker.libraries.Libraries>
+          <ListValues>
+            <Value>libm</Value>
+          </ListValues>
+        </avrgcccpp.linker.libraries.Libraries>
+        <avrgcccpp.linker.memorysettings.Flash>
+          <ListValues>
+            <Value>.BOOT=0x18FDE</Value>
+          </ListValues>
+        </avrgcccpp.linker.memorysettings.Flash>
+        <avrgcc.compiler.optimization.level>Optimize for size (-Os)</avrgcc.compiler.optimization.level>
+        <avrgcccpp.compiler.optimization.level>Optimize for size (-Os)</avrgcccpp.compiler.optimization.level>
+      </AvrGccCpp>
+    </ToolchainSettings>
+    <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .data -O binary  $(OutputFileName).elf  $(OutputFileName).bin &amp;&amp;  "$(SolutionDir)..\tools\modid" $(OutputFileName).bin $(SolutionDir)..\Binaries\$(OutputFileName) &amp;&amp;  "$(SolutionDir)..\tools\modid" $(OutputFileName).bin &amp;&amp;  "$(SolutionDir)..\tools\bin2hex" $(OutputFileName).bin $(SolutionDir)..\CCU-files\firmware\$(OutputFileName).hex</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <ToolchainSettings>
+      <AvrGccCpp>
+        <avrgcc.common.Device>-mmcu=atxmega192a3u -B "%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\gcc\dev\atxmega192a3u"</avrgcc.common.Device>
+        <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
+        <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
+        <avrgcc.common.outputfiles.eep>False</avrgcc.common.outputfiles.eep>
+        <avrgcc.common.outputfiles.srec>False</avrgcc.common.outputfiles.srec>
+        <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
+        <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcc.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>F_CPU=32000000UL</Value>
+            <Value>_DEBUG_</Value>
+          </ListValues>
+        </avrgcc.compiler.symbols.DefSymbols>
+        <avrgcc.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\include</Value>
+          </ListValues>
+        </avrgcc.compiler.directories.IncludePaths>
+        <avrgcc.compiler.optimization.OtherFlags>-fdata-sections</avrgcc.compiler.optimization.OtherFlags>
+        <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
+        <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
+        <avrgcc.compiler.miscellaneous.OtherFlags>-fno-jump-tables -std=gnu99 -fno-strict-aliasing -Wstrict-prototypes -Wmissing-prototypes -Werror-implicit-function-declaration -Wpointer-arith -mrelax</avrgcc.compiler.miscellaneous.OtherFlags>
+        <avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcccpp.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>F_CPU=32000000UL</Value>
+            <Value>_HEAP_SIZE_=4096</Value>
+            <Value>_DEBUG_</Value>
+            <Value>_TRACE_PORT_=PORTF</Value>
+          </ListValues>
+        </avrgcccpp.compiler.symbols.DefSymbols>
+        <avrgcccpp.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\atmel\XMEGAA_DFP\1.0.36\include</Value>
+            <Value>../..</Value>
+            <Value>../../Framework</Value>
+            <Value>../../XMega</Value>
+          </ListValues>
+        </avrgcccpp.compiler.directories.IncludePaths>
+        <avrgcccpp.compiler.optimization.PackStructureMembers>True</avrgcccpp.compiler.optimization.PackStructureMembers>
+        <avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcccpp.compiler.optimization.DebugLevel>Maximum (-g3)</avrgcccpp.compiler.optimization.DebugLevel>
+        <avrgcccpp.compiler.warnings.AllWarnings>True</avrgcccpp.compiler.warnings.AllWarnings>
+        <avrgcccpp.compiler.miscellaneous.OtherFlags>-fno-jump-tables -fno-threadsafe-statics -std=gnu++11</avrgcccpp.compiler.miscellaneous.OtherFlags>
+        <avrgcccpp.linker.libraries.Libraries>
+          <ListValues>
+            <Value>libm</Value>
+          </ListValues>
+        </avrgcccpp.linker.libraries.Libraries>
+        <avrgcccpp.linker.memorysettings.Flash>
+          <ListValues>
+            <Value>.BOOT=0x18FDE</Value>
+          </ListValues>
+        </avrgcccpp.linker.memorysettings.Flash>
+        <avrgcc.compiler.optimization.level>Optimize (-O1)</avrgcc.compiler.optimization.level>
+        <avrgcc.compiler.optimization.DebugLevel>Maximum (-g3)</avrgcc.compiler.optimization.DebugLevel>
+        <avrgcccpp.compiler.optimization.level>Optimize (-O1)</avrgcccpp.compiler.optimization.level>
+        <avrgcccpp.assembler.debugging.DebugLevel>Default (-Wa,-g)</avrgcccpp.assembler.debugging.DebugLevel>
+      </AvrGccCpp>
+    </ToolchainSettings>
+    <PostBuildEvent>"$(ToolchainDir)\avr-objcopy" -j .text -j .data -O binary  $(OutputFileName).elf  $(OutputFileName).bin &amp;&amp;  "$(SolutionDir)..\tools\modid" $(OutputFileName).bin</PostBuildEvent>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Framework\" />
+    <Folder Include="Framework\Containers\" />
+    <Folder Include="Framework\Protocols\" />
+    <Folder Include="Framework\Security\" />
+    <Folder Include="Framework\Time\" />
+    <Folder Include="Framework\Tracing\" />
+    <Folder Include="HBW-Devices" />
+    <Folder Include="HmwUnits" />
+    <Folder Include="XMega\" />
+    <Folder Include="XMega\Peripherals\" />
+    <Folder Include="XMega\Protocols\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Framework\CriticalSection.h">
+      <SubType>compile</SubType>
+      <Link>Framework\CriticalSection.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\DefaultTypes.h">
+      <SubType>compile</SubType>
+      <Link>Framework\DefaultTypes.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\FlashString.h">
+      <SubType>compile</SubType>
+      <Link>Framework\FlashString.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\GlobalInterrupt.h">
+      <SubType>compile</SubType>
+      <Link>Framework\GlobalInterrupt.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\IoStream.cpp">
+      <SubType>compile</SubType>
+      <Link>Framework\IoStream.cpp</Link>
+    </Compile>
+    <Compile Include="..\Framework\IoStream.h">
+      <SubType>compile</SubType>
+      <Link>Framework\IoStream.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\IStream.h">
+      <SubType>compile</SubType>
+      <Link>Framework\IStream.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\MemoryManager.h">
+      <SubType>compile</SubType>
+      <Link>Framework\MemoryManager.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\Protocols\OneWire.h">
+      <SubType>compile</SubType>
+      <Link>Framework\Protocols\OneWire.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\Protocols\Protocols.h">
+      <SubType>compile</SubType>
+      <Link>Framework\Protocols\Protocols.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\Security\Checksum.cpp">
+      <SubType>compile</SubType>
+      <Link>Framework\Security\Checksum.cpp</Link>
+    </Compile>
+    <Compile Include="..\Framework\Security\Checksum.h">
+      <SubType>compile</SubType>
+      <Link>Framework\Security\Checksum.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\Security\Crc8.cpp">
+      <SubType>compile</SubType>
+      <Link>Framework\Security\Crc8.cpp</Link>
+    </Compile>
+    <Compile Include="..\Framework\Security\Crc8.h">
+      <SubType>compile</SubType>
+      <Link>Framework\Security\Crc8.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\Security\ModuleId.h">
+      <SubType>compile</SubType>
+      <Link>Framework\Security\ModuleId.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\Security\Security.h">
+      <SubType>compile</SubType>
+      <Link>Framework\Security\Security.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\SwFramework.cpp">
+      <SubType>compile</SubType>
+      <Link>Framework\SwFramework.cpp</Link>
+    </Compile>
+    <Compile Include="..\Framework\SwFramework.h">
+      <SubType>compile</SubType>
+      <Link>Framework\SwFramework.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\Tracing\Logger.cpp">
+      <SubType>compile</SubType>
+      <Link>Framework\Tracing\Logger.cpp</Link>
+    </Compile>
+    <Compile Include="..\Framework\Tracing\Logger.h">
+      <SubType>compile</SubType>
+      <Link>Framework\Tracing\Logger.h</Link>
+    </Compile>
+    <Compile Include="..\HBW-Devices\HBWDeviceFactory.h">
+      <SubType>compile</SubType>
+      <Link>HBW-Devices\HBWDeviceFactory.h</Link>
+    </Compile>
+    <Compile Include="..\HBW-Devices\HBWGenericDevice.cpp">
+      <SubType>compile</SubType>
+      <Link>HBW-Devices\HBWGenericDevice.cpp</Link>
+    </Compile>
+    <Compile Include="..\HBW-Devices\HBWGenericDeviceHw.cpp">
+      <SubType>compile</SubType>
+      <Link>HBW-Devices\HBWGenericDeviceHw.cpp</Link>
+    </Compile>
+    <Compile Include="..\HBW-Devices\HBWGenericDeviceHw.h">
+      <SubType>compile</SubType>
+      <Link>HBW-Devices\HBWGenericDeviceHw.h</Link>
+    </Compile>
+    <Compile Include="..\HBW-Devices\HBWLcDim8BaseHw.cpp">
+      <SubType>compile</SubType>
+      <Link>HBW-Devices\HBWLcDim8BaseHw.cpp</Link>
+    </Compile>
+    <Compile Include="..\HBW-Devices\HBWLcDim8BaseHw.h">
+      <SubType>compile</SubType>
+      <Link>HBW-Devices\HBWLcDim8BaseHw.h</Link>
+    </Compile>
+    <Compile Include="..\HBW-Devices\HBWX192A3DeviceFactory.cpp">
+      <SubType>compile</SubType>
+      <Link>HBW-Devices\HBWX192A3DeviceFactory.cpp</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwBrightness.cpp">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwBrightness.cpp</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwBrightness.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwBrightness.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwChannel.cpp">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwChannel.cpp</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwChannel.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwChannel.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwDevice.cpp">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwDevice.cpp</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwDevice.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwDevice.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwDeviceHw.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwDeviceHw.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwDimmer.cpp">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwDimmer.cpp</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwDimmer.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwDimmer.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwDS1820.cpp">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwDS1820.cpp</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwDS1820.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwDS1820.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwKey.cpp">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwKey.cpp</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwKey.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwKey.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwLed.cpp">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwLed.cpp</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwLed.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwLed.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwLinkKey.cpp">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwLinkKey.cpp</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwLinkKey.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwLinkKey.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwLinkLed.cpp">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwLinkLed.cpp</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwLinkLed.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwLinkLed.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwLinkReceiver.cpp">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwLinkReceiver.cpp</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwLinkReceiver.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwLinkReceiver.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwLinkSender.cpp">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwLinkSender.cpp</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwLinkSender.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwLinkSender.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwMessageBase.cpp">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMessageBase.cpp</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwMessageBase.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMessageBase.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwMsgAnnounce.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMsgAnnounce.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwMsgEepromMap.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMsgEepromMap.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwMsgGetFwVersion.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMsgGetFwVersion.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwMsgGetHwVersion.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMsgGetHwVersion.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwMsgGetLevel.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMsgGetLevel.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwMsgGetPacketSize.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMsgGetPacketSize.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwMsgGetSerial.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMsgGetSerial.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwMsgInfo.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMsgInfo.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwMsgKeyEvent.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMsgKeyEvent.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwMsgReadEeprom.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMsgReadEeprom.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwMsgReadFlash.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMsgReadFlash.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwMsgResetWifi.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMsgResetWifi.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwMsgSetLevel.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMsgSetLevel.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwMsgWriteEeprom.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMsgWriteEeprom.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwMsgWriteFlash.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMsgWriteFlash.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwStream.cpp">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwStream.cpp</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwStream.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwStream.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwStreamBase.cpp">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwStreamBase.cpp</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwStreamBase.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwStreamBase.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwStreamHw.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwStreamHw.h</Link>
+    </Compile>
+    <Compile Include="..\Framework\Tracing\Traces.cpp">
+      <SubType>compile</SubType>
+      <Link>Framework\Tracing\Traces.cpp</Link>
+    </Compile>
+    <Compile Include="..\Framework\Tracing\Traces.h">
+      <SubType>compile</SubType>
+      <Link>Framework\Tracing\Traces.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwLinkDimmer.cpp">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwLinkDimmer.cpp</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwLinkDimmer.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwLinkDimmer.h</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwSHTC3.cpp">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwSHTC3.cpp</Link>
+    </Compile>
+    <Compile Include="..\HmwUnits\HmwSHTC3.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwSHTC3.h</Link>
+    </Compile>
+    <Compile Include="..\Release.h">
+      <SubType>compile</SubType>
+      <Link>Release.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Basics.cpp">
+      <SubType>compile</SubType>
+      <Link>XMega\Basics.cpp</Link>
+    </Compile>
+    <Compile Include="..\XMega\Basics.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Basics.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\DigitalInput.h">
+      <SubType>compile</SubType>
+      <Link>XMega\DigitalInput.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\DigitalOutput.cpp">
+      <SubType>compile</SubType>
+      <Link>XMega\DigitalOutput.cpp</Link>
+    </Compile>
+    <Compile Include="..\XMega\DigitalOutput.h">
+      <SubType>compile</SubType>
+      <Link>XMega\DigitalOutput.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\GlobalInterruptAVR.h">
+      <SubType>compile</SubType>
+      <Link>XMega\GlobalInterruptAVR.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\MemoryManager.cpp">
+      <SubType>compile</SubType>
+      <Link>XMega\MemoryManager.cpp</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\Clock.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\Clock.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\DigitalFrequencyLockedLoops.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\DigitalFrequencyLockedLoops.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\Eeprom.cpp">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\Eeprom.cpp</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\Eeprom.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\Eeprom.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\EventSystem.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\EventSystem.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\Flash.cpp">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\Flash.cpp</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\Flash.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\Flash.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\InterruptController.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\InterruptController.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\IoPort.cpp">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\IoPort.cpp</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\IoPort.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\IoPort.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\NvmController.cpp">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\NvmController.cpp</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\NvmController.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\NvmController.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\NvmLowLevel.S">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\NvmLowLevel.S</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\Oscillator.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\Oscillator.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\Peripherals.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\Peripherals.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\RealTimeCounter.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\RealTimeCounter.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\ResetSystem.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\ResetSystem.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\TimerCounter.cpp">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\TimerCounter.cpp</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\TimerCounter.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\TimerCounter.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\TimerCounterBase.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\TimerCounterBase.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\TimerCounterChannel.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\TimerCounterChannel.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\Twi.cpp">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\Twi.cpp</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\Twi.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\Twi.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\Usart.cpp">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\Usart.cpp</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\Usart.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\Usart.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Peripherals\WatchDog.h">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\WatchDog.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\PortPin.cpp">
+      <SubType>compile</SubType>
+      <Link>XMega\PortPin.cpp</Link>
+    </Compile>
+    <Compile Include="..\XMega\PortPin.h">
+      <SubType>compile</SubType>
+      <Link>XMega\PortPin.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\Protocols\OneWire.cpp">
+      <SubType>compile</SubType>
+      <Link>XMega\Protocols\OneWire.cpp</Link>
+    </Compile>
+    <Compile Include="..\XMega\PwmOutput.cpp">
+      <SubType>compile</SubType>
+      <Link>XMega\PwmOutput.cpp</Link>
+    </Compile>
+    <Compile Include="..\XMega\PwmOutput.h">
+      <SubType>compile</SubType>
+      <Link>XMega\PwmOutput.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\SystemTime.cpp">
+      <SubType>compile</SubType>
+      <Link>XMega\SystemTime.cpp</Link>
+    </Compile>
+    <Compile Include="..\XMega\UserSignature.h">
+      <SubType>compile</SubType>
+      <Link>XMega\UserSignature.h</Link>
+    </Compile>
+    <Compile Include="..\XMega\SerialStream.cpp">
+      <SubType>compile</SubType>
+      <Link>XMega\SerialStream.cpp</Link>
+    </Compile>
+    <Compile Include="..\XMega\SerialStream.h">
+      <SubType>compile</SubType>
+      <Link>XMega\SerialStream.h</Link>
+    </Compile>		
+    <Compile Include="..\XMega\xEeprom.h">
+      <SubType>compile</SubType>
+      <Link>XMega\xEeprom.h</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\XMega\Peripherals\Assembler.inc">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\Assembler.inc</Link>
+    </None>
+    <None Include="..\XMega\Peripherals\NvmLowLevel.inc">
+      <SubType>compile</SubType>
+      <Link>XMega\Peripherals\NvmLowLevel.inc</Link>
+    </None>
+  </ItemGroup>
+  <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
+</Project>
