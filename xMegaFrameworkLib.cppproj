@@ -392,6 +392,14 @@
     <Compile Include="SdCard.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="SerialStream.cpp">
+      <SubType>compile</SubType>
+      <Link>SerialStream.cpp</Link>
+    </Compile>
+    <Compile Include="SerialStream.h">
+      <SubType>compile</SubType>
+      <Link>SerialStream.h</Link>
+    </Compile>
     <Compile Include="SystemTime.cpp">
       <SubType>compile</SubType>
     </Compile>
