@@ -8,8 +8,8 @@
 #ifndef SwFramework_EventPkg_EventPkg_H
 #define SwFramework_EventPkg_EventPkg_H
 
-#include "IStream.h"
-#include "DefaultTypes.h"
+#include <IStream.h>
+#include <DefaultTypes.h>
 #include <Containers/StaticQueue.h>
 
 class EventDrivenUnit;

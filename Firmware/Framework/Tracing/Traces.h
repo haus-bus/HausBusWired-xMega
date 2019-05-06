@@ -8,12 +8,11 @@
 #ifndef SwFramework_Traces_Traces_H
 #define SwFramework_Traces_Traces_H
 
-#include <DefaultTypes.h>
 #include <SwFramework.h>
+
 class Logger;
 
 class SystemTime;
-
 
 
 Logger& endl( Logger& me );
