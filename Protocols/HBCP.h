@@ -300,6 +300,11 @@ class HBCP
                dataLength = p_dataLength;
             }
 
+            inline void resetData()
+            {
+               memset( data, 0, dataLength );
+            }
+
             ////    Attributes    ////
 
             uint8_t control;
