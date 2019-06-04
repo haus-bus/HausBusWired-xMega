@@ -78,6 +78,21 @@
 
 <channels>
 	<channel index="0" type="MAINTENANCE" count="1" class="maintenance" ui_flags="internal">
+		<paramset type="MASTER" id="maint_ch_master"/>
+		<paramset type="VALUES" id="maint_ch_values">
+			<parameter id="UNREACH" operations="read,event" ui_flags="service">
+				<logical type="boolean"/>
+				<physical type="integer" interface="internal" value_id="UNREACH"/>
+			</parameter>
+			<parameter id="STICKY_UNREACH" operations="read,write,event" ui_flags="service">
+				<logical type="boolean"/>
+				<physical type="integer" interface="internal" value_id="STICKY_UNREACH"/>
+			</parameter>
+			<parameter id="CONFIG_PENDING" operations="read,event" ui_flags="service">
+				<logical type="boolean"/>
+				<physical type="integer" interface="internal" value_id="CONFIG_PENDING"/>
+			</parameter>
+		</paramset>	
 	</channel>
 
 	<channel index="1" type="KEY" count="12" physical_index_offset="-1">
@@ -181,14 +196,6 @@
         </link_roles>
 
 	    <paramset id="hmw_dim_ch_master" type="MASTER" address_step="2" address_start="0x28">
-			<parameter id="PWM_RANGE">
-				<logical type="integer" unit="%" default="100" min="0" max="100">
-			       <special_value id="DISABLE" value="0"/>
-			   </logical>	
-				<physical size="0.7" type="integer" interface="eeprom">
-					<address index="+0"/>
-				</physical>
-			</parameter>
 			<parameter id="LOGGING">
 				<logical type="option">
 					<option id="OFF"/>

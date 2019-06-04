@@ -116,21 +116,28 @@
 				<address index="+0.0"/>
 			</physical>
 		</parameter>	
-		<parameter id="PWM_RANGE">
+		<parameter id="PWM_RANGE_START">
 			<logical type="option">
-				<option id="DISABLED"/>
-				<option id="40%"/>
-				<option id="50%"/>
-				<option id="60%"/>
+				<option id="30%"/>
+				<option id="20%"/>
+				<option id="10%"/>
+				<option id="0%" default="true"/>
+			</logical>
+			<physical size="0.2" type="integer" interface="eeprom">
+				<address index="+0.2"/>
+			</physical>
+		</parameter>	
+		<parameter id="PWM_RANGE_END">
+			<logical type="option">
 				<option id="70%"/>
 				<option id="80%"/>
 				<option id="90%"/>
 				<option id="100%" default="true"/>
 			</logical>
-			<physical size="0.3" type="integer" interface="eeprom">
-				<address index="+0.2"/>
+			<physical size="0.2" type="integer" interface="eeprom">
+				<address index="+0.4"/>
 			</physical>
-		</parameter>		
+		</parameter>	
 		<parameter id="LOGGING">
 			<logical type="option">
 				<option id="OFF"/>

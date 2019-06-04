@@ -21,15 +21,16 @@ class HmwDimmer : public HmwChannel
    public:
       class Config
       {
-         enum OptionMask
+         struct Options
          {
-            LOGGING_MASK = 0x80,
-            RESERVED_MASK = 0x7C,
-            DIMMING_MODE_MASK = 0x03,
-            DEFAULT_OPTIONS = 0x83,
+            uint8_t dimmingMode : 2;
+            uint8_t pwmRangeStart : 2;
+            uint8_t pwmRangeEnd : 2;
+            uint8_t reserved : 1;
+            uint8_t logging : 1;
          };
 
-         uint8_tx options;
+         XEeprom<Options> options;
          uint8_tx reserve;
 
          public:
@@ -42,14 +43,35 @@ class HmwDimmer : public HmwChannel
                DIMM_TRAILING
             };
 
+            enum PwmRangeStart
+            {
+               _30_PERCENT = 0,
+               _20_PERCENT,
+               _10_PERCENT,
+               _00_PERCENT
+            };
+
+            enum PwmRangeEnd
+            {
+               _70_PERCENT = 0,
+               _80_PERCENT,
+               _90_PERCENT,
+               _100_PERCENT
+            };
+
+            Options getOptions() const
+            {
+               return options.operator*();
+            }
+
             inline bool isLogging() const
             {
-               return options & LOGGING_MASK;
+               return getOptions().logging;
             }
 
             inline uint8_t getDimmingMode() const
             {
-               return ( options & DIMMING_MODE_MASK );
+               return getOptions().dimmingMode;
             }
 
             inline bool isDimmingModeSwitch() const
@@ -72,11 +94,29 @@ class HmwDimmer : public HmwChannel
                return ( getDimmingMode() == DIMM_PWM );
             }
 
+            inline uint8_t getPwmRangeStart() const
+            {
+               return getOptions().pwmRangeStart;
+            }
+
+            inline uint8_t getPwmRangeEnd() const
+            {
+               return getOptions().pwmRangeEnd;
+            }
+
             inline void checkOrRestore()
             {
-               if ( ( options & RESERVED_MASK ) != RESERVED_MASK )
+               if ( getOptions().reserved != 1 )
                {
-                  options.update( DEFAULT_OPTIONS | RESERVED_MASK );
+                  Options defaultOptions =
+                  {
+                     .dimmingMode = DIMM_TRAILING,
+                     .pwmRangeStart = _00_PERCENT,
+                     .pwmRangeEnd = _100_PERCENT,
+                     .reserved = 1,
+                     .logging = 1
+                  };
+                  options = defaultOptions;
                }
                if ( reserve != 0xFF )
                {
@@ -164,6 +204,10 @@ class HmwDimmer : public HmwChannel
 
       const uint8_t normalizeLevel;
 
+      uint8_t dimmingFactor;
+
+      uint16_t dimmingOffset;
+
       PwmOutput pwmOutput;
 
       DigitalOutput enableOutput;
@@ -204,6 +248,8 @@ class HmwDimmer : public HmwChannel
    private:
 
       void calculateRampParameter();
+
+      void calculateDimmingParameter();
 
       void jumpToNextState( uint8_t nextState );
 
