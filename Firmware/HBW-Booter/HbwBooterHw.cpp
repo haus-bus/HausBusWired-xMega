@@ -87,7 +87,7 @@ HBWBooterHw::HBWBooterHw()
    serial = &Usart::instance<PortE, 0>();
    LED_PORT.DIRSET = LED_MASK;
 
-#ifdef DEBUG
+#ifdef _DEBUG_
    DigitalInputTmpl< PortD, 6 > rx;
    DigitalOutputTmpl<PortD, 7> tx;
    Usart::instance<PortD, 1>().init<115200>();
@@ -159,7 +159,7 @@ lowLevelInit( void )
                     "out %i0,r24" ::"n" ( &EIND ) : "r24", "memory" );
    #endif
 
-   #ifdef DEBUG
+   #ifdef _DEBUG_
    WatchDog::disable();
    #else
    WatchDog::enable( WatchDog::_4S );

@@ -49,7 +49,7 @@ HBWMultiKeySD6BaseHw::HBWMultiKeySD6BaseHw( PortPin txEnablePin, PortPin owPin, 
    hbwLed5( PortPin( PortC, 4 ), &config.ledcfg[4], invertLed1To6 ),
    hbwLed6( PortPin( PortC, 5 ), &config.ledcfg[5], invertLed1To6 ),
 
-#ifdef DEBUG  // use the IOs PORTD0-PORTD7 for debugging
+#ifdef _DEBUG_  // use the IOs PORTD0-PORTD7 for debugging
    extHbwLed1( PortPin( PortDummy, 0 ), &config.ledcfg[6] ),
    extHbwLed2( PortPin( PortDummy, 1 ), &config.ledcfg[7] ),
    extHbwLed3( PortPin( PortDummy, 2 ), &config.ledcfg[8] ),

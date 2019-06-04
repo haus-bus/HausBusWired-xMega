@@ -47,7 +47,7 @@ HBWLcDim8BaseHw::HBWLcDim8BaseHw() :
    linkReceiver( sizeof( config.dimmerLinks ) / sizeof( config.dimmerLinks[0] ), config.dimmerLinks )
 
 {
-#ifdef DEBUG
+#ifdef _DEBUG_
    TRACE_PORT_INIT( AllPins );
 #endif
    configLed.setInverted();

@@ -24,7 +24,7 @@ void debug( char c )
 HBWGenericDeviceHw::HBWGenericDeviceHw()
 {
    // setup debug console
-#ifdef DEBUG
+#ifdef _DEBUG_
    DigitalInputTmpl< PortD, 6 > rxDebug;
    DigitalOutputTmpl<PortD, 7> txDebug;
    Usart::instance<PortD, 1>().init<115200>();
@@ -61,7 +61,7 @@ lowLevelInit(void)
                     "out %i0,r24" ::"n" ( &EIND ) : "r24","memory" );
    #endif
 
-   #ifdef DEBUG
+   #ifdef _DEBUG_
    WatchDog::disable();
    #else
    WatchDog::enable(WatchDog::_4S);
