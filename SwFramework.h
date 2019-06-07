@@ -278,6 +278,15 @@ inline T minimum( const T val1, const T val2 )
    return ( val1 < val2 ) ? val1 : val2;
 }
 
+template<typename T>
+inline T perCentOf( const uint8_t perCent, const T value )
+{
+   T perCentValue = value * perCent / 100;
+   //T perCentValue = ( value * 5 ) >> 2;
+   //perCentValue = ( perCentValue * perCent ) >> 7;
+   return ( perCentValue ? perCentValue : 1 );
+}
+
 template<int base, unsigned int exp>
 class Pow
 {
