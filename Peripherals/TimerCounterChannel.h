@@ -28,7 +28,12 @@ class TimerCounterChannel
       {
       }
 
-      inline uint16_t getCurrentCount()
+      inline TimerCounter* getTimerCounter() const
+      {
+         return timerCounter;
+      }
+
+      inline uint16_t getCurrentCount() const
       {
          return timerCounter->getCount();
       }
@@ -38,12 +43,12 @@ class TimerCounterChannel
          timerCounter->clearCCFlag( channel );
       }
 
-      inline uint8_t getCCFlag()
+      inline uint8_t getCCFlag() const
       {
          return timerCounter->getCCFlag( channel );
       }
 
-      inline uint16_t getCapture()
+      inline uint16_t getCapture() const
       {
          return timerCounter->getCapture( channel );
       }

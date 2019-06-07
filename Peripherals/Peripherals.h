@@ -45,8 +45,6 @@ class Spi;
 
 class TimerCounter;
 
-class TimerCounterBase;
-
 class Twi;
 
 class Usart;
