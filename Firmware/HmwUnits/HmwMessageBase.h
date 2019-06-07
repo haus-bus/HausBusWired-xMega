@@ -74,7 +74,8 @@ class HmwMessageBase
          GET_FW_VERSION = 'v',
          WRITE_FLASH = 'w',
          SET_LEVEL = 'x',
-         KEY_SIM = 0xCB // 'Ë'
+         KEY_SIM = 0xCB, // 'Ë'
+         STARTUP_REASON = 0xFF
       };
 
       union ControlByte

@@ -20,6 +20,7 @@
 #include "HmwMsgResetWifi.h"
 #include "HmwMsgGetPacketSize.h"
 #include "HmwMsgReadFlash.h"
+#include "HmwMsgStartupReason.h"
 
 #include <Peripherals/WatchDog.h>
 #include <Peripherals/ResetSystem.h>
@@ -35,7 +36,7 @@ HmwDevice::PendingActions HmwDevice::pendingActions;
 
 HmwDeviceHw* HmwDevice::hardware( NULL );
 
-const uint8_t HmwDevice::debugLevel( DEBUG_LEVEL_LOW );
+const uint8_t HmwDevice::debugLevel( DEBUG_LEVEL_OFF );
 
 
 // The loop function is called in an endless loop
@@ -103,6 +104,12 @@ void HmwDevice::handlePendingActions()
    }
    if ( SystemTime::now() > FIRST_ANNOUNCEMENT_TIME )
    {
+      if ( ResetSystem::getSources() )
+      {
+         HmwMsgStartupReason msg( ownAddress, ResetSystem::getSources() );
+         HmwStream::sendMessage( msg );
+         ResetSystem::clearSources();
+      }
       handleAnnouncement();
    }
 }
