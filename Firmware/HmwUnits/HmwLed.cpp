@@ -25,7 +25,6 @@ HmwLed::HmwLed( PortPin _portPin, Config* _config, bool _inverted, uint8_t _defa
    blinkOnTime = 10;
    blinkOffTime = 10;
    blinkQuantity = 255;
-   nextFeedbackTime.reset();
    nextBlinkTime.reset();
 }
 
@@ -103,12 +102,7 @@ void HmwLed::set( uint8_t length, uint8_t const* const data )
       nextBlinkTime.reset();
    }
 
-   // Logging
-   if ( !nextFeedbackTime.isValid() && config->isLogging() )
-   {
-      nextFeedbackTime = Timestamp();
-      nextFeedbackTime += ( HmwDevice::getLoggingTime() * 100 );
-   }
+   checkLogging( config->isLogging() );
 }
 
 
@@ -157,31 +151,7 @@ void HmwLed::loop( uint8_t channel )
       setLevel( currentLevel );
    }
 
-   // feedback trigger set?
-   if ( !nextFeedbackTime.isValid() )
-   {
-      return;
-   }
-
-   if ( !nextFeedbackTime.since() )
-   {
-      return;
-   }
-
-   uint8_t level;
-   uint8_t errcode = HmwDevice::sendInfoMessage( channel, get( &level ), &level );
-
-   // sendInfoMessage returns 0 on success, 1 if bus busy, 2 if failed
-   if ( errcode )
-   {
-      // bus busy
-      // try again later, but insert a small delay
-      nextFeedbackTime += 250;
-   }
-   else
-   {
-      nextFeedbackTime.reset();
-   }
+   handleFeedback();
 }
 
 void HmwLed::checkConfig()

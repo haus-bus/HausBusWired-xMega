@@ -64,10 +64,10 @@ class HmwSHTC3 : public HmwChannel
 
       struct Config
       {
-         uint8_tx minHumidityDelta;
-         uint8_tx minTempDelta;
          uint16_tx minInterval;
-         uint16_tx maxInterval;
+         uint8_tx minDeltaPercent;
+         uint8_tx reserve1;
+         uint16_tx reserve2;
       };
 
       ////    Constructors and destructors    ////
@@ -141,8 +141,6 @@ class HmwSHTC3 : public HmwChannel
       int16_t lastSentCentiCelsius;
 
       Timestamp lastActionTime;
-
-      Timestamp lastSentTime;
 
       Config* config;
 };

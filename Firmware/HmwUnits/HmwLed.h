@@ -11,7 +11,6 @@
 
 #include "HmwChannel.h"
 #include <PwmOutput.h>
-#include <Time/Timestamp.h>
 #include <xEeprom.h>
 
 
@@ -63,7 +62,6 @@ class HmwLed : public HmwChannel
       uint8_t blinkOnTime;
       uint8_t blinkOffTime;
       uint8_t blinkQuantity;
-      Timestamp nextFeedbackTime;
       Timestamp nextBlinkTime;
       uint8_t logicalState;
 

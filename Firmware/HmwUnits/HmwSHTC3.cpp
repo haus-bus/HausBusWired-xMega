@@ -92,29 +92,15 @@ void HmwSHTC3::loop( uint8_t channel )
 
       case SEND_FEEDBACK:
       {
-         bool doSend = true;
+         bool doSend = perCentOf<uint16_t>( config->minDeltaPercent, lastSentHumidity ) <= (uint8_t)abs( currentHumidity - lastSentHumidity );
+         doSend &= perCentOf<uint32_t>( config->minDeltaPercent, lastSentCentiCelsius ) <= (uint16_t)labs( currentCentiCelsius - lastSentCentiCelsius );
 
-         // do not send before min interval
-         doSend &= !( config->minInterval && ( lastSentTime.since() < ( (uint32_t)config->minInterval * 1000 ) ) );
-         doSend &= ( ( config->maxInterval && ( lastSentTime.since() >= ( (uint32_t)config->maxInterval * 1000 ) ) )
-                   || ( config->minHumidityDelta && ( abs( currentHumidity - lastSentHumidity ) >= config->minHumidityDelta ) )
-                   || ( config->minTempDelta && ( abs( currentCentiCelsius - lastSentCentiCelsius ) >= ( (int16_t)config->minTempDelta * 10 ) ) ) );
-
-         if ( doSend )
+         if ( doSend && handleFeedback( SystemTime::S* config->minInterval ) )
          {
-            uint8_t data[3];
-            uint8_t errcode = HmwDevice::sendInfoMessage( channel, get( data ), data );
-
-            // sendInfoMessage returns 0 on success, 1 if bus busy, 2 if failed
-            if ( errcode != 0 )
-            {
-               // retry in 500ms if something fails
-               nextActionDelay = 500;
-               break;
-            }
             lastSentCentiCelsius = currentCentiCelsius;
-            lastSentTime = Timestamp();
+            lastSentHumidity = currentHumidity;
          }
+
          sleep(); // switch off sensor
 
          // start next measurement after 5s
@@ -132,26 +118,16 @@ void HmwSHTC3::loop( uint8_t channel )
 
 void HmwSHTC3::checkConfig()
 {
-   if ( config->minHumidityDelta > 100 )
-   {
-      config->minHumidityDelta = 2;
-   }
-   if ( config->minTempDelta > 250 )
-   {
-      config->minTempDelta = 5;
-   }
    if ( config->minInterval && ( ( config->minInterval < 5 ) || ( config->minInterval > 3600 ) ) )
    {
       config->minInterval = 10;
    }
-   if ( config->maxInterval && ( ( config->maxInterval < 5 ) || ( config->maxInterval > 3600 ) ) )
+   if ( config->minDeltaPercent && ( config->minDeltaPercent > 100 ) )
    {
-      config->maxInterval = 150;
+      config->minDeltaPercent = 2;
    }
-   if ( config->maxInterval && ( config->maxInterval < config->minInterval ) )
-   {
-      config->maxInterval = 0;
-   }
+
+   nextFeedbackTime = SystemTime::now() + SystemTime::S* config->minInterval;
 }
 
 HmwSHTC3::HwStatus HmwSHTC3::checkSensorId()

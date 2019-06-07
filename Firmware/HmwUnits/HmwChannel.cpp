@@ -7,12 +7,12 @@
 
 
 #include "HmwChannel.h"
-#include <Time/SystemTime.h>
+#include "HmwDevice.h"
 
 uint8_t HmwChannel::numChannels = 0;
 HmwChannel* HmwChannel::instances[];
 
-HmwChannel::HmwChannel() : type( UNKNOWN ), channelId( numChannels ), nextActionDelay( 1000 )
+HmwChannel::HmwChannel() : type( UNKNOWN ), channelId( numChannels ), nextActionDelay( 1000 ), nextFeedbackTime( 0 )
 {
    instances[numChannels++] = this;
 }
@@ -53,4 +53,40 @@ void HmwChannel::loop( uint8_t channel )
 
 void HmwChannel::checkConfig()
 {
+}
+
+void HmwChannel::checkLogging( bool enabled )
+{
+   if ( !nextFeedbackTime.isValid() && enabled )
+   {
+      nextFeedbackTime = SystemTime::now() + 100 * HmwDevice::getLoggingTime();
+   }
+}
+
+bool HmwChannel::handleFeedback( uint32_t nextFeedbackDelay )
+{
+   // feedback trigger set and time to send ?
+   if ( nextFeedbackTime.isValid() && nextFeedbackTime.since() )
+   {
+      uint8_t data[32];
+      if ( HmwDevice::sendInfoMessage( channelId, get( data ), data ) == IStream::SUCCESS )
+      {
+         // prepare nextFeedbackTime if needed
+         if ( nextFeedbackDelay )
+         {
+            nextFeedbackTime = SystemTime::now() + nextFeedbackDelay;
+         }
+         else
+         {
+            nextFeedbackTime.reset();
+         }
+         return true;
+      }
+      else
+      {
+         // bus busy, try again later, but insert a small delay
+         nextFeedbackTime += 250;
+      }
+   }
+   return false;
 }

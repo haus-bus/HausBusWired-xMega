@@ -14,7 +14,7 @@
 #endif
 
 
-#include <stdio.h>
+#include <Time/Timestamp.h>
 
 class HmwChannel
 {
@@ -52,7 +52,8 @@ class HmwChannel
 
       Type type;
       uint8_t channelId;
-      HmwChannel();
+      uint16_t nextActionDelay;
+      Timestamp nextFeedbackTime;
 
    private:
       static uint8_t numChannels;
@@ -95,7 +96,9 @@ class HmwChannel
 
    protected:
 
-      uint16_t nextActionDelay;
+      HmwChannel();
+      void checkLogging( bool enabled );
+      bool handleFeedback( uint32_t nextFeedbackDelay = 0 );
 
    private:
 

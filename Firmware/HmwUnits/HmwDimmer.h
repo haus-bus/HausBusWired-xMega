@@ -218,8 +218,6 @@ class HmwDimmer : public HmwChannel
 
       ActionParameter const* actionParameter;
 
-      Timestamp nextFeedbackTime;
-
       Timestamp nextActionTime;
 
       States state;

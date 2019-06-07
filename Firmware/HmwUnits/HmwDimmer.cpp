@@ -11,7 +11,7 @@
 
 #define getId() FSTR( "HmwDimmer." ) << channelId
 
-const uint8_t HmwDimmer::debugLevel( DEBUG_LEVEL_LOW | DEBUG_STATE_L3 );
+const uint8_t HmwDimmer::debugLevel( DEBUG_LEVEL_OFF | DEBUG_STATE_L3 );
 
 HmwDimmer::HmwDimmer( PortPin _portPin, PortPin _enablePin, Config* _config, uint8_t _normalizeLevel ) :
    normalizeLevel( _normalizeLevel ),
@@ -22,7 +22,6 @@ HmwDimmer::HmwDimmer( PortPin _portPin, PortPin _enablePin, Config* _config, uin
    currentLevel( 0 ),
    config( _config ),
    actionParameter( NULL ),
-   nextFeedbackTime( 0 ),
    nextActionTime( 0 ),
    lastKeyNum( 0 )
 {
@@ -218,26 +217,7 @@ void HmwDimmer::loop( uint8_t channel )
    {
       handleStateChart();
    }
-
-   // feedback trigger set?
-   if ( !nextFeedbackTime.isValid() || !nextFeedbackTime.since() )
-   {
-      return;
-   }
-
-   uint8_t errcode = HmwDevice::sendInfoMessage( channel, sizeof( currentLevel ), &currentLevel );
-
-   // sendInfoMessage returns 0 on success, 1 if bus busy, 2 if failed
-   if ( errcode )
-   {
-      // bus busy
-      // try again later, but insert a small delay
-      nextFeedbackTime += 250;
-   }
-   else
-   {
-      nextFeedbackTime.reset();
-   }
+   handleFeedback();
 }
 
 void HmwDimmer::checkConfig()
@@ -280,12 +260,7 @@ void HmwDimmer::setLevel( uint8_t level )
          }
       }
 
-      // Logging
-      if ( !nextFeedbackTime.isValid() && config->isLogging() )
-      {
-         nextFeedbackTime = Timestamp();
-         nextFeedbackTime += ( HmwDevice::getLoggingTime() * 100 );
-      }
+      checkLogging( config->isLogging() );
    }
 }
 

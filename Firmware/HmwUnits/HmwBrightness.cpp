@@ -12,6 +12,25 @@
 #include <Tracing/Logger.h>
 #include <stdlib.h>
 
+const HmwBrightness::MeasurementRangeParameter HmwBrightness::rangeParams[HmwBrightness::MAX_RANGE_PARAMETER] =
+{
+   {
+      TC_CLKSEL_DIV4_gc,
+      1,
+      2
+   },
+   {
+      TC_CLKSEL_DIV64_gc,
+      16,
+      30
+   },
+   {
+      TC_CLKSEL_DIV1024_gc,
+      256,
+      500
+   }
+};
+
 #define getId() FSTR( "HmwBrightness." ) << channel << ' '
 
 
@@ -21,22 +40,41 @@ HmwBrightness::HmwBrightness( PortPin _portPin, TimerCounterChannel _tcChannel, 
    measurePin( _portPin ),
    tcChannel( _tcChannel ),
    state( START_MEASUREMENT ),
+   rangeParamsSet( _8MHZ ),
    config( _config ),
    startCount( 0 ),
    currentValue( 0 ),
-   lastSentValue( 0 )
+   lastSentValue( 0 ),
+   filterHelper( 0 )
 {
    lastActionTime.reset();
-   lastSentTime.reset();
    measurePin.set();
+   prepareNextMeasurement();
 }
+
 
 uint8_t HmwBrightness::get( uint8_t* data )
 {
+   // todo: find correct expression to calculate brightness in [lux]
+
    // MSB first
-   *data++ = ( currentValue >> 8 ) & 0xFF;
-   *data = currentValue & 0xFF;
-   return 2;
+   *data++ = HBYTE( HWORD( currentValue ) );
+   *data++ = LBYTE( HWORD( currentValue ) );
+   *data++ = HBYTE( LWORD( currentValue ) );
+   *data++ = LBYTE( LWORD( currentValue ) );
+
+   return 4;
+}
+
+void HmwBrightness::prepareNextMeasurement()
+{
+   tcChannel.disable();
+   measurePin.configOutput();
+   state = START_MEASUREMENT;
+
+   // give some time to load capacitor for next measurement
+   nextActionDelay = MIN_MEASURE_DELAY;
+   lastActionTime = Timestamp();
 }
 
 void HmwBrightness::loop( uint8_t channel )
@@ -49,87 +87,87 @@ void HmwBrightness::loop( uint8_t channel )
    if ( state == START_MEASUREMENT )
    {
       CriticalSection doNotInterrupt;
+      tcChannel.getTimerCounter()->configClockSource( rangeParams[rangeParamsSet].clkSelection );
       tcChannel.clearCCFlag();
       startCount = tcChannel.getCurrentCount();
       tcChannel.enable();
       measurePin.configInput();
-      nextActionDelay = 10;
+      nextActionDelay = 1;
       lastActionTime = Timestamp();
       state = WAIT_MEASUREMENT_RESULT;
    }
    else if ( state == WAIT_MEASUREMENT_RESULT )
    {
-      nextActionDelay += 10;
-      if ( tcChannel.getCCFlag() )
+      if ( lastActionTime.since() > rangeParams[rangeParamsSet].measurementTimeout )
       {
-         uint16_t delta = ( tcChannel.getCapture() - startCount ) >> 3;
-         if ( delta > MAX_VALUE )
+         // this is handled as a timeout, switch range if possible and start new measurement
+         if ( rangeParamsSet < ( MAX_RANGE_PARAMETER - 1 ) )
          {
-            currentValue = 0;
+            rangeParamsSet++;
          }
-         else
-         {
-            currentValue = MAX_VALUE - delta;
-         }
-         DEBUG_H3( nextActionDelay, '\t', delta );
-         DEBUG_L2( ' ', currentValue );
-         tcChannel.disable();
-         measurePin.configOutput();
-         state = SEND_FEEDBACK;
+         prepareNextMeasurement();
       }
-   }
+      else
+      {
+         // check for measurement result each ms
+         nextActionDelay += 1;
+         if ( tcChannel.getCCFlag() )
+         {
+            uint16_t delta = tcChannel.getCapture() - startCount;
 
-   if ( nextActionDelay > MAX_MEASURE_TIME )
-   {
-      // this is handled as a timeout, it is too dark for measurement
-      tcChannel.disable();
-      measurePin.configOutput();
-      state = START_MEASUREMENT;
+            if ( ( delta < SWITCH_RANGE_THRESHOLD ) && ( rangeParamsSet > 0 ) )
+            {
+               // switch into higher resolution and measure again
+               rangeParamsSet--;
+               prepareNextMeasurement();
+               return;
+            }
+
+            // make sure that result will be uint32_t (depends on type of first operand)
+            uint32_t newValue = (uint32_t)delta * rangeParams[rangeParamsSet].eighthMicroSecondPerTick;
+
+            // check if filter has to be initialized with first value
+            if ( filterHelper == 0 )
+            {
+               filterHelper = ( newValue << FILTER_LEVEL );
+            }
+            else
+            {
+               // filter new input values
+               filterHelper += newValue - currentValue;
+            }
+            currentValue = ( filterHelper >> FILTER_LEVEL );
+
+            DEBUG_H3( newValue, '\t', currentValue );
+            tcChannel.disable();
+            measurePin.configOutput();
+            state = SEND_FEEDBACK;
+         }
+      }
    }
 
    if ( state == SEND_FEEDBACK )
    {
-      // do not send before min interval
-      bool doSend = true;
-      doSend &= !( config->minInterval && ( lastSentTime.since() < ( (uint32_t)config->minInterval * 1000 ) ) );
-      doSend &= ( ( config->maxInterval && ( lastSentTime.since() >= ( (uint32_t)config->maxInterval * 1000 ) ) )
-                || ( config->minDelta && ( (uint16_t)abs( currentValue - lastSentValue ) >= ( (uint16_t)config->minDelta ) ) ) );
+      bool doSend = perCentOf<uint32_t>( config->minDeltaPercent, lastSentValue ) <= (uint32_t)labs( currentValue - lastSentValue );
 
-      if ( doSend )
+      if ( doSend && handleFeedback( SystemTime::S* config->minInterval ) )
       {
-         uint8_t data[2];
-         if ( HmwDevice::sendInfoMessage( channel, get( data ), data ) == IStream::SUCCESS )
-         {
-            lastSentValue = currentValue;
-            lastSentTime = Timestamp();
-         }
+         lastSentValue = currentValue;
       }
-      // start next measurement only once a second, if last measurement took longer
-      // the next one will start after 10ms
-      if ( nextActionDelay < MIN_MEASURE_DELAY )
-      {
-         nextActionDelay = MIN_MEASURE_DELAY;
-      }
-      state = START_MEASUREMENT;
+      prepareNextMeasurement();
    }
 }
 
 void HmwBrightness::checkConfig()
 {
-   if ( config->minDelta > 250 )
-   {
-      config->minDelta = 5;
-   }
-   if ( config->minInterval && ( ( config->minInterval < 5 ) || ( config->minInterval > 3600 ) ) )
+   if ( config->minInterval && ( ( config->minInterval < 10 ) || ( config->minInterval > 3600 ) ) )
    {
       config->minInterval = 10;
    }
-   if ( config->maxInterval && ( ( config->maxInterval < 5 ) || ( config->maxInterval > 3600 ) ) )
+   if ( config->minDeltaPercent && ( ( config->minDeltaPercent < 10 ) || ( config->minDeltaPercent > 100 ) ) )
    {
-      config->maxInterval = 150;
+      config->minDeltaPercent = 10;
    }
-   if ( config->maxInterval && ( config->maxInterval < config->minInterval ) )
-   {
-      config->maxInterval = 0;
-   }
+
+   nextFeedbackTime = SystemTime::now() + SystemTime::S* config->minInterval;
 }

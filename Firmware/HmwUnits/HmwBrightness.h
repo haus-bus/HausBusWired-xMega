@@ -22,10 +22,10 @@ class HmwBrightness : public HmwChannel
    public:
       struct Config
       {
-         uint8_tx options;
-         uint8_tx minDelta;
          uint16_tx minInterval;
-         uint16_tx maxInterval;
+         uint8_tx minDeltaPercent;
+         uint8_tx reserve1;
+         uint16_tx reserve2;
       };
 
       enum HwStatus
@@ -43,9 +43,26 @@ class HmwBrightness : public HmwChannel
          SEND_INVALID_VALUE
       };
 
-      static const uint16_t MAX_MEASURE_TIME = 2000;
-      static const uint16_t MAX_VALUE = 4096;
-      static const uint16_t MIN_MEASURE_DELAY = 1000;
+      enum MeasurementRangeParameterSet
+      {
+         _8MHZ,
+         _500KHZ,
+         _31250HZ,
+         MAX_RANGE_PARAMETER
+      };
+
+      struct MeasurementRangeParameter
+      {
+         TC_CLKSEL_t clkSelection;
+         uint16_t eighthMicroSecondPerTick;
+         uint16_t measurementTimeout;
+      };
+
+      static const uint16_t SWITCH_RANGE_THRESHOLD = 512;
+      static const uint16_t MIN_MEASURE_DELAY = 500;
+      static const uint8_t FILTER_LEVEL = 4;   // 0: no filtering -> 8: max filtering
+
+      static const MeasurementRangeParameter rangeParams[MAX_RANGE_PARAMETER];
 
       ////    Constructor and destructor    ////
       HmwBrightness( PortPin _portPin, TimerCounterChannel _tcChannel, Config* _config );
@@ -57,7 +74,7 @@ class HmwBrightness : public HmwChannel
 
       inline bool isDisabled()
       {
-         return !config->minDelta && !config->minInterval && !config->maxInterval;
+         return !config->minDeltaPercent && !config->minInterval;
       }
 
    protected:
@@ -70,6 +87,8 @@ class HmwBrightness : public HmwChannel
 
    protected:
    private:
+
+      void prepareNextMeasurement();
 
       ////    Attributes    ////
 
@@ -85,18 +104,19 @@ class HmwBrightness : public HmwChannel
 
       State state;
 
+      uint8_t rangeParamsSet;
+
       Config* config;
 
       uint16_t startCount;
 
-      uint16_t currentValue;
+      uint32_t currentValue;
 
-      uint16_t lastSentValue;
+      uint32_t lastSentValue;
+
+      uint32_t filterHelper;
 
       Timestamp lastActionTime;
-
-      Timestamp lastSentTime;
-
 
 }; // HmwBrightness
 
