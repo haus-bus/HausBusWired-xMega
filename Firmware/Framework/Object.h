@@ -51,7 +51,8 @@ class Object
                DHCP = 0xE0,
                IP_STACK_MANAGER,
 
-               LOCAL_CONDITION = 0xFE
+               LOCAL_CONDITION = 0xFE,
+               UNKNOWN
             };
       };
 
