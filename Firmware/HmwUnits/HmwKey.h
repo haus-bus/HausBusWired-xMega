@@ -30,8 +30,8 @@ class HmwKey : public HmwChannel
 
             enum InputType
             {
-               PUSHBUTTON = 0,
-               SWITCH,
+               SWITCH = 0,
+               PUSHBUTTON,
                MAX_INPUTTYPE
             };
 

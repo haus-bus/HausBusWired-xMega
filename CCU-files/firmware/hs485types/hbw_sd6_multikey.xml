@@ -103,8 +103,8 @@
 		<paramset id="hmw_input_ch_master" type="MASTER" address_step="2" address_start="0x10">
 			<parameter id="INPUT_TYPE">
 				<logical type="option">
-					<option id="PUSHBUTTON" default="true"/>
 					<option id="SWITCH"/>
+					<option id="PUSHBUTTON" default="true"/>
 				</logical>
 				<physical size="0.3" type="integer" interface="eeprom">
 					<address index="+0.0"/>
@@ -403,7 +403,7 @@
                </conversion>
 			</parameter>
 			<parameter id="TX_THRESHOLD_PERCENT" operations="read,write">
-				<logical type="integer" min="10" max="100" unit="%" default="0.0">
+				<logical type="integer" min="10" max="100" unit="%" default="10">
 					<special_value id="NOT_USED" value="0.0"/>
 				</logical>
 				<physical size="1.0" type="integer" interface="eeprom">
@@ -427,7 +427,27 @@
 		<link_roles>
 			<source name="WEATHER_TH"/>
 		</link_roles>
-		<paramset type="MASTER" id="shtc3_ch_master"/>
+		<paramset type="MASTER" id="shtc3_ch_master" address_step="6" address_start="0x6A">
+			<parameter id="TX_MINDELAY" operations="read,write">
+			   <logical type="integer" unit="s" default="10" min="5" max="3600">
+			     <special_value id="NOT_USED" value="0"/>
+			   </logical>	   
+               <physical size="2.0" type="integer" interface="eeprom" endian="little">
+                  <address index="+0.0"/>
+               </physical>	  
+               <conversion type="integer_integer_map">
+                 <value_map to_device="false" from_device="true" parameter_value="10" device_value="0xffff"/>
+               </conversion>
+			</parameter>
+			<parameter id="TX_THRESHOLD_PERCENT" operations="read,write">
+				<logical type="integer" min="1" max="100" unit="%" default="2">
+					<special_value id="NOT_USED" value="0.0"/>
+				</logical>
+				<physical size="1.0" type="integer" interface="eeprom">
+					<address index="+2.0"/>
+				</physical>	
+			</parameter>
+		</paramset>		
 		<paramset type="VALUES" id="shtc3_ch_values">
 			<parameter id="TEMPERATURE" operations="read,event">
 				<logical type="float" min="-40.0" max="80.0" unit="&#x2103"/>
