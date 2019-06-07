@@ -32,6 +32,9 @@ TimerCounter& TimerCounter::instance( uint8_t portNumber, uint8_t type )
          case PortF:
             return *reinterpret_cast<TimerCounter*> ( &TCF0 );
          #endif
+
+         case PortDummy:
+            return *(TimerCounter*)0;
       }
    }
    else if ( type == 1 )
@@ -52,6 +55,9 @@ TimerCounter& TimerCounter::instance( uint8_t portNumber, uint8_t type )
          case PortE:
             return *reinterpret_cast<TimerCounter*> ( &TCE1 );
          #endif
+
+         case PortDummy:
+            return *(TimerCounter*)0;
       }
    }
    WARN_3( FSTR( "Requested Timer not exists! port" ), (uint8_t)( 'A' + portNumber ), type );

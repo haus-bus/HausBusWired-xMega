@@ -161,42 +161,42 @@ class TimerCounter
          reg.CTRLFSET = TC_CMD_UPDATE_gc;
       }
 
-      inline uint16_t getCount()
+      inline uint16_t getCount() const
       {
          return reg.CNT;
       }
 
-      inline uint8_t getCCAFlag()
+      inline uint8_t getCCAFlag() const
       {
          return reg.INTFLAGS & TC0_CCAIF_bm;
       }
 
-      inline uint8_t getCCBFlag()
+      inline uint8_t getCCBFlag() const
       {
          return reg.INTFLAGS & TC0_CCBIF_bm;
       }
 
-      inline uint16_t getCaptureA()
+      inline uint16_t getCaptureA() const
       {
          return reg.CCA;
       }
 
-      inline uint16_t getCaptureB()
+      inline uint16_t getCaptureB() const
       {
          return reg.CCB;
       }
 
-      inline uint8_t getErrorFlag()
+      inline uint8_t getErrorFlag() const
       {
          return reg.INTFLAGS & TC0_ERRIF_bm;
       }
 
-      inline uint8_t getOverflowFlag()
+      inline uint8_t getOverflowFlag() const
       {
          return reg.INTFLAGS & TC0_OVFIF_bm;
       }
 
-      inline uint16_t getPeriod()
+      inline uint16_t getPeriod() const
       {
          return reg.PER;
       }
