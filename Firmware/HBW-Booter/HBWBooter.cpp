@@ -37,7 +37,7 @@ struct UserSignature
    uint8_t hardwareRev;
 };
 
-static const uint8_t debugLevel( DEBUG_LEVEL_LOW );
+static const uint8_t debugLevel( DEBUG_LEVEL_OFF );
 
 #define getId() FSTR( "BOOTER" )
 

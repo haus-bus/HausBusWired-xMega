@@ -486,6 +486,10 @@
       <SubType>compile</SubType>
       <Link>HmwUnits\HmwMsgSetLevel.h</Link>
     </Compile>
+    <Compile Include="..\HmwUnits\HmwMsgStartupReason.h">
+      <SubType>compile</SubType>
+      <Link>HmwUnits\HmwMsgStartupReason.h</Link>
+    </Compile>
     <Compile Include="..\HmwUnits\HmwMsgWriteEeprom.h">
       <SubType>compile</SubType>
       <Link>HmwUnits\HmwMsgWriteEeprom.h</Link>
@@ -646,10 +650,6 @@
       <SubType>compile</SubType>
       <Link>XMega\Peripherals\TimerCounter.h</Link>
     </Compile>
-    <Compile Include="..\XMega\Peripherals\TimerCounterBase.h">
-      <SubType>compile</SubType>
-      <Link>XMega\Peripherals\TimerCounterBase.h</Link>
-    </Compile>
     <Compile Include="..\XMega\Peripherals\TimerCounterChannel.h">
       <SubType>compile</SubType>
       <Link>XMega\Peripherals\TimerCounterChannel.h</Link>
@@ -709,7 +709,7 @@
     <Compile Include="..\XMega\SerialStream.h">
       <SubType>compile</SubType>
       <Link>XMega\SerialStream.h</Link>
-    </Compile>		
+    </Compile>
     <Compile Include="..\XMega\xEeprom.h">
       <SubType>compile</SubType>
       <Link>XMega\xEeprom.h</Link>
