@@ -68,7 +68,7 @@
 		<parameter type="integer" signed="true" index="11.0" size="2.0" param="TEMPERATURE"/>
 	</frame>
 	<frame id="LUX_EVENT" direction="from_device" event="true" type="#i" channel_field="10">
-		<parameter type="integer" index="11.0" size="4.0" param="LUX"/>
+		<parameter type="integer" index="11.0" size="2.0" param="LUX"/>
 	</frame>	
 	<frame id="WEATHER_EVENT" direction="from_device" event="true" type="#i" channel_field="10">
 		<parameter type="integer" signed="true" index="11.0" size="2.0" param="TEMPERATURE"/>
@@ -410,15 +410,27 @@
 					<address index="+2.0"/>
 				</physical>	
 			</parameter>
+			<parameter id="SCALE" operations="read,write">
+				<logical type="integer" min="5" max="200" default="60"/>
+				<physical size="1.0" type="integer" interface="eeprom">
+					<address index="+3.0"/>
+				</physical>	
+			</parameter>
+			<parameter id="OFFSET" operations="read,write">
+				<logical type="integer" min="5" max="2500" default="50"/>
+				<physical size="2.0" type="integer" interface="eeprom">
+					<address index="+4.0"/>
+				</physical>	
+			</parameter>
 		</paramset>
 		<paramset type="VALUES" id="lux_ch_values">
 			<parameter id="LUX" operations="read,event" control="LUXMETER.LUX">
-				<logical type="float" min="0.00" max="200000.00" unit="Lux"/>
+				<logical type="float" min="0.0" max="1600.0" unit="Lux"/>
 				<physical type="integer" interface="command" value_id="LUX" no_init="true">
 					<get request="LEVEL_GET" response="LUX_EVENT"/>
 					<event frame="LUX_EVENT"/>
 				</physical>
-				<conversion type="float_integer_scale" factor="100"/>
+				<conversion type="float_integer_scale" factor="10"/>
 			</parameter>
 		</paramset>
 	</channel>	

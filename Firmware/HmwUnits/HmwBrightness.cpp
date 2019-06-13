@@ -55,15 +55,11 @@ HmwBrightness::HmwBrightness( PortPin _portPin, TimerCounterChannel _tcChannel, 
 
 uint8_t HmwBrightness::get( uint8_t* data )
 {
-   // todo: find correct expression to calculate brightness in [lux]
-
    // MSB first
-   *data++ = HBYTE( HWORD( currentValue ) );
-   *data++ = LBYTE( HWORD( currentValue ) );
-   *data++ = HBYTE( LWORD( currentValue ) );
-   *data++ = LBYTE( LWORD( currentValue ) );
+   *data++ = HBYTE( currentValue );
+   *data++ = LBYTE( currentValue );
 
-   return 4;
+   return 2;
 }
 
 void HmwBrightness::prepareNextMeasurement()
@@ -124,21 +120,24 @@ void HmwBrightness::loop( uint8_t channel )
             }
 
             // make sure that result will be uint32_t (depends on type of first operand)
-            uint32_t newValue = (uint32_t)delta * rangeParams[rangeParamsSet].eighthMicroSecondPerTick;
+            uint16_t lux = log( (uint32_t)delta * rangeParams[rangeParamsSet].eighthMicroSecondPerTick ) * config->scale;
+            uint16_t maxLux = config->offset * 10;
+
+            lux = ( maxLux < lux ) ? 0 : maxLux - lux;
 
             // check if filter has to be initialized with first value
             if ( filterHelper == 0 )
             {
-               filterHelper = ( newValue << FILTER_LEVEL );
+               filterHelper = ( lux << FILTER_LEVEL );
             }
             else
             {
                // filter new input values
-               filterHelper += newValue - currentValue;
+               filterHelper += lux - currentValue;
             }
             currentValue = ( filterHelper >> FILTER_LEVEL );
 
-            DEBUG_H3( newValue, '\t', currentValue );
+            DEBUG_H3( lux, '\t', currentValue );
             tcChannel.disable();
             measurePin.configOutput();
             state = SEND_FEEDBACK;
@@ -167,6 +166,14 @@ void HmwBrightness::checkConfig()
    if ( config->minDeltaPercent && ( ( config->minDeltaPercent < 10 ) || ( config->minDeltaPercent > 100 ) ) )
    {
       config->minDeltaPercent = 10;
+   }
+   if ( ( config->scale < 5 ) || ( config->scale > 200 ) )
+   {
+      config->scale = 60;
+   }
+   if ( ( config->offset < 5 ) || ( config->offset > 2500 ) )
+   {
+      config->offset = 52;
    }
 
    nextFeedbackTime = SystemTime::now() + SystemTime::S* config->minInterval;

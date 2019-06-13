@@ -92,11 +92,15 @@ void HmwSHTC3::loop( uint8_t channel )
 
       case SEND_FEEDBACK:
       {
-         bool doSend = perCentOf<uint16_t>( config->minDeltaPercent, lastSentHumidity ) <= (uint8_t)abs( currentHumidity - lastSentHumidity );
-         doSend &= perCentOf<uint32_t>( config->minDeltaPercent, lastSentCentiCelsius ) <= (uint16_t)labs( currentCentiCelsius - lastSentCentiCelsius );
+         uint16_t perCentHumidity = perCentOf<uint16_t>( config->minDeltaPercent, lastSentHumidity );
+         uint32_t perCentCelsius = perCentOf<uint32_t>( config->minDeltaPercent, lastSentCentiCelsius );
+
+         bool doSend = ( perCentHumidity <= (uint8_t)abs( currentHumidity - lastSentHumidity ) );
+         doSend |= ( perCentCelsius <= (uint16_t)labs( currentCentiCelsius - lastSentCentiCelsius ) );
 
          if ( doSend && handleFeedback( SystemTime::S* config->minInterval ) )
          {
+            DEBUG_H4( FSTR( "Sending new values: " ), perCentCelsius, ' ', perCentHumidity )
             lastSentCentiCelsius = currentCentiCelsius;
             lastSentHumidity = currentHumidity;
          }

@@ -24,8 +24,8 @@ class HmwBrightness : public HmwChannel
       {
          uint16_tx minInterval;
          uint8_tx minDeltaPercent;
-         uint8_tx reserve1;
-         uint16_tx reserve2;
+         uint8_tx scale;
+         uint16_tx offset;
       };
 
       enum HwStatus
