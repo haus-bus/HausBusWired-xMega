@@ -31,10 +31,30 @@ const HmwBrightness::MeasurementRangeParameter HmwBrightness::rangeParams[HmwBri
    }
 };
 
-#define getId() FSTR( "HmwBrightness." ) << channel << ' '
+#define getId() FSTR( "HmwBrightness " )
 
 
 const uint8_t HmwBrightness::debugLevel( DEBUG_LEVEL_LOW );
+
+void HmwBrightness::notifyNewMeasuredValue( uint16_t lux )
+{
+      // check if filter has to be initialized with first value
+      if ( filterHelper == 0 )
+      {
+         filterHelper = ( lux << FILTER_LEVEL );
+      }
+      else
+      {
+         // filter new input values
+         filterHelper += lux - currentValue;
+      }
+      currentValue = ( filterHelper >> FILTER_LEVEL );
+
+      DEBUG_H3( lux, '\t', currentValue );
+      tcChannel.disable();
+      measurePin.configOutput();
+      state = SEND_FEEDBACK;
+}
 
 HmwBrightness::HmwBrightness( PortPin _portPin, TimerCounterChannel _tcChannel, Config* _config ) :
    measurePin( _portPin ),
@@ -100,8 +120,13 @@ void HmwBrightness::loop( uint8_t channel )
          if ( rangeParamsSet < ( MAX_RANGE_PARAMETER - 1 ) )
          {
             rangeParamsSet++;
+            prepareNextMeasurement();
          }
-         prepareNextMeasurement();
+         else
+         {
+            // its too dark and measuring takes too long, so it is anyway about 0 lx
+            notifyNewMeasuredValue( 0 );
+         }
       }
       else
       {
@@ -125,22 +150,7 @@ void HmwBrightness::loop( uint8_t channel )
 
             lux = ( maxLux < lux ) ? 0 : maxLux - lux;
 
-            // check if filter has to be initialized with first value
-            if ( filterHelper == 0 )
-            {
-               filterHelper = ( lux << FILTER_LEVEL );
-            }
-            else
-            {
-               // filter new input values
-               filterHelper += lux - currentValue;
-            }
-            currentValue = ( filterHelper >> FILTER_LEVEL );
-
-            DEBUG_H3( lux, '\t', currentValue );
-            tcChannel.disable();
-            measurePin.configOutput();
-            state = SEND_FEEDBACK;
+            notifyNewMeasuredValue( lux );
          }
       }
    }

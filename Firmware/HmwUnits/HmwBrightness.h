@@ -90,6 +90,8 @@ class HmwBrightness : public HmwChannel
 
       void prepareNextMeasurement();
 
+      void notifyNewMeasuredValue( uint16_t lux );
+
       ////    Attributes    ////
 
    public:
